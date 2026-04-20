@@ -12,7 +12,7 @@
     "homepage": "https://github.com/chancegarcia/box.net-v2api-sdk",
     "autoload": {
         "psr-4": {
-            "Box\\": "src/Box"
+            "Box\\": "src"
         }
     },
     "require": {
