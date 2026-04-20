@@ -42,6 +42,11 @@ class Token extends Model implements TokenInterface
     protected mixed $tokenType = null;
     protected array $restrictedTo = [];
 
+    /**
+     * @param mixed $expiresIn
+     * @return Token
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setExpiresIn(mixed $expiresIn = null): self
     {
         $this->expiresIn = $expiresIn;
@@ -53,6 +58,11 @@ class Token extends Model implements TokenInterface
         return $this->expiresIn;
     }
 
+    /**
+     * @param mixed $tokenType
+     * @return Token
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setTokenType(mixed $tokenType = null): self
     {
         $this->tokenType = $tokenType;
@@ -64,6 +74,11 @@ class Token extends Model implements TokenInterface
         return $this->tokenType;
     }
 
+    /**
+     * @param mixed $accessToken
+     * @return Token
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setAccessToken(mixed $accessToken = null): self
     {
         $this->accessToken = $accessToken;
@@ -75,6 +90,11 @@ class Token extends Model implements TokenInterface
         return $this->accessToken;
     }
 
+    /**
+     * @param mixed $grantType
+     * @return Token
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setGrantType(mixed $grantType = null): self
     {
         $this->grantType = $grantType;
@@ -86,6 +106,11 @@ class Token extends Model implements TokenInterface
         return $this->grantType;
     }
 
+    /**
+     * @param mixed $refreshToken
+     * @return Token
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setRefreshToken(mixed $refreshToken = null): self
     {
         $this->refreshToken = $refreshToken;
@@ -107,6 +132,11 @@ class Token extends Model implements TokenInterface
 
     /**
      * {@inheritdoc}
+     */
+    /**
+     * @param array|null $restrictedTo
+     * @return Token
+     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setRestrictedTo(?array $restrictedTo = null): self
     {

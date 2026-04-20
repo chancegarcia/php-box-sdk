@@ -18,7 +18,9 @@
     "require": {
         "php": ">=8.2",
         "symfony/http-foundation": "^2.8|^3.4|^4.4|^5.4|^6|^7.4|^8",
-        "psr/log": "^1.0|^2|^3"
+        "psr/log": "^1.0|^2|^3",
+        "ext-curl": "*",
+        "ext-fileinfo": "*"
     },
     "authors": [
         {

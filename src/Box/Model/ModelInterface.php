@@ -35,6 +35,9 @@
 
 namespace Box\Model;
 
+use Box\Exception\BoxException;
+use Box\Http\Response\BoxResponseInterface;
+
 interface ModelInterface extends BaseModelInterface
 {
     public function __construct(?array $options = null);
@@ -59,15 +62,15 @@ interface ModelInterface extends BaseModelInterface
      * @param string|null $message
      * @param BoxResponseInterface|null $boxResponse
      *
-     * @throws \Box\Exception\BoxException
+     * @throws BoxException
      */
-    public function error(array $data, ?string $message = null, ?\Box\Http\Response\BoxResponseInterface $boxResponse = null);
+    public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null);
 
     /**
      * @param string $class
      * @param string $classType
      *
-     * @throws \Box\Exception\BoxException
+     * @throws BoxException
      * @return bool returns true if validation passes. Throws exception if unable to validate or validation doesn't pass
      */
     public function validateClass(string $class, string $classType): bool;

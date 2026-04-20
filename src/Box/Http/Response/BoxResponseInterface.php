@@ -20,7 +20,6 @@
 namespace Box\Http\Response;
 
 use Box\Http\Response\Header\ResponseHeaderInterface;
-use Zend\Stdlib\ResponseInterface;
 
 interface BoxResponseInterface
 {
@@ -32,6 +31,7 @@ interface BoxResponseInterface
     /**
      * @param ResponseHeaderInterface|null $responseHeader
      * @return BoxResponseInterface
+     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setResponseHeader(?ResponseHeaderInterface $responseHeader = null): self;
 
@@ -73,6 +73,7 @@ interface BoxResponseInterface
      * @param string $version The HTTP protocol version
      *
      * @return static
+     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setProtocolVersion(string $version): static;
 

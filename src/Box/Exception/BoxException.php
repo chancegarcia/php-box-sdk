@@ -51,6 +51,11 @@ class BoxException extends \Exception
      */
     protected ?BoxResponseInterface $boxResponse = null;
 
+    /**
+     * @param mixed $error
+     * @return BoxException
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setError(mixed $error = null): self {
         $this->error = $error;
 
@@ -61,6 +66,11 @@ class BoxException extends \Exception
         return $this->error;
     }
 
+    /**
+     * @param mixed $errorDescription
+     * @return BoxException
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setErrorDescription(mixed $errorDescription = null): self {
         $this->errorDescription = $errorDescription;
 
@@ -92,9 +102,9 @@ class BoxException extends \Exception
         if (!is_null($key)) {
             if (array_key_exists($key, $this->context)) {
                 return $this->context[$key];
-            } else {
-                return null;
             }
+
+            return null;
         }
 
         // if provided a null key, we return full context
@@ -111,6 +121,11 @@ class BoxException extends \Exception
     /**
      * @param mixed $boxCode
      * @return self
+     */
+    /**
+     * @param mixed $boxCode
+     * @return BoxException
+     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setBoxCode(mixed $boxCode = null): self {
         $this->boxCode = $boxCode;

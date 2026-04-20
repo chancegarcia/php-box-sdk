@@ -19,6 +19,7 @@
 
 namespace Box\Http\Response;
 
+use Box\Exception\BoxException;
 use Box\Http\Response\Header\ResponseHeader;
 use Box\Http\Response\Header\ResponseHeaderInterface;
 use Box\Http\Response\Header\StatusLineInterface;
@@ -29,8 +30,11 @@ class BoxResponse extends Response implements BoxResponseInterface
     /**
      * @var ResponseHeaderInterface
      */
-    protected $responseHeader;
+    protected ResponseHeaderInterface $responseHeader;
 
+    /**
+     * @throws BoxException
+     */
     public function __construct(mixed $content = '', string $header = '') {
         $this->responseHeader = new ResponseHeader($header);
 
@@ -56,6 +60,7 @@ class BoxResponse extends Response implements BoxResponseInterface
 
     /**
      * {@inheritdoc}
+     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setResponseHeader(?ResponseHeaderInterface $responseHeader = null): BoxResponseInterface {
         $this->responseHeader = $responseHeader;
@@ -97,6 +102,11 @@ class BoxResponse extends Response implements BoxResponseInterface
         return $normalizedHeaderLines[strtolower($name)];
     }
 
+    /**
+     * @param string $version
+     * @return $this
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setProtocolVersion(string $version): static
     {
         parent::setProtocolVersion($version);

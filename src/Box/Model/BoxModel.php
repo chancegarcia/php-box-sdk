@@ -58,6 +58,11 @@ class BoxModel implements BoxModelInterface
         return $this->type;
     }
 
+    /**
+     * @param mixed $type
+     * @return BoxModel
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setType($type = null)
     {
         $this->type = $type;
@@ -70,6 +75,11 @@ class BoxModel implements BoxModelInterface
         return $this->id;
     }
 
+    /**
+     * @param mixed $id
+     * @return BoxModel
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setId($id = null)
     {
         $this->id = $id;
@@ -82,6 +92,11 @@ class BoxModel implements BoxModelInterface
         return $this->sequenceId;
     }
 
+    /**
+     * @param mixed $sequenceId
+     * @return BoxModel
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setSequenceId($sequenceId = null)
     {
         $this->sequenceId = $sequenceId;
@@ -94,6 +109,11 @@ class BoxModel implements BoxModelInterface
         return $this->etag;
     }
 
+    /**
+     * @param mixed $etag
+     * @return BoxModel
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setEtag($etag = null)
     {
         $this->etag = $etag;
@@ -106,6 +126,11 @@ class BoxModel implements BoxModelInterface
         return $this->name;
     }
 
+    /**
+     * @param mixed $name
+     * @return BoxModel
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setName($name = null)
     {
         $this->name = $name;
@@ -118,6 +143,11 @@ class BoxModel implements BoxModelInterface
         return $this->description;
     }
 
+    /**
+     * @param mixed $description
+     * @return BoxModel
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setDescription($description = null)
     {
         $this->description = $description;
@@ -130,6 +160,11 @@ class BoxModel implements BoxModelInterface
         return $this->size;
     }
 
+    /**
+     * @param mixed $size
+     * @return BoxModel
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setSize($size = null)
     {
         $this->size = $size;
@@ -142,6 +177,11 @@ class BoxModel implements BoxModelInterface
         return $this->createdAt;
     }
 
+    /**
+     * @param mixed $createdAt
+     * @return BoxModel
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setCreatedAt($createdAt = null)
     {
         $this->createdAt = $createdAt;
@@ -154,6 +194,11 @@ class BoxModel implements BoxModelInterface
         return $this->modifiedAt;
     }
 
+    /**
+     * @param mixed $modifiedAt
+     * @return BoxModel
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setModifiedAt($modifiedAt = null)
     {
         $this->modifiedAt = $modifiedAt;
@@ -166,6 +211,11 @@ class BoxModel implements BoxModelInterface
         return $this->createdBy;
     }
 
+    /**
+     * @param mixed $createdBy
+     * @return BoxModel
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setCreatedBy($createdBy = null)
     {
         $this->createdBy = $createdBy;
@@ -178,6 +228,11 @@ class BoxModel implements BoxModelInterface
         return $this->modifiedBy;
     }
 
+    /**
+     * @param mixed $modifiedBy
+     * @return BoxModel
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setModifiedBy($modifiedBy = null)
     {
         $this->modifiedBy = $modifiedBy;
@@ -190,6 +245,11 @@ class BoxModel implements BoxModelInterface
         return $this->ownedBy;
     }
 
+    /**
+     * @param mixed $ownedBy
+     * @return BoxModel
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setOwnedBy($ownedBy = null)
     {
         $this->ownedBy = $ownedBy;
@@ -202,6 +262,11 @@ class BoxModel implements BoxModelInterface
         return $this->sharedLink;
     }
 
+    /**
+     * @param mixed $sharedLink
+     * @return BoxModel
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setSharedLink($sharedLink = null)
     {
         $this->sharedLink = $sharedLink;
@@ -214,6 +279,11 @@ class BoxModel implements BoxModelInterface
         return $this->parent;
     }
 
+    /**
+     * @param mixed $parent
+     * @return BoxModel
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setParent($parent = null)
     {
         $this->parent = $parent;
@@ -226,6 +296,11 @@ class BoxModel implements BoxModelInterface
         return $this->itemStatus;
     }
 
+    /**
+     * @param mixed $itemStatus
+     * @return BoxModel
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setItemStatus($itemStatus = null)
     {
         $this->itemStatus = $itemStatus;

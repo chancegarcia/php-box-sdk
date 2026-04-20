@@ -31,6 +31,7 @@
 
 namespace Box\Model\Client;
 
+use Box\Exception\BoxException;
 use Box\Exception\Exception;
 use Box\Model\Collaboration\Collaboration;
 use Box\Model\Connection\Connection;
@@ -44,12 +45,13 @@ use Box\Model\Group\GroupInterface;
 use Box\Model\Model;
 use Box\Model\ModelInterface;
 use Box\Model\User\UserInterface;
+use JsonException;
 
 /**
  * Class Client
  * @package Box\Model
  */
-class Client extends Model implements ModelInterface
+class Client extends Model
 {
     CONST AUTH_URI = "https://www.box.com/api/oauth2/authorize";
     CONST TOKEN_URI = "https://www.box.com/api/oauth2/token";
@@ -112,9 +114,7 @@ class Client extends Model implements ModelInterface
      */
     public function getNewFolder($options = null)
     {
-        $oClass = $this->getNewClass('Folder', $options);
-
-        return $oClass;
+        return $this->getNewClass('Folder', $options);
     }
 
     /**
@@ -124,9 +124,7 @@ class Client extends Model implements ModelInterface
      */
     public function getNewUser($options = null)
     {
-        $oClass = $this->getNewClass('User', $options);
-
-        return $oClass;
+        return $this->getNewClass('User', $options);
     }
 
     /**
@@ -136,9 +134,7 @@ class Client extends Model implements ModelInterface
      */
     public function getNewGroup($options = null)
     {
-        $oClass = $this->getNewClass('Group', $options);
-
-        return $oClass;
+        return $this->getNewClass('Group', $options);
     }
 
     /**
@@ -148,9 +144,7 @@ class Client extends Model implements ModelInterface
      */
     public function getNewCollaboration($options = null)
     {
-        $oClass = $this->getNewClass('Collaboration', $options);
-
-        return $oClass;
+        return $this->getNewClass('Collaboration', $options);
     }
 
     /**
@@ -188,7 +182,7 @@ class Client extends Model implements ModelInterface
     public function addFolder($folder)
     {
         $folders = $this->getFolders();
-        array_push($folders, $folder);
+        $folders[] = $folder;
         $this->setFolders($folders);
 
         return $this;
@@ -296,6 +290,10 @@ class Client extends Model implements ModelInterface
         return $members;
     }
 
+    /**
+     * @throws Exception
+     * @throws BoxException
+     */
     public function getFolderBySharedUri($sharedUri = null)
     {
         if (!is_string($sharedUri))
@@ -342,7 +340,6 @@ class Client extends Model implements ModelInterface
                 $errorData['error'] = $jsonData['message'];
                 $errorData['error_description'] = $jsonData;
                 $this->error($errorData, null, $response);
-                $folder = null;
             }
             else
             {
@@ -353,7 +350,7 @@ class Client extends Model implements ModelInterface
         return $folder;
     }
 
-    public function getFolderFromBox($id = 0)
+    public function getFolderFromBox($id = 0): FolderInterface|Folder
     {
         $uri = Folder::URI . '/' . $id; // all class constant URIs do not end in a slash
 
@@ -418,6 +415,7 @@ class Client extends Model implements ModelInterface
      * @param int $parentFolderId
      *
      * @return Folder|FolderInterface
+     * @throws BoxException
      */
     public function createNewBoxFolder($name, $parentFolderId = 0)
     {
@@ -449,7 +447,7 @@ class Client extends Model implements ModelInterface
         }
         else
         {
-            if (is_array($jsonData) && array_key_exists('type', $jsonData) && 'error' == $jsonData['type'])
+            if (is_array($jsonData) && array_key_exists('type', $jsonData) && 'error' === $jsonData['type'])
             {
                 $data = array();
                 $data['error'] = $jsonData['status'] . "  - " . $jsonData['code'];
@@ -502,7 +500,7 @@ class Client extends Model implements ModelInterface
         }
         else
         {
-            if (is_array($data) && array_key_exists('type', $data) && 'error' == $data['type'])
+            if (is_array($data) && array_key_exists('type', $data) && 'error' === $data['type'])
             {
                 $errorData = array();
                 $errorData['error'] = $data['status'] . "  - " . $data['code'];
@@ -518,6 +516,7 @@ class Client extends Model implements ModelInterface
      * @param null|\Box\Model\Folder\Folder|\Box\Model\Folder\FolderInterface $folder
      *
      * @return mixed raw json data as an array
+     * @throws BoxException
      */
     public function getFolderCollaborations($folder = null)
     {
@@ -554,7 +553,7 @@ class Client extends Model implements ModelInterface
             }
             else
             {
-                if (array_key_exists('type', $data) && 'error' == $data['type'])
+                if (array_key_exists('type', $data) && 'error' === $data['type'])
                 {
                     $data['error'] = "sdk_unknown";
                     $ditto = $data;
@@ -575,6 +574,7 @@ class Client extends Model implements ModelInterface
      *
      * @return \Box\Model\Collaboration\Collaboration|\Box\Model\Collaboration\CollaborationInterface
      * @throws \Box\Exception\Exception
+     * @throws BoxException
      */
     public function addCollaboration($folder = null, $collaborator = null, $role = 'viewer')
     {
@@ -633,7 +633,7 @@ class Client extends Model implements ModelInterface
             }
             else
             {
-                if (array_key_exists('type', $data) && 'error' == $data['type'])
+                if (array_key_exists('type', $data) && 'error' === $data['type'])
                 {
                     $data['error'] = "sdk_unknown";
                     $ditto = $data;
@@ -655,6 +655,7 @@ class Client extends Model implements ModelInterface
      * default shared link set to collaborator access, no unshared time or permissions set to
      *
      * @return \Box\Model\Folder\Folder|\Box\Model\Folder\FolderInterface
+     * @throws BoxException
      */
     public function createSharedLinkForFolder($folder = null, $params = null)
     {
@@ -704,7 +705,7 @@ class Client extends Model implements ModelInterface
             }
             else
             {
-                if (array_key_exists('type', $data) && 'error' == $data['type'])
+                if (array_key_exists('type', $data) && 'error' === $data['type'])
                 {
                     $data['error'] = "sdk_unknown";
                     $ditto = $data;
@@ -727,8 +728,9 @@ class Client extends Model implements ModelInterface
      * @param bool $addToFolders
      *
      * @return \Box\Model\Folder\Folder|\Box\Model\Folder\FolderInterface
+     * @throws Exception*@throws BoxException
+     * @throws BoxException
      * @internal param $destinationId
-     * @throws Exception
      */
     public function copyBoxFolder($originalFolder, $parent, $name = null, $addToFolders = true)
     {
@@ -795,7 +797,7 @@ class Client extends Model implements ModelInterface
             }
             else
             {
-                if (array_key_exists('type', $data) && 'error' == $data['type'])
+                if (array_key_exists('type', $data) && 'error' === $data['type'])
                 {
                     $data['error'] = "sdk_unknown";
                     $ditto = $data;
@@ -817,6 +819,12 @@ class Client extends Model implements ModelInterface
     }
 
     // @todo make multiple file upload
+
+    /**
+     * @throws Exception
+     * @throws BoxException
+     * @throws JsonException
+     */
     public function uploadFileToBox($file)
     {
         $uri = File::UPLOAD_URI;
@@ -830,9 +838,9 @@ class Client extends Model implements ModelInterface
 
         $uploaded = $response->getContent();
 
-        $data = json_decode($uploaded, true);
+        $data = json_decode($uploaded, true, 512, JSON_THROW_ON_ERROR);
 
-        if (is_array($data) && array_key_exists('type', $data) && 'error' == $data['type'])
+        if (is_array($data) && array_key_exists('type', $data) && 'error' === $data['type'])
         {
             $data['error'] = "sdk_unknown";
             $ditto = $data;
@@ -940,9 +948,7 @@ class Client extends Model implements ModelInterface
     {
         $token = $this->getToken();
 
-        $header = "Authorization: Bearer " . $token->getAccessToken();
-
-        return $header;
+        return "Authorization: Bearer " . $token->getAccessToken();
     }
 
     /**
@@ -978,9 +984,7 @@ class Client extends Model implements ModelInterface
         $response = $connection->post(self::REVOKE_URI, $params);
         $json = $response->getContent();
         // @todo add error handling for null data
-        $data = json_decode($json, true);
-
-        return $data;
+        return json_decode($json, true, 512, JSON_THROW_ON_ERROR);
     }
 
     public function auth()
@@ -1053,6 +1057,11 @@ class Client extends Model implements ModelInterface
         return $connection;
     }
 
+    /**
+     * @param mixed $clientId
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setClientId($clientId = null)
     {
         $this->clientId = $clientId;
@@ -1065,6 +1074,11 @@ class Client extends Model implements ModelInterface
         return $this->clientId;
     }
 
+    /**
+     * @param mixed $clientSecret
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setClientSecret($clientSecret = null)
     {
         $this->clientSecret = $clientSecret;
@@ -1077,6 +1091,11 @@ class Client extends Model implements ModelInterface
         return $this->clientSecret;
     }
 
+    /**
+     * @param mixed $redirectUri
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setRedirectUri($redirectUri = null)
     {
         $this->redirectUri = $redirectUri;
@@ -1090,6 +1109,11 @@ class Client extends Model implements ModelInterface
     }
 
 
+    /**
+     * @param mixed $authorizationCode
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setAuthorizationCode($authorizationCode = null)
     {
         $this->authorizationCode = $authorizationCode;
@@ -1102,6 +1126,11 @@ class Client extends Model implements ModelInterface
         return $this->authorizationCode;
     }
 
+    /**
+     * @param mixed $token
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setToken($token = null)
     {
         $this->token = $token;
@@ -1121,6 +1150,11 @@ class Client extends Model implements ModelInterface
         return $this->token;
     }
 
+    /**
+     * @param mixed $tokenClass
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setTokenClass($tokenClass = null)
     {
         $this->validateClass($tokenClass, 'TokenInterface');
@@ -1134,6 +1168,11 @@ class Client extends Model implements ModelInterface
         return $this->tokenClass;
     }
 
+    /**
+     * @param mixed $connectionClass
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setConnectionClass($connectionClass = null)
     {
         $this->validateClass($connectionClass, 'ConnectionInterface');
@@ -1148,6 +1187,11 @@ class Client extends Model implements ModelInterface
         return $this->connectionClass;
     }
 
+    /**
+     * @param mixed $connection
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setConnection($connection = null)
     {
         if (!$connection instanceof ConnectionInterface)
@@ -1171,6 +1215,11 @@ class Client extends Model implements ModelInterface
         return $this->connection;
     }
 
+    /**
+     * @param mixed $fileClass
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setFileClass($fileClass = null)
     {
         $this->validateClass($fileClass, 'FileInterface');
@@ -1191,6 +1240,11 @@ class Client extends Model implements ModelInterface
      *
      * @return $this
      */
+    /**
+     * @param mixed $files
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setFiles($files = null)
     {
         $this->files = $files;
@@ -1203,6 +1257,11 @@ class Client extends Model implements ModelInterface
         return $this->files;
     }
 
+    /**
+     * @param mixed $folderClass
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setFolderClass($folderClass = null)
     {
         $this->validateClass($folderClass, 'FolderInterface');
@@ -1216,6 +1275,11 @@ class Client extends Model implements ModelInterface
         return $this->folderClass;
     }
 
+    /**
+     * @param mixed $folders
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setFolders($folders = null)
     {
         $this->folders = $folders;
@@ -1223,6 +1287,11 @@ class Client extends Model implements ModelInterface
         return $this;
     }
 
+    /**
+     * @param mixed $collaborationClass
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setCollaborationClass($collaborationClass = null)
     {
         $this->validateClass($collaborationClass, 'CollaborationInterface');
@@ -1236,6 +1305,11 @@ class Client extends Model implements ModelInterface
         return $this->collaborationClass;
     }
 
+    /**
+     * @param mixed $userClass
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setUserClass($userClass = null)
     {
         $this->validateClass($userClass, 'UserInterface');
@@ -1249,6 +1323,11 @@ class Client extends Model implements ModelInterface
         return $this->userClass;
     }
 
+    /**
+     * @param mixed $groupClass
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setGroupClass($groupClass = null)
     {
         $this->validateClass($groupClass, 'GroupInterface');
@@ -1267,6 +1346,11 @@ class Client extends Model implements ModelInterface
      *
      * @return \Box\Model\Client\Client $this
      */
+    /**
+     * @param mixed $collaborations
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setCollaborations($collaborations = null)
     {
         $this->collaborations = $collaborations;
@@ -1282,6 +1366,11 @@ class Client extends Model implements ModelInterface
         return $this->collaborations;
     }
 
+    /**
+     * @param mixed $deviceId
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setDeviceId($deviceId = null)
     {
         $this->deviceId = $deviceId;
@@ -1294,6 +1383,11 @@ class Client extends Model implements ModelInterface
         return $this->deviceId;
     }
 
+    /**
+     * @param mixed $deviceName
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setDeviceName($deviceName = null)
     {
         $this->deviceName = $deviceName;
@@ -1306,6 +1400,11 @@ class Client extends Model implements ModelInterface
         return $this->deviceName;
     }
 
+    /**
+     * @param mixed $state
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setState($state = null)
     {
         $this->state = $state;
@@ -1322,6 +1421,11 @@ class Client extends Model implements ModelInterface
      * @param \Box\Model\Folder\Folder|\Box\Model\Folder\FolderInterface $root
      *
      * @return \Box\Model\Client\Client
+     */
+    /**
+     * @param mixed $root
+     * @return Client
+     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setRoot($root = null)
     {
@@ -1342,6 +1446,7 @@ class Client extends Model implements ModelInterface
      * @param $uri
      *
      * @return mixed
+     * @throws BoxException
      */
     public function query($uri = null)
     {
@@ -1359,29 +1464,19 @@ class Client extends Model implements ModelInterface
             $data['error'] = "sdk_json_decode";
             $data['error_description'] = "unable to decode or recursion level too deep";
             $this->error($data);
-
-            return $data;
         }
-        else
+
+        if (array_key_exists('error', $data))
         {
-            if (array_key_exists('error', $data))
-            {
-                $this->error($data);
+            $this->error($data);
+        }
 
-                return $data;
-            }
-            else
-            {
-                if (array_key_exists('type', $data) && 'error' == $data['type'])
-                {
-                    $data['error'] = "sdk_unknown";
-                    $ditto = $data;
-                    $data['error_description'] = $ditto;
-                    $this->error($data);
-
-                    return $data;
-                }
-            }
+        if (array_key_exists('type', $data) && 'error' === $data['type'])
+        {
+            $data['error'] = "sdk_unknown";
+            $ditto = $data;
+            $data['error_description'] = $ditto;
+            $this->error($data);
         }
 
         return $data;
@@ -1414,8 +1509,6 @@ class Client extends Model implements ModelInterface
 
         $this->debug("full search uri: " . $uri, [__METHOD__, __LINE__]);
 
-        $data = $this->query($uri);
-
-        return $data;
+        return $this->query($uri);
     }
 }

@@ -76,9 +76,7 @@ class Model extends BaseModel implements ModelInterface
     {
         $arr = $this->classArray();
 
-        $finalArray = $this->removeEmpty($arr);
-
-        return $finalArray;
+        return $this->removeEmpty($arr);
     }
 
     /**
@@ -93,7 +91,7 @@ class Model extends BaseModel implements ModelInterface
     public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null)
     {
         $error = $data['error'];
-        if (null === $message || !is_string($message))
+        if (null === $message)
         {
             $message = $error;
         }
@@ -170,8 +168,6 @@ class Model extends BaseModel implements ModelInterface
 
         $sClass = $this->$sMethod();
 
-        $oClass = new $sClass($classConstructorOptions);
-
-        return $oClass;
+        return new $sClass($classConstructorOptions);
     }
 }

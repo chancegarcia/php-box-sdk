@@ -64,9 +64,8 @@ abstract class BaseModel implements BaseModelInterface, LoggerAwareInterface
         $sFirst = array_shift($aTokens);
         $aTokens = array_map('ucfirst', $aTokens);
         array_unshift($aTokens, $sFirst);
-        $classVar = implode("", $aTokens);
 
-        return $classVar;
+        return implode("", $aTokens);
     }
 
     public function toBoxVar(string $str): string
@@ -75,9 +74,8 @@ abstract class BaseModel implements BaseModelInterface, LoggerAwareInterface
         $sFirst = array_shift($aTokens);
         $aTokens = array_map('lcfirst', $aTokens);
         array_unshift($aTokens, $sFirst);
-        $boxVar = implode("_", $aTokens);
 
-        return $boxVar;
+        return implode("_", $aTokens);
     }
 
     /**

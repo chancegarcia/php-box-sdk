@@ -256,8 +256,7 @@ class Connection extends Model implements ConnectionInterface
      */
     public function createCurlFile(string $pathToFile, string $mimeType, string $filename): CURLFile
     {
-        $curlFile = new CURLFile($pathToFile,$mimeType, $filename);
-        return $curlFile;
+        return new CURLFile($pathToFile,$mimeType, $filename);
     }
 
     /**
@@ -266,9 +265,8 @@ class Connection extends Model implements ConnectionInterface
     public function getMimeType(string $file): mixed
     {
         $fInfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimeType = finfo_file($fInfo, $file);
 
-        return $mimeType;
+        return finfo_file($fInfo, $file);
     }
 
     /**
@@ -315,6 +313,11 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
+    /**
+     * @param array|null $curlOpts
+     * @return Connection
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setCurlOpts(?array $curlOpts = null): self
     {
         if (!is_array($curlOpts))
@@ -333,6 +336,11 @@ class Connection extends Model implements ConnectionInterface
         return $this->curlOpts;
     }
 
+    /**
+     * @param string|null $authenticationResponseClass
+     * @return Connection
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setAuthenticationResponseClass(?string $authenticationResponseClass = null): self
     {
         $this->validateClass($authenticationResponseClass,'AuthenticationResponseInterface');
@@ -345,6 +353,11 @@ class Connection extends Model implements ConnectionInterface
         return $this->authenticationResponseClass;
     }
 
+    /**
+     * @param mixed $clientId
+     * @return Connection
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setClientId(mixed $clientId = null): self
     {
         $this->clientId = $clientId;
@@ -356,6 +369,11 @@ class Connection extends Model implements ConnectionInterface
         return $this->clientId;
     }
 
+    /**
+     * @param mixed $clientSecret
+     * @return Connection
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setClientSecret(mixed $clientSecret = null): self
     {
         $this->clientSecret = $clientSecret;
@@ -367,6 +385,11 @@ class Connection extends Model implements ConnectionInterface
         return $this->clientSecret;
     }
 
+    /**
+     * @param mixed $redirectUri
+     * @return Connection
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setRedirectUri(mixed $redirectUri = null): self
     {
         $this->redirectUri = $redirectUri;
@@ -378,6 +401,11 @@ class Connection extends Model implements ConnectionInterface
         return $this->redirectUri;
     }
 
+    /**
+     * @param mixed $requestType
+     * @return Connection
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setRequestType(mixed $requestType = null): self
     {
         $this->requestType = $requestType;
@@ -389,6 +417,11 @@ class Connection extends Model implements ConnectionInterface
         return $this->requestType;
     }
 
+    /**
+     * @param mixed $authenticationResponse
+     * @return Connection
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setAuthenticationResponse(mixed $authenticationResponse = null): self
     {
         $this->authenticationResponse = $authenticationResponse;
@@ -400,6 +433,11 @@ class Connection extends Model implements ConnectionInterface
         return $this->authenticationResponse;
     }
 
+    /**
+     * @param mixed $responseType
+     * @return Connection
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setResponseType(mixed $responseType = null): self
     {
         $this->responseType = $responseType;
@@ -411,6 +449,11 @@ class Connection extends Model implements ConnectionInterface
         return $this->responseType;
     }
 
+    /**
+     * @param mixed $state
+     * @return Connection
+     * @deprecated since 0.11.0, use non-fluent setter instead.
+     */
     public function setState(mixed $state = null): self
     {
         $this->state = $state;

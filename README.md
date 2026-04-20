@@ -1,11 +1,11 @@
 box.net-v2api-sdk
 =================
 
-Requires at least 5.6.10
+Requires at least 8.0 (8.5 recommended)
 
 php sdk for use with box.net v2 api (http://developers.box.com/)
 
-Copyright (C) 2013-2025  Chance Garcia
+Copyright (C) 2013-2026  Chance Garcia
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,8 @@ Copyright (C) 2013-2025  Chance Garcia
     SOFTWARE.
 
 # usage
+
+Note: Fluent setters (chaining) are deprecated as of v0.11.0 and will be removed in a future release. Please use them as non-fluent methods (do not rely on the return value).
 
 ## setup
 ```php
