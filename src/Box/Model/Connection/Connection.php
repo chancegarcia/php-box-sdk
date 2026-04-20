@@ -62,6 +62,16 @@ class Connection extends Model implements ConnectionInterface
      */
     protected array $curlOpts = [];
 
+    private bool $disableSslVerification = false;
+
+    public function __construct(?array $options = null)
+    {
+        parent::__construct($options);
+        if (array_key_exists('disableSslVerification', $options) && is_bool($options['disableSslVerification'])) {
+            $this->disableSslVerification = $options['disableSslVerification'];
+        }
+    }
+
     // relooking over auth flow, we have to assume app is already authorized externally. rewrite to use tokens for connection
     // may need to store the tokens
     public function connect(): mixed
@@ -91,7 +101,8 @@ class Connection extends Model implements ConnectionInterface
         curl_setopt($ch , CURLOPT_RETURNTRANSFER , true);
         curl_setopt($ch, CURLOPT_HEADER, true);
 
-        curl_setopt($ch , CURLOPT_SSL_VERIFYPEER , false);
+        // note: disable should only be used for development purposes.
+        curl_setopt($ch , CURLOPT_SSL_VERIFYPEER , !$this->getDisableSslVerification());
         return $ch;
     }
 
@@ -463,4 +474,8 @@ class Connection extends Model implements ConnectionInterface
         return $this->state;
     }
 
+    public function getDisableSslVerification(): ?bool
+    {
+        return $this->disableSslVerification;
+    }
 }
