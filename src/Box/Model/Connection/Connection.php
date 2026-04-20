@@ -118,9 +118,7 @@ class Connection extends Model implements ConnectionInterface
         $header = substr($sResponse, 0, $header_size);
         $body = substr($sResponse, $header_size) ?: "";
 
-        $oResponse = new BoxResponse($body, $header);
-
-        return $oResponse;
+        return new BoxResponse($body, $header);
     }
 
     /**
