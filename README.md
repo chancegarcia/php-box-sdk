@@ -53,7 +53,7 @@ $code = $request->get('code');
 try {
     $token = $client->getAccessToken();
     // store the token somehow
-} catch (\Box\Exception\Exception $e) {
+} catch (\Box\Exception\BoxException $e) {
     switch ($e->getError()) {
         case "invalid_grant":
             // do something to get another access code?

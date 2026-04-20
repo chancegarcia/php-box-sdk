@@ -32,7 +32,6 @@
 namespace Box\Model\Client;
 
 use Box\Exception\BoxException;
-use Box\Exception\Exception;
 use Box\Model\Collaboration\Collaboration;
 use Box\Model\Connection\Connection;
 use Box\Model\Connection\ConnectionInterface;
@@ -215,7 +214,7 @@ class Client extends Model
      *
      * @return array returns an array of User objects that are in the group membership
      * @return array returns an array of User objects that are in the group membership
-     * @throws \Box\Exception\Exception
+     * @throws \Box\Exception\BoxException
      */
     public function getGroupMembershipList($group = null, $limit = null, $offset = null)
     {
@@ -228,7 +227,7 @@ class Client extends Model
 
         if (!$group instanceof GroupInterface)
         {
-            throw new Exception("Group object expected", Exception::INVALID_INPUT);
+            throw new BoxException("Group object expected", BoxException::INVALID_INPUT);
         }
 
         $members = array();
@@ -290,14 +289,13 @@ class Client extends Model
     }
 
     /**
-     * @throws Exception
      * @throws BoxException
      */
     public function getFolderBySharedUri($sharedUri = null)
     {
         if (!is_string($sharedUri))
         {
-            throw new Exception('shared uri must be a string value', Exception::INVALID_INPUT);
+            throw new BoxException('shared uri must be a string value', BoxException::INVALID_INPUT);
         }
 
         $uri = Folder::SHARED_ITEM_URI;
@@ -572,7 +570,6 @@ class Client extends Model
      *     roles} default is viewer
      *
      * @return \Box\Model\Collaboration\Collaboration|\Box\Model\Collaboration\CollaborationInterface
-     * @throws \Box\Exception\Exception
      * @throws BoxException
      */
     public function addCollaboration($folder = null, $collaborator = null, $role = 'viewer')
@@ -1028,7 +1025,7 @@ class Client extends Model
      * @param      $connection Connection
      * @param null|array $additionalHeaders
      *
-     * @throws Exception
+     * @throws BoxException
      */
     public function setConnectionAuthHeader($connection, $additionalHeaders = null): void
     {
@@ -1036,7 +1033,7 @@ class Client extends Model
 
         if (null !== $additionalHeaders && !is_array($additionalHeaders))
         {
-            throw new Exception('additional headers must be in array format', Exception::INVALID_INPUT);
+            throw new BoxException('additional headers must be in array format', BoxException::INVALID_INPUT);
         }
 
         if (is_array($additionalHeaders))
@@ -1168,12 +1165,13 @@ class Client extends Model
     /**
      * @param mixed $connection
      * @return void
+     * @throws BoxException
      */
     public function setConnection($connection = null): void
     {
         if (!$connection instanceof ConnectionInterface)
         {
-            throw new Exception("Invalid Class", Exception::INVALID_CLASS);
+            throw new BoxException("Invalid Class", BoxException::INVALID_CLASS);
         }
         $this->connection = $connection;
 
@@ -1434,11 +1432,19 @@ class Client extends Model
         return $data;
     }
 
+    /**
+     * @param string|null $query
+     * @param int|null $limit
+     * @param int|null $offset
+     * @param string|null $type
+     * @return mixed
+     * @throws BoxException
+     */
     public function search($query = null, $limit = null, $offset = null, $type = null)
     {
         if (empty($query))
         {
-            throw new Exception('please enter a search term', Exception::INVALID_INPUT);
+            throw new BoxException('please enter a search term', BoxException::INVALID_INPUT);
         }
 
         $uriQuery = rawurlencode($query);

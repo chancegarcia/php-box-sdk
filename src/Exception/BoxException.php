@@ -46,6 +46,22 @@ class BoxException extends \Exception
     protected mixed $errorDescription = null;
     protected array $context = [];
     protected mixed $boxCode = null;
+
+    /**
+     * @param string $message
+     * @param mixed|null $code
+     * @param \Throwable|null $previous
+     */
+    public function __construct(string $message = "", mixed $code = 0, ?\Throwable $previous = null)
+    {
+        if (is_int($code)) {
+            parent::__construct($message, $code, $previous);
+        } else {
+            parent::__construct($message, 0, $previous);
+            $this->boxCode = $code;
+        }
+    }
+
     /**
      * @var null|BoxResponseInterface
      */
