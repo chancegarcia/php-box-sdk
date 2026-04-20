@@ -27,24 +27,36 @@ interface BoxResponseInterface
     /**
      * @return ResponseHeaderInterface
      */
-    public function getResponseHeader();
+    public function getResponseHeader(): ResponseHeaderInterface;
 
     /**
-     * @param ResponseHeaderInterface $header
+     * @param ResponseHeaderInterface|null $responseHeader
      * @return BoxResponseInterface
      */
-    public function setResponseHeader(ResponseHeaderInterface $header = null);
+    public function setResponseHeader(?ResponseHeaderInterface $responseHeader = null): self;
 
     /**
      * @return mixed
      */
-    public function getContent();
+    public function getContent(): mixed;
 
-    public function hasHeader($name);
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasHeader(string $name): bool;
 
-    public function getHeader($name);
+    /**
+     * @param string $name
+     * @return array
+     */
+    public function getHeader(string $name): array;
 
-    public function getHeaderLine($name);
+    /**
+     * @param string $name
+     * @return string
+     */
+    public function getHeaderLine(string $name): string;
 
     // making interface entries for httpfoundation Response class that we extend and use
 
@@ -53,16 +65,16 @@ interface BoxResponseInterface
      *
      * @return int Status code
      */
-    public function getStatusCode();
+    public function getStatusCode(): int;
 
     /**
      * Sets the HTTP protocol version (1.0 or 1.1).
      *
      * @param string $version The HTTP protocol version
      *
-     * @return ResponseInterface
+     * @return static
      */
-    public function setProtocolVersion(string $version);
+    public function setProtocolVersion(string $version): static;
 
     // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
     /**
@@ -70,69 +82,68 @@ interface BoxResponseInterface
      *
      * @return bool
      */
-    public function isInvalid();
+    public function isInvalid(): bool;
 
     /**
      * Is response informative?
      *
      * @return bool
      */
-    public function isInformational();
+    public function isInformational(): bool;
 
     /**
      * Is response successful?
      *
      * @return bool
      */
-    public function isSuccessful();
+    public function isSuccessful(): bool;
 
     /**
      * Is the response a redirect?
      *
      * @return bool
      */
-    public function isRedirection();
+    public function isRedirection(): bool;
 
     /**
      * Is there a client error?
      *
      * @return bool
      */
-
-    public function isClientError();
+    public function isClientError(): bool;
 
     /**
      * Was there a server side error?
      *
      * @return bool
      */
-    public function isServerError();
+    public function isServerError(): bool;
 
     /**
      * Is the response OK?
      *
      * @return bool
      */
-    public function isOk();
+    public function isOk(): bool;
 
     /**
      * Is the response forbidden?
      *
      * @return bool
      */
-    public function isForbidden();
+    public function isForbidden(): bool;
 
     /**
      * Is the response a not found error?
      *
      * @return bool
      */
-    public function isNotFound();
+    public function isNotFound(): bool;
 
     /**
      * Is the response empty?
      *
      * @return bool
      */
-    public function isEmpty();
+    public function isEmpty(): bool;
 }

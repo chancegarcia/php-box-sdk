@@ -37,41 +37,52 @@ namespace Box\Model;
 
 interface ModelInterface extends BaseModelInterface
 {
-
-    public function __construct(array $options = null);
+    public function __construct(?array $options = null);
 
     /**
      * class properties as an array
      *
      * @return array
      */
-    public function classArray();
+    public function classArray(): array;
 
     /**
      * same as class array except empty elements are filtered out
      * @return array
      */
-    public function toBoxArray();
+    public function toBoxArray(): array;
 
     /**
      * used to throw exceptions that need to contain error information returned from Box
      *
-     * @param $data array containing error and error_description keys
+     * @param array $data containing error and error_description keys
+     * @param string|null $message
+     * @param BoxResponseInterface|null $boxResponse
      *
      * @throws \Box\Exception\BoxException
      */
-    public function error($data);
+    public function error(array $data, ?string $message = null, ?\Box\Http\Response\BoxResponseInterface $boxResponse = null);
 
     /**
      * @param string $class
-     * @param  string $classType
+     * @param string $classType
      *
      * @throws \Box\Exception\BoxException
      * @return bool returns true if validation passes. Throws exception if unable to validate or validation doesn't pass
      */
-    public function validateClass($class, $classType);
+    public function validateClass(string $class, string $classType): bool;
 
-    public function buildQuery($params, $numericPrefix = '');
+    /**
+     * @param array $params
+     * @param string $numericPrefix
+     * @return string
+     */
+    public function buildQuery(array $params, string $numericPrefix = ''): string;
 
-    public function getNewClass($className = null, $classConstructorOptions = null);
+    /**
+     * @param string|null $className
+     * @param mixed $classConstructorOptions
+     * @return mixed
+     */
+    public function getNewClass(?string $className = null, mixed $classConstructorOptions = null): mixed;
 }

@@ -37,37 +37,37 @@ use Box\Model\User\UserInterface;
 
 class User extends Model implements UserInterface
 {
-    protected $type = "user";
-    protected $id;
-    protected $name;
-    protected $login;
-    protected $createdAt;
-    protected $modifiedAt;
-    protected $role; // admin, coadmin, user only
-    protected $language;
-    protected $spaceAmount;
-    protected $spaceUsed;
-    protected $maxUploadSize;
-    protected $trackingCodes;
-    protected $canSeeManagedUsers;
-    protected $isSyncEnabled;
-    protected $status;
-    protected $jobTitle;
-    protected $phone;
-    protected $address;
-    protected $avatarUrl;
-    protected $isExemptFromDeviceLimits;
-    protected $isExemptFromLoginVerification;
-    protected $enterprise;
+    protected mixed $type = "user";
+    protected mixed $id = null;
+    protected mixed $name = null;
+    protected mixed $login = null;
+    protected mixed $createdAt = null;
+    protected mixed $modifiedAt = null;
+    protected mixed $role = null; // admin, coadmin, user only
+    protected mixed $language = null;
+    protected mixed $spaceAmount = null;
+    protected mixed $spaceUsed = null;
+    protected mixed $maxUploadSize = null;
+    protected mixed $trackingCodes = null;
+    protected mixed $canSeeManagedUsers = null;
+    protected mixed $isSyncEnabled = null;
+    protected mixed $status = null;
+    protected mixed $jobTitle = null;
+    protected mixed $phone = null;
+    protected mixed $address = null;
+    protected mixed $avatarUrl = null;
+    protected mixed $isExemptFromDeviceLimits = null;
+    protected mixed $isExemptFromLoginVerification = null;
+    protected mixed $enterprise = null;
 
-    public function setId($id = null)
+    public function setId(mixed $id = null): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    public function getId()
+    public function getId(): mixed
     {
         return $this->id;
     }

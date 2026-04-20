@@ -40,27 +40,25 @@ use Psr\Log\LoggerInterface;
 
 abstract class BaseModel implements BaseModelInterface, LoggerAwareInterface
 {
-    protected $logger;
+    protected ?LoggerInterface $logger = null;
 
     /**
-     * @return LoggerInterface
+     * @return LoggerInterface|null
      */
-    public function getLogger()
+    public function getLogger(): ?LoggerInterface
     {
         return $this->logger;
     }
 
     /**
-     * @param LoggerInterface $logger
-     * @return BaseModelInterface
+     * @param LoggerInterface|null $logger
      */
-    public function setLogger(LoggerInterface $logger = null)
+    public function setLogger(?LoggerInterface $logger = null): void
     {
         $this->logger = $logger;
-        return $this;
     }
 
-    public function toClassVar($str)
+    public function toClassVar(string $str): string
     {
         $aTokens = explode("_", $str);
         $sFirst = array_shift($aTokens);
@@ -71,7 +69,7 @@ abstract class BaseModel implements BaseModelInterface, LoggerAwareInterface
         return $classVar;
     }
 
-    public function toBoxVar($str)
+    public function toBoxVar(string $str): string
     {
         $aTokens = preg_split('/(?<=\\w)(?=[A-Z])/', $str);
         $sFirst = array_shift($aTokens);
@@ -83,14 +81,11 @@ abstract class BaseModel implements BaseModelInterface, LoggerAwareInterface
     }
 
     /**
-     * this will bomb out if any properties are private
-     * @todo try using setter if found?
-     *
-     * @param array|StdClass $aData
+     * @param array|\stdClass $aData
      *
      * @return $this
      */
-    public function mapBoxToClass($aData)
+    public function mapBoxToClass(array|\stdClass $aData): self
     {
         if ($this->getLogger() instanceof LoggerInterface)
         {
@@ -106,7 +101,7 @@ abstract class BaseModel implements BaseModelInterface, LoggerAwareInterface
             {
                 $this->{$sSetterMethod}($v);
             }
-            else
+            elseif (property_exists($this, $sClassProp))
             {
                 $this->{$sClassProp} = $v;
             }
@@ -118,32 +113,26 @@ abstract class BaseModel implements BaseModelInterface, LoggerAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function isInt($number = null)
+    public function isInt(mixed $number = null): bool
     {
         if (!is_numeric($number))
         {
             return false;
         }
-        else
+
+        if (is_string($number) && str_contains($number, "."))
         {
-            if (is_string($number) && false !== strpos($number, "."))
-            {
-                return false;
-            }
-            else
-            {
-                if (!is_int($number) && !is_string($number))
-                {
-                    return false;
-                }
-                else
-                {
-                    if (is_string($number) && !is_int((int)$number))
-                    {
-                        return false;
-                    }
-                }
-            }
+            return false;
+        }
+
+        if (!is_int($number) && !is_string($number))
+        {
+            return false;
+        }
+
+        if (is_string($number) && !is_int((int)$number))
+        {
+            return false;
         }
 
         return true;
@@ -152,7 +141,7 @@ abstract class BaseModel implements BaseModelInterface, LoggerAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function removeEmpty(array $haystack = array())
+    public function removeEmpty(array $haystack = []): array
     {
         foreach ($haystack as $k => $v)
         {

@@ -34,6 +34,7 @@
 namespace Box\Model\Connection;
 
 use Box\Http\Response\BoxResponse;
+use Box\Http\Response\BoxResponseInterface;
 use Box\Model\Model;
 use Box\Exception\BoxException;
 use \CURLFile;
@@ -46,24 +47,24 @@ use Psr\Log\LoggerInterface;
  */
 class Connection extends Model implements ConnectionInterface
 {
-    protected $responseType = "code";
-    protected $clientId;
-    protected $clientSecret;
-    protected $redirectUri;
-    protected $state;
-    protected $requestType = "GET";
+    protected mixed $responseType = "code";
+    protected mixed $clientId = null;
+    protected mixed $clientSecret = null;
+    protected mixed $redirectUri = null;
+    protected mixed $state = null;
+    protected string $requestType = "GET";
 
-    protected $authenticationResponse;
-    protected $authenticationResponseClass='Box\Model\Connection\AuthenticationResponse';
+    protected mixed $authenticationResponse = null;
+    protected string $authenticationResponseClass = 'Box\Model\Connection\AuthenticationResponse';
 
     /**
      * @var array array of options with the options as the key and the option values as the value
      */
-    protected $curlOpts=array();
+    protected array $curlOpts = [];
 
     // relooking over auth flow, we have to assume app is already authorized externally. rewrite to use tokens for connection
     // may need to store the tokens
-    public function connect()
+    public function connect(): mixed
     {
         throw new BoxException('method not yet implemented');
     }
@@ -71,7 +72,7 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function initCurl()
+    public function initCurl(): \CurlHandle
     {
         $ch = curl_init();
         $this->initCurlOpts($ch);
@@ -81,7 +82,7 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function initCurlOpts($ch)
+    public function initCurlOpts(\CurlHandle $ch): \CurlHandle
     {
         // figure out how to log to verbose output to file. maybe make a box logger? or do output buffer capture?
         //curl_setopt($ch, CURLOPT_VERBOSE, true);
@@ -97,7 +98,7 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getCurlData($ch)
+    public function getCurlData(\CurlHandle $ch): BoxResponseInterface
     {
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug('before curl_exec curl opts', array(
@@ -125,7 +126,7 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function initAdditionalCurlOpts($ch)
+    public function initAdditionalCurlOpts(\CurlHandle $ch): \CurlHandle
     {
         $opts = $this->getCurlOpts();
         if (0 != count($opts))
@@ -165,7 +166,7 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function query($uri)
+    public function query(string $uri): BoxResponseInterface
     {
         $ch = $this->initCurl();
         $ch = $this->initCurlOpts($ch);
@@ -177,7 +178,7 @@ class Connection extends Model implements ConnectionInterface
         return $data;
     }
 
-    public function delete($uri)
+    public function delete(string $uri): BoxResponseInterface
     {
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug("delete uri: " . $uri, array(__METHOD__ . ":" . __LINE__));
@@ -188,19 +189,12 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function put($uri, $params = array(), $nameValuePair = false)
+    public function put(string $uri, array|string $params = []): BoxResponseInterface
     {
         $ch = $this->initCurl();
         $ch = $this->initCurlOpts($ch);
         curl_setopt($ch, CURLOPT_URL, $uri);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-
-        if ($nameValuePair)
-        {
-            $params = json_encode($params);
-            @trigger_error('the `nameValuePair` switch will be deprecated in the future; all values will be json encoded values',
-                           E_USER_DEPRECATED);
-        }
 
         if (is_array($params))
         {
@@ -224,7 +218,7 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function post($uri, $params = array(), $nameValuePair = false)
+    public function post(string $uri, array|string $params = [], bool $nameValuePair = false): BoxResponseInterface
     {
 
         $ch = $this->initCurl();
@@ -260,7 +254,7 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function createCurlFile($pathToFile, $mimeType, $filename)
+    public function createCurlFile(string $pathToFile, string $mimeType, string $filename): CURLFile
     {
         $curlFile = new CURLFile($pathToFile,$mimeType, $filename);
         return $curlFile;
@@ -269,7 +263,7 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getMimeType($file)
+    public function getMimeType(string $file): mixed
     {
         $fInfo = finfo_open(FILEINFO_MIME_TYPE);
         $mimeType = finfo_file($fInfo, $file);
@@ -280,7 +274,7 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function postFile($uri, $file, $parentId = 0)
+    public function postFile(string $uri, string $file, int $parentId = 0): array|BoxResponseInterface
     {
         // @todo allow Content-MD5 header to be set
         // Post 1-n files, each element of $files array assumed to be absolute
@@ -321,11 +315,11 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function setCurlOpts($curlOpts = null)
+    public function setCurlOpts(?array $curlOpts = null): self
     {
         if (!is_array($curlOpts))
         {
-            $curlOpts = array($curlOpts);
+            $curlOpts = $curlOpts !== null ? array($curlOpts) : [];
         }
         $this->curlOpts = $curlOpts;
         return $this;
@@ -334,96 +328,96 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getCurlOpts()
+    public function getCurlOpts(): array
     {
         return $this->curlOpts;
     }
 
-    public function setAuthenticationResponseClass($authenticationResponseClass = null)
+    public function setAuthenticationResponseClass(?string $authenticationResponseClass = null): self
     {
         $this->validateClass($authenticationResponseClass,'AuthenticationResponseInterface');
         $this->authenticationResponseClass = $authenticationResponseClass;
         return $this;
     }
 
-    public function getAuthenticationResponseClass()
+    public function getAuthenticationResponseClass(): string
     {
         return $this->authenticationResponseClass;
     }
 
-    public function setClientId($clientId = null)
+    public function setClientId(mixed $clientId = null): self
     {
         $this->clientId = $clientId;
         return $this;
     }
 
-    public function getClientId()
+    public function getClientId(): mixed
     {
         return $this->clientId;
     }
 
-    public function setClientSecret($clientSecret = null)
+    public function setClientSecret(mixed $clientSecret = null): self
     {
         $this->clientSecret = $clientSecret;
         return $this;
     }
 
-    public function getClientSecret()
+    public function getClientSecret(): mixed
     {
         return $this->clientSecret;
     }
 
-    public function setRedirectUri($redirectUri = null)
+    public function setRedirectUri(mixed $redirectUri = null): self
     {
         $this->redirectUri = $redirectUri;
         return $this;
     }
 
-    public function getRedirectUri()
+    public function getRedirectUri(): mixed
     {
         return $this->redirectUri;
     }
 
-    public function setRequestType($requestType = null)
+    public function setRequestType(mixed $requestType = null): self
     {
         $this->requestType = $requestType;
         return $this;
     }
 
-    public function getRequestType()
+    public function getRequestType(): string
     {
         return $this->requestType;
     }
 
-    public function setAuthenticationResponse($authenticationResponse = null)
+    public function setAuthenticationResponse(mixed $authenticationResponse = null): self
     {
         $this->authenticationResponse = $authenticationResponse;
         return $this;
     }
 
-    public function getAuthenticationResponse()
+    public function getAuthenticationResponse(): mixed
     {
         return $this->authenticationResponse;
     }
 
-    public function setResponseType($responseType = null)
+    public function setResponseType(mixed $responseType = null): self
     {
         $this->responseType = $responseType;
         return $this;
     }
 
-    public function getResponseType()
+    public function getResponseType(): mixed
     {
         return $this->responseType;
     }
 
-    public function setState($state = null)
+    public function setState(mixed $state = null): self
     {
         $this->state = $state;
         return $this;
     }
 
-    public function getState()
+    public function getState(): mixed
     {
         return $this->state;
     }

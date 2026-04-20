@@ -37,5 +37,5 @@ interface CollaborationInterface extends ModelInterface
 {
     const URI = "https://api.box.com/2.0/collaborations";
 
-    public function getId();
+    public function getId(): mixed;
 }

@@ -36,28 +36,28 @@ use Box\Model\Model;
 
 class Folder extends Model implements FolderInterface
 {
-    protected $type = "folder";
-    protected $id;
-    protected $sequenceId;
-    protected $etag;
-    protected $name;
-    protected $createdAt;
-    protected $modifiedAt;
-    protected $description;
-    protected $size;
-    protected $pathCollection;
-    protected $createdBy;
-    protected $modifiedBy;
-    protected $ownedBy;
-    protected $sharedLink;
-    protected $folderUploadEmail;
-    protected $parent;
-    protected $itemStatus;
-    protected $itemCollection;
-    protected $syncState;
-    protected $hasCollaborations;
+    protected string $type = "folder";
+    protected mixed $id = null;
+    protected mixed $sequenceId = null;
+    protected mixed $etag = null;
+    protected mixed $name = null;
+    protected mixed $createdAt = null;
+    protected mixed $modifiedAt = null;
+    protected mixed $description = null;
+    protected mixed $size = null;
+    protected mixed $pathCollection = null;
+    protected mixed $createdBy = null;
+    protected mixed $modifiedBy = null;
+    protected mixed $ownedBy = null;
+    protected mixed $sharedLink = null;
+    protected mixed $folderUploadEmail = null;
+    protected mixed $parent = null;
+    protected mixed $itemStatus = null;
+    protected mixed $itemCollection = null;
+    protected mixed $syncState = null;
+    protected mixed $hasCollaborations = null;
 
-    public function classArray($syncState = "synced")
+    public function classArray(string $syncState = "synced"): array
     {
         $aFolder = parent::classArray();
 
@@ -158,12 +158,12 @@ class Folder extends Model implements FolderInterface
      * convenience function
      * @return mixed
      */
-    public function getItems()
+    public function getItems(): mixed
     {
         return $this->getItemCollection();
     }
 
-    public function getId()
+    public function getId(): mixed
     {
         if (null === $this->id)
         {

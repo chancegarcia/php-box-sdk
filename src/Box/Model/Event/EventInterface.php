@@ -37,27 +37,27 @@ namespace Box\Model\Event;
 
 interface EventInterface
 {
-    public function getType();
+    public function getType(): mixed;
 
-    public function setType($type = null);
+    public function setType(mixed $type = null): self;
 
-    public function getEventId();
+    public function getEventId(): mixed;
 
-    public function setEventId($eventId = null);
+    public function setEventId(mixed $eventId = null): self;
 
-    public function getCreatedBy();
+    public function getCreatedBy(): mixed;
 
-    public function setCreatedBy($createdBy = null);
+    public function setCreatedBy(mixed $createdBy = null): self;
 
-    public function getEventType();
+    public function getEventType(): mixed;
 
-    public function setEventType($eventType = null);
+    public function setEventType(mixed $eventType = null): self;
 
-    public function getSessionId();
+    public function getSessionId(): mixed;
 
-    public function setSessionId($sessionId = null);
+    public function setSessionId(mixed $sessionId = null): self;
 
-    public function getSource();
+    public function getSource(): mixed;
 
-    public function setSource($source = null);
+    public function setSource(mixed $source = null): self;
 }

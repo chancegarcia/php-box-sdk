@@ -44,28 +44,32 @@ use Box\Model\Event\Event;
  */
 class AdminEvent extends Event implements AdminEventInterface
 {
-    private $streamType;
+    private mixed $streamType = null;
 
-    protected $limit = 100;
-    protected $streamPosition;
-    protected $createdAfter;
-    protected $createdBefore;
+    protected mixed $limit = 100;
+    protected mixed $streamPosition = null;
+    protected mixed $createdAfter = null;
+    protected mixed $createdBefore = null;
 
-    public function __construct(array $options = array())
+    public function __construct(?array $options = null)
     {
         $this->streamType = self::STREAM_TYPE;
-        return parent::__construct($options);
+        if (null === $options) {
+            $options = [];
+        }
+        parent::__construct($options);
     }
 
     /**
      * remove any attempt to map to the private property
      *
      * {@inheritdoc}
+     * @param array|\stdClass $aData
      */
-    public function mapBoxToClass($aData)
+    public function mapBoxToClass(array|\stdClass $aData): self
     {
         // @todo need to refactor base model to explicitly take an array as the argument
-        if (is_array($aData) && array_key_exists('stream_type'))
+        if (is_array($aData) && array_key_exists('stream_type', $aData))
         {
             unset($aData['stream_type']);
         }
@@ -83,7 +87,7 @@ class AdminEvent extends Event implements AdminEventInterface
     /**
      * {@inheritdoc}
      */
-    public function getStreamType()
+    public function getStreamType(): mixed
     {
         return $this->streamType;
     }
@@ -91,7 +95,7 @@ class AdminEvent extends Event implements AdminEventInterface
     /**
      * {@inheritdoc}
      */
-    public function getLimit()
+    public function getLimit(): mixed
     {
         return $this->limit;
     }
@@ -99,7 +103,7 @@ class AdminEvent extends Event implements AdminEventInterface
     /**
      * {@inheritdoc}
      */
-    public function setLimit($limit = null)
+    public function setLimit(mixed $limit = null): self
     {
         $this->limit = $limit;
 
@@ -109,7 +113,7 @@ class AdminEvent extends Event implements AdminEventInterface
     /**
      * {@inheritdoc}
      */
-    public function getStreamPosition()
+    public function getStreamPosition(): mixed
     {
         return $this->streamPosition;
     }
@@ -117,7 +121,7 @@ class AdminEvent extends Event implements AdminEventInterface
     /**
      * {@inheritdoc}
      */
-    public function setStreamPosition($streamPosition = null)
+    public function setStreamPosition(mixed $streamPosition = null): self
     {
         $this->streamPosition = $streamPosition;
 
@@ -127,7 +131,7 @@ class AdminEvent extends Event implements AdminEventInterface
     /**
      * {@inheritdoc}
      */
-    public function getCreatedAfter()
+    public function getCreatedAfter(): mixed
     {
         return $this->createdAfter;
     }
@@ -135,7 +139,7 @@ class AdminEvent extends Event implements AdminEventInterface
     /**
      * {@inheritdoc}
      */
-    public function setCreatedAfter($createdAfter = null)
+    public function setCreatedAfter(mixed $createdAfter = null): self
     {
         $this->createdAfter = $createdAfter;
 
@@ -145,7 +149,7 @@ class AdminEvent extends Event implements AdminEventInterface
     /**
      * {@inheritdoc}
      */
-    public function getCreatedBefore()
+    public function getCreatedBefore(): mixed
     {
         return $this->createdBefore;
     }
@@ -153,7 +157,7 @@ class AdminEvent extends Event implements AdminEventInterface
     /**
      * {@inheritdoc}
      */
-    public function setCreatedBefore($createdBefore = null)
+    public function setCreatedBefore(mixed $createdBefore = null): self
     {
         $this->createdBefore = $createdBefore;
 

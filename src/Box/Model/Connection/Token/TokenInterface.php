@@ -35,33 +35,33 @@ use Box\Model\ModelInterface;
 
 interface TokenInterface extends ModelInterface
 {
-    public function getGrantType();
+    public function getGrantType(): mixed;
 
-    public function getAccessToken();
+    public function getAccessToken(): mixed;
 
-    public function setAccessToken($accessToken = null);
+    public function setAccessToken(mixed $accessToken = null): self;
 
-    public function getRefreshToken();
+    public function getRefreshToken(): mixed;
 
-    public function setRefreshToken($refreshToken = null);
+    public function setRefreshToken(mixed $refreshToken = null): self;
 
-    public function getExpiresIn();
+    public function getExpiresIn(): mixed;
 
-    public function setExpiresIn($expiresIn = null);
+    public function setExpiresIn(mixed $expiresIn = null): self;
 
-    public function getTokenType();
+    public function getTokenType(): mixed;
 
-    public function setTokenType($tokenType = null);
+    public function setTokenType(mixed $tokenType = null): self;
 
     /**
      * @return array
      */
-    public function getRestrictedTo();
+    public function getRestrictedTo(): array;
 
     /**
-     * @param array $restrictedTo
+     * @param array|null $restrictedTo
      *
-     * @return TokenInterface
+     * @return self
      */
-    public function setRestrictedTo($restrictedTo = null);
+    public function setRestrictedTo(?array $restrictedTo = null): self;
 }

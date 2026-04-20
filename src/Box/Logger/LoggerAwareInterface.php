@@ -40,7 +40,7 @@ use Psr\Log\LoggerInterface;
 interface LoggerAwareInterface extends \Psr\Log\LoggerAwareInterface
 {
     /**
-     * @return LoggerInterface
+     * @return LoggerInterface|null
      */
-    public function getLogger();
+    public function getLogger(): ?LoggerInterface;
 }

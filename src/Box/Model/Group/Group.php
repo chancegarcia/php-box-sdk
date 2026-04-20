@@ -38,13 +38,13 @@ use Box\Model\Group\GroupInterface;
 
 class Group extends Model implements GroupInterface
 {
-    protected $type = 'group';
-    protected $id;
-    protected $name;
-    protected $createdAt;
-    protected $modifiedAt;
+    protected mixed $type = 'group';
+    protected mixed $id = null;
+    protected mixed $name = null;
+    protected mixed $createdAt = null;
+    protected mixed $modifiedAt = null;
 
-    public function getMembershipListUri($limit = 100, $offset = 0)
+    public function getMembershipListUri(mixed $limit = 100, mixed $offset = 0): string
     {
         $selfId = $this->getId();
         if (!is_numeric($selfId))
@@ -67,13 +67,13 @@ class Group extends Model implements GroupInterface
         return $uri;
     }
 
-    public function setId($id = null)
+    public function setId(mixed $id = null): self
     {
         $this->id = $id;
         return $this;
     }
 
-    public function getId()
+    public function getId(): mixed
     {
         return $this->id;
     }

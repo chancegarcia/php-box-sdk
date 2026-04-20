@@ -35,67 +35,64 @@ use Box\Model\Model;
 
 class Token extends Model implements TokenInterface
 {
-    protected $accessToken;
-    protected $refreshToken;
-    protected $grantType = "authorization_code";
-    protected $expiresIn;
-    protected $tokenType;
-    protected $restrictedTo = array();
+    protected mixed $accessToken = null;
+    protected mixed $refreshToken = null;
+    protected mixed $grantType = "authorization_code";
+    protected mixed $expiresIn = null;
+    protected mixed $tokenType = null;
+    protected array $restrictedTo = [];
 
-    public function setExpiresIn($expiresIn = null)
+    public function setExpiresIn(mixed $expiresIn = null): self
     {
         $this->expiresIn = $expiresIn;
         return $this;
     }
 
-    public function getExpiresIn()
+    public function getExpiresIn(): mixed
     {
         return $this->expiresIn;
     }
 
-    public function setTokenType($tokenType = null)
+    public function setTokenType(mixed $tokenType = null): self
     {
         $this->tokenType = $tokenType;
         return $this;
     }
 
-    public function getTokenType()
+    public function getTokenType(): mixed
     {
         return $this->tokenType;
     }
 
-
-
-    public function setAccessToken($accessToken = null)
+    public function setAccessToken(mixed $accessToken = null): self
     {
         $this->accessToken = $accessToken;
         return $this;
     }
 
-    public function getAccessToken()
+    public function getAccessToken(): mixed
     {
         return $this->accessToken;
     }
 
-
-    public function setGrantType($grantType = null)
+    public function setGrantType(mixed $grantType = null): self
     {
         $this->grantType = $grantType;
         return $this;
     }
 
-    public function getGrantType()
+    public function getGrantType(): mixed
     {
         return $this->grantType;
     }
 
-    public function setRefreshToken($refreshToken = null)
+    public function setRefreshToken(mixed $refreshToken = null): self
     {
         $this->refreshToken = $refreshToken;
         return $this;
     }
 
-    public function getRefreshToken()
+    public function getRefreshToken(): mixed
     {
         return $this->refreshToken;
     }
@@ -103,7 +100,7 @@ class Token extends Model implements TokenInterface
     /**
      * {@inheritdoc}
      */
-    public function getRestrictedTo()
+    public function getRestrictedTo(): array
     {
         return $this->restrictedTo;
     }
@@ -111,9 +108,9 @@ class Token extends Model implements TokenInterface
     /**
      * {@inheritdoc}
      */
-    public function setRestrictedTo($restrictedTo = null)
+    public function setRestrictedTo(?array $restrictedTo = null): self
     {
-        $this->restrictedTo = $restrictedTo;
+        $this->restrictedTo = $restrictedTo ?? [];
 
         return $this;
     }

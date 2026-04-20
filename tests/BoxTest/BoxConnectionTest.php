@@ -58,13 +58,13 @@ class BoxConnectionTest extends TestCase
 
     public function testInitCurlReturnsResource()
     {
-        $this->assertInternalType('resource', $this->connection->initCurl());
+        $this->assertInstanceOf(\CurlHandle::class, $this->connection->initCurl());
     }
 
     public function testInitAdditionalCurlOptsReturnsResource()
     {
         $ch = $this->connection->initCurl();
-        $this->assertInternalType('resource', $this->connection->initAdditionalCurlOpts($ch));
+        $this->assertInstanceOf(\CurlHandle::class, $this->connection->initAdditionalCurlOpts($ch));
     }
 
     // test query

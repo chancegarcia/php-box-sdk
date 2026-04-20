@@ -50,16 +50,16 @@ class BoxClientTest extends TestCase
     {
         // test string return
         // base string
-        $this->assertContains('response_type', $this->client->buildAuthQuery());
-        $this->assertContains('client_id', $this->client->buildAuthQuery());
+        $this->assertStringContainsString('response_type', $this->client->buildAuthQuery());
+        $this->assertStringContainsString('client_id', $this->client->buildAuthQuery());
 
         // with state
         $this->client->setState('a:b:c:1');
-        $this->assertContains('state', $this->client->buildAuthQuery());
+        $this->assertStringContainsString('state', $this->client->buildAuthQuery());
 
         // with redirect uri
         $this->client->setRedirectUri('http://example.com');
-        $this->assertContains('redirect_uri', $this->client->buildAuthQuery());
+        $this->assertStringContainsString('redirect_uri', $this->client->buildAuthQuery());
     }
 
     // test get token

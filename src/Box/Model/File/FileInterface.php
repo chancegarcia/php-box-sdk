@@ -43,12 +43,12 @@ interface FileInterface extends  ModelInterface
     const URI = "https://api.box.com/2.0/files";
     const UPLOAD_URI = "https://upload.box.com/api/2.0/files/content";
 
-    public function getId();
+    public function getId(): mixed;
 
     /**
      * @return mixed|SharedLinkInterface
      */
-    public function getSharedLink();
+    public function getSharedLink(): mixed;
 
-    public function setSharedLink($sharedLink = null);
+    public function setSharedLink(mixed $sharedLink = null): self;
 }

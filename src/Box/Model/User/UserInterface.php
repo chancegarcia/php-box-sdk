@@ -38,5 +38,5 @@ interface UserInterface extends ModelInterface
     const URI = 'https://api.box.com/2.0/users';
     const CURRENT_USER_URI = 'https://api.box.com/2.0/users/me';
 
-    public function getId();
+    public function getId(): mixed;
 }

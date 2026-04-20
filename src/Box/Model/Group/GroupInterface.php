@@ -38,6 +38,6 @@ interface GroupInterface extends ModelInterface
     const URI = "https://api.box.com/2.0/groups";
     const MEMBERSHIP_URI = "https://api.box.com/2.0/group_memberships";
 
-    public function getId();
-    public function getMembershipListUri($limit = 100, $offset = 0);
+    public function getId(): mixed;
+    public function getMembershipListUri(mixed $limit = 100, mixed $offset = 0): string;
 }

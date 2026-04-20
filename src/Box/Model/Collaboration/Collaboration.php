@@ -37,24 +37,24 @@ use Box\Model\Collaboration\CollaborationInterface;
 
 class Collaboration extends Model implements CollaborationInterface
 {
-    protected $id;
-    protected $type = "collaboration";
-    protected $createdBy;
-    protected $createdAt;
-    protected $modifiedAt;
-    protected $expiresAt;
-    protected $status;
-    protected $accessibleBy;
-    protected $role;
-    protected $acknowledgedAt;
-    protected $item;
+    protected mixed $id = null;
+    protected mixed $type = 'collaboration';
+    protected mixed $createdBy = null;
+    protected mixed $createdAt = null;
+    protected mixed $modifiedAt = null;
+    protected mixed $expiresAt = null;
+    protected mixed $status = null;
+    protected mixed $accessibleBy = null;
+    protected mixed $role = null;
+    protected mixed $acknowledgedAt = null;
+    protected mixed $item = null;
 
-    public function getId()
+    public function getId(): mixed
     {
         return $this->id;
     }
 
-    public function setId($id = null)
+    public function setId(mixed $id = null): self
     {
         $this->id = $id;
 

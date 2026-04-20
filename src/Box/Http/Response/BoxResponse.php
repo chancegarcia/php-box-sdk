@@ -31,7 +31,7 @@ class BoxResponse extends Response implements BoxResponseInterface
      */
     protected $responseHeader;
 
-    public function __construct($content = '', $header = '') {
+    public function __construct(mixed $content = '', string $header = '') {
         $this->responseHeader = new ResponseHeader($header);
 
         $statusLine = $this->responseHeader->getStatusLine();
@@ -50,21 +50,21 @@ class BoxResponse extends Response implements BoxResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getResponseHeader() {
+    public function getResponseHeader(): ResponseHeaderInterface {
         return $this->responseHeader;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setResponseHeader(ResponseHeaderInterface $responseHeader = null) {
+    public function setResponseHeader(?ResponseHeaderInterface $responseHeader = null): BoxResponseInterface {
         $this->responseHeader = $responseHeader;
 
         return $this;
     }
 
 
-    public function hasHeader($name) {
+    public function hasHeader(string $name): bool {
         $headerLines = $this->getResponseHeader()->getHeaderLines();
 
         $normalizedHeaderLineKeys = array_map('strtolower', array_keys($headerLines));
@@ -72,12 +72,12 @@ class BoxResponse extends Response implements BoxResponseInterface
         return in_array(strtolower($name), $normalizedHeaderLineKeys);
     }
 
-    public function getHeader($name) {
+    public function getHeader(string $name): array {
         $headerLine = $this->getHeaderLine($name);
         if ("" === $headerLine) {
             $header = array();
         } else {
-            if (false === strpos($headerLine, ",")) {
+            if (!str_contains($headerLine, ",")) {
                 $header = array($headerLine);
             } else {
                 $header = explode(",", $headerLine);
@@ -87,7 +87,7 @@ class BoxResponse extends Response implements BoxResponseInterface
         return $header;
     }
 
-    public function getHeaderLine($name) {
+    public function getHeaderLine(string $name): string {
         if (!$this->hasHeader($name)) {
             return "";
         }
@@ -95,5 +95,12 @@ class BoxResponse extends Response implements BoxResponseInterface
         $normalizedHeaderLines = array_change_key_case($this->getResponseHeader()->getHeaderLines());
 
         return $normalizedHeaderLines[strtolower($name)];
+    }
+
+    public function setProtocolVersion(string $version): static
+    {
+        parent::setProtocolVersion($version);
+
+        return $this;
     }
 }

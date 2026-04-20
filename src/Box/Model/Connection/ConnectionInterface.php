@@ -38,72 +38,74 @@ use CURLFile;
 
 interface ConnectionInterface extends ModelInterface
 {
-    public function connect();
+    /**
+     * @return mixed
+     * @throws BoxException
+     */
+    public function connect(): mixed;
 
     /**
      * GET
      * @param string $uri
      * @return BoxResponseInterface
      */
-    public function query($uri);
+    public function query(string $uri): BoxResponseInterface;
 
     /**
      * POST
      *
-     * @param              $uri
+     * @param string $uri
      * @param array|string $params will convert array to string; array will be deprecated in the future; json
      *                                  encoded string will become the only valid value
-     * @param bool|false $nameValuePair this will be deprecated/fully removed in the future since params as a json
+     * @param bool $nameValuePair this will be deprecated/fully removed in the future since params as a json
      *                                  encoded string will be the expected value
      *
      * @return BoxResponseInterface
      */
-    public function post($uri, $params = array(), $nameValuePair = false);
+    public function post(string $uri, array|string $params = [], bool $nameValuePair = false): BoxResponseInterface;
 
     /**
-     * @param resource $ch
-     * @return resource
+     * @param \CurlHandle $ch
+     * @return \CurlHandle
      * @throws BoxException
      */
-    public function initAdditionalCurlOpts($ch);
+    public function initAdditionalCurlOpts(\CurlHandle $ch): \CurlHandle;
 
     /**
-     * @param array $curlOpts
-     * @return ConnectionInterface
+     * @param array|null $curlOpts
+     * @return self
      */
-    public function setCurlOpts($curlOpts = null);
+    public function setCurlOpts(?array $curlOpts = null): self;
 
     /**
      * @return array
      */
-    public function getCurlOpts();
+    public function getCurlOpts(): array;
 
     /**
-     * @return resource
+     * @return \CurlHandle
      */
-    public function initCurl();
+    public function initCurl(): \CurlHandle;
 
     /**
-     * @param resource $ch
-     * @return resource
+     * @param \CurlHandle $ch
+     * @return \CurlHandle
      */
-    public function initCurlOpts($ch);
+    public function initCurlOpts(\CurlHandle $ch): \CurlHandle;
 
     /**
-     * @param resource $ch
+     * @param \CurlHandle $ch
      * @return BoxResponseInterface
      */
-    public function getCurlData($ch);
+    public function getCurlData(\CurlHandle $ch): BoxResponseInterface;
 
     /**
-     * @param $uri
+     * @param string $uri
      * @param array|string $params array will be deprecated in the future; json encoded string will become the only valid value
-     * @param bool|false $nameValuePair this will be deprecated/fully removed in the future since params as a json encoded
-     *                                  string will be the expected value
      *
      * @return BoxResponseInterface
      */
-    public function put($uri, $params = array());
+    public function put(string $uri, array|string $params = []): BoxResponseInterface;
 
     /**
      * @param string $pathToFile
@@ -111,13 +113,13 @@ interface ConnectionInterface extends ModelInterface
      * @param string $filename name of the file/post name
      * @return CURLFile
      */
-    public function createCurlFile($pathToFile, $mimeType, $filename);
+    public function createCurlFile(string $pathToFile, string $mimeType, string $filename): CURLFile;
 
     /**
      * @param string $file file/path to file
      * @return mixed
      */
-    public function getMimeType($file);
+    public function getMimeType(string $file): mixed;
 
     /**
      * @param string $uri
@@ -125,5 +127,5 @@ interface ConnectionInterface extends ModelInterface
      * @param int $parentId
      * @return array|BoxResponseInterface
      */
-    public function postFile($uri, $file, $parentId = 0);
+    public function postFile(string $uri, string $file, int $parentId = 0): array|BoxResponseInterface;
 }

@@ -226,53 +226,53 @@ interface AdminEventInterface extends EventInterface
     /**
      * @return mixed
      */
-    public function getStreamType();
-
-    /**
-     * @return int
-     */
-    public function getLimit();
-
-    /**
-     * @param int $limit
-     *
-     * @return AdminEventInterface|AdminEvent
-     */
-    public function setLimit($limit = null);
+    public function getStreamType(): mixed;
 
     /**
      * @return mixed
      */
-    public function getStreamPosition();
+    public function getLimit(): mixed;
+
+    /**
+     * @param mixed $limit
+     *
+     * @return self
+     */
+    public function setLimit(mixed $limit = null): self;
+
+    /**
+     * @return mixed
+     */
+    public function getStreamPosition(): mixed;
 
     /**
      * @param mixed $streamPosition
      *
-     * @return AdminEventInterface|AdminEvent
+     * @return self
      */
-    public function setStreamPosition($streamPosition = null);
+    public function setStreamPosition(mixed $streamPosition = null): self;
 
     /**
      * @return mixed
      */
-    public function getCreatedAfter();
+    public function getCreatedAfter(): mixed;
 
     /**
      * @param mixed $createdAfter
      *
-     * @return AdminEventInterface|AdminEvent
+     * @return self
      */
-    public function setCreatedAfter($createdAfter = null);
+    public function setCreatedAfter(mixed $createdAfter = null): self;
 
     /**
      * @return mixed
      */
-    public function getCreatedBefore();
+    public function getCreatedBefore(): mixed;
 
     /**
      * @param mixed $createdBefore
      *
-     * @return AdminEventInterface|AdminEvent
+     * @return self
      */
-    public function setCreatedBefore($createdBefore = null);
+    public function setCreatedBefore(mixed $createdBefore = null): self;
 }

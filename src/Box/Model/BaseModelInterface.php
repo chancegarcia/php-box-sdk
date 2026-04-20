@@ -38,23 +38,25 @@ namespace Box\Model;
 interface BaseModelInterface
 {
     /**
-     * @param $str
+     * @param string $str
      *
-     * @return mixed
+     * @return string
      */
-    public function toClassVar($str);
-
-    public function toBoxVar($str);
+    public function toClassVar(string $str): string;
 
     /**
-     * this will bomb out if any properties are private
-     * @todo try using setter if found?
+     * @param string $str
      *
-     * @param $aData
+     * @return string
+     */
+    public function toBoxVar(string $str): string;
+
+    /**
+     * @param array|\stdClass $aData
      *
      * @return $this
      */
-    public function mapBoxToClass($aData);
+    public function mapBoxToClass(array|\stdClass $aData): self;
 
     /**
      * validate integer value even if it is a string value, unlike is_int()
@@ -63,7 +65,7 @@ interface BaseModelInterface
      *
      * @return bool
      */
-    public function isInt($number = null);
+    public function isInt(mixed $number = null): bool;
 
     /**
      * recursively remove empty elements from an array (trim is applied to string values)
@@ -72,5 +74,5 @@ interface BaseModelInterface
      *
      * @return array
      */
-    public function removeEmpty(array $haystack = array());
+    public function removeEmpty(array $haystack = []): array;
 }

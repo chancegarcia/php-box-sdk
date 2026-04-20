@@ -56,53 +56,53 @@ class Client extends Model implements ModelInterface
     CONST REVOKE_URI = "https://www.box.com/api/oauth2/revoke";
     CONST SEARCH_URI = "https://api.box.com/2.0/search";
 
-    protected $state;
+    protected mixed $state = null;
 
     /**
-     * @var Connection|ConnectionInterface
+     * @var Connection|ConnectionInterface|null
      */
-    protected $connection;
+    protected ?ConnectionInterface $connection = null;
     /**
      * @var array of folder items indexed by the folder ID
      * @internal should just be an array of any folder known/retrieved by the client. does not need to be recursive
      *     since folders know their parents and items
      */
-    protected $folders;
-    protected $files;
+    protected mixed $folders = null;
+    protected mixed $files = null;
     /**
      * @var array of collaborations
      */
-    protected $collaborations;
+    protected mixed $collaborations = null;
 
     /**
-     * @var Folder
+     * @var Folder|null
      */
-    protected $root;
+    protected ?FolderInterface $root = null;
 
     /**
-     * @var Token|TokenInterface
+     * @var Token|TokenInterface|null
      */
-    protected $token;
+    protected ?TokenInterface $token = null;
 
-    protected $authorizationCode;
-    protected $clientId;
-    protected $clientSecret;
-    protected $redirectUri;
+    protected mixed $authorizationCode = null;
+    protected mixed $clientId = null;
+    protected mixed $clientSecret = null;
+    protected mixed $redirectUri = null;
 
-    protected $deviceId = null;
-    protected $deviceName = null;
+    protected mixed $deviceId = null;
+    protected mixed $deviceName = null;
 
 
     /**
      * allow for class injection by using an interface for these classes
      */
-    protected $folderClass = 'Box\Model\Folder\Folder';
-    protected $fileClass = 'Box\Model\File\File';
-    protected $connectionClass = 'Box\Model\Connection\Connection';
-    protected $tokenClass = 'Box\Model\Connection\Token\Token';
-    protected $collaborationClass = 'Box\Model\Collaboration\Collaboration';
-    protected $userClass = 'Box\Model\User\User';
-    protected $groupClass = 'Box\Model\Group\Group';
+    protected string $folderClass = 'Box\Model\Folder\Folder';
+    protected string $fileClass = 'Box\Model\File\File';
+    protected string $connectionClass = 'Box\Model\Connection\Connection';
+    protected string $tokenClass = 'Box\Model\Connection\Token\Token';
+    protected string $collaborationClass = 'Box\Model\Collaboration\Collaboration';
+    protected string $userClass = 'Box\Model\User\User';
+    protected string $groupClass = 'Box\Model\Group\Group';
 
 
     /**

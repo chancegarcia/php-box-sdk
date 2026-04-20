@@ -37,39 +37,39 @@ use Box\Model\File\FileInterface;
 
 class File extends Model implements FileInterface
 {
-    protected $id;
-    protected $type;
-    protected $sequenceId;
-    protected $etag;
-    protected $sha1;
-    protected $name;
-    protected $description;
-    protected $size;
-    protected $pathCollection;
-    protected $createdAt;
-    protected $modifiedAt;
-    protected $trashedAt;
-    protected $purgedAt;
-    protected $contentCreatedAt;
-    protected $contentModifiedAt;
-    protected $createdBy;
-    protected $modifiedBy;
-    protected $ownedBy;
-    protected $sharedLink;
-    protected $parent;
-    protected $itemStatus;
+    protected mixed $id = null;
+    protected mixed $type = "file";
+    protected mixed $sequenceId = null;
+    protected mixed $etag = null;
+    protected mixed $sha1 = null;
+    protected mixed $name = null;
+    protected mixed $description = null;
+    protected mixed $size = null;
+    protected mixed $pathCollection = null;
+    protected mixed $createdAt = null;
+    protected mixed $modifiedAt = null;
+    protected mixed $trashedAt = null;
+    protected mixed $purgedAt = null;
+    protected mixed $contentCreatedAt = null;
+    protected mixed $contentModifiedAt = null;
+    protected mixed $createdBy = null;
+    protected mixed $modifiedBy = null;
+    protected mixed $ownedBy = null;
+    protected mixed $sharedLink = null;
+    protected mixed $parent = null;
+    protected mixed $itemStatus = null;
 
     // the following will not appear in default file requests and must be explicitly asked for using the fields parameter.
-    protected $versionNumber;
-    protected $commentCount;
-    protected $permissions;
+    protected mixed $versionNumber = null;
+    protected mixed $commentCount = null;
+    protected mixed $permissions = null;
 
-    public function getId()
+    public function getId(): mixed
     {
         return $this->id;
     }
 
-    public function setId($id = null)
+    public function setId(mixed $id = null): self
     {
         if (!is_numeric($id))
         {
@@ -446,7 +446,7 @@ class File extends Model implements FileInterface
      *
      * @return \Box\Model\File\File|\Box\Model\File\FileInterface
      */
-    public function setSharedLink($sharedLink = null)
+    public function setSharedLink(mixed $sharedLink = null): self
     {
         $this->sharedLink = $sharedLink;
 
@@ -456,7 +456,7 @@ class File extends Model implements FileInterface
     /**
      * @return mixed
      */
-    public function getSharedLink()
+    public function getSharedLink(): mixed
     {
         return $this->sharedLink;
     }

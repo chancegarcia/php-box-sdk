@@ -38,9 +38,9 @@ interface FolderInterface extends ModelInterface
     const URI = 'https://api.box.com/2.0/folders';
     const SHARED_ITEM_URI = "https://api.box.com/2.0/shared_items";
 
-    public function getId();
+    public function getId(): mixed;
 
-    public function getItems();
+    public function getItems(): mixed;
 
-    public function classArray($syncState = "synced");
+    public function classArray(string $syncState = "synced"): array;
 }

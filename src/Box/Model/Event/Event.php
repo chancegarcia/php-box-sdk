@@ -39,22 +39,22 @@ use Box\Model\Model;
 
 class Event extends Model implements EventInterface
 {
-    protected $type;
+    protected mixed $type = null;
 
-    protected $eventId;
+    protected mixed $eventId = null;
 
-    protected $createdBy;
+    protected mixed $createdBy = null;
 
-    protected $eventType;
+    protected mixed $eventType = null;
 
-    protected $sessionId;
+    protected mixed $sessionId = null;
 
-    protected $source;
+    protected mixed $source = null;
 
     /**
      * @return mixed
      */
-    public function getType()
+    public function getType(): mixed
     {
         return $this->type;
     }
@@ -64,7 +64,7 @@ class Event extends Model implements EventInterface
      *
      * @return EventInterface
      */
-    public function setType($type = null)
+    public function setType(mixed $type = null): self
     {
         $this->type = $type;
 
@@ -74,7 +74,7 @@ class Event extends Model implements EventInterface
     /**
      * @return mixed
      */
-    public function getEventId()
+    public function getEventId(): mixed
     {
         return $this->eventId;
     }
@@ -84,7 +84,7 @@ class Event extends Model implements EventInterface
      *
      * @return EventInterface
      */
-    public function setEventId($eventId = null)
+    public function setEventId(mixed $eventId = null): self
     {
         $this->eventId = $eventId;
 
@@ -94,7 +94,7 @@ class Event extends Model implements EventInterface
     /**
      * @return mixed
      */
-    public function getCreatedBy()
+    public function getCreatedBy(): mixed
     {
         return $this->createdBy;
     }
@@ -104,7 +104,7 @@ class Event extends Model implements EventInterface
      *
      * @return EventInterface
      */
-    public function setCreatedBy($createdBy = null)
+    public function setCreatedBy(mixed $createdBy = null): self
     {
         $this->createdBy = $createdBy;
 
@@ -114,7 +114,7 @@ class Event extends Model implements EventInterface
     /**
      * @return mixed
      */
-    public function getEventType()
+    public function getEventType(): mixed
     {
         return $this->eventType;
     }
@@ -124,7 +124,7 @@ class Event extends Model implements EventInterface
      *
      * @return EventInterface
      */
-    public function setEventType($eventType = null)
+    public function setEventType(mixed $eventType = null): self
     {
         $this->eventType = $eventType;
 
@@ -134,7 +134,7 @@ class Event extends Model implements EventInterface
     /**
      * @return mixed
      */
-    public function getSessionId()
+    public function getSessionId(): mixed
     {
         return $this->sessionId;
     }
@@ -144,7 +144,7 @@ class Event extends Model implements EventInterface
      *
      * @return EventInterface
      */
-    public function setSessionId($sessionId = null)
+    public function setSessionId(mixed $sessionId = null): self
     {
         $this->sessionId = $sessionId;
 
@@ -154,7 +154,7 @@ class Event extends Model implements EventInterface
     /**
      * @return mixed
      */
-    public function getSource()
+    public function getSource(): mixed
     {
         return $this->source;
     }
@@ -164,11 +164,10 @@ class Event extends Model implements EventInterface
      *
      * @return EventInterface
      */
-    public function setSource($source = null)
+    public function setSource(mixed $source = null): self
     {
         $this->source = $source;
 
         return $this;
     }
-
 }

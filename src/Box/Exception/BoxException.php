@@ -42,42 +42,42 @@ class BoxException extends \Exception
     const INVALID_INPUT = "Invalid Input";
     const MISSING_ID = "Missing Id";
 
-    protected $error;
-    protected $errorDescription;
-    protected $context = array();
-    protected $boxCode;
+    protected mixed $error = null;
+    protected mixed $errorDescription = null;
+    protected array $context = [];
+    protected mixed $boxCode = null;
     /**
      * @var null|BoxResponseInterface
      */
-    protected $boxResponse;
+    protected ?BoxResponseInterface $boxResponse = null;
 
-    public function setError($error = null) {
+    public function setError(mixed $error = null): self {
         $this->error = $error;
 
         return $this;
     }
 
-    public function getError() {
+    public function getError(): mixed {
         return $this->error;
     }
 
-    public function setErrorDescription($errorDescription = null) {
+    public function setErrorDescription(mixed $errorDescription = null): self {
         $this->errorDescription = $errorDescription;
 
         return $this;
     }
 
-    public function getErrorDescription() {
+    public function getErrorDescription(): mixed {
         return $this->errorDescription;
     }
 
-    public function addContext($contextInformation = null, $key = null) {
+    public function addContext(mixed $contextInformation = null, ?string $key = null): void {
         if (is_string($key)) {
             $finalKey = $key;
             // if we have duplicate key for some reason, make it unique
             if (array_key_exists($key, $this->context)) {
                 do {
-                    $finalKey = uniqid($key."_");
+                    $finalKey = uniqid($key."_", true);
                 } while (array_key_exists($finalKey, $this->context));
             }
 
@@ -87,7 +87,7 @@ class BoxException extends \Exception
         }
     }
 
-    public function getContext($key = null) {
+    public function getContext(?string $key = null): mixed {
         // make sure we have a key value and avoid false negative; allow null to returned on non-existent key
         if (!is_null($key)) {
             if (array_key_exists($key, $this->context)) {
@@ -104,24 +104,24 @@ class BoxException extends \Exception
     /**
      * @return mixed
      */
-    public function getBoxCode() {
+    public function getBoxCode(): mixed {
         return $this->boxCode;
     }
 
     /**
      * @param mixed $boxCode
-     * @return BoxException
+     * @return self
      */
-    public function setBoxCode($boxCode = null) {
+    public function setBoxCode(mixed $boxCode = null): self {
         $this->boxCode = $boxCode;
 
         return $this;
     }
 
     /**
-     * @return BoxResponseInterface
+     * @return BoxResponseInterface|null
      */
-    public function getBoxResponse()
+    public function getBoxResponse(): ?BoxResponseInterface
     {
         return $this->boxResponse;
     }
@@ -129,7 +129,7 @@ class BoxException extends \Exception
     /**
      * @param BoxResponseInterface $boxResponse
      */
-    public function setBoxResponse(BoxResponseInterface $boxResponse)
+    public function setBoxResponse(BoxResponseInterface $boxResponse): void
     {
         $this->boxResponse = $boxResponse;
     }

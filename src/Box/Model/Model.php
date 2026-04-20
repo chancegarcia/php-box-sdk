@@ -41,15 +41,13 @@ class Model extends BaseModel implements ModelInterface
     // @todo add curl history on info/error/errno properties for child classes to access for recording
     // @todo add last curl info/error/errno properties as well
 
-    public function __construct(array $options = null)
+    public function __construct(?array $options = null)
     {
 
         if (null !== $options)
         {
             $this->mapBoxToClass($options);
         }
-
-        return $this;
     }
 
     /**
@@ -57,7 +55,7 @@ class Model extends BaseModel implements ModelInterface
      *
      * @return array
      */
-    public function classArray()
+    public function classArray(): array
     {
         $aModel = get_object_vars($this);
         $aArray = array();
@@ -74,7 +72,7 @@ class Model extends BaseModel implements ModelInterface
     /**
      * {@inheritdoc}
      */
-    public function toBoxArray()
+    public function toBoxArray(): array
     {
         $arr = $this->classArray();
 
@@ -86,11 +84,13 @@ class Model extends BaseModel implements ModelInterface
     /**
      * used to throw exceptions that need to contain error information returned from Box
      *
-     * @param $data array containing error and error_description keys
+     * @param array $data containing error and error_description keys
+     * @param string|null $message
+     * @param BoxResponseInterface|null $boxResponse
      *
      * @throws \Box\Exception\BoxException
      */
-    public function error($data, $message = null, BoxResponseInterface $boxResponse = null)
+    public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null)
     {
         $error = $data['error'];
         if (null === $message || !is_string($message))
@@ -117,7 +117,7 @@ class Model extends BaseModel implements ModelInterface
         throw $exception;
     }
 
-    public function debug($message, $context = [])
+    public function debug(string $message, array $context = []): void
     {
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug($message, $context);
@@ -126,32 +126,19 @@ class Model extends BaseModel implements ModelInterface
 
     /**
      * @param string $class
-     * @param  string $classType
+     * @param string $classType
      *
      * @throws \Box\Exception\BoxException
      * @return bool returns true if validation passes. Throws exception if unable to validate or validation doesn't pass
      */
-    public function validateClass($class, $classType)
+    public function validateClass(string $class, string $classType): bool
     {
-        if (!is_string($class))
-        {
-            throw new BoxException("Please specify a class string to validate", BoxException::INVALID_INPUT);
-        }
-
-        if (!is_string($classType))
-        {
-            throw new BoxException("Unable to validate. Please specify a class type to validate",
-                                   BoxException::INVALID_CLASS_TYPE);
-        }
-
         if (!class_exists($class))
         {
             throw new BoxException("Unable to find class", BoxException::UNKNOWN_CLASS);
         }
-        else
-        {
-            $oClass = new $class();
-        }
+
+        $oClass = new $class();
 
         if (!$oClass instanceof $classType)
         {
@@ -162,17 +149,17 @@ class Model extends BaseModel implements ModelInterface
     }
 
     /**
-     * @param $params
-     * @param $numericPrefix
+     * @param array $params
+     * @param string $numericPrefix
      *
      * @return string
      */
-    public function buildQuery($params, $numericPrefix = '')
+    public function buildQuery(array $params, string $numericPrefix = ''): string
     {
         return http_build_query($params, $numericPrefix, '&', PHP_QUERY_RFC3986);
     }
 
-    public function getNewClass($className = null, $classConstructorOptions = null)
+    public function getNewClass(?string $className = null, mixed $classConstructorOptions = null): mixed
     {
         if (null === $className)
         {
