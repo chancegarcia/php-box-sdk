@@ -8,7 +8,7 @@
  */
 
 namespace BoxTest;
-use Box\Model\Client\Client;
+use Box\Client;
 use Box\Model\Connection\Token\Token;
 use Box\Model\Group\Group;
 use PHPUnit\Framework\TestCase;
