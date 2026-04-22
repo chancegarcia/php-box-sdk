@@ -5,3 +5,20 @@ todo.md
 tmp.php
 composer.lock
 .env
+/.phpunit.result.cache
+/.idea/
+/coverage/
+/.phpunit.cache
+/.env.local
+/.env.*.local
+/.php_cs.cache
+/.php-cs-fixer.cache
+/phpstan-result.cache
+/psalm.xml.cache
+
+# Keep directory structure, ignore contents
+var/tmp/*
+!var/tmp/.gitkeep
+
+var/log/*
+!var/log/.gitkeep
