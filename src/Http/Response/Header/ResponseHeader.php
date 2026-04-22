@@ -72,7 +72,7 @@ class ResponseHeader implements ResponseHeaderInterface
     /**
      * {@inheritdoc}
      */
-    public function setStatusLine(StatusLineInterface $statusLine = null) {
+    public function setStatusLine(?StatusLineInterface $statusLine = null) {
         $this->statusLine = $statusLine;
 
     }
@@ -87,7 +87,7 @@ class ResponseHeader implements ResponseHeaderInterface
     /**
      * {@inheritdoc}
      */
-    public function setHeaderLines(array $headerLines = null) {
+    public function setHeaderLines(?array $headerLines = null) {
         $this->headerLines = $headerLines;
 
     }

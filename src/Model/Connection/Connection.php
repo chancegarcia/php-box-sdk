@@ -182,7 +182,6 @@ class Connection extends Model implements ConnectionInterface
         curl_setopt($ch, CURLOPT_URL, $uri);
         $ch = $this->initAdditionalCurlOpts($ch);
         $data = $this->getCurlData($ch);
-        curl_close($ch);
 
         return $data;
     }
@@ -218,7 +217,6 @@ class Connection extends Model implements ConnectionInterface
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postParams);
         $ch = $this->initAdditionalCurlOpts($ch);
         $data = $this->getCurlData($ch);
-        curl_close($ch);
 
         return $data;
 
@@ -255,7 +253,6 @@ class Connection extends Model implements ConnectionInterface
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postParams);
         $ch = $this->initAdditionalCurlOpts($ch);
         $data = $this->getCurlData($ch);
-        curl_close($ch);
 
         return $data;
     }
@@ -314,7 +311,6 @@ class Connection extends Model implements ConnectionInterface
 
         $ch = $this->initAdditionalCurlOpts($ch);
         $data = $this->getCurlData($ch);
-        curl_close($ch);
 
         return $data;
     }

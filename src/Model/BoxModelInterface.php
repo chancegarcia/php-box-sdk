@@ -44,7 +44,7 @@ interface BoxModelInterface
     /**
      * @param mixed $type
      *
-     * @return BoxModelInterface
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setType($type = null);
@@ -57,7 +57,7 @@ interface BoxModelInterface
     /**
      * @param mixed $id
      *
-     * @return BoxModelInterface
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setId($id = null);
@@ -70,7 +70,7 @@ interface BoxModelInterface
     /**
      * @param mixed $sequenceId
      *
-     * @return BoxModelInterface
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setSequenceId($sequenceId = null);
@@ -83,7 +83,7 @@ interface BoxModelInterface
     /**
      * @param mixed $etag
      *
-     * @return BoxModelInterface
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setEtag($etag = null);
@@ -96,7 +96,7 @@ interface BoxModelInterface
     /**
      * @param mixed $name
      *
-     * @return BoxModelInterface
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setName($name = null);
@@ -109,7 +109,7 @@ interface BoxModelInterface
     /**
      * @param mixed $description
      *
-     * @return BoxModelInterface
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setDescription($description = null);
@@ -122,7 +122,7 @@ interface BoxModelInterface
     /**
      * @param mixed $size
      *
-     * @return BoxModelInterface
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setSize($size = null);
@@ -135,7 +135,7 @@ interface BoxModelInterface
     /**
      * @param mixed $createdAt
      *
-     * @return BoxModelInterface
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setCreatedAt($createdAt = null);
@@ -148,7 +148,7 @@ interface BoxModelInterface
     /**
      * @param mixed $modifiedAt
      *
-     * @return BoxModelInterface
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setModifiedAt($modifiedAt = null);
@@ -161,7 +161,7 @@ interface BoxModelInterface
     /**
      * @param mixed $createdBy
      *
-     * @return BoxModelInterface
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setCreatedBy($createdBy = null);
@@ -174,7 +174,7 @@ interface BoxModelInterface
     /**
      * @param mixed $modifiedBy
      *
-     * @return BoxModelInterface
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setModifiedBy($modifiedBy = null);
@@ -187,7 +187,7 @@ interface BoxModelInterface
     /**
      * @param mixed $ownedBy
      *
-     * @return BoxModelInterface
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setOwnedBy($ownedBy = null);
@@ -200,7 +200,7 @@ interface BoxModelInterface
     /**
      * @param mixed $sharedLink
      *
-     * @return BoxModelInterface
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setSharedLink($sharedLink = null);
@@ -213,7 +213,7 @@ interface BoxModelInterface
     /**
      * @param mixed $parent
      *
-     * @return BoxModelInterface
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setParent($parent = null);
@@ -226,7 +226,7 @@ interface BoxModelInterface
     /**
      * @param mixed $itemStatus
      *
-     * @return BoxModelInterface
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setItemStatus($itemStatus = null);

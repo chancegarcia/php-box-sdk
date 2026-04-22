@@ -66,7 +66,7 @@ interface BoxResponseInterface
      *
      * @param string $version The HTTP protocol version
      *
-     * @return static
+     * @return Response
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setProtocolVersion(string $version): Response;

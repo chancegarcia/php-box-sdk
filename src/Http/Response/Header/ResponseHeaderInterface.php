@@ -27,10 +27,11 @@ interface ResponseHeaderInterface
     public function getStatusLine();
 
     /**
-     * @param StatusLineInterface $statusLine
+     * @param StatusLineInterface|null $statusLine
+     *
      * @return ResponseHeaderInterface
      */
-    public function setStatusLine(StatusLineInterface $statusLine = null);
+    public function setStatusLine(?StatusLineInterface $statusLine = null);
 
     /**
      * @return array
@@ -38,8 +39,9 @@ interface ResponseHeaderInterface
     public function getHeaderLines();
 
     /**
-     * @param array $headerLines
+     * @param array|null $headerLines
+     *
      * @return ResponseHeaderInterface
      */
-    public function setHeaderLines(array $headerLines = null);
+    public function setHeaderLines(?array $headerLines = null);
 }

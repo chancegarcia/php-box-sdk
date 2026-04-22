@@ -60,7 +60,7 @@ class BoxModel implements BoxModelInterface
 
     /**
      * @param mixed $type
-     * @return BoxModel
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setType($type = null)
@@ -76,7 +76,7 @@ class BoxModel implements BoxModelInterface
 
     /**
      * @param mixed $id
-     * @return BoxModel
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setId($id = null)
@@ -92,7 +92,7 @@ class BoxModel implements BoxModelInterface
 
     /**
      * @param mixed $sequenceId
-     * @return BoxModel
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setSequenceId($sequenceId = null)
@@ -108,7 +108,7 @@ class BoxModel implements BoxModelInterface
 
     /**
      * @param mixed $etag
-     * @return BoxModel
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setEtag($etag = null)
@@ -124,7 +124,7 @@ class BoxModel implements BoxModelInterface
 
     /**
      * @param mixed $name
-     * @return BoxModel
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setName($name = null)
@@ -140,7 +140,7 @@ class BoxModel implements BoxModelInterface
 
     /**
      * @param mixed $description
-     * @return BoxModel
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setDescription($description = null)
@@ -156,7 +156,7 @@ class BoxModel implements BoxModelInterface
 
     /**
      * @param mixed $size
-     * @return BoxModel
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setSize($size = null)
@@ -172,7 +172,7 @@ class BoxModel implements BoxModelInterface
 
     /**
      * @param mixed $createdAt
-     * @return BoxModel
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setCreatedAt($createdAt = null)
@@ -188,7 +188,7 @@ class BoxModel implements BoxModelInterface
 
     /**
      * @param mixed $modifiedAt
-     * @return BoxModel
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setModifiedAt($modifiedAt = null)
@@ -204,7 +204,7 @@ class BoxModel implements BoxModelInterface
 
     /**
      * @param mixed $createdBy
-     * @return BoxModel
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setCreatedBy($createdBy = null)
@@ -220,7 +220,7 @@ class BoxModel implements BoxModelInterface
 
     /**
      * @param mixed $modifiedBy
-     * @return BoxModel
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setModifiedBy($modifiedBy = null)
@@ -236,7 +236,7 @@ class BoxModel implements BoxModelInterface
 
     /**
      * @param mixed $ownedBy
-     * @return BoxModel
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setOwnedBy($ownedBy = null)
@@ -252,7 +252,7 @@ class BoxModel implements BoxModelInterface
 
     /**
      * @param mixed $sharedLink
-     * @return BoxModel
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setSharedLink($sharedLink = null)
@@ -268,7 +268,7 @@ class BoxModel implements BoxModelInterface
 
     /**
      * @param mixed $parent
-     * @return BoxModel
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setParent($parent = null)
@@ -284,7 +284,7 @@ class BoxModel implements BoxModelInterface
 
     /**
      * @param mixed $itemStatus
-     * @return BoxModel
+     * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setItemStatus($itemStatus = null)

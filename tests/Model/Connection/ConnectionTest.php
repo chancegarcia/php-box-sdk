@@ -48,7 +48,6 @@ class ConnectionTest extends TestCase
         // We can't easily verify curl options from the handle in PHP without extra extensions
         // but we can ensure it doesn't crash and returns the handle.
         $this->assertInstanceOf(\CurlHandle::class, $ch);
-        curl_close($ch);
     }
 
     public function testGetSetClientId()
