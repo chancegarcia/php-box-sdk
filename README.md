@@ -41,30 +41,30 @@ The SDK includes a Symfony Console-based CLI tool for manual end-to-end testing 
 
 ### Available Commands
 
-Run `bin/console list box` to see all available commands.
+Run `bin/box-sdk list box` to see all available commands.
 
 #### 1. Generate Authorization URL
 Builds the URL to visit in your browser to start the OAuth2 flow.
 ```bash
-bin/console box:auth:url
+bin/box-sdk box:auth:url
 ```
 
 #### 2. Exchange Authorization Code
 Exchange the code obtained after browser authorization for an access token.
 ```bash
-bin/console box:auth:exchange-code <AUTH_CODE> --secrets-file=token.json
+bin/box-sdk box:auth:exchange-code <AUTH_CODE> --secrets-file=token.json
 ```
 
 #### 3. Refresh Access Token
 Refresh an expired access token using a refresh token.
 ```bash
-bin/console box:auth:refresh-token --refresh-token=<REFRESH_TOKEN> --secrets-file=token.json
+bin/box-sdk box:auth:refresh-token --refresh-token=<REFRESH_TOKEN> --secrets-file=token.json
 ```
 
 #### 4. Upload a File
 Upload a local file to a Box folder. Requires `BOX_ACCESS_TOKEN` to be set in `.env`.
 ```bash
-bin/console box:file:upload /path/to/local/file.txt --folder-id=0
+bin/box-sdk box:file:upload /path/to/local/file.txt --folder-id=0
 ```
 
 ### Secret Handling
