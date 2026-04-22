@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__.'/../vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+use Symfony\Component\Dotenv\Dotenv;
+
+$dotenv = new Dotenv();
+if (file_exists(__DIR__ . '/../.env')) {
+    $dotenv->load(__DIR__ . '/../.env');
+}
+
+$application = new Application('Box SDK CLI', '1.0.0');
+
+$configProvider = new \Box\Service\EnvConfigProvider();
+$clientFactory = new \Box\Service\BoxClientFactory($configProvider);
+$outputFormatter = new \Box\Service\ConsoleOutputFormatter();
+
+$application->add(new \Box\Command\AuthUrlCommand($clientFactory, $configProvider, $outputFormatter));
+$application->add(new \Box\Command\AuthExchangeCommand($clientFactory, $configProvider, $outputFormatter));
+$application->add(new \Box\Command\AuthRefreshCommand($clientFactory, $configProvider, $outputFormatter));
+$application->add(new \Box\Command\FileUploadCommand($clientFactory, $configProvider, $outputFormatter));
+
+$application->run();

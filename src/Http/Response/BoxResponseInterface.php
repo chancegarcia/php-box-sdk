@@ -20,6 +20,7 @@
 namespace Box\Http\Response;
 
 use Box\Http\Response\Header\ResponseHeaderInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 interface BoxResponseInterface
 {
@@ -27,13 +28,6 @@ interface BoxResponseInterface
      * @return ResponseHeaderInterface
      */
     public function getResponseHeader(): ResponseHeaderInterface;
-
-    /**
-     * @param ResponseHeaderInterface|null $responseHeader
-     * @return BoxResponseInterface
-     * @deprecated since 0.11.0, use non-fluent setter instead.
-     */
-    public function setResponseHeader(?ResponseHeaderInterface $responseHeader = null): void;
 
     /**
      * @return mixed
@@ -75,7 +69,7 @@ interface BoxResponseInterface
      * @return static
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setProtocolVersion(string $version): static;
+    public function setProtocolVersion(string $version): Response;
 
     // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
     /**

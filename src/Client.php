@@ -52,7 +52,7 @@ use JsonException;
  */
 class Client extends Model
 {
-    CONST AUTH_URI = "https://www.box.com/api/oauth2/authorize";
+    CONST AUTH_URI = "https://account.box.com/api/oauth2/authorize";
     CONST TOKEN_URI = "https://www.box.com/api/oauth2/token";
     CONST REVOKE_URI = "https://www.box.com/api/oauth2/revoke";
     CONST SEARCH_URI = "https://api.box.com/2.0/search";
@@ -303,7 +303,7 @@ class Client extends Model
         $aSharedLinkHeader = array($sSharedLinkHeader);
 
         $connection = $this->getConnection();
-        $connection = $this->setConnectionAuthHeader($connection, $aSharedLinkHeader);
+        $this->setConnectionAuthHeader($connection, $aSharedLinkHeader);
 
         $response = $connection->query($uri);
 
@@ -352,7 +352,7 @@ class Client extends Model
         $uri = Folder::URI . '/' . $id; // all class constant URIs do not end in a slash
 
         $connection = $this->getConnection();
-        $connection = $this->setConnectionAuthHeader($connection);
+        $this->setConnectionAuthHeader($connection);
 
         $response = $connection->query($uri);
 
@@ -419,7 +419,7 @@ class Client extends Model
         $uri = Folder::URI;
 
         $connection = $this->getConnection();
-        $connection = $this->setConnectionAuthHeader($connection);
+        $this->setConnectionAuthHeader($connection);
 
         $params = array(
             'name' => $name,
@@ -478,7 +478,7 @@ class Client extends Model
         // @todo implement If-Match header logic
 
         $connection = $this->getConnection();
-        $connection = $this->setConnectionAuthHeader($connection);
+        $this->setConnectionAuthHeader($connection);
         $response = $connection->put($uri, $params, true);
 
         $json = $response->getContent();
@@ -527,7 +527,7 @@ class Client extends Model
         $uri = Folder::URI . '/' . $folderId . '/collaborations';
 
         $connection = $this->getConnection();
-        $connection = $this->setConnectionAuthHeader($connection);
+        $this->setConnectionAuthHeader($connection);
 
         $response = $connection->query($uri);
 
@@ -607,7 +607,7 @@ class Client extends Model
 
         // can be refactored a bit more but the json encode works in the connection class
         $connection = $this->getConnection();
-        $connection = $this->setConnectionAuthHeader($connection);
+        $this->setConnectionAuthHeader($connection);
 
         $response = $connection->post($uri, $params, true);
 
@@ -679,7 +679,7 @@ class Client extends Model
 
         // can be refactored a bit more but the json encode works in the connection class
         $connection = $this->getConnection();
-        $connection = $this->setConnectionAuthHeader($connection);
+        $this->setConnectionAuthHeader($connection);
 
         $response = $connection->put($uri, $params, true);
 
@@ -766,7 +766,7 @@ class Client extends Model
         $this->debug("params: " . var_export($params, true), [__METHOD__, __LINE__]);
 
         $connection = $this->getConnection();
-        $connection = $this->setConnectionAuthHeader($connection);
+        $this->setConnectionAuthHeader($connection);
 
         $response = $connection->post($uri, $params, true);
         $this->debug("response header: " . var_export($response->getResponseHeader(), true), [__METHOD__, __LINE__]);
@@ -828,7 +828,7 @@ class Client extends Model
         // loop through the files and add the @ to the filename if not present
 
         $connection = $this->getConnection();
-        $connection = $this->setConnectionAuthHeader($connection);
+        $this->setConnectionAuthHeader($connection);
 
         $response = $connection->postFile($uri, $file);
 
@@ -856,10 +856,6 @@ class Client extends Model
         $params['client_secret'] = $this->getClientSecret();
 
         $redirectUri = $this->getRedirectUri();
-        if (null !== $redirectUri)
-        {
-            $params['redirect_uri'] = $redirectUri;
-        }
 
         $response = $connection->post(self::TOKEN_URI, $params);
         $json = $response->getContent();
@@ -1401,7 +1397,7 @@ class Client extends Model
     public function query($uri = null)
     {
         $connection = $this->getConnection();
-        $connection = $this->setConnectionAuthHeader($connection);
+        $this->setConnectionAuthHeader($connection);
 
         $response = $connection->query($uri);
 

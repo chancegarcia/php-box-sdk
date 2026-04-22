@@ -16,11 +16,13 @@
         }
     },
     "require": {
-        "php": ">=8.2",
-        "symfony/http-foundation": "^2.8|^3.4|^4.4|^5.4|^6|^7.4|^8",
-        "psr/log": "^1.0|^2|^3",
+        "php": ">=8.4",
+        "symfony/http-foundation": "^7.4|^8",
+        "psr/log": "^3",
         "ext-curl": "*",
-        "ext-fileinfo": "*"
+        "ext-fileinfo": "*",
+        "symfony/dotenv": "^7.4",
+        "symfony/console": "^7.4"
     },
     "authors": [
         {

@@ -58,15 +58,6 @@ class BoxResponse extends Response implements BoxResponseInterface
         return $this->responseHeader;
     }
 
-    /**
-     * {@inheritdoc}
-     * @deprecated since 0.11.0, use non-fluent setter instead.
-     */
-    public function setResponseHeader(?ResponseHeaderInterface $responseHeader = null): BoxResponseInterface {
-        $this->responseHeader = $responseHeader;
-
-    }
-
 
     public function hasHeader(string $name): bool {
         $headerLines = $this->getResponseHeader()->getHeaderLines();
@@ -99,16 +90,5 @@ class BoxResponse extends Response implements BoxResponseInterface
         $normalizedHeaderLines = array_change_key_case($this->getResponseHeader()->getHeaderLines());
 
         return $normalizedHeaderLines[strtolower($name)];
-    }
-
-    /**
-     * @param string $version
-     * @return $this
-     * @deprecated since 0.11.0, use non-fluent setter instead.
-     */
-    public function setProtocolVersion(string $version): static
-    {
-        parent::setProtocolVersion($version);
-
     }
 }
