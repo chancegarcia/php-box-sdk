@@ -9,7 +9,8 @@ class ConsoleOutputFormatterTest extends TestCase
 {
     public function testMaskSensitiveData(): void
     {
-        $formatter = new ConsoleOutputFormatter();
+        $jsonFormatter = $this->createMock(\Box\Contract\JsonFormatterInterface::class);
+        $formatter = new ConsoleOutputFormatter($jsonFormatter);
         $data = [
             'access_token' => 'sensitive_token_12345678',
             'normal_field' => 'normal_value',
@@ -28,7 +29,8 @@ class ConsoleOutputFormatterTest extends TestCase
 
     public function testMaskShortString(): void
     {
-        $formatter = new ConsoleOutputFormatter();
+        $jsonFormatter = $this->createMock(\Box\Contract\JsonFormatterInterface::class);
+        $formatter = new ConsoleOutputFormatter($jsonFormatter);
         $data = ['access_token' => 'short'];
         $masked = $formatter->maskSensitiveData($data);
         $this->assertEquals('********', $masked['access_token']);

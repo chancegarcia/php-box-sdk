@@ -1,0 +1,370 @@
+<?php
+
+namespace Box\Tests;
+
+use Box\Client;
+use Box\Http\Response\BoxResponseInterface;
+use Box\Model\Connection\Connection;
+use Box\Model\Connection\Token\Token;
+use Box\Model\Folder\Folder;
+use Box\Model\Collaboration\Collaboration;
+use Box\Model\User\User;
+use Box\Model\Group\Group;
+use Box\Exception\BoxException;
+use JsonException;
+use PHPUnit\Framework\TestCase;
+
+class ClientTest extends TestCase
+{
+    protected $client;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->client = new Client();
+        $this->client->setClientId('test_client_id');
+        $this->client->setClientSecret('test_client_secret');
+    }
+
+    public function testBuildAuthQuery()
+    {
+        $url = $this->client->buildAuthQuery();
+        $this->assertStringContainsString('response_type=code', $url);
+        $this->assertStringContainsString('client_id=test_client_id', $url);
+
+        $this->client->setState('test_state');
+        $url = $this->client->buildAuthQuery();
+        $this->assertStringContainsString('state=test_state', $url);
+
+        $this->client->setRedirectUri('https://example.com/callback');
+        $url = $this->client->buildAuthQuery();
+        $this->assertStringContainsString('redirect_uri=' . urlencode('https://example.com/callback'), $url);
+    }
+
+    public function testAuth()
+    {
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())
+            ->method('query')
+            ->with($this->client->buildAuthQuery())
+            ->willReturn($this->createMock(BoxResponseInterface::class));
+
+        $this->client->setConnection($connection);
+        $this->client->auth();
+    }
+
+    /**
+     * @throws JsonException
+     * @throws BoxException
+     */
+    public function testGetAccessTokenSuccess()
+    {
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('getContent')->willReturn(json_encode([
+            'access_token' => 'access_foo',
+            'refresh_token' => 'refresh_bar',
+            'expires_in' => 3600,
+            'token_type' => 'Bearer'
+        ], JSON_THROW_ON_ERROR));
+
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())
+            ->method('post')
+            ->willReturn($response);
+
+        $this->client->setConnection($connection);
+        $this->client->setAuthorizationCode('test_code');
+
+        $token = $this->client->getAccessToken();
+        $this->assertInstanceOf(Token::class, $token);
+        $this->assertEquals('access_foo', $token->getAccessToken());
+        $this->assertEquals('refresh_bar', $token->getRefreshToken());
+    }
+
+    public function testRefreshTokenSuccess(): void
+    {
+        $token = new Token();
+        $token->setRefreshToken('old_refresh');
+        $this->client->setToken($token);
+
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('getContent')->willReturn(json_encode([
+            'access_token' => 'new_access',
+            'refresh_token' => 'new_refresh',
+            'expires_in' => 3600,
+            'token_type' => 'Bearer'
+        ], JSON_THROW_ON_ERROR));
+
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())
+            ->method('post')
+            ->willReturn($response);
+
+        $this->client->setConnection($connection);
+
+        $newToken = $this->client->refreshToken();
+        $this->assertSame($token, $newToken);
+        $this->assertEquals('new_access', $token->getAccessToken());
+        $this->assertEquals('new_refresh', $token->getRefreshToken());
+    }
+
+    public function testGetAuthorizationHeader()
+    {
+        $token = new Token();
+        $token->setAccessToken('test_token');
+        $this->client->setToken($token);
+
+        $header = $this->client->getAuthorizationHeader();
+        $this->assertEquals('Authorization: Bearer test_token', $header);
+    }
+
+    public function testSetConnectionAuthHeader()
+    {
+        $token = new Token();
+        $token->setAccessToken('test_token');
+        $this->client->setToken($token);
+
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())
+            ->method('setCurlOpts')
+            ->with($this->callback(function($opts) {
+                return isset($opts['CURLOPT_HTTPHEADER']) &&
+                       in_array('Authorization: Bearer test_token', $opts['CURLOPT_HTTPHEADER']) &&
+                       in_array('X-Extra: foo', $opts['CURLOPT_HTTPHEADER']);
+            }));
+
+        $this->client->setConnectionAuthHeader($connection, ['X-Extra: foo']);
+        $this->assertTrue(true); // satisfy risky test
+    }
+
+    public function testDestroyToken()
+    {
+        $token = new Token();
+        $token->setAccessToken('test_token');
+
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('getContent')->willReturn(json_encode(['status' => 'success']));
+
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())
+            ->method('post')
+            ->willReturn($response);
+
+        $this->client->setConnection($connection);
+
+        $result = $this->client->destroyToken($token);
+        $this->assertEquals(['status' => 'success'], $data = json_decode(json_encode($result), true));
+    }
+
+    public function testGetFolderFromBox()
+    {
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('getContent')->willReturn(json_encode([
+            'type' => 'folder',
+            'id' => '123',
+            'name' => 'Test Folder'
+        ]));
+
+        $connection = $this->createMock(Connection::class);
+        $connection->method('query')->willReturn($response);
+        $this->client->setConnection($connection);
+
+        $token = new Token();
+        $token->setAccessToken('foo');
+        $this->client->setToken($token);
+
+        $folder = $this->client->getFolderFromBox('123');
+        $this->assertInstanceOf(Folder::class, $folder);
+        $this->assertEquals('123', $folder->getId());
+        $this->assertEquals('Test Folder', $folder->getName());
+    }
+
+    public function testCreateNewBoxFolder()
+    {
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('getContent')->willReturn(json_encode([
+            'type' => 'folder',
+            'id' => '456',
+            'name' => 'New Folder'
+        ]));
+
+        $connection = $this->createMock(Connection::class);
+        $connection->method('post')->willReturn($response);
+        $this->client->setConnection($connection);
+
+        $token = new Token();
+        $token->setAccessToken('foo');
+        $this->client->setToken($token);
+
+        $folder = $this->client->createNewBoxFolder('New Folder', '0');
+        $this->assertInstanceOf(Folder::class, $folder);
+        $this->assertEquals('456', $folder->getId());
+    }
+
+    public function testUpdateBoxFolderThrows()
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('currently not implemented/working.');
+
+        $folder = new Folder();
+        $this->client->updateBoxFolder($folder);
+    }
+
+    public function testGetFolderCollaborations()
+    {
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('getContent')->willReturn(json_encode([
+            'total_count' => 1,
+            'entries' => [['type' => 'collaboration', 'id' => 'collab1']]
+        ]));
+
+        $connection = $this->createMock(Connection::class);
+        $connection->method('query')->willReturn($response);
+        $this->client->setConnection($connection);
+
+        $token = new Token();
+        $token->setAccessToken('foo');
+        $this->client->setToken($token);
+
+        $folder = new Folder();
+        $folder->setId('123');
+
+        $data = $this->client->getFolderCollaborations($folder);
+        $this->assertIsArray($data);
+        $this->assertEquals(1, $data['total_count']);
+        $this->assertEquals('collab1', $data['entries'][0]['id']);
+    }
+
+    public function testAddCollaboration()
+    {
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('getContent')->willReturn(json_encode([
+            'type' => 'collaboration',
+            'id' => 'collab2'
+        ]));
+
+        $connection = $this->createMock(Connection::class);
+        $connection->method('post')->willReturn($response);
+        $this->client->setConnection($connection);
+
+        $token = new Token();
+        $token->setAccessToken('foo');
+        $this->client->setToken($token);
+
+        $folder = new Folder(); $folder->setId('123');
+        $user = new User(); $user->setId('user1');
+
+        $collab = $this->client->addCollaboration($folder, $user, 'editor');
+        $this->assertInstanceOf(Collaboration::class, $collab);
+    }
+
+    public function testCreateSharedLinkForFolder()
+    {
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('getContent')->willReturn(json_encode([
+            'type' => 'folder',
+            'id' => '123',
+            'shared_link' => ['url' => 'https://box.com/s/foo']
+        ]));
+
+        $connection = $this->createMock(Connection::class);
+        $connection->method('put')->willReturn($response);
+        $this->client->setConnection($connection);
+
+        $token = new Token();
+        $token->setAccessToken('foo');
+        $this->client->setToken($token);
+
+        $folder = new Folder(); $folder->setId('123');
+
+        $updatedFolder = $this->client->createSharedLinkForFolder($folder);
+        $this->assertInstanceOf(Folder::class, $updatedFolder);
+        $this->assertEquals('https://box.com/s/foo', $updatedFolder->getSharedLink()['url']);
+    }
+
+    public function testCopyBoxFolder()
+    {
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('getContent')->willReturn(json_encode([
+            'type' => 'folder',
+            'id' => 'copy123'
+        ]));
+
+        $connection = $this->createMock(Connection::class);
+        $connection->method('post')->willReturn($response);
+        $this->client->setConnection($connection);
+
+        $token = new Token();
+        $token->setAccessToken('foo');
+        $this->client->setToken($token);
+
+        $folder = new Folder(); $folder->setId('123');
+        $parent = new Folder(); $parent->setId('0');
+
+        // Mocking getFolderFromBox to avoid its side effects if it calls connection
+        $client = $this->getMockBuilder(Client::class)
+            ->onlyMethods(['getFolderFromBox'])
+            ->getMock();
+        $client->setConnection($connection);
+        $client->setToken($token);
+        $client->setClientId('foo');
+        $client->setClientSecret('bar');
+        $client->method('getFolderFromBox')->willReturn(new Folder(['id' => 'copy123']));
+
+        $copy = $client->copyBoxFolder($folder, $parent);
+        $this->assertInstanceOf(Folder::class, $copy);
+        $this->assertEquals('copy123', $copy->getId());
+    }
+
+    public function testGetBoxFolderItems()
+    {
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('getContent')->willReturn(json_encode([
+            'total_count' => 1,
+            'entries' => [['type' => 'file', 'id' => 'file1']]
+        ]));
+
+        $connection = $this->createMock(Connection::class);
+        $connection->method('query')->willReturn($response);
+        $this->client->setConnection($connection);
+
+        $token = new Token();
+        $token->setAccessToken('foo');
+        $this->client->setToken($token);
+
+        $folder = new Folder();
+        $folder->setId('123');
+
+        $result = $this->client->getBoxFolderItems($folder);
+        $this->assertSame($folder, $result);
+        $this->assertEquals(1, $folder->getItemCollection()['total_count']);
+    }
+
+    public function testGetFolder()
+    {
+        // Test id = 0 returns all folders
+        // Currently getFolders(true) returns null at the end (line 204 in src/Client.php)
+
+        $token = new Token();
+        $token->setAccessToken('foo');
+        $this->client->setToken($token);
+
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('getContent')->willReturn(json_encode([
+            'type' => 'folder',
+            'id' => '0'
+        ]));
+        $connection = $this->createMock(Connection::class);
+        $connection->method('query')->willReturn($response);
+        $this->client->setConnection($connection);
+
+        $folders = $this->client->getFolder('0');
+        // Capture current behavior: it returns null at line 204 in getFolders
+        $this->assertNull($folders);
+
+        // Test caching behavior if we manually populate folders
+        $folder = new Folder(['id' => '123']);
+        $this->client->setFolders(['123' => $folder]);
+        $this->assertSame($folder, $this->client->getFolder('123', false));
+    }
+}

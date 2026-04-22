@@ -12,7 +12,12 @@
     "homepage": "https://github.com/chancegarcia/box.net-v2api-sdk",
     "autoload": {
         "psr-4": {
-            "Box\\": "src"
+            "Box\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Box\\Tests\\": "tests/"
         }
     },
     "require": {
@@ -34,6 +39,6 @@
     "require-dev": {
         "roave/security-advisories": "dev-latest"
         ,
-        "phpunit/phpunit": "^10"
+        "phpunit/phpunit": "^10.5"
     }
 }
