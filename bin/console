@@ -15,11 +15,25 @@ $application = new Application('Box SDK CLI', '1.0.0');
 
 $configProvider = new \Box\Service\EnvConfigProvider();
 $clientFactory = new \Box\Service\BoxClientFactory($configProvider);
-$outputFormatter = new \Box\Service\ConsoleOutputFormatter();
 
-$application->add(new \Box\Command\AuthUrlCommand($clientFactory, $configProvider, $outputFormatter));
-$application->add(new \Box\Command\AuthExchangeCommand($clientFactory, $configProvider, $outputFormatter));
-$application->add(new \Box\Command\AuthRefreshCommand($clientFactory, $configProvider, $outputFormatter));
-$application->add(new \Box\Command\FileUploadCommand($clientFactory, $configProvider, $outputFormatter));
+// Resolve JSON formatter
+$jsonFormatterClass = $configProvider->getJsonFormatterClass() ?? \Box\Service\DefaultJsonFormatter::class;
+if (!class_exists($jsonFormatterClass)) {
+    throw new \RuntimeException(sprintf('JSON formatter class "%s" not found.', $jsonFormatterClass));
+}
+$jsonFormatter = new $jsonFormatterClass();
+if (!$jsonFormatter instanceof \Box\Contract\JsonFormatterInterface) {
+    throw new \RuntimeException(sprintf('JSON formatter class "%s" must implement Box\Contract\JsonFormatterInterface.', $jsonFormatterClass));
+}
+
+$outputFormatter = new \Box\Service\ConsoleOutputFormatter($jsonFormatter);
+
+$configNormalizer = new \Box\Logger\ConfigNormalizer();
+$loggerFactory = new \Box\Logger\LoggerFactory($configNormalizer);
+
+$application->add(new \Box\Command\AuthUrlCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->add(new \Box\Command\AuthExchangeCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->add(new \Box\Command\AuthRefreshCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->add(new \Box\Command\FileUploadCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
 
 $application->run();

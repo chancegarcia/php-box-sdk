@@ -6,9 +6,12 @@ use Box\Command\FileUploadCommand;
 use Box\Contract\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Client;
+use Box\Logger\ConfigNormalizer;
+use Box\Logger\LoggerFactory;
 use Box\Model\Connection\Connection;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Service\ConsoleOutputFormatter;
+use Box\Service\DefaultJsonFormatter;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -19,6 +22,7 @@ class FileUploadCommandTest extends TestCase
     private $clientFactory;
     private $configProvider;
     private $outputFormatter;
+    private $loggerFactory;
     private $client;
     private $connection;
     private $testFile;
@@ -27,7 +31,8 @@ class FileUploadCommandTest extends TestCase
     {
         $this->clientFactory = $this->createMock(BoxClientFactoryInterface::class);
         $this->configProvider = $this->createMock(ConfigProviderInterface::class);
-        $this->outputFormatter = new ConsoleOutputFormatter();
+        $this->outputFormatter = new ConsoleOutputFormatter(new DefaultJsonFormatter());
+        $this->loggerFactory = new LoggerFactory(new ConfigNormalizer());
         $this->client = $this->createMock(Client::class);
         $this->connection = $this->createMock(Connection::class);
 
@@ -50,7 +55,7 @@ class FileUploadCommandTest extends TestCase
         $this->configProvider->method('getAccessToken')->willReturn(null);
 
         $application = new Application();
-        $application->addCommand(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter));
+        $application->add(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:file:upload');
         $commandTester = new CommandTester($command);
@@ -59,7 +64,7 @@ class FileUploadCommandTest extends TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('BOX_ACCESS_TOKEN is required in the .env file to upload a file.', $output);
+        $this->assertStringContainsString('BOX_ACCESS_TOKEN is required for upload.', $output);
         $this->assertEquals(Command::FAILURE, $commandTester->getStatusCode());
 
         // Verify no upload was attempted
@@ -71,7 +76,7 @@ class FileUploadCommandTest extends TestCase
         $this->configProvider->method('getAccessToken')->willReturn('');
 
         $application = new Application();
-        $application->addCommand(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter));
+        $application->add(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:file:upload');
         $commandTester = new CommandTester($command);
@@ -80,7 +85,7 @@ class FileUploadCommandTest extends TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('BOX_ACCESS_TOKEN is required in the .env file to upload a file.', $output);
+        $this->assertStringContainsString('BOX_ACCESS_TOKEN is required for upload.', $output);
         $this->assertEquals(Command::FAILURE, $commandTester->getStatusCode());
 
         $this->connection->expects($this->never())->method('postFile');
@@ -91,7 +96,7 @@ class FileUploadCommandTest extends TestCase
         $this->configProvider->method('getAccessToken')->willReturn('   ');
 
         $application = new Application();
-        $application->add(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter));
+        $application->add(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:file:upload');
         $commandTester = new CommandTester($command);
@@ -100,7 +105,7 @@ class FileUploadCommandTest extends TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('BOX_ACCESS_TOKEN is required in the .env file to upload a file.', $output);
+        $this->assertStringContainsString('BOX_ACCESS_TOKEN is required for upload.', $output);
         $this->assertEquals(Command::FAILURE, $commandTester->getStatusCode());
 
         $this->connection->expects($this->never())->method('postFile');
@@ -120,7 +125,7 @@ class FileUploadCommandTest extends TestCase
             ->willReturn($response);
 
         $application = new Application();
-        $application->add(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter));
+        $application->add(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:file:upload');
         $commandTester = new CommandTester($command);

@@ -4,6 +4,7 @@ namespace Box\Command;
 
 use Box\Contract\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
+use Box\Logger\LoggerFactory;
 use Box\Model\Connection\Token\Token;
 use Box\Service\ConsoleOutputFormatter;
 use Symfony\Component\Console\Command\Command;
@@ -13,39 +14,42 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Exception;
 
-class AuthRefreshCommand extends Command
+class AuthRefreshCommand extends AbstractBoxCommand
 {
     protected static $defaultName = 'box:auth:refresh-token';
 
     public function __construct(
         private BoxClientFactoryInterface $clientFactory,
         private ConfigProviderInterface $configProvider,
-        private ConsoleOutputFormatter $outputFormatter
+        private ConsoleOutputFormatter $outputFormatter,
+        LoggerFactory $loggerFactory
     ) {
-        parent::__construct();
+        parent::__construct($loggerFactory);
     }
 
     protected function configure(): void
     {
+        parent::configure();
         $this
             ->setName(self::$defaultName)
             ->setDescription('Refreshes an access token using a refresh token')
             ->setHelp('This command uses a refresh token to obtain a new access token and a new refresh token.')
-            ->addOption('refresh-token', null, InputOption::VALUE_REQUIRED, 'The refresh token (falls back to BOX_REFRESH_TOKEN env)')
             ->addOption('secrets-file', null, InputOption::VALUE_REQUIRED, 'Path to write the full token payload')
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force writing to secrets file without confirmation')
-            ->addOption('json', null, InputOption::VALUE_NONE, 'Output masked result as JSON to console');
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force writing to secrets file without confirmation');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        $this->logger->info('Starting token refresh command');
+        
         $client = $this->clientFactory->createClient();
 
-        $refreshTokenValue = $input->getOption('refresh-token') ?? $this->configProvider->getRefreshToken();
+        $refreshTokenValue = $this->configProvider->getRefreshToken();
 
         if (!$refreshTokenValue) {
-            $io->error('Refresh token is required. Provide it as an option or set BOX_REFRESH_TOKEN env.');
+            $io->error('Refresh token is required. Set BOX_REFRESH_TOKEN env.');
+            $this->logger->error('Refresh token is missing');
             return Command::FAILURE;
         }
 
@@ -59,17 +63,7 @@ class AuthRefreshCommand extends Command
             $tokenData = $newToken->toBoxArray();
 
             if ($secretsPath = $input->getOption('secrets-file')) {
-                if (!$input->getOption('force')) {
-                    if (!$io->confirm(sprintf('Are you sure you want to write sensitive tokens to %s?', $secretsPath), false)) {
-                        $io->warning('Secret export cancelled.');
-                    } else {
-                        $this->writeSecrets($secretsPath, $tokenData);
-                        $io->success(sprintf('Secrets written to %s', $secretsPath));
-                    }
-                } else {
-                    $this->writeSecrets($secretsPath, $tokenData);
-                    $io->success(sprintf('Secrets written to %s', $secretsPath));
-                }
+                $this->writeSecrets($secretsPath, $tokenData, $io, (bool)$input->getOption('force'));
             }
 
             if ($input->getOption('json')) {
@@ -84,22 +78,12 @@ class AuthRefreshCommand extends Command
                 $this->outputFormatter->formatMasked($io, $tokenData);
             }
 
+            $this->logger->info('Token refresh completed successfully');
             return Command::SUCCESS;
         } catch (Exception $e) {
             $io->error('Failed to refresh token: ' . $e->getMessage());
+            $this->logger->error('Failed to refresh token', ['exception' => $e]);
             return Command::FAILURE;
-        }
-    }
-
-    private function writeSecrets(string $path, array $data): void
-    {
-        $dir = dirname($path);
-        if (!is_dir($dir) || !is_writable($dir)) {
-            throw new Exception(sprintf('The directory "%s" is not writable.', $dir));
-        }
-
-        if (false === file_put_contents($path, json_encode($data, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR))) {
-            throw new Exception(sprintf('Failed to write to file "%s".', $path));
         }
     }
 }

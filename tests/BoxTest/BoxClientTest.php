@@ -86,9 +86,21 @@ class BoxClientTest extends TestCase
         // auth code
     }
 
-    public function testUploadFileToBox()
+    public function testUploadFileToBoxThrowsExceptionWhenTokenIsMissing()
     {
+        $this->expectException(\Box\Exception\BoxException::class);
+        $this->expectExceptionMessage('BOX_ACCESS_TOKEN is required for upload.');
+        
+        $this->client->uploadFileToBox('some_file.txt');
+    }
 
+    public function testSetConnectionAuthHeaderThrowsExceptionWhenTokenIsMissing()
+    {
+        $this->expectException(\Box\Exception\BoxException::class);
+        $this->expectExceptionMessage('BOX_ACCESS_TOKEN is required for upload.');
+        
+        $connection = $this->createMock(\Box\Model\Connection\Connection::class);
+        $this->client->setConnectionAuthHeader($connection);
     }
 
     public function testClient()

@@ -52,6 +52,11 @@ class EnvConfigProvider implements ConfigProviderInterface
         return $_ENV['BOX_ACCESS_TOKEN'] ?? $_SERVER['BOX_ACCESS_TOKEN'] ?? null;
     }
 
+    public function getJsonFormatterClass(): ?string
+    {
+        return $_ENV['BOX_JSON_FORMATTER'] ?? $_SERVER['BOX_JSON_FORMATTER'] ?? null;
+    }
+
     private function getRequiredEnv(string $key): string
     {
         $value = $_ENV[$key] ?? $_SERVER[$key] ?? null;

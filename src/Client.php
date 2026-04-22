@@ -823,6 +823,11 @@ class Client extends Model
      */
     public function uploadFileToBox($file)
     {
+        $accessToken = $this->getToken()->getAccessToken();
+        if (empty($accessToken) || trim($accessToken) === '') {
+            throw new BoxException('BOX_ACCESS_TOKEN is required for upload.', BoxException::INVALID_INPUT);
+        }
+
         $uri = File::UPLOAD_URI;
 
         // loop through the files and add the @ to the filename if not present
@@ -1025,7 +1030,13 @@ class Client extends Model
      */
     public function setConnectionAuthHeader($connection, $additionalHeaders = null): void
     {
-        $headers = array($this->getAuthorizationHeader());
+        $authorizationHeader = $this->getAuthorizationHeader();
+
+        if (str_ends_with($authorizationHeader, ' ')) {
+             throw new BoxException('BOX_ACCESS_TOKEN is required for upload.', BoxException::INVALID_INPUT);
+        }
+
+        $headers = array($authorizationHeader);
 
         if (null !== $additionalHeaders && !is_array($additionalHeaders))
         {

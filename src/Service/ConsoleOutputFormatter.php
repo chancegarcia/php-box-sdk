@@ -2,16 +2,21 @@
 
 namespace Box\Service;
 
+use Box\Contract\JsonFormatterInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class ConsoleOutputFormatter
 {
+    public function __construct(
+        private JsonFormatterInterface $jsonFormatter
+    ) {}
+
     public function formatMasked(SymfonyStyle $io, array $data, bool $isJson = false): void
     {
         $maskedData = $this->maskSensitiveData($data);
 
         if ($isJson) {
-            $io->writeln(json_encode($maskedData, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
+            $io->writeln($this->jsonFormatter->format($maskedData));
             return;
         }
 

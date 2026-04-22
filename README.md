@@ -73,6 +73,30 @@ bin/console box:file:upload /path/to/local/file.txt --folder-id=0
 - The command will ask for confirmation before writing secrets to a file unless `--force` is used.
 - Use `--json` for machine-readable (but still masked) console output.
 
+### Logging
+The SDK uses Monolog for logging. By default, logs are written to the `var/log` directory:
+- `var/log/box-sdk.log`: Contains `debug` and `info` messages.
+- `var/log/box-sdk-warning.log`: Contains `warning` messages.
+- `var/log/box-sdk-error.log`: Contains `error` messages.
+
+Logs are rotated daily, and up to 5 old files are kept. Each log file has a maximum size of 100MB.
+
+#### Logging Options
+Every command supports the following logging overrides:
+- `--log-config <path>`: Use a custom Monolog configuration file (overrides all default behavior).
+- `--log-dir <dir>`: Change the directory where logs are stored.
+- `--log-file <name>`: Change the base log file name. If used, **all** log levels will be written to this single file in the active log directory.
+
+#### Custom Configuration
+The default configuration is located in `config/monolog.php`. For fully custom logging behavior, create a new PHP file that returns a configuration array and pass it via `--log-config`.
+
+### Custom JSON Formatting
+You can override the default JSON output formatter by setting the `BOX_JSON_FORMATTER` environment variable in your `.env` file to a fully qualified class name.
+```dotenv
+BOX_JSON_FORMATTER="App\Service\CustomJsonFormatter"
+```
+The class must implement `Box\Contract\JsonFormatterInterface`.
+
 ## Programmatic Usage
 
 ### Client Setup
