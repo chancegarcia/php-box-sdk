@@ -138,6 +138,10 @@ class Model extends BaseModel implements ModelInterface
 
         $oClass = new $class();
 
+        if ($this->logger && method_exists($oClass, 'setLogger')) {
+            $oClass->setLogger($this->logger);
+        }
+
         if (!$oClass instanceof $classType)
         {
             throw new BoxException("Invalid Connection Class", BoxException::INVALID_CLASS_TYPE);
@@ -168,6 +172,11 @@ class Model extends BaseModel implements ModelInterface
 
         $sClass = $this->$sMethod();
 
-        return new $sClass($classConstructorOptions);
+        $instance = new $sClass($classConstructorOptions);
+        if ($this->logger && method_exists($instance, 'setLogger')) {
+            $instance->setLogger($this->logger);
+        }
+
+        return $instance;
     }
 }

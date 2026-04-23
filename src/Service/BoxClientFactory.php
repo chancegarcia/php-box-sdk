@@ -5,17 +5,28 @@ namespace Box\Service;
 use Box\Client;
 use Box\Contract\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
+use Psr\Log\LoggerInterface;
 
 class BoxClientFactory implements BoxClientFactoryInterface
 {
+    private ?LoggerInterface $logger = null;
+
     public function __construct(
         private ConfigProviderInterface $configProvider
     ) {
     }
 
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
+    }
+
     public function createClient(): Client
     {
         $client = new Client();
+        if ($this->logger) {
+            $client->setLogger($this->logger);
+        }
         $client->setClientId($this->configProvider->getClientId());
         $client->setClientSecret($this->configProvider->getClientSecret());
 

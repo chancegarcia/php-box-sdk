@@ -13,6 +13,7 @@ The SDK functions as a **boundary layer** around the Box API. It encapsulates tr
 ### Recommendations:
 - **Isolation:** Keep Box-specific logic (e.g., folder IDs, specific API calls) isolated from your core business logic.
 - **Service Orientation:** Wrap the `Box\Client` in your own application-specific service or adapter. This allows you to define an interface that matches your domain's needs.
+- **Logger Propagation:** When using a custom factory to create `Client` instances, ensure the logger is injected into the factory or directly onto the `Client`. The SDK automatically propagates the logger to internal models and connections.
 - **Forward Compatibility:** This SDK is designed to be "framework-friendly." By following these patterns, you simplify future transitions to specialized integrations like a Symfony bundle.
 
 ## 3. Integration Model
@@ -100,7 +101,8 @@ Uploads require a local file path and optionally a target folder ID (defaults to
 
 The SDK implements `Psr\Log\LoggerAwareInterface`. It is highly recommended to inject your application's PSR-3 compliant logger (e.g., Monolog).
 
-- **Library Style:** The SDK logs internal transitions, API requests (at debug level), and errors.
+- **Library Style:** The SDK logs internal transitions, API requests (at debug level), and errors using PSR-3 conventions and structured context.
+- **Propagation:** Once a logger is set on the `Client`, it is automatically propagated to all objects created by the client, such as `Connection`, `Folder`, and `File` models.
 - **Host Integration:** In a Symfony or Laravel app, the container should automatically inject the main application logger into the `Client` service.
 
 ## 8. Extension and Composition Patterns

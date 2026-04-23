@@ -19,12 +19,12 @@ class AuthRefreshCommand extends AbstractBoxCommand
     protected static $defaultName = 'box:auth:refresh-token';
 
     public function __construct(
-        private BoxClientFactoryInterface $clientFactory,
+        BoxClientFactoryInterface $clientFactory,
         private ConfigProviderInterface $configProvider,
         private ConsoleOutputFormatter $outputFormatter,
         LoggerFactory $loggerFactory
     ) {
-        parent::__construct($loggerFactory);
+        parent::__construct($clientFactory, $loggerFactory);
     }
 
     protected function configure(): void

@@ -11,12 +11,15 @@ use Psr\Log\LoggerInterface;
 use Box\Logger\LoggerFactory;
 use Exception;
 
+use Box\Contract\BoxClientFactoryInterface;
+
 abstract class AbstractBoxCommand extends Command
 {
     protected LoggerInterface $logger;
     protected string $defaultLogConfig = 'config/monolog.php';
 
     public function __construct(
+        protected BoxClientFactoryInterface $clientFactory,
         protected LoggerFactory $loggerFactory
     ) {
         parent::__construct();
@@ -50,6 +53,7 @@ abstract class AbstractBoxCommand extends Command
         }
 
         $this->logger = $this->loggerFactory->createLogger($config, $overrides);
+        $this->clientFactory->setLogger($this->logger);
     }
 
     protected function writeSecrets(string $path, array $data, SymfonyStyle $io, bool $force = false): void

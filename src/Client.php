@@ -33,11 +33,13 @@ namespace Box;
 
 use Box\Exception\BoxException;
 use Box\Model\Collaboration\Collaboration;
+use Box\Model\Collaboration\CollaborationInterface;
 use Box\Model\Connection\Connection;
 use Box\Model\Connection\ConnectionInterface;
 use Box\Model\Connection\Token\Token;
 use Box\Model\Connection\Token\TokenInterface;
 use Box\Model\File\File;
+use Box\Model\File\FileInterface;
 use Box\Model\Folder\Folder;
 use Box\Model\Folder\FolderInterface;
 use Box\Model\Group\GroupInterface;
@@ -1142,7 +1144,7 @@ class Client extends Model
      */
     public function setTokenClass($tokenClass = null): void
     {
-        $this->validateClass($tokenClass, 'TokenInterface');
+        $this->validateClass($tokenClass, TokenInterface::class);
         $this->tokenClass = $tokenClass;
 
     }
@@ -1158,8 +1160,7 @@ class Client extends Model
      */
     public function setConnectionClass($connectionClass = null): void
     {
-        $this->validateClass($connectionClass, 'ConnectionInterface');
-
+        $this->validateClass($connectionClass, ConnectionInterface::class);
         $this->connectionClass = $connectionClass;
 
     }
@@ -1190,6 +1191,9 @@ class Client extends Model
         {
             $connectionClass = $this->getConnectionClass();
             $connection = new $connectionClass();
+            if ($this->logger) {
+                $connection->setLogger($this->logger);
+            }
             $this->connection = $connection;
         }
 
@@ -1202,7 +1206,7 @@ class Client extends Model
      */
     public function setFileClass($fileClass = null): void
     {
-        $this->validateClass($fileClass, 'FileInterface');
+        $this->validateClass($fileClass, FileInterface::class);
         $this->fileClass = $fileClass;
 
     }
@@ -1240,7 +1244,7 @@ class Client extends Model
      */
     public function setFolderClass($folderClass = null): void
     {
-        $this->validateClass($folderClass, 'FolderInterface');
+        $this->validateClass($folderClass, FolderInterface::class);
         $this->folderClass = $folderClass;
 
     }
@@ -1266,7 +1270,7 @@ class Client extends Model
      */
     public function setCollaborationClass($collaborationClass = null): void
     {
-        $this->validateClass($collaborationClass, 'CollaborationInterface');
+        $this->validateClass($collaborationClass, CollaborationInterface::class);
         $this->collaborationClass = $collaborationClass;
 
     }
@@ -1282,7 +1286,7 @@ class Client extends Model
      */
     public function setUserClass($userClass = null): void
     {
-        $this->validateClass($userClass, 'UserInterface');
+        $this->validateClass($userClass, UserInterface::class);
         $this->userClass = $userClass;
 
     }
@@ -1298,7 +1302,7 @@ class Client extends Model
      */
     public function setGroupClass($groupClass = null): void
     {
-        $this->validateClass($groupClass, 'GroupInterface');
+        $this->validateClass($groupClass, GroupInterface::class);
         $this->groupClass = $groupClass;
 
     }
