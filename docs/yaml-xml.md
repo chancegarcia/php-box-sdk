@@ -37,3 +37,8 @@ Once loaders are implemented, the `AbstractBoxCommand::initialize` method can be
 $loader = $this->loaderFactory->getLoader($logConfigPath);
 $config = $loader->load($logConfigPath);
 ```
+
+---
+
+**See also:**
+- [Project Roadmap](roadmap.md)
