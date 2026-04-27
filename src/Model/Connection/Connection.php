@@ -35,6 +35,9 @@ namespace Box\Model\Connection;
 
 use Box\Http\Response\BoxResponse;
 use Box\Http\Response\BoxResponseInterface;
+use Box\Http\Transport\CurlTransport;
+use Box\Http\Transport\GuzzleTransport;
+use Box\Http\Transport\TransportInterface;
 use Box\Model\Model;
 use Box\Exception\BoxException;
 use \CURLFile;
@@ -44,15 +47,27 @@ use Psr\Log\LoggerInterface;
  * Class Connection
  * @package Box\Model
  * @todo add in method to access last curl info, error and error number for debugging
+ * @todo v1: remove cURL-specific methods from this class or move to transport-specific interface
+ * @todo v1: make transport selection the primary way to configure HTTP execution
+ * @todo v1: remove client credential synchronization and make Connection the source of truth
  */
 class Connection extends Model implements ConnectionInterface
 {
+    public const TRANSPORT_CURL = 'curl';
+    public const TRANSPORT_GUZZLE = 'guzzle';
+
     protected mixed $responseType = "code";
     protected mixed $clientId = null;
     protected mixed $clientSecret = null;
     protected mixed $redirectUri = null;
     protected mixed $state = null;
     protected string $requestType = "GET";
+
+    protected ?string $accessToken = null;
+    protected array $headers = [];
+    protected string $transportName = self::TRANSPORT_CURL;
+    protected ?TransportInterface $transport = null;
+    protected array $guzzleOptions = [];
 
     protected mixed $authenticationResponse = null;
     protected string $authenticationResponseClass = 'Box\Model\Connection\AuthenticationResponse';
@@ -66,9 +81,27 @@ class Connection extends Model implements ConnectionInterface
 
     public function __construct(?array $options = null)
     {
+        // Don't pass transport to parent construct if it's a string,
+        // handle it manually to avoid BaseModel trying to call setTransport(string)
+        $transport = null;
+        if (is_array($options) && isset($options['transport'])) {
+            $transport = $options['transport'];
+            unset($options['transport']);
+        }
+
         parent::__construct($options);
-        if (is_array($options) && array_key_exists('disableSslVerification', $options) && is_bool($options['disableSslVerification'])) {
-            $this->disableSslVerification = $options['disableSslVerification'];
+
+        if ($transport) {
+            $this->setTransportName($transport);
+        }
+
+        if (is_array($options)) {
+            if (array_key_exists('disableSslVerification', $options) && is_bool($options['disableSslVerification'])) {
+                $this->disableSslVerification = $options['disableSslVerification'];
+            }
+            if (isset($options['accessToken'])) {
+                $this->setAccessToken($options['accessToken']);
+            }
         }
     }
 
@@ -177,13 +210,27 @@ class Connection extends Model implements ConnectionInterface
      */
     public function query(string $uri): BoxResponseInterface
     {
-        $ch = $this->initCurl();
-        $ch = $this->initCurlOpts($ch);
-        curl_setopt($ch, CURLOPT_URL, $uri);
-        $ch = $this->initAdditionalCurlOpts($ch);
-        $data = $this->getCurlData($ch);
+        return $this->request('GET', $uri);
+    }
 
-        return $data;
+    public function request(string $method, string $uri, array $options = []): BoxResponseInterface
+    {
+        $transport = $this->getTransport();
+
+        $headers = array_merge($this->getHeaders(), $options['headers'] ?? []);
+
+        if ($this->getAccessToken()) {
+            $headers['Authorization'] = $this->getAuthorizationHeader();
+        }
+
+        $options['headers'] = $headers;
+
+        if ($this->getTransportName() === self::TRANSPORT_GUZZLE) {
+            $options = array_merge($this->getGuzzleOptions(), $options);
+            $options['verify'] = !$this->getDisableSslVerification();
+        }
+
+        return $transport->request($method, $uri, $options);
     }
 
     public function delete(string $uri): BoxResponseInterface
@@ -191,7 +238,8 @@ class Connection extends Model implements ConnectionInterface
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug("delete uri: " . $uri, array(__METHOD__ . ":" . __LINE__));
         }
-        throw new BoxException('stubbed method. please implement');
+
+        return $this->request('DELETE', $uri);
     }
 
     /**
@@ -199,11 +247,6 @@ class Connection extends Model implements ConnectionInterface
      */
     public function put(string $uri, array|string $params = []): BoxResponseInterface
     {
-        $ch = $this->initCurl();
-        $ch = $this->initCurlOpts($ch);
-        curl_setopt($ch, CURLOPT_URL, $uri);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-
         if (is_array($params))
         {
             $postParams = $this->buildQuery($params);
@@ -214,12 +257,8 @@ class Connection extends Model implements ConnectionInterface
         {
             $postParams = $params;
         }
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postParams);
-        $ch = $this->initAdditionalCurlOpts($ch);
-        $data = $this->getCurlData($ch);
 
-        return $data;
-
+        return $this->request('PUT', $uri, ['body' => $postParams]);
     }
 
     /**
@@ -227,12 +266,6 @@ class Connection extends Model implements ConnectionInterface
      */
     public function post(string $uri, array|string $params = [], bool $nameValuePair = false): BoxResponseInterface
     {
-
-        $ch = $this->initCurl();
-        $ch = $this->initCurlOpts($ch);
-        curl_setopt($ch, CURLOPT_URL, $uri);
-        curl_setopt($ch, CURLOPT_POST, true);
-
         if ($nameValuePair)
         {
             $params = json_encode($params);
@@ -250,11 +283,8 @@ class Connection extends Model implements ConnectionInterface
         {
             $postParams = $params;
         }
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postParams);
-        $ch = $this->initAdditionalCurlOpts($ch);
-        $data = $this->getCurlData($ch);
 
-        return $data;
+        return $this->request('POST', $uri, ['body' => $postParams]);
     }
 
     /**
@@ -295,6 +325,25 @@ class Connection extends Model implements ConnectionInterface
 
         $mimeType = $this->getMimeType($file);
 
+        if (self::TRANSPORT_GUZZLE === $this->getTransportName()) {
+            return $this->request('POST', $uri, [
+                'multipart' => [
+                    [
+                        'name' => 'file',
+                        'contents' => fopen($file, 'r'),
+                        'filename' => $filename,
+                        'headers' => [
+                            'Content-Type' => $mimeType
+                        ]
+                    ],
+                    [
+                        'name' => 'parent_id',
+                        'contents' => (string)$parentId
+                    ]
+                ]
+            ]);
+        }
+
         $curlFile = $this->createCurlFile($file, $mimeType, $filename);
 
         $data=array(
@@ -302,17 +351,12 @@ class Connection extends Model implements ConnectionInterface
             'parent_id' => $parentId
         );
 
-        $ch = $this->initCurl();
-        $ch = $this->initCurlOpts($ch);
-        curl_setopt($ch, CURLOPT_URL, $uri);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-
-        $ch = $this->initAdditionalCurlOpts($ch);
-        $data = $this->getCurlData($ch);
-
-        return $data;
+        return $this->request('POST', $uri, [
+            'multipart' => [
+                ['name' => 'file', 'contents' => $curlFile],
+                ['name' => 'parent_id', 'contents' => (string)$parentId]
+            ]
+        ]);
     }
 
     /**
@@ -446,5 +490,73 @@ class Connection extends Model implements ConnectionInterface
     public function getDisableSslVerification(): ?bool
     {
         return $this->disableSslVerification;
+    }
+
+    public function setAccessToken(?string $accessToken = null): void
+    {
+        $this->accessToken = $accessToken;
+    }
+
+    public function getAccessToken(): ?string
+    {
+        return $this->accessToken;
+    }
+
+    public function getAuthorizationHeader(): ?string
+    {
+        return $this->getAccessToken() ? 'Bearer ' . $this->getAccessToken() : null;
+    }
+
+    public function setHeaders(array $headers = []): void
+    {
+        $this->headers = $headers;
+    }
+
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    public function addHeader(string $name, string $value): void
+    {
+        $this->headers[$name] = $value;
+    }
+
+    public function setTransportName(string $transportName): void
+    {
+        $this->transportName = $transportName;
+        $this->transport = null; // reset cached transport
+    }
+
+    public function getTransportName(): string
+    {
+        return $this->transportName;
+    }
+
+    public function setTransport(TransportInterface $transport): void
+    {
+        $this->transport = $transport;
+    }
+
+    public function getTransport(): TransportInterface
+    {
+        if (null === $this->transport) {
+            if (self::TRANSPORT_GUZZLE === $this->getTransportName()) {
+                $this->transport = new GuzzleTransport();
+            } else {
+                $this->transport = new CurlTransport($this);
+            }
+        }
+        return $this->transport;
+    }
+
+    public function setGuzzleOptions(array $options = []): void
+    {
+        $this->guzzleOptions = $options;
+    }
+
+    public function getGuzzleOptions(): array
+    {
+        return $this->guzzleOptions;
     }
 }

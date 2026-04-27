@@ -1038,7 +1038,10 @@ class Client extends Model
              throw new BoxException('BOX_ACCESS_TOKEN is required for upload.', BoxException::INVALID_INPUT);
         }
 
-        $headers = array($authorizationHeader);
+        // SYNC: ensure connection has the access token
+        if ($connection instanceof ConnectionInterface) {
+            $connection->setAccessToken($this->getToken()->getAccessToken());
+        }
 
         if (null !== $additionalHeaders && !is_array($additionalHeaders))
         {
@@ -1047,11 +1050,26 @@ class Client extends Model
 
         if (is_array($additionalHeaders))
         {
-            $headers = array_merge($headers, $additionalHeaders);
+            foreach ($additionalHeaders as $name => $value) {
+                if (is_int($name)) {
+                    // if it's "Name: Value" string
+                    $parts = explode(':', $value, 2);
+                    if (count($parts) === 2) {
+                        $connection->addHeader(trim($parts[0]), trim($parts[1]));
+                    }
+                } else {
+                    $connection->addHeader($name, $value);
+                }
+            }
         }
 
         // header opt will require a merge with other headers to not overwrite.
         // @todo refactor to allow additional headers with auth header
+        // For compatibility, we still call setCurlOpts if it's a CurlTransport or if someone depends on it
+        $headers = array($authorizationHeader);
+        if (is_array($additionalHeaders)) {
+            $headers = array_merge($headers, $additionalHeaders);
+        }
         $connection->setCurlOpts(array('CURLOPT_HTTPHEADER' => $headers));
     }
 
@@ -1062,7 +1080,9 @@ class Client extends Model
     public function setClientId($clientId = null): void
     {
         $this->clientId = $clientId;
-
+        if ($this->connection instanceof ConnectionInterface) {
+            $this->connection->setClientId($clientId);
+        }
     }
 
     public function getClientId()
@@ -1077,7 +1097,9 @@ class Client extends Model
     public function setClientSecret($clientSecret = null): void
     {
         $this->clientSecret = $clientSecret;
-
+        if ($this->connection instanceof ConnectionInterface) {
+            $this->connection->setClientSecret($clientSecret);
+        }
     }
 
     public function getClientSecret()
@@ -1092,7 +1114,9 @@ class Client extends Model
     public function setRedirectUri($redirectUri = null): void
     {
         $this->redirectUri = $redirectUri;
-
+        if ($this->connection instanceof ConnectionInterface) {
+            $this->connection->setRedirectUri($redirectUri);
+        }
     }
 
     public function getRedirectUri()
@@ -1190,9 +1214,16 @@ class Client extends Model
         if (null === $this->connection)
         {
             $connectionClass = $this->getConnectionClass();
+            /** @var ConnectionInterface $connection */
             $connection = new $connectionClass();
             if ($this->logger) {
                 $connection->setLogger($this->logger);
+            }
+            $connection->setClientId($this->getClientId());
+            $connection->setClientSecret($this->getClientSecret());
+            $connection->setRedirectUri($this->getRedirectUri());
+            if ($this->token) {
+                $connection->setAccessToken($this->token->getAccessToken());
             }
             $this->connection = $connection;
         }

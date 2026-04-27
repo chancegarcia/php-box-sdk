@@ -28,7 +28,10 @@
         "ext-fileinfo": "*",
         "symfony/dotenv": "^7.4",
         "symfony/console": "^7.4",
-        "monolog/monolog": "^3.0"
+        "monolog/monolog": "^3.0",
+        "guzzlehttp/guzzle": "^7.0",
+        "psr/http-message": "^2.0",
+        "guzzlehttp/psr7": "^2.0"
     },
     "authors": [
         {

@@ -23,8 +23,17 @@ use Box\Exception\BoxException;
 use Box\Http\Response\Header\ResponseHeader;
 use Box\Http\Response\Header\ResponseHeaderInterface;
 use Box\Http\Response\Header\StatusLineInterface;
+use GuzzleHttp\Psr7\Utils;
+use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
+use Psr\Http\Message\StreamInterface;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @todo v1: Deprecate BoxResponse and move toward PSR-7 ResponseInterface directly
+ * @todo v1: Replace getContent() with getBody()
+ * @todo v1: Replace getResponseHeader() with PSR-7 header methods
+ * @todo v1: Remove inheritance from Symfony HttpFoundation Response if no longer needed
+ */
 class BoxResponse extends Response implements BoxResponseInterface
 {
     /**
@@ -33,9 +42,15 @@ class BoxResponse extends Response implements BoxResponseInterface
     protected ResponseHeaderInterface $responseHeader;
 
     /**
+     * @var PsrResponseInterface|null
+     */
+    protected ?PsrResponseInterface $psrResponse = null;
+
+    /**
      * @throws BoxException
      */
-    public function __construct(mixed $content = '', string $header = '') {
+    public function __construct(mixed $content = '', string $header = '', ?PsrResponseInterface $psrResponse = null) {
+        $this->psrResponse = $psrResponse;
         $this->responseHeader = new ResponseHeader($header);
 
         $statusLine = $this->responseHeader->getStatusLine();
@@ -51,6 +66,75 @@ class BoxResponse extends Response implements BoxResponseInterface
         }
     }
 
+    public function getProtocolVersion(): string {
+        return parent::getProtocolVersion();
+    }
+
+    public function withProtocolVersion(string $version): static {
+        $new = clone $this;
+        $new->setProtocolVersion($version);
+        return $new;
+    }
+
+    public function getHeaders(): array {
+        $headers = $this->headers->all();
+        // PSR-7 headers are array of strings
+        foreach ($headers as $name => $values) {
+            if (!is_array($values)) {
+                $headers[$name] = [$values];
+            }
+        }
+        return $headers;
+    }
+
+    public function getHeader(string $name): array {
+        $values = $this->headers->all(strtolower($name));
+        return is_array($values) ? $values : [$values];
+    }
+
+    public function getHeaderLine(string $name): string {
+        return implode(', ', $this->getHeader($name));
+    }
+
+    public function withHeader(string $name, $value): static {
+        $new = clone $this;
+        $new->headers->set($name, $value);
+        return $new;
+    }
+
+    public function withAddedHeader(string $name, $value): static {
+        $new = clone $this;
+        $new->headers->set($name, $value, false);
+        return $new;
+    }
+
+    public function withoutHeader(string $name): static {
+        $new = clone $this;
+        $new->headers->remove($name);
+        return $new;
+    }
+
+    public function getBody(): StreamInterface {
+        return Utils::streamFor($this->getContent());
+    }
+
+    public function withBody(StreamInterface $body): static {
+        $new = clone $this;
+        $new->setContent((string)$body);
+        return $new;
+    }
+
+    public function getReasonPhrase(): string {
+        return Response::$statusTexts[$this->getStatusCode()] ?? '';
+    }
+
+    public function withStatus(int $code, string $reasonPhrase = ''): static {
+        $new = clone $this;
+        $new->setStatusCode($code);
+        // Symfony Response handles reason phrase internally if we don't set it explicitly
+        return $new;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -58,37 +142,7 @@ class BoxResponse extends Response implements BoxResponseInterface
         return $this->responseHeader;
     }
 
-
     public function hasHeader(string $name): bool {
-        $headerLines = $this->getResponseHeader()->getHeaderLines();
-
-        $normalizedHeaderLineKeys = array_map('strtolower', array_keys($headerLines));
-
-        return in_array(strtolower($name), $normalizedHeaderLineKeys);
-    }
-
-    public function getHeader(string $name): array {
-        $headerLine = $this->getHeaderLine($name);
-        if ("" === $headerLine) {
-            $header = array();
-        } else {
-            if (!str_contains($headerLine, ",")) {
-                $header = array($headerLine);
-            } else {
-                $header = explode(",", $headerLine);
-            }
-        }
-
-        return $header;
-    }
-
-    public function getHeaderLine(string $name): string {
-        if (!$this->hasHeader($name)) {
-            return "";
-        }
-
-        $normalizedHeaderLines = array_change_key_case($this->getResponseHeader()->getHeaderLines());
-
-        return $normalizedHeaderLines[strtolower($name)];
+        return $this->headers->has($name);
     }
 }
