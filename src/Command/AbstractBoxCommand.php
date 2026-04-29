@@ -2,6 +2,8 @@
 
 namespace Box\Command;
 
+use Box\Client;
+use Box\Model\Connection\Connection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -10,6 +12,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Psr\Log\LoggerInterface;
 use Box\Logger\LoggerFactory;
 use Exception;
+use InvalidArgumentException;
 
 use Box\Contract\BoxClientFactoryInterface;
 
@@ -32,6 +35,35 @@ abstract class AbstractBoxCommand extends Command
             ->addOption('log-dir', null, InputOption::VALUE_REQUIRED, 'Different log directory')
             ->addOption('log-file', null, InputOption::VALUE_REQUIRED, 'Different base log file name (contains all levels)')
             ->addOption('json', null, InputOption::VALUE_NONE, 'Output result as JSON to console');
+
+        $this->configureTransportOption();
+    }
+
+    protected function configureTransportOption(): void
+    {
+        $this->addOption(
+            'transport',
+            null,
+            InputOption::VALUE_REQUIRED,
+            sprintf('The HTTP transport to use. Allowed values: %s, %s', Connection::TRANSPORT_CURL, Connection::TRANSPORT_GUZZLE)
+        );
+    }
+
+    protected function applyTransportOption(InputInterface $input, Client $client): void
+    {
+        $transport = $input->getOption('transport');
+        if (null === $transport) {
+            return;
+        }
+
+        $allowedTransports = [Connection::TRANSPORT_CURL, Connection::TRANSPORT_GUZZLE];
+        if (!in_array($transport, $allowedTransports, true)) {
+            throw new InvalidArgumentException(
+                sprintf('Invalid transport "%s". Allowed transports: %s.', $transport, implode(', ', $allowedTransports))
+            );
+        }
+
+        $client->getConnection()->setTransportName($transport);
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output): void

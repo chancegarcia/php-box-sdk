@@ -76,10 +76,16 @@ The CLI uses the SDK's internal logging services, configured via Monolog.
 - `var/log/box-sdk-error.log`: Errors and exceptions.
 
 ### Runtime Overrides
-Every command supports the following logging flags:
+Every command supports the following flags for logging and transport:
 - `--log-dir <dir>`: Change the target log directory.
 - `--log-file <name>`: Consolidate all levels into a single file.
 - `--log-config <path>`: Provide a custom PHP-based Monolog configuration.
+- `--transport <type>`: Choose the HTTP transport (`curl` or `guzzle`). `curl` is the default.
+
+Example using a specific transport:
+```bash
+bin/box-sdk box:file:upload /path/to/local/file.txt --transport=guzzle
+```
 
 ## 6. Customization
 

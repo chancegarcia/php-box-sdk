@@ -225,7 +225,7 @@ class Connection extends Model implements ConnectionInterface
 
         $options['headers'] = $headers;
 
-        if ($this->getTransportName() === self::TRANSPORT_GUZZLE) {
+        if (self::TRANSPORT_GUZZLE === $this->getTransportName()) {
             $options = array_merge($this->getGuzzleOptions(), $options);
             $options['verify'] = !$this->getDisableSslVerification();
         }
@@ -330,7 +330,7 @@ class Connection extends Model implements ConnectionInterface
                 'multipart' => [
                     [
                         'name' => 'file',
-                        'contents' => fopen($file, 'r'),
+                        'contents' => fopen($file, 'rb'),
                         'filename' => $filename,
                         'headers' => [
                             'Content-Type' => $mimeType

@@ -43,8 +43,9 @@ class FileUploadCommand extends AbstractBoxCommand
     {
         $io = new SymfonyStyle($input, $output);
         $this->logger->info('Starting file upload command');
-        
+
         $client = $this->clientFactory->createClient();
+        $this->applyTransportOption($input, $client);
 
         $filePath = $input->getArgument('file-path') ?? $this->configProvider->getUploadFilePath();
 
@@ -81,8 +82,7 @@ class FileUploadCommand extends AbstractBoxCommand
             $client->setConnectionAuthHeader($connection);
 
             $response = $connection->postFile(\Box\Model\File\File::UPLOAD_URI, $filePath, (int)$folderId);
-            $data = $response->getContent();
-            $result = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+            $result = $client->parseResponse($response);
 
             if ($input->getOption('json')) {
                 $this->outputFormatter->formatMasked($io, [

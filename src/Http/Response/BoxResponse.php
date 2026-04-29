@@ -66,6 +66,10 @@ class BoxResponse extends Response implements BoxResponseInterface
         }
     }
 
+    public function getPsrResponse(): ?PsrResponseInterface {
+        return $this->psrResponse;
+    }
+
     public function getProtocolVersion(): string {
         return parent::getProtocolVersion();
     }
