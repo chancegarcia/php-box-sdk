@@ -31,9 +31,9 @@ $outputFormatter = new \Box\Service\ConsoleOutputFormatter($jsonFormatter);
 $configNormalizer = new \Box\Logger\ConfigNormalizer();
 $loggerFactory = new \Box\Logger\LoggerFactory($configNormalizer);
 
-$application->add(new \Box\Command\AuthUrlCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
-$application->add(new \Box\Command\AuthExchangeCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
-$application->add(new \Box\Command\AuthRefreshCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
-$application->add(new \Box\Command\FileUploadCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->addCommand(new \Box\Command\AuthUrlCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->addCommand(new \Box\Command\AuthExchangeCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->addCommand(new \Box\Command\AuthRefreshCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->addCommand(new \Box\Command\FileUploadCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
 
 $application->run();

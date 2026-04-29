@@ -20,9 +20,10 @@
 namespace Box\Http\Response;
 
 use Box\Http\Response\Header\ResponseHeaderInterface;
+use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Symfony\Component\HttpFoundation\Response;
 
-interface BoxResponseInterface
+interface BoxResponseInterface extends PsrResponseInterface
 {
     /**
      * @return ResponseHeaderInterface

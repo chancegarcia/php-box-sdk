@@ -127,4 +127,18 @@ interface ConnectionInterface extends ModelInterface
      * @return array|BoxResponseInterface
      */
     public function postFile(string $uri, string $file, int $parentId = 0): array|BoxResponseInterface;
+
+    public function setAccessToken(?string $accessToken = null): void;
+
+    public function getAccessToken(): ?string;
+
+    public function setHeaders(array $headers = []): void;
+
+    public function getHeaders(): array;
+
+    public function addHeader(string $name, string $value): void;
+
+    public function setTransportName(string $transportName): void;
+
+    public function getTransportName(): string;
 }

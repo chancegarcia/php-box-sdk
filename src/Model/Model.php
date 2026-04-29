@@ -90,7 +90,7 @@ class Model extends BaseModel implements ModelInterface
      */
     public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null)
     {
-        $error = $data['error'];
+        $error = $data['error'] ?? 'unknown';
         if (null === $message)
         {
             $message = $error;
@@ -98,7 +98,7 @@ class Model extends BaseModel implements ModelInterface
 
         $exception = new BoxException($message);
         $exception->setError($error);
-        $exception->setErrorDescription($data['error_description']);
+        $exception->setErrorDescription($data['error_description'] ?? '');
 
         $context = [];
         if ($boxResponse instanceof BoxResponseInterface) {
@@ -113,6 +113,51 @@ class Model extends BaseModel implements ModelInterface
         }
 
         throw $exception;
+    }
+
+    /**
+     * @param BoxResponseInterface $response
+     * @return array
+     * @throws BoxException
+     */
+    protected function parseResponse(BoxResponseInterface $response): array
+    {
+        $content = $response->getContent();
+        $statusCode = $response->getStatusCode();
+
+        if ($response->isClientError() || $response->isServerError()) {
+            if (empty($content)) {
+                $message = sprintf('Box API request failed with HTTP %d', $statusCode);
+                $this->error([
+                    'error' => 'http_error_' . $statusCode,
+                    'error_description' => $message,
+                ], $message, $response);
+            }
+        }
+
+        if (empty($content)) {
+            return [];
+        }
+
+        try {
+            $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            $message = sprintf('Box API response JSON decode failed: %s', $e->getMessage());
+            $this->error([
+                'error' => 'json_decode_error',
+                'error_description' => $content,
+            ], $message, $response);
+        }
+
+        if (is_array($data) && array_key_exists('type', $data) && 'error' === $data['type']) {
+            $this->error($data, $data['message'] ?? null, $response);
+        }
+
+        if (is_array($data) && array_key_exists('error', $data)) {
+            $this->error($data, $data['error_description'] ?? null, $response);
+        }
+
+        return $data;
     }
 
     public function debug(string $message, array $context = []): void

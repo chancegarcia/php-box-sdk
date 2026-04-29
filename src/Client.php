@@ -32,6 +32,7 @@
 namespace Box;
 
 use Box\Exception\BoxException;
+use Box\Http\Response\BoxResponseInterface;
 use Box\Model\Collaboration\Collaboration;
 use Box\Model\Collaboration\CollaborationInterface;
 use Box\Model\Connection\Connection;
@@ -309,23 +310,7 @@ class Client extends Model
 
         $response = $connection->query($uri);
 
-        $data = $response->getContent();
-
-        $jsonData = json_decode($data, true);
-        /**
-         * API docs says error is thrown if folder does not exist or no access.
-         * no example of error to parse by. Have to assume success until can modify
-         */
-
-        /**
-         * error decoding json data
-         */
-        if (null === $jsonData)
-        {
-            $data['error'] = "unable to decode json data";
-            $data['error_description'] = 'try refreshing the token';
-            $this->error($data, null, $response);
-        }
+        $jsonData = $this->parseResponse($response);
 
         if (is_array($jsonData) && array_key_exists('type', $jsonData) && 'folder' === $jsonData['type'])
         {
@@ -358,23 +343,7 @@ class Client extends Model
 
         $response = $connection->query($uri);
 
-        $data = $response->getContent();
-
-        $jsonData = json_decode($data, true);
-        /**
-         * API docs says error is thrown if folder does not exist or no access.
-         * no example of error to parse by. Have to assume success until can modify
-         */
-
-        /**
-         * error decoding json data
-         */
-        if (null === $jsonData)
-        {
-            $data['error'] = "unable to decode json data";
-            $data['error_description'] = 'try refreshing the token';
-            $this->error($data, null, $response);
-        }
+        $jsonData = $this->parseResponse($response);
 
         $folder = $this->getNewFolder();
         $folder->mapBoxToClass($jsonData);
@@ -430,30 +399,7 @@ class Client extends Model
 
         $response = $connection->post($uri, $params, true);
 
-        $data = $response->getContent();
-
-        $jsonData = json_decode($data, true);
-
-        /**
-         * error decoding json data
-         */
-        if (null === $jsonData)
-        {
-            $data = array();
-            $data['error'] = "unable to decode json data";
-            $data['error_description'] = 'try refreshing the token';
-            $this->error($data, null, $response);
-        }
-        else
-        {
-            if (is_array($jsonData) && array_key_exists('type', $jsonData) && 'error' === $jsonData['type'])
-            {
-                $data = array();
-                $data['error'] = $jsonData['status'] . "  - " . $jsonData['code'];
-                $data['error_description'] = var_export($jsonData['context_info'], true);
-                $this->error($data, null, $response);
-            }
-        }
+        $jsonData = $this->parseResponse($response);
 
         $folder = $this->getNewFolder();
         $folder->mapBoxToClass($jsonData);
@@ -483,30 +429,7 @@ class Client extends Model
         $this->setConnectionAuthHeader($connection);
         $response = $connection->put($uri, $params, true);
 
-        $json = $response->getContent();
-
-        $data = json_decode($json, true);
-
-        /**
-         * error decoding json data
-         */
-        if (null === $data)
-        {
-            $errorData = array();
-            $errorData['error'] = "unable to decode json data";
-            $errorData['error_description'] = $data;
-            $this->error($errorData, null, $response);
-        }
-        else
-        {
-            if (is_array($data) && array_key_exists('type', $data) && 'error' === $data['type'])
-            {
-                $errorData = array();
-                $errorData['error'] = $data['status'] . "  - " . $data['code'];
-                $errorData['error_description'] = var_export($data['context_info'], true);
-                $this->error($errorData, null, $response);
-            }
-        }
+        $data = $this->parseResponse($response);
 
         return $data; // inconsistent? figure out what return is needed, if any
     }
@@ -533,36 +456,7 @@ class Client extends Model
 
         $response = $connection->query($uri);
 
-        $json = $response->getContent();
-
-        $data = json_decode($json, true);
-
-        // this can be refactored too...from copyBoxFolder
-        if (null === $data)
-        {
-            $data['error'] = "sdk_json_decode";
-            $data['error_description'] = "unable to decode or recursion level too deep";
-            $this->error($data, null, $response);
-        }
-        else
-        {
-            if (array_key_exists('error', $data))
-            {
-                $this->error($data, null, $response);
-            }
-            else
-            {
-                if (array_key_exists('type', $data) && 'error' === $data['type'])
-                {
-                    $data['error'] = "sdk_unknown";
-                    $ditto = $data;
-                    $data['error_description'] = $ditto;
-                    $this->error($data, null, $response);
-                }
-            }
-        }
-
-        return $data;
+        return $this->parseResponse($response);
     }
 
     /**
@@ -613,33 +507,7 @@ class Client extends Model
 
         $response = $connection->post($uri, $params, true);
 
-        $json = $response->getContent();
-
-        $data = json_decode($json, true);
-
-        if (null === $data)
-        {
-            $data['error'] = "sdk_json_decode";
-            $data['error_description'] = "unable to decode or recursion level too deep";
-            $this->error($data, null, $response);
-        }
-        else
-        {
-            if (array_key_exists('error', $data))
-            {
-                $this->error($data, null, $response);
-            }
-            else
-            {
-                if (array_key_exists('type', $data) && 'error' === $data['type'])
-                {
-                    $data['error'] = "sdk_unknown";
-                    $ditto = $data;
-                    $data['error_description'] = $ditto;
-                    $this->error($data, null, $response);
-                }
-            }
-        }
+        $data = $this->parseResponse($response);
 
         $collaboration = $this->getNewCollaboration();
         $collaboration->mapBoxToClass($data);
@@ -685,33 +553,7 @@ class Client extends Model
 
         $response = $connection->put($uri, $params, true);
 
-        $json = $response->getContent();
-
-        $data = json_decode($json, true);
-
-        if (null === $data)
-        {
-            $data['error'] = "sdk_json_decode";
-            $data['error_description'] = "unable to decode or recursion level too deep";
-            $this->error($data, null, $response);
-        }
-        else
-        {
-            if (array_key_exists('error', $data))
-            {
-                $this->error($data, null, $response);
-            }
-            else
-            {
-                if (array_key_exists('type', $data) && 'error' === $data['type'])
-                {
-                    $data['error'] = "sdk_unknown";
-                    $ditto = $data;
-                    $data['error_description'] = $ditto;
-                    $this->error($data);
-                }
-            }
-        }
+        $data = $this->parseResponse($response);
 
         $updatedFolder = $this->getNewFolder();
         $updatedFolder->mapBoxToClass($data);
@@ -773,37 +615,7 @@ class Client extends Model
         $response = $connection->post($uri, $params, true);
         $this->debug("response header: " . var_export($response->getResponseHeader(), true), [__METHOD__, __LINE__]);
 
-        $json = $response->getContent();
-        $this->debug("response content (json expected): " . var_export($json, true), [__METHOD__, __LINE__]);
-
-        $data = json_decode($json, true);
-        $originalDecodeData = $data;
-        $this->debug("original decoded data: " . var_export($originalDecodeData, true), [__METHOD__, __LINE__]);
-
-        if (null === $data)
-        {
-
-            $data['error'] = "sdk_json_decode";
-            $data['error_description'] = "unable to decode or recursion level too deep";
-            $this->error($data, null, $response);
-        }
-        else
-        {
-            if (array_key_exists('error', $data))
-            {
-                $this->error($data, null, $response);
-            }
-            else
-            {
-                if (array_key_exists('type', $data) && 'error' === $data['type'])
-                {
-                    $data['error'] = "sdk_unknown";
-                    $ditto = $data;
-                    $data['error_description'] = $ditto;
-                    $this->error($data, null, $response);
-                }
-            }
-        }
+        $data = $this->parseResponse($response);
 
         $copy = $this->getNewFolder();
         $copy->mapBoxToClass($data);
@@ -817,6 +629,16 @@ class Client extends Model
     }
 
     // @todo make multiple file upload
+
+    /**
+     * @param BoxResponseInterface $response
+     * @return array
+     * @throws BoxException
+     */
+    public function parseResponse(BoxResponseInterface $response): array
+    {
+        return parent::parseResponse($response);
+    }
 
     /**
      * @throws Exception
@@ -839,19 +661,7 @@ class Client extends Model
 
         $response = $connection->postFile($uri, $file);
 
-        $uploaded = $response->getContent();
-
-        $data = json_decode($uploaded, true, 512, JSON_THROW_ON_ERROR);
-
-        if (is_array($data) && array_key_exists('type', $data) && 'error' === $data['type'])
-        {
-            $data['error'] = "sdk_unknown";
-            $ditto = $data;
-            $data['error_description'] = $ditto;
-            $this->error($data);
-        }
-
-        return $data;
+        return $this->parseResponse($response);
     }
 
     public function getAccessToken()
@@ -865,23 +675,7 @@ class Client extends Model
         $redirectUri = $this->getRedirectUri();
 
         $response = $connection->post(self::TOKEN_URI, $params);
-        $json = $response->getContent();
-
-        $data = json_decode($json, true);
-
-        if (null === $data)
-        {
-            $data['error'] = "sdk_json_decode";
-            $data['error_description'] = "unable to decode or recursion level too deep";
-            $this->error($data);
-        }
-        else
-        {
-            if (array_key_exists('error', $data))
-            {
-                $this->error($data);
-            }
-        }
+        $data = $this->parseResponse($response);
 
         $token = $this->getToken();
         $this->setTokenData($token, $data);
@@ -918,23 +712,8 @@ class Client extends Model
         $connection = $this->getConnection();
 
         $response = $connection->post(self::TOKEN_URI, $params);
-        $json = $response->getContent();
 
-        $data = json_decode($json, true);
-
-        if (null === $data)
-        {
-            $data['error'] = "sdk_json_decode";
-            $data['error_description'] = "unable to decode or recursion level too deep";
-            $this->error($data, null, $response);
-        }
-        else
-        {
-            if (array_key_exists('error', $data))
-            {
-                $this->error($data, null, $response);
-            }
-        }
+        $data = $this->parseResponse($response);
 
         $this->setTokenData($token, $data);
 
@@ -977,9 +756,8 @@ class Client extends Model
         $connection = $this->getConnection();
 
         $response = $connection->post(self::REVOKE_URI, $params);
-        $json = $response->getContent();
-        // @todo add error handling for null data
-        return json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+
+        return $this->parseResponse($response);
     }
 
     public function auth()
@@ -1038,7 +816,10 @@ class Client extends Model
              throw new BoxException('BOX_ACCESS_TOKEN is required for upload.', BoxException::INVALID_INPUT);
         }
 
-        $headers = array($authorizationHeader);
+        // SYNC: ensure connection has the access token
+        if ($connection instanceof ConnectionInterface) {
+            $connection->setAccessToken($this->getToken()->getAccessToken());
+        }
 
         if (null !== $additionalHeaders && !is_array($additionalHeaders))
         {
@@ -1047,11 +828,26 @@ class Client extends Model
 
         if (is_array($additionalHeaders))
         {
-            $headers = array_merge($headers, $additionalHeaders);
+            foreach ($additionalHeaders as $name => $value) {
+                if (is_int($name)) {
+                    // if it's "Name: Value" string
+                    $parts = explode(':', $value, 2);
+                    if (count($parts) === 2) {
+                        $connection->addHeader(trim($parts[0]), trim($parts[1]));
+                    }
+                } else {
+                    $connection->addHeader($name, $value);
+                }
+            }
         }
 
         // header opt will require a merge with other headers to not overwrite.
         // @todo refactor to allow additional headers with auth header
+        // For compatibility, we still call setCurlOpts if it's a CurlTransport or if someone depends on it
+        $headers = array($authorizationHeader);
+        if (is_array($additionalHeaders)) {
+            $headers = array_merge($headers, $additionalHeaders);
+        }
         $connection->setCurlOpts(array('CURLOPT_HTTPHEADER' => $headers));
     }
 
@@ -1062,7 +858,9 @@ class Client extends Model
     public function setClientId($clientId = null): void
     {
         $this->clientId = $clientId;
-
+        if ($this->connection instanceof ConnectionInterface) {
+            $this->connection->setClientId($clientId);
+        }
     }
 
     public function getClientId()
@@ -1077,7 +875,9 @@ class Client extends Model
     public function setClientSecret($clientSecret = null): void
     {
         $this->clientSecret = $clientSecret;
-
+        if ($this->connection instanceof ConnectionInterface) {
+            $this->connection->setClientSecret($clientSecret);
+        }
     }
 
     public function getClientSecret()
@@ -1092,7 +892,9 @@ class Client extends Model
     public function setRedirectUri($redirectUri = null): void
     {
         $this->redirectUri = $redirectUri;
-
+        if ($this->connection instanceof ConnectionInterface) {
+            $this->connection->setRedirectUri($redirectUri);
+        }
     }
 
     public function getRedirectUri()
@@ -1190,9 +992,16 @@ class Client extends Model
         if (null === $this->connection)
         {
             $connectionClass = $this->getConnectionClass();
+            /** @var ConnectionInterface $connection */
             $connection = new $connectionClass();
             if ($this->logger) {
                 $connection->setLogger($this->logger);
+            }
+            $connection->setClientId($this->getClientId());
+            $connection->setClientSecret($this->getClientSecret());
+            $connection->setRedirectUri($this->getRedirectUri());
+            if ($this->token) {
+                $connection->setAccessToken($this->token->getAccessToken());
             }
             $this->connection = $connection;
         }
@@ -1416,31 +1225,7 @@ class Client extends Model
 
         $response = $connection->query($uri);
 
-        $json = $response->getContent();
-
-        $data = json_decode($json, true);
-
-        if (null === $data)
-        {
-            $data['error'] = "sdk_json_decode";
-            $data['error_description'] = "unable to decode or recursion level too deep";
-            $this->error($data);
-        }
-
-        if (array_key_exists('error', $data))
-        {
-            $this->error($data);
-        }
-
-        if (array_key_exists('type', $data) && 'error' === $data['type'])
-        {
-            $data['error'] = "sdk_unknown";
-            $ditto = $data;
-            $data['error_description'] = $ditto;
-            $this->error($data);
-        }
-
-        return $data;
+        return $this->parseResponse($response);
     }
 
     /**

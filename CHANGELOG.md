@@ -3,30 +3,31 @@
 ## [v 0.11.0]
 
 ### Summary
-- **Modernized Dependency Stack:** Updated requirements to PHP 8.4+ and transitioned to Symfony 7.4/8.0 components.
-- **New Command-Line Tool:** Introduced `bin/box-sdk`, a Symfony-based CLI for interactive API exploration and manual testing.
-- **Improved Logging:** Integrated a robust logging system based on PSR-3 and Monolog, with automatic propagation to internal models.
-- **Refactored Architecture:** Streamlined the internal directory structure and namespace mapping for better PSR-4 compliance and library integration.
-- **Enhanced Documentation:** Added comprehensive guides for programmatic usage and CLI operations.
+- **Modernized PHP Requirement**: The SDK now requires PHP 8.4 or higher, leveraging the latest language features for better performance and type safety.
+- **Streamlined Namespace Structure**: Simplified the project structure and namespaces (e.g., `Box\Client` instead of `Box\Model\Client\Client`), making the SDK more intuitive to use.
+- **New CLI Test Harness**: Introduced a powerful command-line tool (`bin/box-sdk`) for testing API interactions, managing authentication, and uploading files without writing code.
+- **Enhanced Logging and Observability**: Integrated Monolog support, allowing developers to easily plug in and configure detailed logging for all API interactions.
+- **Pluggable HTTP Transports**: Added support for both Guzzle and native Curl transports, giving developers more control over how HTTP requests are handled.
 
 ### Developer Details
-- **Namespace Realignment:** The `Box\` namespace now maps directly to `src/` (previously `src/Box/`). This is a structural change affecting all class imports.
-- **CLI Harness:** New commands for OAuth2 workflows (`auth:url`, `auth:exchange-code`, `auth:refresh-token`) and file operations (`file:upload`).
-- **Logging Integration:**
-    - Added `LoggerFactory` and `ConfigNormalizer` for centralized log management.
-    - SDK-wide support for `LoggerAwareInterface`.
-    - Internal models now automatically inherit loggers from the main `Client`.
-- **API Client:** Introduced `Box\Client` as a high-level facade for interacting with Box API services.
-- **Environment Configuration:** Support for `.env` files and `EnvConfigProvider` to manage credentials and settings for the CLI harness.
-- **Service Layer:** Added `BoxClientFactory`, `BoxResponseParser`, and various service-level interfaces to decouple transport from business logic.
+- **Namespace Flattening**: The `Box\` namespace now maps directly to `src/`. This structural change affects all class imports.
+- **Authentication Improvements**: Added `auth:url`, `auth:exchange-code`, and `auth:refresh-token` commands to the new CLI tool to facilitate OAuth2 flows.
+- **HTTP Layer**:
+    - Introduced `TransportInterface` to decouple HTTP execution from client logic.
+    - Added `GuzzleTransport` and `CurlTransport` implementations.
+    - `BoxResponse` has been rewritten to provide better access to headers and status information.
+- **Configuration**:
+    - Introduced `EnvConfigProvider` for environment-variable based configuration.
+    - Added a central `config/monolog.php` for logging configuration.
+- **Service Layer**: Added `BoxClientFactory` and various service-level interfaces to decouple transport from business logic.
 
 ### Breaking Changes
-- **PHP Version:** Minimum required version is now **8.4**. Integrations running on older PHP versions will fail to install.
-- **Namespace & Pathing:** The directory shift from `src/Box/` to `src/` requires updating all `use` statements or autoloader configurations.
-- **Dependency Upgrades:** Significant bumps to `psr/log` (v3) and `symfony/*` (v7.4/v8) may conflict with host applications using older versions of these libraries.
+- **PHP 8.4 Required**: Versions of PHP older than 8.4 are no longer supported.
+- **Class Renames/Moves**: Almost every class has been moved or renamed due to the namespace reorganization. The primary entry point is now `Box\Client`.
+- **Dependency Updates**: Updated major versions of Symfony components (v7/v8) and PSR log (v3).
 
 ### Migration Notes
-- **Update Autoloading:** Ensure your `composer.json` or custom autoloader reflects that `Box\` classes are now located directly under `src/`.
-- **Configuration:** Use the new `.env.dist` template to configure `BOX_CLIENT_ID` and `BOX_CLIENT_SECRET` for use with the CLI or `EnvConfigProvider`.
-- **Logger Injection:** If you use a custom logger, inject it directly into the `Client` via `setLogger()`. It will be automatically propagated to internal components.
-- **Dependency Management:** Review your project's dependency tree for potential conflicts with Symfony 7.4/8.0 or PSR-3 v3.
+- **Update PHP Version**: Ensure your environment is running PHP 8.4+.
+- **Update Namespaces**: Update all imports from `Box\Model\Client\Client` to `Box\Client`. Other models and services have similarly moved from `Box\Box\...` to `Box\...`.
+- **Update Autoloading**: If you have custom autoloading, reflect that `Box\` classes are now located directly under `src/`.
+- **Configuration**: Use the new `.env.dist` template to configure `BOX_CLIENT_ID` and `BOX_CLIENT_SECRET` for use with the CLI or `EnvConfigProvider`.
