@@ -37,8 +37,8 @@ namespace Box\Connection;
 
 use Box\Exception\BoxException;
 use Box\Factory\AbstractFactory;
-use Box\Model\Connection\ConnectionInterface;
-use Box\Model\Connection\Token\TokenInterface;
+use Box\Connection\ConnectionInterface;
+use Box\Connection\Token\TokenInterface;
 
 class ConnectionFactory extends AbstractFactory
 {
@@ -49,7 +49,7 @@ class ConnectionFactory extends AbstractFactory
      */
     static public function getConnection($options = null)
     {
-        return parent::get('Box\Model\Connection\Connection', $options);
+        return parent::get('Box\Connection\Connection', $options);
     }
 
     /**
@@ -72,7 +72,7 @@ class ConnectionFactory extends AbstractFactory
 
         if (!$options['token'] instanceof TokenInterface)
         {
-            throw new BoxException('instance of Box\Model\Connection\Token\TokenInterface expected');
+            throw new BoxException('instance of Box\Connection\Token\TokenInterface expected');
         }
 
         /**

@@ -39,14 +39,22 @@ $authUrl = $client->buildAuthQuery();
 After the user authorizes and is redirected back to your site with a `code`, exchange it for a token:
 ```php
 $client->setAuthorizationCode($_GET['code']);
-$token = $client->getAccessToken(); // Returns a \Box\Model\Connection\Token\Token object
+$token = $client->getAccessToken(); // Returns a \Box\Connection\Token\Token object
 ```
 
-### 3. File Upload
-Once you have an active token, you can upload files:
+### 3. File and Folder Operations
+Once you have an active token, you can interact with Box resources:
 ```php
+use Box\File\File;
+use Box\Folder\Folder;
+
 $client->setToken($token);
+
+// Upload a file
 $response = $client->uploadFileToBox('/path/to/local/file.txt', '0'); // '0' is the root folder ID
+
+// Get root folder
+$rootFolder = $client->getFolder();
 ```
 
 ## Advanced Documentation
@@ -62,6 +70,7 @@ For detailed setup instructions, available commands, and logging options, see th
 ---
 
 **See also:**
+- [Upgrading from 0.10.x to 0.11.0](docs/upgrading-0.10-to-0.11.md)
 - [Programmatic Usage Guide](docs/programmatic-usage.md)
 - [CLI Test Harness Guide](docs/cli-test-harness.md)
 - [Project Roadmap](docs/roadmap.md)

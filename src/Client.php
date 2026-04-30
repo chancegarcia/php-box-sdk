@@ -31,27 +31,27 @@
 
 namespace Box;
 
+use Box\Collaboration\Collaboration;
+use Box\Collaboration\CollaborationInterface;
+use Box\Connection\Connection;
+use Box\Connection\ConnectionInterface;
+use Box\Connection\Token\Token;
+use Box\Connection\Token\TokenInterface;
 use Box\Exception\BoxException;
+use Box\File\File;
+use Box\File\FileInterface;
+use Box\Folder\Folder;
+use Box\Folder\FolderInterface;
+use Box\Group\GroupInterface;
 use Box\Http\Response\BoxResponseInterface;
-use Box\Model\Collaboration\Collaboration;
-use Box\Model\Collaboration\CollaborationInterface;
-use Box\Model\Connection\Connection;
-use Box\Model\Connection\ConnectionInterface;
-use Box\Model\Connection\Token\Token;
-use Box\Model\Connection\Token\TokenInterface;
-use Box\Model\File\File;
-use Box\Model\File\FileInterface;
-use Box\Model\Folder\Folder;
-use Box\Model\Folder\FolderInterface;
-use Box\Model\Group\GroupInterface;
 use Box\Model\Model;
 use Box\Model\ModelInterface;
-use Box\Model\User\UserInterface;
+use Box\User\UserInterface;
 use JsonException;
 
 /**
  * Class Client
- * @package Box\Model
+ * @package Box
  */
 class Client extends Model
 {
@@ -100,13 +100,13 @@ class Client extends Model
     /**
      * allow for class injection by using an interface for these classes
      */
-    protected string $folderClass = 'Box\Model\Folder\Folder';
-    protected string $fileClass = 'Box\Model\File\File';
-    protected string $connectionClass = 'Box\Model\Connection\Connection';
-    protected string $tokenClass = 'Box\Model\Connection\Token\Token';
-    protected string $collaborationClass = 'Box\Model\Collaboration\Collaboration';
-    protected string $userClass = 'Box\Model\User\User';
-    protected string $groupClass = 'Box\Model\Group\Group';
+    protected string $folderClass = \Box\Folder\Folder::class;
+    protected string $fileClass = \Box\File\File::class;
+    protected string $connectionClass = \Box\Connection\Connection::class;
+    protected string $tokenClass = \Box\Connection\Token\Token::class;
+    protected string $collaborationClass = \Box\Collaboration\Collaboration::class;
+    protected string $userClass = \Box\User\User::class;
+    protected string $groupClass = \Box\Group\Group::class;
 
 
     /**
@@ -122,7 +122,7 @@ class Client extends Model
     /**
      * @param mixed $options
      *
-     * @return \Box\Model\User\User|\Box\Model\User\UserInterface
+     * @return \Box\User\User|\Box\User\UserInterface
      */
     public function getNewUser($options = null)
     {
@@ -132,7 +132,7 @@ class Client extends Model
     /**
      * @param mixed $options
      *
-     * @return \Box\Model\Group\Group|\Box\Model\Group\GroupInterface
+     * @return \Box\Group\Group|\Box\Group\GroupInterface
      */
     public function getNewGroup($options = null)
     {
@@ -142,7 +142,7 @@ class Client extends Model
     /**
      * @param mixed $options
      *
-     * @return \Box\Model\Collaboration\Collaboration|\Box\Model\Collaboration\CollaborationInterface
+     * @return \Box\Collaboration\Collaboration|\Box\Collaboration\CollaborationInterface
      */
     public function getNewCollaboration($options = null)
     {
@@ -352,11 +352,11 @@ class Client extends Model
     }
 
     /**
-     * @param \Box\Model\Folder\Folder|\Box\Model\Folder\FolderInterface $folder
+     * @param \Box\Folder\Folder|\Box\Folder\FolderInterface $folder
      * @param int $limit
      * @param int $offset
      *
-     * @return \Box\Model\Folder\Folder|\Box\Model\Folder\FolderInterface
+     * @return \Box\Folder\Folder|\Box\Folder\FolderInterface
      */
     public function getBoxFolderItems($folder, $limit = 100, $offset = 0)
     {
@@ -435,7 +435,7 @@ class Client extends Model
     }
 
     /**
-     * @param null|\Box\Model\Folder\Folder|\Box\Model\Folder\FolderInterface $folder
+     * @param null|\Box\Folder\Folder|\Box\Folder\FolderInterface $folder
      *
      * @return mixed raw json data as an array
      * @throws BoxException
@@ -460,12 +460,12 @@ class Client extends Model
     }
 
     /**
-     * @param null|\Box\Model\Folder\Folder|\Box\Model\Folder\FolderInterface $folder
-     * @param null|\Box\Model\User\User|\Box\Model\User\UserInterface|\Box\Model\Group\GroupInterface $collaborator
+     * @param null|\Box\Folder\Folder|\Box\Folder\FolderInterface $folder
+     * @param null|\Box\User\User|\Box\User\UserInterface|\Box\Group\GroupInterface $collaborator
      * @param string $role see {@link http://developers.box.com/docs/#collaborations box documentation for all possible
      *     roles} default is viewer
      *
-     * @return \Box\Model\Collaboration\Collaboration|\Box\Model\Collaboration\CollaborationInterface
+     * @return \Box\Collaboration\Collaboration|\Box\Collaboration\CollaborationInterface
      * @throws BoxException
      */
     public function addCollaboration($folder = null, $collaborator = null, $role = 'viewer')
@@ -516,11 +516,11 @@ class Client extends Model
     }
 
     /**
-     * @param null|\Box\Model\Folder\Folder|\Box\Model\Folder\FolderInterface $folder
+     * @param null|\Box\Folder\Folder|\Box\Folder\FolderInterface $folder
      * @param array|null shared link options with
      * default shared link set to collaborator access, no unshared time or permissions set to
      *
-     * @return \Box\Model\Folder\Folder|\Box\Model\Folder\FolderInterface
+     * @return \Box\Folder\Folder|\Box\Folder\FolderInterface
      * @throws BoxException
      */
     public function createSharedLinkForFolder($folder = null, $params = null)
@@ -567,7 +567,7 @@ class Client extends Model
      * @param string $name
      * @param bool $addToFolders
      *
-     * @return \Box\Model\Folder\Folder|\Box\Model\Folder\FolderInterface
+     * @return \Box\Folder\Folder|\Box\Folder\FolderInterface
      * @throws Exception*@throws BoxException
      * @throws BoxException
      * @internal param $destinationId
@@ -685,7 +685,7 @@ class Client extends Model
     }
 
     /**
-     * @return \Box\Model\Connection\Token\Token|\Box\Model\Connection\Token\TokenInterface
+     * @return \Box\Connection\Token\Token|\Box\Connection\Token\TokenInterface
      */
     public function refreshToken()
     {
@@ -730,7 +730,7 @@ class Client extends Model
     }
 
     /**
-     * @param $token \Box\Model\Connection\Token\TokenInterface
+     * @param $token \Box\Connection\Token\TokenInterface
      * @param $data
      */
     public function setTokenData($token, $data): void
@@ -742,7 +742,7 @@ class Client extends Model
     }
 
     /**
-     * @param $token \Box\Model\Connection\Token\TokenInterface|\Box\Model\Connection\Token\Token
+     * @param $token \Box\Connection\Token\TokenInterface|\Box\Connection\Token\Token
      *
      * @return mixed
      */
@@ -1190,7 +1190,7 @@ class Client extends Model
     }
 
     /**
-     * @param \Box\Model\Folder\Folder|\Box\Model\Folder\FolderInterface $root
+     * @param \Box\Folder\Folder|\Box\Folder\FolderInterface $root
      *
      * @return \Box\Model\Client\Client
      */
@@ -1205,7 +1205,7 @@ class Client extends Model
     }
 
     /**
-     * @return \Box\Model\Folder\Folder|\Box\Model\Folder\FolderInterface
+     * @return \Box\Folder\Folder|\Box\Folder\FolderInterface
      */
     public function getRoot()
     {

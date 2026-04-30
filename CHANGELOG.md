@@ -31,3 +31,4 @@
 - **Update Namespaces**: Update all imports from `Box\Model\Client\Client` to `Box\Client`. Other models and services have similarly moved from `Box\Box\...` to `Box\...`.
 - **Update Autoloading**: If you have custom autoloading, reflect that `Box\` classes are now located directly under `src/`.
 - **Configuration**: Use the new `.env.dist` template to configure `BOX_CLIENT_ID` and `BOX_CLIENT_SECRET` for use with the CLI or `EnvConfigProvider`.
+- **Upgrade Guide**: See the detailed [Upgrading from 0.10.x to 0.11.0](docs/upgrading-0.10-to-0.11.md) guide for more information.

@@ -54,7 +54,7 @@ The `Box\Client` is stateful regarding its configuration (Client ID, Secret) and
 Always fail fast if required configuration is missing. Use environment variables or secure secret management to inject `BOX_CLIENT_ID` and `BOX_CLIENT_SECRET`.
 
 ### Token Persistence
-The SDK provides a `Box\Model\Connection\Token\Token` model. Your application is responsible for:
+The SDK provides a `Box\Connection\Token\Token` model. Your application is responsible for:
 1. **Exchanging** the authorization code for an initial token.
 2. **Persisting** the serialized token data (access token, refresh token, expiration).
 3. **Reloading** the token into the `Client` for subsequent requests.
@@ -122,7 +122,7 @@ To maintain a clean boundary:
 ### Service Wrapper
 ```php
 use Box\Client;
-use Box\Model\Connection\Token\Token;
+use Box\Connection\Token\Token;
 
 class BoxIntegration
 {

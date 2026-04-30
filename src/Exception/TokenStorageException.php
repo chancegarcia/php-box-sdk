@@ -35,7 +35,7 @@
 
 namespace Box\Exception;
 
-use Box\Model\Connection\Token\TokenInterface;
+use Box\Connection\Token\TokenInterface;
 use Box\Storage\Token\BaseTokenStorageInterface;
 
 class TokenStorageException extends \Exception

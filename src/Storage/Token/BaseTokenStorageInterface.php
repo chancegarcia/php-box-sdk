@@ -36,21 +36,21 @@
 
 namespace Box\Storage\Token;
 
-use Box\Model\Connection\Token\TokenInterface;
+use Box\Connection\Token\TokenInterface;
 
 interface BaseTokenStorageInterface
 {
     /**
      * add/insert/store token to storage
      *
-     * @param \Box\Model\Connection\Token\TokenInterface $token
+     * @param \Box\Connection\Token\TokenInterface $token
      *
      * @return bool return value is success of storage
      */
     public function storeToken(TokenInterface $token);
 
     /**
-     * @param \Box\Model\Connection\Token\TokenInterface $token
+     * @param \Box\Connection\Token\TokenInterface $token
      * @param mixed $tokenUpdateClause update context such as a where clause
      *
      * @return bool return value is success of storage
@@ -81,7 +81,7 @@ interface BaseTokenStorageInterface
     /**
      * remove token from storage
      *
-     * @param \Box\Model\Connection\Token\TokenInterface $token
+     * @param \Box\Connection\Token\TokenInterface $token
      * @param null $tokenContext
      *
      */

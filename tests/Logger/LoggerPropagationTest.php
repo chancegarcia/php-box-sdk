@@ -6,9 +6,9 @@ use Box\Client;
 use Box\Contract\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Service\BoxClientFactory;
-use Box\Model\Connection\Connection;
-use Box\Model\Folder\Folder;
-use Box\Model\Collaboration\Collaboration;
+use Box\Connection\Connection;
+use Box\Folder\Folder;
+use Box\Collaboration\Collaboration;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 

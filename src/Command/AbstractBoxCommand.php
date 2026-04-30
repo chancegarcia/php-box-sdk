@@ -3,7 +3,7 @@
 namespace Box\Command;
 
 use Box\Client;
-use Box\Model\Connection\Connection;
+use Box\Connection\Connection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

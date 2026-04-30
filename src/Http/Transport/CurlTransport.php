@@ -4,7 +4,7 @@ namespace Box\Http\Transport;
 
 use Box\Http\Response\BoxResponse;
 use Box\Http\Response\BoxResponseInterface;
-use Box\Model\Connection\ConnectionInterface;
+use Box\Connection\ConnectionInterface;
 
 class CurlTransport implements TransportInterface
 {

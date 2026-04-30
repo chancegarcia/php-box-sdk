@@ -35,7 +35,7 @@
 
 namespace Box\Storage\Token\Container;
 
-use Box\Model\Connection\Token\TokenInterface;
+use Box\Connection\Token\TokenInterface;
 use Box\Storage\Token\BaseTokenStorageInterface;
 
 class TokenStorageContainer implements BaseTokenStorageInterface
@@ -94,7 +94,7 @@ class TokenStorageContainer implements BaseTokenStorageInterface
     /**
      * remove token from storage
      *
-     * @param \Box\Model\Connection\Token\TokenInterface $token
+     * @param \Box\Connection\Token\TokenInterface $token
      * @param null $tokenContext
      *
      */

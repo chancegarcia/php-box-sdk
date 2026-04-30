@@ -35,7 +35,7 @@
 
 namespace Box\Item\SharedLink\Permissions;
 
-use Box\Model\Item\SharedLink\Permissions\PermissionsInterface;
+use Box\Item\SharedLink\Permissions\PermissionsInterface;
 use Box\Model\Model;
 
 class Permissions extends Model implements PermissionsInterface

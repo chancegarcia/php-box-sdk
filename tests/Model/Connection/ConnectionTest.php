@@ -3,7 +3,7 @@
 namespace Box\Tests\Model\Connection;
 
 use Box\Http\Response\BoxResponseInterface;
-use Box\Model\Connection\Connection;
+use Box\Connection\Connection;
 use PHPUnit\Framework\TestCase;
 
 class ConnectionTest extends TestCase

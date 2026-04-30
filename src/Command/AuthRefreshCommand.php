@@ -5,7 +5,7 @@ namespace Box\Command;
 use Box\Contract\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Logger\LoggerFactory;
-use Box\Model\Connection\Token\Token;
+use Box\Connection\Token\Token;
 use Box\Service\ConsoleOutputFormatter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

@@ -35,8 +35,8 @@
 
 namespace Box\Item\SharedLink;
 
-use Box\Model\Item\SharedLink\Permissions\PermissionsInterface;
-use Box\Model\Item\SharedLink\SharedLinkInterface;
+use Box\Item\SharedLink\Permissions\PermissionsInterface;
+use Box\Item\SharedLink\SharedLinkInterface;
 use Box\Model\Model;
 
 class SharedLink extends Model implements SharedLinkInterface

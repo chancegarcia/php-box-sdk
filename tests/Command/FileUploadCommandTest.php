@@ -8,7 +8,7 @@ use Box\Contract\ConfigProviderInterface;
 use Box\Client;
 use Box\Logger\ConfigNormalizer;
 use Box\Logger\LoggerFactory;
-use Box\Model\Connection\Connection;
+use Box\Connection\Connection;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Service\ConsoleOutputFormatter;
 use Box\Service\DefaultJsonFormatter;

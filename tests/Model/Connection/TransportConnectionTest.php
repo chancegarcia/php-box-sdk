@@ -3,7 +3,7 @@
 namespace Box\Tests\Model\Connection;
 
 use Box\Http\Response\BoxResponseInterface;
-use Box\Model\Connection\Connection;
+use Box\Connection\Connection;
 use Box\Http\Transport\TransportInterface;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Handler\MockHandler;

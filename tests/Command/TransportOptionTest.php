@@ -8,8 +8,8 @@ use Box\Contract\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Logger\ConfigNormalizer;
 use Box\Logger\LoggerFactory;
-use Box\Model\Connection\Connection;
-use Box\Model\Connection\ConnectionInterface;
+use Box\Connection\Connection;
+use Box\Connection\ConnectionInterface;
 use Box\Service\ConsoleOutputFormatter;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
@@ -52,7 +52,7 @@ class TransportOptionTest extends TestCase
     {
         $this->configProvider->method('getRefreshToken')->willReturn('some-token');
         
-        $token = $this->createMock(\Box\Model\Connection\Token\TokenInterface::class);
+        $token = $this->createMock(\Box\Connection\Token\TokenInterface::class);
         $token->method('toBoxArray')->willReturn([]);
         $this->client->method('refreshToken')->willReturn($token);
 
@@ -74,7 +74,7 @@ class TransportOptionTest extends TestCase
     {
         $this->configProvider->method('getRefreshToken')->willReturn('some-token');
 
-        $token = $this->createMock(\Box\Model\Connection\Token\TokenInterface::class);
+        $token = $this->createMock(\Box\Connection\Token\TokenInterface::class);
         $token->method('toBoxArray')->willReturn([]);
         $this->client->method('refreshToken')->willReturn($token);
         
@@ -110,7 +110,7 @@ class TransportOptionTest extends TestCase
     {
         $this->configProvider->method('getRefreshToken')->willReturn('some-token');
 
-        $token = $this->createMock(\Box\Model\Connection\Token\TokenInterface::class);
+        $token = $this->createMock(\Box\Connection\Token\TokenInterface::class);
         $token->method('toBoxArray')->willReturn([]);
         $this->client->method('refreshToken')->willReturn($token);
         

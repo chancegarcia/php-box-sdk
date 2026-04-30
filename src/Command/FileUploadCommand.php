@@ -5,7 +5,7 @@ namespace Box\Command;
 use Box\Contract\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Logger\LoggerFactory;
-use Box\Model\Connection\Token\Token;
+use Box\Connection\Token\Token;
 use Box\Service\ConsoleOutputFormatter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -81,7 +81,7 @@ class FileUploadCommand extends AbstractBoxCommand
             $connection = $client->getConnection();
             $client->setConnectionAuthHeader($connection);
 
-            $response = $connection->postFile(\Box\Model\File\File::UPLOAD_URI, $filePath, (int)$folderId);
+            $response = $connection->postFile(\Box\File\File::UPLOAD_URI, $filePath, (int)$folderId);
             $result = $client->parseResponse($response);
 
             if ($input->getOption('json')) {

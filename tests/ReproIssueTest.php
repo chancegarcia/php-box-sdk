@@ -4,8 +4,8 @@ namespace Box\Tests;
 
 use Box\Client;
 use Box\Http\Response\BoxResponseInterface;
-use Box\Model\Connection\Connection;
-use Box\Model\Connection\Token\Token;
+use Box\Connection\Connection;
+use Box\Connection\Token\Token;
 use Box\Exception\BoxException;
 use PHPUnit\Framework\TestCase;
 

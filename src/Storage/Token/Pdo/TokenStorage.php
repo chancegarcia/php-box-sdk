@@ -35,8 +35,8 @@
 
 namespace Box\Storage\Token\Pdo;
 
-use Box\Model\Connection\Token\Token;
-use Box\Model\Connection\Token\TokenInterface;
+use Box\Connection\Token\Token;
+use Box\Connection\Token\TokenInterface;
 use PDO;
 
 /**
@@ -360,7 +360,7 @@ class TokenStorage implements TokenStorageInterface
     /**
      * remove token from storage
      *
-     * @param \Box\Model\Connection\Token\TokenInterface $token
+     * @param \Box\Connection\Token\TokenInterface $token
      * @param null $tokenContext
      *
      */

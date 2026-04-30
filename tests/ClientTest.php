@@ -4,12 +4,12 @@ namespace Box\Tests;
 
 use Box\Client;
 use Box\Http\Response\BoxResponseInterface;
-use Box\Model\Connection\Connection;
-use Box\Model\Connection\Token\Token;
-use Box\Model\Folder\Folder;
-use Box\Model\Collaboration\Collaboration;
-use Box\Model\User\User;
-use Box\Model\Group\Group;
+use Box\Connection\Connection;
+use Box\Connection\Token\Token;
+use Box\Folder\Folder;
+use Box\Collaboration\Collaboration;
+use Box\User\User;
+use Box\Group\Group;
 use Box\Exception\BoxException;
 use JsonException;
 use PHPUnit\Framework\TestCase;
