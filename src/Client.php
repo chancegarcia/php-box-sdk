@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Client
@@ -56,10 +57,10 @@ use JsonException;
  */
 class Client extends Model
 {
-    CONST AUTH_URI = "https://account.box.com/api/oauth2/authorize";
-    CONST TOKEN_URI = "https://www.box.com/api/oauth2/token";
-    CONST REVOKE_URI = "https://www.box.com/api/oauth2/revoke";
-    CONST SEARCH_URI = "https://api.box.com/2.0/search";
+    const AUTH_URI = "https://account.box.com/api/oauth2/authorize";
+    const TOKEN_URI = "https://www.box.com/api/oauth2/token";
+    const REVOKE_URI = "https://www.box.com/api/oauth2/revoke";
+    const SEARCH_URI = "https://api.box.com/2.0/search";
 
     protected mixed $state = null;
 
@@ -160,15 +161,12 @@ class Client extends Model
     {
         $folders = $this->getFolders($retrieve);
 
-        if (0 == $id)
-        {
+        if (0 == $id) {
             return $folders;
         }
 
-        if (!array_key_exists($id, $folders))
-        {
-            if (!$retrieve)
-            {
+        if (!array_key_exists($id, $folders)) {
+            if (!$retrieve) {
                 return null;
             }
             $folder = $this->getFolderFromBox($id);
@@ -179,7 +177,6 @@ class Client extends Model
         $folder = $folders[ $id ];
 
         return $folder;
-
     }
 
     public function addFolder(mixed $folder): void
@@ -187,26 +184,22 @@ class Client extends Model
         $folders = $this->getFolders();
         $folders[] = $folder;
         $this->setFolders($folders);
-
     }
 
     public function getFolders(bool $retrieve = true): mixed
     {
-        if (!$retrieve)
-        {
+        if (!$retrieve) {
             return $this->folders;
         }
 
         $root = $this->getRoot();
-        if (null === $root)
-        {
+        if (null === $root) {
             $root = $this->getFolderFromBox();
             $this->setRoot($root);
         }
 
         // not sure if I should add recursive parsing of folder/items. stubbing out for now.
         return null;
-
     }
 
     /**
@@ -222,25 +215,21 @@ class Client extends Model
      */
     public function getGroupMembershipList($group = null, $limit = null, $offset = null)
     {
-        if (is_numeric($group))
-        {
+        if (is_numeric($group)) {
             $groupId = $group;
             $group = $this->getNewGroup();
             $group->setId($groupId);
         }
 
-        if (!$group instanceof GroupInterface)
-        {
+        if (!$group instanceof GroupInterface) {
             throw new BoxException("Group object expected", BoxException::INVALID_INPUT);
         }
 
         $members = array();
         $entries = array();
 
-        if (is_numeric($limit) || is_numeric($offset))
-        {
-            if (!is_numeric($limit))
-            {
+        if (is_numeric($limit) || is_numeric($offset)) {
+            if (!is_numeric($limit)) {
                 $limit = 100;
             }
 
@@ -249,9 +238,7 @@ class Client extends Model
             $data = $this->query($uri);
 
             $entries = $data['entries'];
-        }
-        else
-        {
+        } else {
             $limit = 100;
             $offset = 0;
 
@@ -265,10 +252,8 @@ class Client extends Model
 
             $currentTotal = count($entries);
 
-            while ($currentTotal < $totalMembers)
-            {
-                if (0 != $offset)
-                {
+            while ($currentTotal < $totalMembers) {
+                if (0 != $offset) {
                     $nextPage = $group->getMembershipListUri($limit, $offset);
                     $data = $this->query($nextPage);
                     $moreEntries = $data['entries'];
@@ -281,8 +266,7 @@ class Client extends Model
             }
         }
 
-        foreach ($entries as $entry)
-        {
+        foreach ($entries as $entry) {
             $userData = $entry['user'];
             $user = $this->getNewUser();
             $user->mapBoxToClass($userData);
@@ -297,8 +281,7 @@ class Client extends Model
      */
     public function getFolderBySharedUri($sharedUri = null)
     {
-        if (!is_string($sharedUri))
-        {
+        if (!is_string($sharedUri)) {
             throw new BoxException('shared uri must be a string value', BoxException::INVALID_INPUT);
         }
 
@@ -313,21 +296,15 @@ class Client extends Model
 
         $jsonData = $this->parseResponse($response);
 
-        if (is_array($jsonData) && array_key_exists('type', $jsonData) && 'folder' === $jsonData['type'])
-        {
+        if (is_array($jsonData) && array_key_exists('type', $jsonData) && 'folder' === $jsonData['type']) {
             $folder = $this->getNewFolder();
             $folder->mapBoxToClass($jsonData);
-        }
-        else
-        {
-            if (is_array($jsonData) && array_key_exists('type', $jsonData) && 'error' === $jsonData['type'])
-            {
+        } else {
+            if (is_array($jsonData) && array_key_exists('type', $jsonData) && 'error' === $jsonData['type']) {
                 $errorData['error'] = $jsonData['message'];
                 $errorData['error_description'] = $jsonData;
                 $this->error($errorData, null, $response);
-            }
-            else
-            {
+            } else {
                 $folder = false;
             }
         }
@@ -439,7 +416,7 @@ class Client extends Model
         $uri = Folder::URI . '/' . $folder->getId();
 
         $params = $folder->toBoxArray();
-        // Only certain fields should be sent for update, but toBoxArray() with removeEmpty() 
+        // Only certain fields should be sent for update, but toBoxArray() with removeEmpty()
         // will at least avoid sending nulls. Usually name, description, parent, shared_link, etc.
         // We'll keep it simple for now as per instructions to "Implement only if there is a clear existing connection method or established request pattern."
 
@@ -467,8 +444,7 @@ class Client extends Model
      */
     public function getFolderCollaborations($folder = null)
     {
-        if (!$folder instanceof FolderInterface)
-        {
+        if (!$folder instanceof FolderInterface) {
             $err['error'] = 'sdk_unexpected_type';
             $err['error_description'] = "expecting FolderInterface class. given (" . var_export($folder, true) . ")";
             $this->error($err);
@@ -495,15 +471,13 @@ class Client extends Model
      */
     public function addCollaboration($folder = null, $collaborator = null, $role = 'viewer')
     {
-        if (!$folder instanceof FolderInterface)
-        {
+        if (!$folder instanceof FolderInterface) {
             $err['error'] = 'sdk_unexpected_type';
             $err['error_description'] = "expecting FolderInterface class. given (" . var_export($folder, true) . ")";
             $this->error($err);
         }
 
-        if (!$collaborator instanceof UserInterface && !$collaborator instanceof GroupInterface)
-        {
+        if (!$collaborator instanceof UserInterface && !$collaborator instanceof GroupInterface) {
             $err['error'] = 'sdk_unexpected_type';
             $err['error_description'] = "expecting UserInterface class. given (" . var_export($collaborator, true) . ")";
             $this->error($err);
@@ -550,8 +524,7 @@ class Client extends Model
      */
     public function createSharedLinkForFolder($folder = null, $params = null)
     {
-        if (!$folder instanceof FolderInterface)
-        {
+        if (!$folder instanceof FolderInterface) {
             $err['error'] = 'sdk_unexpected_type';
             $err['error_description'] = "expecting FolderInterface class. given (" . var_export($folder, true) . ")";
             $this->error($err);
@@ -563,8 +536,7 @@ class Client extends Model
 
         $uri .= "/" . $folderId;
 
-        if (!is_array($params))
-        {
+        if (!is_array($params)) {
             $params = array(
                 'shared_link' => array(
                     'access' => 'collaborators'
@@ -599,8 +571,7 @@ class Client extends Model
      */
     public function copyBoxFolder($originalFolder, $parent, $name = null, $addToFolders = true)
     {
-        if (!$originalFolder instanceof FolderInterface)
-        {
+        if (!$originalFolder instanceof FolderInterface) {
             $this->error(array(
                 'error' => 'Folder or FolderInterface expected',
                 'error_description' => $originalFolder
@@ -611,15 +582,13 @@ class Client extends Model
         $this->debug("copy uri: " . $uri, [__METHOD__, __LINE__]);
         $this->debug("initial parent: " . var_export($parent, true), [__METHOD__, __LINE__]);
 
-        if (is_array($parent))
-        {
+        if (is_array($parent)) {
             $folder = $this->getNewFolder();
             $folder->mapBoxToClass($parent);
             $parent = $folder;
         }
 
-        if (!$parent instanceof FolderInterface)
-        {
+        if (!$parent instanceof FolderInterface) {
             $this->error(array(
                 'error' => 'Folder or FolderInterface expected',
                 'error_description' => $parent
@@ -627,8 +596,7 @@ class Client extends Model
         }
 
         $params['parent'] = array('id' => $parent->getId());
-        if (null !== $name)
-        {
+        if (null !== $name) {
             $params['name'] = $name;
         }
 
@@ -645,8 +613,7 @@ class Client extends Model
         $copy = $this->getNewFolder();
         $copy->mapBoxToClass($data);
 
-        if (true === $addToFolders && $copy instanceof Folder)
-        {
+        if (true === $addToFolders && $copy instanceof Folder) {
             $this->addFolder($copy);
         }
 
@@ -710,7 +677,6 @@ class Client extends Model
         $this->setTokenData($token, $data);
 
         return $token;
-
     }
 
     /**
@@ -727,14 +693,12 @@ class Client extends Model
         $params['grant_type'] = 'refresh_token';
 
         $deviceId = $this->getDeviceId();
-        if (null !== $deviceId)
-        {
+        if (null !== $deviceId) {
             $params['device_id'] = $deviceId;
         }
 
         $deviceName = $this->getDeviceName();
-        if (null !== $deviceName)
-        {
+        if (null !== $deviceName) {
             $params['device_name'] = $deviceName;
         }
 
@@ -812,8 +776,7 @@ class Client extends Model
         $params['client_id'] = $clientId;
 
         $state = $this->getState();
-        if (null !== $state)
-        {
+        if (null !== $state) {
             $params['state'] = $state;
         }
 
@@ -822,8 +785,7 @@ class Client extends Model
 
         $redirectUri = $this->getRedirectUri();
 
-        if (null !== $redirectUri)
-        {
+        if (null !== $redirectUri) {
             $redirectUri = urlencode($redirectUri);
             $uri .= "&redirect_uri=" . $redirectUri;
         }
@@ -850,13 +812,11 @@ class Client extends Model
             $connection->setAccessToken($this->getToken()->getAccessToken());
         }
 
-        if (null !== $additionalHeaders && !is_array($additionalHeaders))
-        {
+        if (null !== $additionalHeaders && !is_array($additionalHeaders)) {
             throw new BoxException('additional headers must be in array format', BoxException::INVALID_INPUT);
         }
 
-        if (is_array($additionalHeaders))
-        {
+        if (is_array($additionalHeaders)) {
             foreach ($additionalHeaders as $name => $value) {
                 if (is_int($name)) {
                     // if it's "Name: Value" string
@@ -939,7 +899,6 @@ class Client extends Model
     public function setAuthorizationCode($authorizationCode = null): void
     {
         $this->authorizationCode = $authorizationCode;
-
     }
 
     public function getAuthorizationCode()
@@ -954,13 +913,11 @@ class Client extends Model
     public function setToken($token = null): void
     {
         $this->token = $token;
-
     }
 
     public function getToken()
     {
-        if (null === $this->token)
-        {
+        if (null === $this->token) {
             $tokenClass = $this->getTokenClass();
             $token = new $tokenClass();
             $this->token = $token;
@@ -977,7 +934,6 @@ class Client extends Model
     {
         $this->validateClass($tokenClass, TokenInterface::class);
         $this->tokenClass = $tokenClass;
-
     }
 
     public function getTokenClass()
@@ -993,7 +949,6 @@ class Client extends Model
     {
         $this->validateClass($connectionClass, ConnectionInterface::class);
         $this->connectionClass = $connectionClass;
-
     }
 
     public function getConnectionClass()
@@ -1008,18 +963,15 @@ class Client extends Model
      */
     public function setConnection($connection = null): void
     {
-        if (!$connection instanceof ConnectionInterface)
-        {
+        if (!$connection instanceof ConnectionInterface) {
             throw new BoxException("Invalid Class", BoxException::INVALID_CLASS);
         }
         $this->connection = $connection;
-
     }
 
     public function getConnection()
     {
-        if (null === $this->connection)
-        {
+        if (null === $this->connection) {
             $connectionClass = $this->getConnectionClass();
             /** @var ConnectionInterface $connection */
             $connection = new $connectionClass();
@@ -1046,7 +998,6 @@ class Client extends Model
     {
         $this->validateClass($fileClass, FileInterface::class);
         $this->fileClass = $fileClass;
-
     }
 
     public function getFileClass()
@@ -1068,7 +1019,6 @@ class Client extends Model
     public function setFiles($files = null): void
     {
         $this->files = $files;
-
     }
 
     public function getFiles()
@@ -1084,7 +1034,6 @@ class Client extends Model
     {
         $this->validateClass($folderClass, FolderInterface::class);
         $this->folderClass = $folderClass;
-
     }
 
     public function getFolderClass()
@@ -1099,7 +1048,6 @@ class Client extends Model
     public function setFolders($folders = null): void
     {
         $this->folders = $folders;
-
     }
 
     /**
@@ -1110,7 +1058,6 @@ class Client extends Model
     {
         $this->validateClass($collaborationClass, CollaborationInterface::class);
         $this->collaborationClass = $collaborationClass;
-
     }
 
     public function getCollaborationClass()
@@ -1126,7 +1073,6 @@ class Client extends Model
     {
         $this->validateClass($userClass, UserInterface::class);
         $this->userClass = $userClass;
-
     }
 
     public function getUserClass()
@@ -1142,7 +1088,6 @@ class Client extends Model
     {
         $this->validateClass($groupClass, GroupInterface::class);
         $this->groupClass = $groupClass;
-
     }
 
     public function getGroupClass()
@@ -1162,7 +1107,6 @@ class Client extends Model
     public function setCollaborations($collaborations = null): void
     {
         $this->collaborations = $collaborations;
-
     }
 
     /**
@@ -1180,7 +1124,6 @@ class Client extends Model
     public function setDeviceId($deviceId = null): void
     {
         $this->deviceId = $deviceId;
-
     }
 
     public function getDeviceId()
@@ -1195,7 +1138,6 @@ class Client extends Model
     public function setDeviceName($deviceName = null): void
     {
         $this->deviceName = $deviceName;
-
     }
 
     public function getDeviceName()
@@ -1210,7 +1152,6 @@ class Client extends Model
     public function setState($state = null): void
     {
         $this->state = $state;
-
     }
 
     public function getState()
@@ -1230,7 +1171,6 @@ class Client extends Model
     public function setRoot($root = null): void
     {
         $this->root = $root;
-
     }
 
     /**
@@ -1267,8 +1207,7 @@ class Client extends Model
      */
     public function search($query = null, $limit = null, $offset = null, $type = null)
     {
-        if (empty($query))
-        {
+        if (empty($query)) {
             throw new BoxException('please enter a search term', BoxException::INVALID_INPUT);
         }
 
@@ -1280,13 +1219,11 @@ class Client extends Model
             $uri .= "&type=" . $type;
         }
 
-        if (is_numeric($limit) && is_int($limit))
-        {
+        if (is_numeric($limit) && is_int($limit)) {
             $uri .= "&limit=" . $limit;
         }
 
-        if (is_numeric($offset) && is_int($offset))
-        {
+        if (is_numeric($offset) && is_int($offset)) {
             $uri .= "&offset=" . $offset;
         }
 

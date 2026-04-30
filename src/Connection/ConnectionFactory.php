@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -47,7 +48,7 @@ class ConnectionFactory extends AbstractFactory
      *
      * @return ConnectionInterface
      */
-    static public function getConnection($options = null)
+    public static function getConnection($options = null)
     {
         return parent::get('Box\Connection\Connection', $options);
     }
@@ -63,15 +64,13 @@ class ConnectionFactory extends AbstractFactory
      * @return ConnectionInterface
      * @throws \Box\Exception\BoxException
      */
-    static public function getAuthorizedConnection($options = null)
+    public static function getAuthorizedConnection($options = null)
     {
-        if (!array_key_exists('token', $options))
-        {
+        if (!array_key_exists('token', $options)) {
             throw new BoxException('token expected to create an authorized connection');
         }
 
-        if (!$options['token'] instanceof TokenInterface)
-        {
+        if (!$options['token'] instanceof TokenInterface) {
             throw new BoxException('instance of Box\Connection\Token\TokenInterface expected');
         }
 
@@ -81,26 +80,22 @@ class ConnectionFactory extends AbstractFactory
         $token = $options['token'];
 
         unset($options['token']);
-        if (!is_string($token->getAccessToken()))
-        {
+        if (!is_string($token->getAccessToken())) {
             throw new BoxException('TokenInterface::getAccessToken() does not contain a string access token');
         }
 
         $additionalHeaders = null;
-        if (array_key_exists('additionalHeaders', $options))
-        {
+        if (array_key_exists('additionalHeaders', $options)) {
             $additionalHeaders = $options['additionalHeaders'];
             unset($options['additionalHeaders']);
-            if (!is_array($additionalHeaders))
-            {
+            if (!is_array($additionalHeaders)) {
                 throw new BoxException('additionalHeaders option must be an array');
             }
         }
 
         $headers = array("Authorization: Bearer " . $token->getAccessToken());
 
-        if (is_array($additionalHeaders))
-        {
+        if (is_array($additionalHeaders)) {
             $headers = array_merge($headers, $additionalHeaders);
         }
 
