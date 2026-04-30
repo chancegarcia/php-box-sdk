@@ -3,6 +3,8 @@
 namespace Box\Tests\Model\Mapper;
 
 use Box\Mapper\Hydrator;
+use Box\Tests\Model\Mapper\Fixtures\Group;
+use Box\Tests\Model\Mapper\Fixtures\User;
 use Doctrine\Common\Collections\Collection;
 use PHPUnit\Framework\TestCase;
 
@@ -80,40 +82,5 @@ class HydratorTest extends TestCase
         $this->assertInstanceOf(User::class, $group->users[0]);
         $this->assertEquals('Alice', $group->users[0]->name);
         $this->assertEquals('Bob', $group->users[1]->name);
-    }
-}
-
-class Address
-{
-    public string $street;
-}
-class User
-{
-    public string $name;
-    public ?Address $address = null;
-}
-class Group
-{
-    public string $name;
-    /** @var \Box\Tests\Model\Mapper\User[] */
-    public \Doctrine\Common\Collections\Collection $users;
-}
-
-class HydratorRecursiveTest extends TestCase
-{
-    public function testRecursiveHydration(): void
-    {
-        $hydrator = new Hydrator();
-        $user = new User();
-        $data = [
-            'name' => 'John',
-            'address' => ['street' => 'Main St']
-        ];
-
-        $hydrator->hydrate($user, $data);
-
-        $this->assertEquals('John', $user->name);
-        $this->assertInstanceOf(Address::class, $user->address);
-        $this->assertEquals('Main St', $user->address->street);
     }
 }
