@@ -36,6 +36,7 @@
 
 namespace Box\Service\File;
 
+use Box\DTO\File\Request\CreateSharedLinkRequest;
 use Box\File\File;
 use Box\File\FileInterface;
 use Box\Item\SharedLink\SharedLinkInterface;
@@ -46,12 +47,22 @@ class FileService extends Service implements FileServiceInterface
     protected $sharedLink;
     protected $access;
 
-    public function createSharedLink(FileInterface $file = null, SharedLinkInterface $sharedLink = null)
+    /**
+     * {@inheritdoc}
+     * @param FileInterface|null $file
+     * @param SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink
+     */
+    public function createSharedLink(FileInterface $file = null, SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink = null)
     {
         $uri = $file::URI . "/" . $file->getId();
 
+        if (is_array($sharedLink)) {
+            // Normalize array to DTO
+            $sharedLink = (new \Box\Model\Mapper\Hydrator())->hydrate(CreateSharedLinkRequest::class, $sharedLink);
+        }
+
         $params = array(
-            'shared_link' => $sharedLink->toBoxArray()
+            'shared_link' => ($sharedLink instanceof CreateSharedLinkRequest) ? $sharedLink->toArray() : $sharedLink->toBoxArray()
         );
 
         $updatedFile = $this->createNewFile();
