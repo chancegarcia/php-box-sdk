@@ -4,10 +4,14 @@ namespace Box\Model;
 
 use Box\Exception\BoxException;
 use Box\Http\Response\BoxResponseInterface;
+use Box\Mapper\ModelMapper;
+use Box\Trait\BoxLoggerTrait;
 use Psr\Log\LoggerInterface;
 
 trait ModelTrait
 {
+    use BoxLoggerTrait;
+
     public function classArray(): array
     {
         $aModel = get_object_vars($this);
@@ -26,90 +30,14 @@ trait ModelTrait
     {
         $arr = $this->classArray();
 
-        return $this->removeEmpty($arr);
-    }
-
-    public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null): void
-    {
-        $error = $data['error'] ?? 'unknown_error';
-        $errorDescription = $data['error_description'] ?? $message ?? 'An unknown error occurred';
-
-        $context = [
-            'error' => $error,
-            'error_description' => $errorDescription,
-        ];
-
-        if ($boxResponse instanceof BoxResponseInterface) {
-            $context['http_status'] = $boxResponse->getStatusCode();
-            $context['response_body'] = $boxResponse->getContent();
-        }
-
-        $exception = new BoxException($errorDescription, BoxException::BOX_API_ERROR);
-        $exception->setStatus($error);
-
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $loggerMessage = $error . "\n" . $exception->getTraceAsString() . "\n";
-
-            $this->getLogger()->error($loggerMessage, $context);
-        }
-
-        throw $exception;
-    }
-
-    protected function parseResponse(BoxResponseInterface $response): array
-    {
-        $content = $response->getContent();
-        $statusCode = $response->getStatusCode();
-
-        if ($response->isClientError() || $response->isServerError()) {
-            if (empty($content)) {
-                $message = sprintf('Box API request failed with HTTP %d', $statusCode);
-                $this->error([
-                    'error' => 'http_error_' . $statusCode,
-                    'error_description' => $message,
-                ], $message, $response);
-            }
-        }
-
-        if (empty($content)) {
-            return [];
-        }
-
-        try {
-            $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            $message = sprintf('Box API response JSON decode failed: %s', $e->getMessage());
-            $this->error([
-                'error' => 'json_decode_error',
-                'error_description' => $content,
-            ], $message, $response);
-        }
-
-        if (is_array($data) && array_key_exists('type', $data) && 'error' === $data['type']) {
-            $this->error($data, $data['message'] ?? null, $response);
-        }
-
-        if (is_array($data) && array_key_exists('error', $data)) {
-            $this->error($data, $data['error_description'] ?? null, $response);
-        }
-
-        return $data;
-    }
-
-    public function debug(string $message, array $context = []): void
-    {
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug($message, $context);
-        }
+        return ModelMapper::removeEmpty($arr, true);
     }
 
     /**
-     * @param string $class
-     * @param string $classType
-     *
-     * @throws \Box\Exception\BoxException
-     * @return bool returns true if validation passes. Throws exception if unable to validate or validation doesn't pass
+     * @return LoggerInterface|null
      */
+    abstract public function getLogger(): ?LoggerInterface;
+
     public function validateClass(string $class, string $classType): bool
     {
         if (!class_exists($class))
