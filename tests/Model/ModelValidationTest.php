@@ -37,7 +37,7 @@ class ModelValidationTest extends TestCase
     public function testValidateClassThrowsBoxExceptionForMissingClass()
     {
         $this->expectException(BoxException::class);
-        
+
         try {
             $this->model->validateClass('NonExistentClass', 'SomeInterface');
         } catch (BoxException $e) {
@@ -57,7 +57,7 @@ class ModelValidationTest extends TestCase
             throw $e;
         }
     }
-    
+
     public function testValidateClassPassesForValidSubclass()
     {
         $result = $this->model->validateClass(ClassImplementingSomething::class, Model::class);

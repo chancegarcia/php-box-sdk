@@ -40,7 +40,7 @@ class AuthUrlCommand extends AbstractBoxCommand
     {
         $io = new SymfonyStyle($input, $output);
         $this->logger->info('Generating authorization URL');
-        
+
         $client = $this->clientFactory->createClient();
 
         $redirectUri = $input->getOption('redirect-uri') ?? $this->configProvider->getRedirectUri();

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -32,6 +33,7 @@
  * SOFTWARE.
  *
  */
+
 namespace Box\Model;
 
 interface BoxModelInterface
@@ -230,5 +232,4 @@ interface BoxModelInterface
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setItemStatus(?string $itemStatus = null): void;
-
 }

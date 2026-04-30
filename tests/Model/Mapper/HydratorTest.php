@@ -45,8 +45,14 @@ class HydratorTest extends TestCase
     {
         $target = new class {
             private string $name;
-            public function setName(string $name): void { $this->name = $name; }
-            public function getName(): string { return $this->name; }
+            public function setName(string $name): void
+            {
+                $this->name = $name;
+            }
+            public function getName(): string
+            {
+                return $this->name;
+            }
         };
 
         $data = ['name' => 'John'];
@@ -77,12 +83,17 @@ class HydratorTest extends TestCase
     }
 }
 
-class Address { public string $street; }
-class User {
+class Address
+{
+    public string $street;
+}
+class User
+{
     public string $name;
     public ?Address $address = null;
 }
-class Group {
+class Group
+{
     public string $name;
     /** @var \Box\Tests\Model\Mapper\User[] */
     public \Doctrine\Common\Collections\Collection $users;

@@ -17,8 +17,7 @@ trait ModelTrait
         $aModel = get_object_vars($this);
         $aArray = array();
 
-        foreach ($aModel as $k => $v)
-        {
+        foreach ($aModel as $k => $v) {
             $sKey = $this->toBoxVar($k);
             $aArray[ $sKey ] = $v;
         }
@@ -40,13 +39,11 @@ trait ModelTrait
 
     public function validateClass(string $class, string $classType): bool
     {
-        if (!class_exists($class))
-        {
+        if (!class_exists($class)) {
             throw new BoxException("Unable to find class", BoxException::UNKNOWN_CLASS);
         }
 
-        if (!is_subclass_of($class, $classType) && $class !== $classType)
-        {
+        if (!is_subclass_of($class, $classType) && $class !== $classType) {
             throw new BoxException("Invalid Connection Class", BoxException::INVALID_CLASS_TYPE);
         }
 
@@ -66,8 +63,7 @@ trait ModelTrait
 
     public function getNewClass(?string $className = null, mixed $classConstructorOptions = null): mixed
     {
-        if (null === $className)
-        {
+        if (null === $className) {
             throw new BoxException('undefined class name', BoxException::INVALID_INPUT);
         }
 

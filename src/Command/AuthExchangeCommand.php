@@ -43,7 +43,7 @@ class AuthExchangeCommand extends AbstractBoxCommand
     {
         $io = new SymfonyStyle($input, $output);
         $this->logger->info('Starting token exchange command');
-        
+
         $client = $this->clientFactory->createClient();
         $this->applyTransportOption($input, $client);
 

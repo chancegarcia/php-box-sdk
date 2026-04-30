@@ -127,7 +127,7 @@ class ClientTest extends TestCase
         $connection = $this->createMock(Connection::class);
         $connection->expects($this->once())
             ->method('setCurlOpts')
-            ->with($this->callback(function($opts) {
+            ->with($this->callback(function ($opts) {
                 return isset($opts['CURLOPT_HTTPHEADER']) &&
                        in_array('Authorization: Bearer test_token', $opts['CURLOPT_HTTPHEADER']) &&
                        in_array('X-Extra: foo', $opts['CURLOPT_HTTPHEADER']);
@@ -230,7 +230,7 @@ class ClientTest extends TestCase
                 true
             )
             ->willReturn($response);
-        
+
         $connection->expects($this->once())
             ->method('addHeader')
             ->with('If-Match', 'etag123');
@@ -315,8 +315,10 @@ class ClientTest extends TestCase
         $token->setAccessToken('foo');
         $this->client->setToken($token);
 
-        $folder = new Folder(); $folder->setId('123');
-        $user = new User(); $user->setId('user1');
+        $folder = new Folder();
+        $folder->setId('123');
+        $user = new User();
+        $user->setId('user1');
 
         $collab = $this->client->addCollaboration($folder, $user, 'editor');
         $this->assertInstanceOf(Collaboration::class, $collab);
@@ -339,7 +341,8 @@ class ClientTest extends TestCase
         $token->setAccessToken('foo');
         $this->client->setToken($token);
 
-        $folder = new Folder(); $folder->setId('123');
+        $folder = new Folder();
+        $folder->setId('123');
 
         $updatedFolder = $this->client->createSharedLinkForFolder($folder);
         $this->assertInstanceOf(Folder::class, $updatedFolder);
@@ -362,8 +365,10 @@ class ClientTest extends TestCase
         $token->setAccessToken('foo');
         $this->client->setToken($token);
 
-        $folder = new Folder(); $folder->setId('123');
-        $parent = new Folder(); $parent->setId('0');
+        $folder = new Folder();
+        $folder->setId('123');
+        $parent = new Folder();
+        $parent->setId('0');
 
         // Mocking getFolderFromBox to avoid its side effects if it calls connection
         $client = $this->getMockBuilder(Client::class)

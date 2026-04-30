@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Collaboration
@@ -67,7 +68,6 @@ class Collaboration extends Model implements CollaborationInterface
     public function setAccessibleBy($accessibleBy = null)
     {
         $this->accessibleBy = $accessibleBy;
-
     }
 
     public function getAccessibleBy()
@@ -114,7 +114,6 @@ class Collaboration extends Model implements CollaborationInterface
     public function setCreatedBy($createdBy = null)
     {
         $this->createdBy = $createdBy;
-
     }
 
     public function getCreatedBy()
@@ -143,7 +142,6 @@ class Collaboration extends Model implements CollaborationInterface
     public function setItem($item = null)
     {
         $this->item = $item;
-
     }
 
     public function getItem()
@@ -198,8 +196,7 @@ class Collaboration extends Model implements CollaborationInterface
             'rejected'
         );
 
-        if (!in_array($status, $acceptable))
-        {
+        if (!in_array($status, $acceptable)) {
             $err['error'] = "sdk_invalid_collaboration_status";
             $err['error_description'] = "status can only be one of the following values: " . implode(', ', $acceptable);
             $this->error($err);
@@ -216,13 +213,10 @@ class Collaboration extends Model implements CollaborationInterface
     public function setType($type = null)
     {
         $this->type = $type;
-
     }
 
     public function getType()
     {
         return $this->type;
     }
-
-
 }

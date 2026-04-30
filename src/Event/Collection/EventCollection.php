@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -119,15 +120,11 @@ class EventCollection extends Model implements EventCollectionInterface
      */
     public function setEntries($entries = null): EventCollectionInterface
     {
-        if (is_array($entries))
-        {
+        if (is_array($entries)) {
             $this->originalEntries = $entries;
             $entries = new DoctrineArrayCollection($entries);
-        }
-        else
-        {
-            if (!$entries instanceof Collection)
-            {
+        } else {
+            if (!$entries instanceof Collection) {
                 throw new BoxException('entries must be an array or instance of \Doctrine\Common\Collections\Collection');
             }
         }
@@ -136,5 +133,4 @@ class EventCollection extends Model implements EventCollectionInterface
 
         return $this;
     }
-
 }

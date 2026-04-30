@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package
  * @subpackage
@@ -33,7 +34,7 @@ namespace Box\Exception;
 
 use Box\Http\Response\BoxResponseInterface;
 use Box\Http\Response\ResponseParser;
-use \Exception;
+use Exception;
 
 class BoxResponseException extends BoxException
 {
@@ -52,7 +53,8 @@ class BoxResponseException extends BoxException
      *
      * @return BoxResponseException
      */
-    public function __construct(string $message = "", mixed $code = 0, ?Exception $previous = null, ?BoxResponseInterface $response = null) {
+    public function __construct(string $message = "", mixed $code = 0, ?Exception $previous = null, ?BoxResponseInterface $response = null)
+    {
         parent::__construct($message, $code, $previous);
 
         if ($response instanceof BoxResponseInterface) {
@@ -88,13 +90,13 @@ class BoxResponseException extends BoxException
                 }
             }
         }
-
     }
 
     /**
      * @return null|BoxResponseInterface
      */
-    public function getResponse() {
+    public function getResponse()
+    {
         return $this->response;
     }
 
@@ -102,8 +104,8 @@ class BoxResponseException extends BoxException
      * @param BoxResponseInterface $response
      * @return BoxResponseException
      */
-    public function setResponse(?BoxResponseInterface $response = null) {
+    public function setResponse(?BoxResponseInterface $response = null)
+    {
         $this->response = $response;
-
     }
 }

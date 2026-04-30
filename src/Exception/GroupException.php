@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box_Group
  * @subpackage  Box_Group_Exception

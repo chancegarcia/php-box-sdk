@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -145,5 +146,4 @@ interface UserEventInterface extends EventInterface
      * When an admin role changes for a user
      */
     const CHANGE_ADMIN_ROLE = "CHANGE_ADMIN_ROLE";
-
 }

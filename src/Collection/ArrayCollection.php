@@ -1,4 +1,5 @@
 <?php
+
 /**
  * We copied this file from Doctrine before we began using composer. Correctly attributing now.
  * will still need to keep this around for now due to other projects

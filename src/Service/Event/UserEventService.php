@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -36,7 +37,9 @@
 namespace Box\Service\Event;
 
 use Box\Exception\BoxException;
-use Box\Event\Collection\EventCollection, Box\Event\Collection\EventCollectionInterface;
+use Box\Event\Collection\EventCollection,
+
+Box\Event\Collection\EventCollectionInterface;
 use Box\Event\User\UserEventInterface;
 use Box\Service\Service;
 use Box\Event\EventInterface, Box\Event\Event;
@@ -88,8 +91,7 @@ class UserEventService extends Service implements UserEventServiceInterface
     public function setStreamType($streamType = null)
     {
         $validStreamTypes = $this->getValidStreamTypes();
-        if (!in_array($streamType, $validStreamTypes))
-        {
+        if (!in_array($streamType, $validStreamTypes)) {
             throw new BoxException("unexpect type ("
                                    . var_export($streamType, true)
                                    . ") valid types include: "
@@ -97,7 +99,6 @@ class UserEventService extends Service implements UserEventServiceInterface
         }
 
         $this->streamType = $streamType;
-
     }
 
     /**
@@ -113,23 +114,19 @@ class UserEventService extends Service implements UserEventServiceInterface
      */
     public function setLimit($limit = null)
     {
-        if (null === $limit)
-        {
+        if (null === $limit) {
             $limit = self::LIMIT_DEFAULT;
         }
 
-        if (!$this->isInt($limit))
-        {
+        if (!$this->isInt($limit)) {
             throw new BoxException('limit must be a valid integer value, (' . var_export($limit, true) . ') given');
         }
 
-        if ($limit > self::LIMIT_MAX)
-        {
+        if ($limit > self::LIMIT_MAX) {
             $limit = self::LIMIT_MAX;
         }
 
         $this->limit = $limit;
-
     }
 
     /**
@@ -146,15 +143,13 @@ class UserEventService extends Service implements UserEventServiceInterface
      */
     public function setStreamPosition($streamPosition = null)
     {
-        if ("now" !== $streamPosition && !$this->isInt($streamPosition))
-        {
+        if ("now" !== $streamPosition && !$this->isInt($streamPosition)) {
             throw new BoxException('limit must be a valid integer value or "now", ('
                                    . var_export($streamPosition, true)
                                    . ') given');
         }
 
         $this->streamPosition = $streamPosition;
-
     }
 
     public function getEvents($type = 'decoded', EventCollectionInterface $eventCollection = null)
@@ -162,22 +157,20 @@ class UserEventService extends Service implements UserEventServiceInterface
         $uri = $this->getEventsUri();
 
         $eventsData = $this->getFromBox($uri, $type);
-        if ($this->getLogger() instanceof LoggerInterface)
-        {
-            $this->getLogger()->debug('events data: ' . var_export($eventsData, true),
-                                      array(
+        if ($this->getLogger() instanceof LoggerInterface) {
+            $this->getLogger()->debug(
+                'events data: ' . var_export($eventsData, true),
+                array(
                                           __METHOD__ . ":" . __LINE__,
-                                      ));
+                )
+            );
         }
 
         $returnData = null;
 
-        if ($eventCollection instanceof ModelInterface)
-        {
+        if ($eventCollection instanceof ModelInterface) {
             $returnData = $eventCollection->mapBoxToClass($eventsData);
-        }
-        else
-        {
+        } else {
             $returnData = $this->getLastResult($type);
         }
 

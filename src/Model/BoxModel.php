@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -66,7 +67,6 @@ class BoxModel implements BoxModelInterface
     public function setType($type = null): void
     {
         $this->type = $type;
-
     }
 
     public function getId(): mixed
@@ -82,7 +82,6 @@ class BoxModel implements BoxModelInterface
     public function setId($id = null): void
     {
         $this->id = $id;
-
     }
 
     public function getSequenceId(): mixed
@@ -98,7 +97,6 @@ class BoxModel implements BoxModelInterface
     public function setSequenceId($sequenceId = null): void
     {
         $this->sequenceId = $sequenceId;
-
     }
 
     public function getEtag(): mixed
@@ -114,7 +112,6 @@ class BoxModel implements BoxModelInterface
     public function setEtag($etag = null): void
     {
         $this->etag = $etag;
-
     }
 
     public function getName(): mixed
@@ -130,7 +127,6 @@ class BoxModel implements BoxModelInterface
     public function setName($name = null): void
     {
         $this->name = $name;
-
     }
 
     public function getDescription(): mixed
@@ -146,7 +142,6 @@ class BoxModel implements BoxModelInterface
     public function setDescription($description = null): void
     {
         $this->description = $description;
-
     }
 
     public function getSize(): mixed
@@ -162,7 +157,6 @@ class BoxModel implements BoxModelInterface
     public function setSize($size = null): void
     {
         $this->size = $size;
-
     }
 
     public function getCreatedAt(): mixed
@@ -178,7 +172,6 @@ class BoxModel implements BoxModelInterface
     public function setCreatedAt($createdAt = null): void
     {
         $this->createdAt = $createdAt;
-
     }
 
     public function getModifiedAt(): mixed
@@ -194,7 +187,6 @@ class BoxModel implements BoxModelInterface
     public function setModifiedAt($modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
-
     }
 
     public function getCreatedBy(): mixed
@@ -210,7 +202,6 @@ class BoxModel implements BoxModelInterface
     public function setCreatedBy($createdBy = null): void
     {
         $this->createdBy = $createdBy;
-
     }
 
     public function getModifiedBy(): mixed
@@ -226,7 +217,6 @@ class BoxModel implements BoxModelInterface
     public function setModifiedBy($modifiedBy = null): void
     {
         $this->modifiedBy = $modifiedBy;
-
     }
 
     public function getOwnedBy(): mixed
@@ -242,7 +232,6 @@ class BoxModel implements BoxModelInterface
     public function setOwnedBy($ownedBy = null): void
     {
         $this->ownedBy = $ownedBy;
-
     }
 
     public function getSharedLink(): mixed
@@ -258,7 +247,6 @@ class BoxModel implements BoxModelInterface
     public function setSharedLink($sharedLink = null): void
     {
         $this->sharedLink = $sharedLink;
-
     }
 
     public function getParent(): mixed
@@ -274,7 +262,6 @@ class BoxModel implements BoxModelInterface
     public function setParent($parent = null): void
     {
         $this->parent = $parent;
-
     }
 
     public function getItemStatus(): mixed
@@ -290,7 +277,5 @@ class BoxModel implements BoxModelInterface
     public function setItemStatus($itemStatus = null): void
     {
         $this->itemStatus = $itemStatus;
-
     }
-
 }

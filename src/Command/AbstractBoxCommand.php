@@ -13,7 +13,6 @@ use Psr\Log\LoggerInterface;
 use Box\Logger\LoggerFactory;
 use Exception;
 use InvalidArgumentException;
-
 use Box\Contract\BoxClientFactoryInterface;
 
 abstract class AbstractBoxCommand extends Command
@@ -69,13 +68,13 @@ abstract class AbstractBoxCommand extends Command
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         $logConfigPath = $input->getOption('log-config') ?? $this->defaultLogConfig;
-        
+
         if (!file_exists($logConfigPath)) {
              throw new Exception(sprintf('Log config file "%s" not found.', $logConfigPath));
         }
 
         $config = require $logConfigPath;
-        
+
         $overrides = [];
         if ($logDir = $input->getOption('log-dir')) {
             $overrides['log_dir'] = $logDir;

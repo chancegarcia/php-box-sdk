@@ -14,23 +14,59 @@ class MappingTestModel extends Model
     protected $zeroValue;
     protected $falseValue;
 
-    public function getId() { return $this->id; }
-    public function setId($id): void { $this->id = $id; }
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function setId($id): void
+    {
+        $this->id = $id;
+    }
 
-    public function getName() { return $this->name; }
-    public function setName($name): void { $this->name = $name; }
+    public function getName()
+    {
+        return $this->name;
+    }
+    public function setName($name): void
+    {
+        $this->name = $name;
+    }
 
-    public function getCreatedAt() { return $this->createdAt; }
-    public function setCreatedAt($createdAt): void { $this->createdAt = $createdAt; }
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+    public function setCreatedAt($createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
 
-    public function getIsTrue() { return $this->isTrue; }
-    public function setIsTrue($isTrue): void { $this->isTrue = $isTrue; }
+    public function getIsTrue()
+    {
+        return $this->isTrue;
+    }
+    public function setIsTrue($isTrue): void
+    {
+        $this->isTrue = $isTrue;
+    }
 
-    public function getZeroValue() { return $this->zeroValue; }
-    public function setZeroValue($zeroValue): void { $this->zeroValue = $zeroValue; }
+    public function getZeroValue()
+    {
+        return $this->zeroValue;
+    }
+    public function setZeroValue($zeroValue): void
+    {
+        $this->zeroValue = $zeroValue;
+    }
 
-    public function getFalseValue() { return $this->falseValue; }
-    public function setFalseValue($falseValue): void { $this->falseValue = $falseValue; }
+    public function getFalseValue()
+    {
+        return $this->falseValue;
+    }
+    public function setFalseValue($falseValue): void
+    {
+        $this->falseValue = $falseValue;
+    }
 }
 
 class MappingTest extends TestCase
@@ -96,13 +132,13 @@ class MappingTest extends TestCase
         $this->assertArrayNotHasKey('remove_null', $result);
         $this->assertArrayNotHasKey('remove_empty_string', $result);
         $this->assertArrayNotHasKey('remove_whitespace', $result);
-        
+
         // Current behavior audit: check if it keeps 0, "0", false
         // The issue description says removeEmpty uses empty(), which removes 0, "0", false.
         $this->assertArrayNotHasKey('keep_zero', $result, 'Current removeEmpty drops 0');
         $this->assertArrayNotHasKey('keep_zero_string', $result, 'Current removeEmpty drops "0"');
         $this->assertArrayNotHasKey('keep_false', $result, 'Current removeEmpty drops false');
-        
+
         $this->assertEquals(['keep' => 1], $result['nested']);
     }
 

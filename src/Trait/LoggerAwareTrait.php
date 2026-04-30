@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package
  * @subpackage
@@ -35,7 +36,6 @@ use Psr\Log\LoggerInterface;
 
 trait LoggerAwareTrait
 {
-
     protected ?LoggerInterface $logger = null;
 
     /**

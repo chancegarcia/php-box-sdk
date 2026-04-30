@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -67,7 +68,6 @@ class Event extends Model implements EventInterface
     public function setType(mixed $type = null): void
     {
         $this->type = $type;
-
     }
 
     /**
@@ -86,7 +86,6 @@ class Event extends Model implements EventInterface
     public function setEventId(mixed $eventId = null): void
     {
         $this->eventId = $eventId;
-
     }
 
     /**
@@ -105,7 +104,6 @@ class Event extends Model implements EventInterface
     public function setCreatedBy(mixed $createdBy = null): void
     {
         $this->createdBy = $createdBy;
-
     }
 
     /**
@@ -124,7 +122,6 @@ class Event extends Model implements EventInterface
     public function setEventType(mixed $eventType = null): void
     {
         $this->eventType = $eventType;
-
     }
 
     /**
@@ -143,7 +140,6 @@ class Event extends Model implements EventInterface
     public function setSessionId(mixed $sessionId = null): void
     {
         $this->sessionId = $sessionId;
-
     }
 
     /**
@@ -162,6 +158,5 @@ class Event extends Model implements EventInterface
     public function setSource(mixed $source = null): void
     {
         $this->source = $source;
-
     }
 }

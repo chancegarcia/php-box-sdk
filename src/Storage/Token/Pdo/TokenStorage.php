@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -75,7 +76,6 @@ class TokenStorage implements TokenStorageInterface
     public function setPreviousToken(TokenInterface $previousToken = null)
     {
         $this->previousToken = $previousToken;
-
     }
 
     /**
@@ -115,7 +115,6 @@ class TokenStorage implements TokenStorageInterface
         $pdo = new PDO($dsn, $username, $password, $options);
 
         $this->setPdo($pdo);
-
     }
 
     /**
@@ -134,7 +133,6 @@ class TokenStorage implements TokenStorageInterface
     public function setDsn($dsn = null)
     {
         $this->dsn = $dsn;
-
     }
 
     /**
@@ -153,7 +151,6 @@ class TokenStorage implements TokenStorageInterface
     public function setUsername($username = null)
     {
         $this->username = $username;
-
     }
 
     /**
@@ -172,7 +169,6 @@ class TokenStorage implements TokenStorageInterface
     public function setPassword($password = null)
     {
         $this->password = $password;
-
     }
 
     /**
@@ -191,7 +187,6 @@ class TokenStorage implements TokenStorageInterface
     public function setOptions(array $options = null)
     {
         $this->options = $options;
-
     }
 
     /**
@@ -210,7 +205,6 @@ class TokenStorage implements TokenStorageInterface
     public function setPdo(PDO $pdo = null)
     {
         $this->pdo = $pdo;
-
     }
 
     /**
@@ -229,7 +223,6 @@ class TokenStorage implements TokenStorageInterface
     public function setTokenTableName($tokenTableName = null)
     {
         $this->tokenTableName = $tokenTableName;
-
     }
 
     /**
@@ -246,7 +239,6 @@ class TokenStorage implements TokenStorageInterface
     public function setTokenTableId($tokenTableId = null)
     {
         $this->tokenTableId = $tokenTableId;
-
     }
 
     /**
@@ -263,7 +255,6 @@ class TokenStorage implements TokenStorageInterface
     public function setAdditionalTokenTableData(array $additionalTokenTableData = null)
     {
         $this->additionalTokenTableData = $additionalTokenTableData;
-
     }
 
     /**
@@ -280,7 +271,6 @@ class TokenStorage implements TokenStorageInterface
     public function setUseCompositeKey($useCompositeKey = null)
     {
         $this->useCompositeKey = $useCompositeKey;
-
     }
 
     /**
@@ -297,7 +287,6 @@ class TokenStorage implements TokenStorageInterface
     public function setTokenCompositeKeyMap($tokenCompositeKeyMap = null)
     {
         $this->tokenCompositeKeyMap = $tokenCompositeKeyMap;
-
     }
 
     /**
@@ -314,7 +303,6 @@ class TokenStorage implements TokenStorageInterface
     public function setTokenMap($tokenMap = null)
     {
         $this->tokenMap = $tokenMap;
-
     }
 
     /**
@@ -328,16 +316,13 @@ class TokenStorage implements TokenStorageInterface
         $tokenMap = $this->getTokenMap();
 
         $first = true;
-        foreach ($tokenMap as $column => $value)
-        {
+        foreach ($tokenMap as $column => $value) {
             $sql .= "`" . $this->getTokenTableName() . "`" . "`" . $column . "`"
                     . " = ";
 
-            if (false === $first)
-            {
+            if (false === $first) {
                 $sql .= " AND ";
             }
-
         }
     }
 
