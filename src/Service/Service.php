@@ -798,8 +798,15 @@ class Service extends BaseModel implements ServiceInterface
 
         // here is where we decide to throw exceptions based on response
         if (!$response->isSuccessful()) {
-            throw new BoxResponseException("Box Response was unsuccessful. ", $response->getStatusCode(), null,
-                $response);
+            $e = new BoxResponseException("Box Response was unsuccessful. ", $response->getStatusCode(), null, $response);
+            
+            // Handle Retry-After header
+            if ($response->getStatusCode() === 429 && $response->hasHeader('Retry-After')) {
+                $retryAfter = $response->getHeaderLine('Retry-After');
+                $e->addContext($retryAfter, 'retry_after');
+            }
+            
+            throw $e;
         }
 
         $json = $response->getContent();
