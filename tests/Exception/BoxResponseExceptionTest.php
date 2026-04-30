@@ -16,7 +16,10 @@ class BoxResponseExceptionTest extends TestCase
             'message' => 'An item with the same name already exists.',
             'context_info' => ['conflicts' => ['id' => '12345']]
         ]));
-        $response->method('getHeaderLine')->with('WWW-Authenticate')->willReturn('');
+        $response->method('getHeaderLine')->willReturnMap([
+            ['WWW-Authenticate', ''],
+            ['Retry-After', '']
+        ]);
         
         $e = new BoxResponseException("Error", 409, null, $response);
         $e->addContext(['conflicts' => ['id' => '12345']], 'item_context');
@@ -32,7 +35,10 @@ class BoxResponseExceptionTest extends TestCase
         $response->method('getContent')->willReturn(json_encode([
             'message' => 'Invalid token'
         ]));
-        $response->method('getHeaderLine')->with('WWW-Authenticate')->willReturn('Bearer error="invalid_token", error_description="The access token expired"');
+        $response->method('getHeaderLine')->willReturnMap([
+            ['WWW-Authenticate', 'Bearer error="invalid_token", error_description="The access token expired"'],
+            ['Retry-After', '']
+        ]);
         
         $e = new BoxResponseException("Error", 401, null, $response);
         

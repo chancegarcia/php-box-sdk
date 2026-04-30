@@ -803,7 +803,17 @@ class Service extends BaseModel implements ServiceInterface
             // Handle Retry-After header
             if ($response->getStatusCode() === 429 && $response->hasHeader('Retry-After')) {
                 $retryAfter = $response->getHeaderLine('Retry-After');
-                $e->addContext($retryAfter, 'retry_after');
+                $delay = 0;
+                if (is_numeric($retryAfter)) {
+                    $delay = (int)$retryAfter;
+                } else {
+                    $retryTime = strtotime($retryAfter);
+                    if ($retryTime !== false) {
+                        $delay = max(0, $retryTime - time());
+                    }
+                }
+                $e->addContext($retryAfter, 'retry_after_header');
+                $e->addContext($delay, 'retry_after_seconds');
             }
             
             throw $e;
