@@ -173,16 +173,29 @@ class Folder extends Model implements FolderInterface
         return $this->id;
     }
 
-    public function setId($id = null)
+    /**
+     * @param string|int|null $id
+     * @return void
+     * @todo v1.0 strict string type
+     */
+    public function setId($id = null): void
     {
         $this->id = $id;
     }
 
-    public function setCreatedAt($createdAt = null)
+    /**
+     * @param \DateTimeInterface|string|null $createdAt
+     * @return void
+     * @todo v1.0 \DateTimeImmutable|null type
+     */
+    public function setCreatedAt($createdAt = null): void
     {
         $this->createdAt = $createdAt;
     }
 
+    /**
+     * @return \DateTimeInterface|string|null
+     */
     public function getCreatedAt()
     {
         return $this->createdAt;
@@ -198,7 +211,11 @@ class Folder extends Model implements FolderInterface
         return $this->createdBy;
     }
 
-    public function setDescription($description = null)
+    /**
+     * @param string|null $description
+     * @return void
+     */
+    public function setDescription($description = null): void
     {
         $this->description = $description;
     }
@@ -208,7 +225,11 @@ class Folder extends Model implements FolderInterface
         return $this->description;
     }
 
-    public function setEtag($etag = null)
+    /**
+     * @param string|null $etag
+     * @return void
+     */
+    public function setEtag($etag = null): void
     {
         $this->etag = $etag;
     }
@@ -248,7 +269,12 @@ class Folder extends Model implements FolderInterface
         return $this->itemCollection;
     }
 
-    public function setItemStatus($itemStatus = null)
+    /**
+     * @param string|null $itemStatus
+     * @return void
+     * @todo v1.0 Enum status
+     */
+    public function setItemStatus($itemStatus = null): void
     {
         $this->itemStatus = $itemStatus;
     }
@@ -258,11 +284,19 @@ class Folder extends Model implements FolderInterface
         return $this->itemStatus;
     }
 
-    public function setModifiedAt($modifiedAt = null)
+    /**
+     * @param \DateTimeInterface|string|null $modifiedAt
+     * @return void
+     * @todo v1.0 \DateTimeImmutable|null type
+     */
+    public function setModifiedAt($modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
     }
 
+    /**
+     * @return \DateTimeInterface|string|null
+     */
     public function getModifiedAt()
     {
         return $this->modifiedAt;
@@ -278,7 +312,11 @@ class Folder extends Model implements FolderInterface
         return $this->modifiedBy;
     }
 
-    public function setName($name = null)
+    /**
+     * @param string|null $name
+     * @return void
+     */
+    public function setName($name = null): void
     {
         $this->name = $name;
     }
@@ -338,7 +376,11 @@ class Folder extends Model implements FolderInterface
         return $this->sharedLink;
     }
 
-    public function setSize($size = null)
+    /**
+     * @param int|null $size
+     * @return void
+     */
+    public function setSize($size = null): void
     {
         $this->size = $size;
     }

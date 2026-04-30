@@ -42,5 +42,9 @@ interface FolderInterface extends ModelInterface
 
     public function getItems(): mixed;
 
+    /**
+     * @param string $syncState
+     * @return array
+     */
     public function classArray(string $syncState = "synced"): array;
 }

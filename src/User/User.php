@@ -60,10 +60,14 @@ class User extends Model implements UserInterface
     protected mixed $isExemptFromLoginVerification = null;
     protected mixed $enterprise = null;
 
+    /**
+     * @param string|int|null $id
+     * @return void
+     * @todo v1.0 strict string type
+     */
     public function setId(mixed $id = null): void
     {
         $this->id = $id;
-
     }
 
     public function getId(): mixed
@@ -104,19 +108,34 @@ class User extends Model implements UserInterface
         return $this->canSeeManagedUsers;
     }
 
-    public function setCreatedAt($createdAt = null)
+    /**
+     * @param \DateTimeInterface|string|null $createdAt
+     * @return void
+     * @todo v1.0 \DateTimeImmutable|null type
+     */
+    public function setCreatedAt($createdAt = null): void
     {
         $this->createdAt = $createdAt;
-
     }
 
+    /**
+     * @return \DateTimeInterface|string|null
+     */
     public function getCreatedAt()
     {
         return $this->createdAt;
     }
 
-    public function setEnterprise($enterprise = null)
+    /**
+     * @param object|array|null $enterprise
+     * @return void
+     */
+    public function setEnterprise($enterprise = null): void
     {
+        if (is_array($enterprise)) {
+            // @todo v1.0 remove array support
+        }
+
         $this->enterprise = $enterprise;
 
     }
@@ -181,10 +200,13 @@ class User extends Model implements UserInterface
         return $this->language;
     }
 
-    public function setLogin($login = null)
+    /**
+     * @param string|null $login
+     * @return void
+     */
+    public function setLogin($login = null): void
     {
         $this->login = $login;
-
     }
 
     public function getLogin()
@@ -192,10 +214,13 @@ class User extends Model implements UserInterface
         return $this->login;
     }
 
-    public function setMaxUploadSize($maxUploadSize = null)
+    /**
+     * @param float|int|null $maxUploadSize
+     * @return void
+     */
+    public function setMaxUploadSize($maxUploadSize = null): void
     {
         $this->maxUploadSize = $maxUploadSize;
-
     }
 
     public function getMaxUploadSize()
@@ -203,21 +228,31 @@ class User extends Model implements UserInterface
         return $this->maxUploadSize;
     }
 
-    public function setModifiedAt($modifiedAt = null)
+    /**
+     * @param \DateTimeInterface|string|null $modifiedAt
+     * @return void
+     * @todo v1.0 \DateTimeImmutable|null type
+     */
+    public function setModifiedAt($modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
-
     }
 
+    /**
+     * @return \DateTimeInterface|string|null
+     */
     public function getModifiedAt()
     {
         return $this->modifiedAt;
     }
 
-    public function setName($name = null)
+    /**
+     * @param string|null $name
+     * @return void
+     */
+    public function setName($name = null): void
     {
         $this->name = $name;
-
     }
 
     public function getName()
@@ -269,10 +304,14 @@ class User extends Model implements UserInterface
         return $this->spaceUsed;
     }
 
-    public function setStatus($status = null)
+    /**
+     * @param string|null $status
+     * @return void
+     * @todo v1.0 Enum status
+     */
+    public function setStatus($status = null): void
     {
         $this->status = $status;
-
     }
 
     public function getStatus()

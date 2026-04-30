@@ -64,7 +64,7 @@ interface ModelInterface extends BaseModelInterface
      *
      * @throws BoxException
      */
-    public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null);
+    public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null): void;
 
     /**
      * @param string $class
