@@ -33,6 +33,7 @@
 
 namespace Box\Connection;
 
+use Box\Http\FileStream;
 use Box\Http\Response\BoxResponse;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Http\Transport\CurlTransport;
@@ -308,29 +309,27 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function postFile(string $uri, string $file, int $parentId = 0): array|BoxResponseInterface
+    public function postFile(string $uri, string|FileStream $file, string|int $parentId = 0): array|BoxResponseInterface
     {
         // @todo allow Content-MD5 header to be set
-        // Post 1-n files, each element of $files array assumed to be absolute
-        // path to a file.  $files can be array (multiple) or string (one file).
-        // Data will be posted in a series of POST vars named $file0, $file1...
-        // $fileN
 
-        $pathInfo = pathinfo($file);
-        $filename = $file;
-        if (array_key_exists('filename', $pathInfo))
-        {
-            $filename = $pathInfo['filename'] . "." . $pathInfo['extension'];
+        if ($file instanceof FileStream) {
+            $resource = $file->getResource();
+            $filename = $file->getFilename();
+            $mimeType = $file->getMimeType() ?? 'application/octet-stream';
+        } else {
+            $pathInfo = pathinfo($file);
+            $filename = basename($file);
+            $mimeType = $this->getMimeType($file);
+            $resource = fopen($file, 'rb');
         }
-
-        $mimeType = $this->getMimeType($file);
 
         if (self::TRANSPORT_GUZZLE === $this->getTransportName()) {
             return $this->request('POST', $uri, [
                 'multipart' => [
                     [
                         'name' => 'file',
-                        'contents' => fopen($file, 'rb'),
+                        'contents' => $resource,
                         'filename' => $filename,
                         'headers' => [
                             'Content-Type' => $mimeType
@@ -344,12 +343,33 @@ class Connection extends Model implements ConnectionInterface
             ]);
         }
 
-        $curlFile = $this->createCurlFile($file, $mimeType, $filename);
+        if ($file instanceof FileStream) {
+            // For CurlTransport, we might need a temporary file if it only supports CURLFile with paths
+            // But CurlTransport's request() method just passes $options['multipart'] to curl_setopt(..., CURLOPT_POSTFIELDS, $fields)
+            // If we use Guzzle's approach of passing the resource, curl might not handle it correctly in an array for multipart.
+            // Actually, curl_setopt with an array for CURLOPT_POSTFIELDS expects CURLFile or string (starting with @ is deprecated).
+            
+            // To be safe and compatible with CurlTransport's current implementation:
+            $tmpFile = tempnam(sys_get_temp_dir(), 'box_upload_');
+            $tmpResource = fopen($tmpFile, 'wb');
+            stream_copy_to_stream($resource, $tmpResource);
+            fclose($tmpResource);
+            rewind($resource); // keep original resource state if possible, though it's probably better to just use the path now
 
-        $data=array(
-            'file' => $curlFile,
-            'parent_id' => $parentId
-        );
+            $curlFile = $this->createCurlFile($tmpFile, $mimeType, $filename);
+            
+            $response = $this->request('POST', $uri, [
+                'multipart' => [
+                    ['name' => 'file', 'contents' => $curlFile],
+                    ['name' => 'parent_id', 'contents' => (string)$parentId]
+                ]
+            ]);
+
+            unlink($tmpFile);
+            return $response;
+        }
+
+        $curlFile = $this->createCurlFile($file, $mimeType, $filename);
 
         return $this->request('POST', $uri, [
             'multipart' => [

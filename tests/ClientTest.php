@@ -189,25 +189,89 @@ class ClientTest extends TestCase
         ]));
 
         $connection = $this->createMock(Connection::class);
-        $connection->method('post')->willReturn($response);
+        $connection->expects($this->once())
+            ->method('post')
+            ->with(
+                Folder::URI,
+                [
+                    'name' => 'New Folder',
+                    'parent' => ['id' => '123'],
+                    'description' => 'A description'
+                ],
+                true
+            )
+            ->willReturn($response);
         $this->client->setConnection($connection);
 
         $token = new Token();
         $token->setAccessToken('foo');
         $this->client->setToken($token);
 
-        $folder = $this->client->createNewBoxFolder('New Folder', '0');
+        $folder = $this->client->createNewBoxFolder('New Folder', 123, ['description' => 'A description']);
         $this->assertInstanceOf(Folder::class, $folder);
         $this->assertEquals('456', $folder->getId());
     }
 
-    public function testUpdateBoxFolderThrows()
+    public function testUpdateBoxFolder()
     {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('currently not implemented/working.');
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('getContent')->willReturn(json_encode([
+            'type' => 'folder',
+            'id' => '123',
+            'name' => 'Updated Name'
+        ]));
+
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())
+            ->method('put')
+            ->with(
+                Folder::URI . '/123',
+                $this->callback(fn($params) => $params['name'] === 'Updated Name'),
+                true
+            )
+            ->willReturn($response);
+        
+        $connection->expects($this->once())
+            ->method('addHeader')
+            ->with('If-Match', 'etag123');
+
+        $this->client->setConnection($connection);
+
+        $token = new Token();
+        $token->setAccessToken('foo');
+        $this->client->setToken($token);
 
         $folder = new Folder();
-        $this->client->updateBoxFolder($folder);
+        $folder->setId('123');
+        $folder->setName('Updated Name');
+        $folder->setEtag('etag123');
+
+        $data = $this->client->updateBoxFolder($folder, true);
+        $this->assertIsArray($data);
+        $this->assertEquals('Updated Name', $data['name']);
+    }
+
+    public function testExchangeAuthorizationCodeForToken()
+    {
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('getContent')->willReturn(json_encode([
+            'access_token' => 'new_access_token',
+            'expires_in' => 3600,
+            'token_type' => 'bearer',
+            'refresh_token' => 'new_refresh_token'
+        ]));
+
+        $connection = $this->createMock(Connection::class);
+        $connection->method('post')->willReturn($response);
+        $this->client->setConnection($connection);
+
+        $this->client->setClientId('client_id');
+        $this->client->setClientSecret('client_secret');
+        $this->client->setAuthorizationCode('auth_code');
+
+        $token = $this->client->exchangeAuthorizationCodeForToken();
+        $this->assertInstanceOf(Token::class, $token);
+        $this->assertEquals('new_access_token', $token->getAccessToken());
     }
 
     public function testGetFolderCollaborations()

@@ -34,6 +34,7 @@ namespace Box\Connection;
 use Box\Exception\BoxException;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Model\ModelInterface;
+use Box\Http\FileStream;
 use CURLFile;
 
 interface ConnectionInterface extends ModelInterface
@@ -122,11 +123,11 @@ interface ConnectionInterface extends ModelInterface
 
     /**
      * @param string $uri
-     * @param string $file file/path to file
-     * @param int $parentId
+     * @param string|FileStream $file file/path to file or FileStream object
+     * @param string|int $parentId
      * @return array|BoxResponseInterface
      */
-    public function postFile(string $uri, string $file, int $parentId = 0): array|BoxResponseInterface;
+    public function postFile(string $uri, string|FileStream $file, string|int $parentId = 0): array|BoxResponseInterface;
 
     public function setAccessToken(?string $accessToken = null): void;
 

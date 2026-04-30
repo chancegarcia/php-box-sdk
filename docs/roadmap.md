@@ -20,8 +20,8 @@ The CLI can also support native/manual tasks when helpful, but that is secondary
 - Make environment-based configuration predictable and safe
 - Improve error handling for auth failures and edge cases
 
-### 3. File Upload Support
-- Continue refining upload behavior
+### 3. File Upload and Streaming
+- Support robust file uploads including streaming via `FileStream`
 - Improve handling of local files, temporary files, and remote responses
 - Make feedback clear and actionable
 - Validate upload success/failure states thoroughly
@@ -32,19 +32,25 @@ The CLI can also support native/manual tasks when helpful, but that is secondary
 - Support manual/native tasks where useful, without treating them as the primary goal
 - Avoid over-investing in CLI complexity that does not directly help SDK testing
 
-### 5. Testing and Quality
+### 5. SDK Architecture (v1.0 Vision)
+- Transition `Client` to a service facade
+- Replace class-string setters with constructor injection/factories
+- Standardize internal boundaries between transport, models, and services
+- Decouple `Connection` from `Model` inheritance
+
+### 6. Testing and Quality
 - Expand PHPUnit coverage across commands, services, and client behavior
 - Add tests for edge cases and failure scenarios
 - Keep test fixtures and temporary test data organized
 - Reduce regressions by covering critical flows first
 
-### 6. Documentation
+### 7. Documentation
 - Improve project documentation for setup and usage
 - Add practical examples for authentication and upload flows
 - Document command-line options and environment variables
 - Keep README and docs aligned with actual behavior
 
-### 7. Configuration Format Future Planning
+### 8. Configuration Format Future Planning
 - Track possible YAML/XML configuration integration here: [yaml-xml.md](yaml-xml.md)
 - Treat YAML/XML support as a future consideration, not a current requirement
 - If adopted later, it may be implemented in a separate Symfony bundle project instead of being supported directly in this repository

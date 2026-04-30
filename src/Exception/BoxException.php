@@ -41,11 +41,13 @@ class BoxException extends \Exception
     const INVALID_CLASS = "Invalid Class";
     const INVALID_INPUT = "Invalid Input";
     const MISSING_ID = "Missing Id";
+    const BOX_API_ERROR = "Box API Error";
 
     protected mixed $error = null;
     protected mixed $errorDescription = null;
     protected array $context = [];
     protected mixed $boxCode = null;
+    protected mixed $status = null;
 
     /**
      * @param string $message
@@ -157,5 +159,15 @@ class BoxException extends \Exception
     public function setBoxResponse(BoxResponseInterface $boxResponse): void
     {
         $this->boxResponse = $boxResponse;
+    }
+
+    public function setStatus(mixed $status): void
+    {
+        $this->status = $status;
+    }
+
+    public function getStatus(): mixed
+    {
+        return $this->status;
     }
 }

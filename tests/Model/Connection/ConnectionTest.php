@@ -139,4 +139,44 @@ class ConnectionTest extends TestCase
         $this->assertSame($response, $result);
         @curl_close($ch);
     }
+    public function testPostFileWithParentId()
+    {
+        $response = $this->createMock(BoxResponseInterface::class);
+        $connection = $this->getMockBuilder(Connection::class)
+            ->onlyMethods(['request'])
+            ->getMock();
+
+        $parentId = '12345';
+        $connection->expects($this->once())
+            ->method('request')
+            ->with('POST', 'http://example.com', $this->callback(function($options) use ($parentId) {
+                return $options['multipart'][1]['name'] === 'parent_id' && $options['multipart'][1]['contents'] === $parentId;
+            }))
+            ->willReturn($response);
+
+        $result = $connection->postFile('http://example.com', __FILE__, $parentId);
+        $this->assertSame($response, $result);
+    }
+
+    public function testPostFileWithFileStream()
+    {
+        $response = $this->createMock(BoxResponseInterface::class);
+        $connection = $this->getMockBuilder(Connection::class)
+            ->onlyMethods(['request'])
+            ->getMock();
+
+        $stream = \Box\Http\FileStream::fromString("test content", "test.txt", "text/plain");
+
+        $connection->expects($this->once())
+            ->method('request')
+            ->with('POST', 'http://example.com', $this->callback(function($options) {
+                // Check if multipart has file and parent_id
+                return count($options['multipart']) === 2;
+            }))
+            ->willReturn($response);
+
+        $result = $connection->postFile('http://example.com', $stream, 0);
+        $this->assertSame($response, $result);
+        fclose($stream->getResource());
+    }
 }

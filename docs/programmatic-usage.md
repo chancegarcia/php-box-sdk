@@ -72,32 +72,70 @@ if ($token->isExpired()) {
 
 The SDK uses `Box\Http\Response\BoxResponseInterface` for all API responses and throws `Box\Exception\BoxException` when things go wrong.
 
-### Inspection
-Always check the HTTP status code. Successful operations usually return `200`, `201`, or `204`.
-
-### Error Handling
+### Robust Error Handling
 A `BoxException` may contain a `BoxResponseInterface` if the error originated from the Box API. This allows you to inspect the JSON payload for specific Box error codes.
+
+The SDK follows a "fail-fast" principle for client-side validation (e.g., missing tokens or invalid parameters) while providing detailed information for server-side errors.
 
 ```php
 try {
-    $response = $client->uploadFileToBox($path);
+    $response = $client->uploadFileToBox($path, $folderId);
 } catch (Box\Exception\BoxException $e) {
+    // Check if the exception has an associated API response
     $apiResponse = $e->getBoxResponse();
-    if ($apiResponse && $apiResponse->getStatusCode() === 409) {
-        // Handle name collision
+    
+    if ($apiResponse) {
+        $statusCode = $apiResponse->getStatusCode();
+        $errorBody = $apiResponse->getBody(); // Returns array if JSON, or string
+        
+        if ($statusCode === 409) {
+            // Handle name collision
+        }
+    } else {
+        // Handle client-side exception (e.g., local file not found, missing config)
+        echo "Client error: " . $e->getMessage();
     }
-    throw $e;
 }
 ```
 
-## 6. File Upload Integration
+## 6. File Uploads and Streaming
 
-Uploads require a local file path and optionally a target folder ID (defaults to `0` for the root folder).
+The SDK supports uploading files either from a local path or directly from a stream.
 
-- **Validation:** Validate that the local file exists and is readable *before* calling the SDK.
-- **Targeting:** Treat folder IDs as configuration or dynamic metadata within your app. Do not hardcode them.
+### Local File Upload
+```php
+$client->uploadFileToBox('/path/to/local/file.txt', 'target_folder_id');
+```
 
-## 7. Logging and Observability
+### File Streaming with `FileStream`
+For in-memory content or resources from other streams, use `Box\Http\FileStream`. This avoids writing temporary files to disk.
+
+```php
+use Box\Http\FileStream;
+
+// From a string
+$stream = FileStream::fromString('Dynamic content', 'report.csv', 'text/csv');
+$client->uploadFileToBox($stream, '0');
+
+// From an existing resource
+$fh = fopen('https://example.com/remote-image.jpg', 'r');
+$stream = new FileStream($fh, 'remote-image.jpg');
+$client->uploadFileToBox($stream, 'folder_id');
+
+// From a path with custom filename/mimetype
+$stream = FileStream::fromPath('/tmp/raw_data', 'final_name.dat', 'application/octet-stream');
+$client->uploadFileToBox($stream, 'folder_id');
+```
+
+## 7. Model Validation and Box IDs
+
+The SDK models use a shared trait-based validation system. In v0.11.x, Box IDs are consistently handled as `string|int` to ensure compatibility with both numeric and string-based IDs used by Box.
+
+### Data Types
+- **IDs:** Use `string` or `int`. The SDK will normalize these when communicating with the API.
+- **Models:** Models are populated via arrays but can be validated for required fields.
+
+## 8. Logging and Observability
 
 The SDK implements `Psr\Log\LoggerAwareInterface`. It is highly recommended to inject your application's PSR-3 compliant logger (e.g., Monolog).
 
@@ -105,19 +143,19 @@ The SDK implements `Psr\Log\LoggerAwareInterface`. It is highly recommended to i
 - **Propagation:** Once a logger is set on the `Client`, it is automatically propagated to all objects created by the client, such as `Connection`, `Folder`, and `File` models.
 - **Host Integration:** In a Symfony or Laravel app, the container should automatically inject the main application logger into the `Client` service.
 
-## 8. Extension and Composition Patterns
+## 9. Extension and Composition Patterns
 
 To maintain a clean boundary:
 - **Factories:** Use a factory to create the `Client` with the correct `Logger` and base configuration.
 - **Adapters:** If your application supports multiple storage backends, implement a `StorageInterface` and create a `BoxStorageAdapter` that wraps the SDK.
 
-## 9. Best Practices
+## 10. Best Practices
 
 - **Security:** Never commit `BOX_CLIENT_SECRET` or any tokens to source control.
 - **Infrastructure:** Treat the SDK as infrastructure. Your business logic shouldn't know how Box handles OAuth2; it should only care about "storing a file."
 - **Testing:** Use the SDK's interfaces to mock the `Client` in your unit tests.
 
-## 10. Minimal Examples
+## 11. Minimal Examples
 
 ### Service Wrapper
 ```php

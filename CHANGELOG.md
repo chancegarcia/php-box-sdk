@@ -3,32 +3,46 @@
 ## [v 0.11.0]
 
 ### Summary
-- **Modernized PHP Requirement**: The SDK now requires PHP 8.4 or higher, leveraging the latest language features for better performance and type safety.
-- **Streamlined Namespace Structure**: Simplified the project structure and namespaces (e.g., `Box\Client` instead of `Box\Model\Client\Client`), making the SDK more intuitive to use.
-- **New CLI Test Harness**: Introduced a powerful command-line tool (`bin/box-sdk`) for testing API interactions, managing authentication, and uploading files without writing code.
-- **Enhanced Logging and Observability**: Integrated Monolog support, allowing developers to easily plug in and configure detailed logging for all API interactions.
-- **Pluggable HTTP Transports**: Added support for both Guzzle and native Curl transports, giving developers more control over how HTTP requests are handled.
+- **Modernized for PHP 8.4**: Updated to leverage PHP 8.4 features like property hooks and improved type safety, requiring a minimum of PHP 8.4.
+- **Simplified SDK Structure**: Flattened namespaces for a more intuitive developer experience (e.g., `Box\Client` instead of `Box\Model\Client\Client`).
+- **New CLI Test Harness**: Introduced `bin/box-sdk`, a command-line tool for managing OAuth2 flows and interacting with the Box API without writing code.
+- **Flexible HTTP Layer**: Added support for pluggable HTTP transports, including Guzzle and a native Curl implementation.
+- **Enhanced Observability**: Integrated Monolog for standard logging across all API interactions.
+- **Memory-Efficient Uploads**: Introduced a new file streaming abstraction to handle large uploads from various sources with minimal memory overhead.
 
 ### Developer Details
-- **Namespace Flattening**: The `Box\` namespace now maps directly to `src/`. This structural change affects all class imports.
-- **Authentication Improvements**: Added `auth:url`, `auth:exchange-code`, and `auth:refresh-token` commands to the new CLI tool to facilitate OAuth2 flows.
-- **HTTP Layer**:
+- **Architecture**:
     - Introduced `TransportInterface` to decouple HTTP execution from client logic.
-    - Added `GuzzleTransport` and `CurlTransport` implementations.
-    - `BoxResponse` has been rewritten to provide better access to headers and status information.
-- **Configuration**:
-    - Introduced `EnvConfigProvider` for environment-variable based configuration.
-    - Added a central `config/monolog.php` for logging configuration.
-- **Service Layer**: Added `BoxClientFactory` and various service-level interfaces to decouple transport from business logic.
+    - Added `GuzzleTransport` and `CurlTransport` (default).
+    - `BoxResponse` now provides direct access to headers, status lines, and parsed body content.
+- **Client & Models**:
+    - Primary entry point moved to `Box\Client`.
+    - Model setters now return `void`, deprecating the previous fluent/chained API style.
+    - Added `Client::exchangeAuthorizationCodeForToken()` as a descriptive alias for OAuth2 code exchange.
+    - Standardized Box IDs as `string|int` for consistency across the SDK.
+- **Authentication & Config**:
+    - Added `EnvConfigProvider` for easy environment-variable based configuration.
+    - CLI tool supports `auth:url`, `auth:exchange-code`, and `auth:refresh-token` commands.
+- **Logging**: Centralized logging via `LoggerFactory` and `LoggerAwareInterface`, supporting PSR-3 compliant loggers.
 
 ### Breaking Changes
-- **PHP 8.4 Required**: Versions of PHP older than 8.4 are no longer supported.
-- **Class Renames/Moves**: Almost every class has been moved or renamed due to the namespace reorganization. The primary entry point is now `Box\Client`.
-- **Dependency Updates**: Updated major versions of Symfony components (v7/v8) and PSR log (v3).
+- **PHP Version**: PHP >= 8.4 is now required.
+- **Namespaces**: Extensive reorganization of classes. While aliases exist for many classes in 0.11.0, they are deprecated and will be removed in v1.0.
+- **Non-Fluent Setters**: All model setters (e.g., `setName()`, `setId()`) no longer return `$this`. Chained calls will now result in errors.
+- **Dependency Updates**: Upgraded to Symfony 7/8 components and PSR-3 logging.
 
 ### Migration Notes
-- **Update PHP Version**: Ensure your environment is running PHP 8.4+.
-- **Update Namespaces**: Update all imports from `Box\Model\Client\Client` to `Box\Client`. Other models and services have similarly moved from `Box\Box\...` to `Box\...`.
-- **Update Autoloading**: If you have custom autoloading, reflect that `Box\` classes are now located directly under `src/`.
-- **Configuration**: Use the new `.env.dist` template to configure `BOX_CLIENT_ID` and `BOX_CLIENT_SECRET` for use with the CLI or `EnvConfigProvider`.
-- **Upgrade Guide**: See the detailed [Upgrading from 0.10.x to 0.11.0](docs/upgrading-0.10-to-0.11.md) guide for more information.
+- **Update PHP**: Ensure your environment is running PHP 8.4 or higher.
+- **Namespace Refactor**: Update imports to the new flattened structure. For example, change `use Box\Model\Client\Client` to `use Box\Client`.
+- **Unchain Setters**: Break any chained setter calls into individual statements.
+    - *Before*: 
+       ```php
+      $folder->setName('New Name')->setParentId('0');
+       ```
+    - *After*:
+       ```php
+      $folder->setName('New Name'); 
+      $folder->setParentId('0');
+       ``` 
+- **Configuration**: Use the new `.env.dist` as a template for environment-based configuration if using `EnvConfigProvider` or the CLI.
+- **Detailed Guide**: Refer to [Upgrading from 0.10.x to 0.11.0](docs/upgrading-0.10-to-0.11.md) guide for a comprehensive migration checklist.

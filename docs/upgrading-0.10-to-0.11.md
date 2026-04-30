@@ -79,6 +79,21 @@ $file->setName('document.pdf');
 $file->setDescription('Project specs');
 ```
 
+## New Features and Improvements
+
+### Client Robustness and Error Handling
+- **Robust Exceptions:** `BoxException` now frequently includes a `BoxResponseInterface` (via `$e->getBoxResponse()`), allowing programmatic inspection of API error details.
+- **Fail-Fast Validation:** The client now performs more rigorous checks on configuration (like tokens) before attempting remote calls, throwing descriptive `BoxException` errors early.
+
+### File Streaming Support
+- **FileStream Abstraction:** Introduced `Box\Http\FileStream` for handling file uploads from resources, strings, or specific paths without requiring disk access.
+- **Upload Flexibility:** Both `Client::uploadFileToBox()` and `Connection::postFile()` now accept a `FileStream` object in addition to standard file paths.
+
+### API Enhancements
+- **Parent ID Support:** `Client::uploadFileToBox()` now accepts a second parameter `$parentId` (defaulting to `0`), matching the underlying `Connection` capability.
+- **Auth Aliases:** Added `exchangeAuthorizationCodeForToken()` as a clearer alternative to `getAccessToken()` for the OAuth2 code exchange step.
+- **Type Flexibility:** Box IDs are now consistently documented and supported as `string|int` to avoid issues with large numeric-string IDs.
+
 ## Search Patterns
 You can use the following patterns to find code that needs attention:
 

@@ -2,9 +2,9 @@ You are working in the current project.
 
 User inputs:
 - Release tag: insert-tag-here
-  - Optional.
-  - Replace `insert-tag-here` with a specific git tag only when you want to force the changelog comparison base.
-  - If the value is still `insert-tag-here`, treat it as not provided and determine the comparison base automatically using the rules below.
+    - Optional.
+    - Replace `insert-tag-here` with a specific git tag only when you want to force the changelog comparison base.
+    - If the value is still `insert-tag-here`, treat it as not provided and determine the comparison base automatically using the rules below.
 
 Task:
 Create or update `CHANGELOG.md` by comparing the current codebase against the selected previous release point.
@@ -43,16 +43,18 @@ Required output structure:
 6. `### Migration Notes` only if users need to adjust code or configuration
 
 Section rules:
+
 ### Summary
-- 3–6 bullets only
-- Plain English
-- High-level
-- Explain what changed and why a user should care
-- No deep technical jargon unless it is unavoidable
+- 3–6 bullets only.
+- Plain English.
+- High-level.
+- Explain what changed and why a user should care.
+- No deep technical jargon unless it is unavoidable.
+- Prefer readable prose to code examples in this section.
 
 ### Developer Details
-- More technical, but still concise
-- Group bullets by theme, not by file
+- More technical, but still concise.
+- Group bullets by theme, not by file.
 - Include:
     - API or public surface changes
     - behavior changes
@@ -61,19 +63,56 @@ Section rules:
     - configuration changes
     - CLI changes
     - compatibility implications
-- Keep this section focused on upgrade-relevant details
-- Do not turn this into a changelog dump
+- Keep this section focused on upgrade-relevant details.
+- Do not turn this into a changelog dump.
+- When showing concrete usage changes, prefer separate Markdown code blocks for examples instead of inline code snippets.
 
 ### Breaking Changes
-- Include only if the diff introduces actual breaking behavior
-- Make the impact unmistakable
-- State what will fail or behave differently
-- Keep it short and direct
+- Include only if the diff introduces actual breaking behavior.
+- Make the impact unmistakable.
+- State what will fail or behave differently.
+- Keep it short and direct.
+- If showing old and new usage, use clearly labeled `Before` and `After` examples with separate fenced code blocks.
 
 ### Migration Notes
-- Include only when users must change code, config, or workflow
-- Make each note actionable
-- If no migration is required, omit this section entirely
+- Include only when users must change code, config, or workflow.
+- Make each note actionable.
+- If no migration is required, omit this section entirely.
+- Prefer examples when they make the required change clearer.
+- For examples, use fenced code blocks whenever possible instead of putting multiple statements inline.
+
+Example formatting rule:
+- Prefer this style for code examples:
+
+- **Unchain Setters**: Break any chained setter calls into individual statements.
+    - *Before*:
+
+      ~~~~php
+      $folder->setName('New Name')->setParentId('0');
+      ~~~~
+
+    - *After*:
+
+      ~~~~php
+      $folder->setName('New Name');
+      $folder->setParentId('0');
+      ~~~~
+
+- Avoid this style when the example contains more than a trivial expression:
+
+    - *Before*: `$folder->setName('New Name')->setParentId('0');`
+    - *After*: `$folder->setName('New Name'); $folder->setParentId('0');`
+
+Code example rules:
+- Prefer fenced code blocks for examples when possible.
+- Use the correct language identifier on fenced code blocks, such as `php`, `bash`, `json`, `yaml`, `xml`, or `markdown`.
+- Use inline code only for short identifiers, method names, class names, option names, file paths, single constants, or very short expressions.
+- Do not cram multiple statements into inline code.
+- If an example has both old and new usage, label them as `Before` and `After`.
+- Keep examples minimal and focused on the migration or behavior change.
+- Do not include speculative examples that are not supported by the diff.
+- Prefer code examples that users can copy directly.
+- Use Markdown tilde fences for code examples when that avoids nested backtick issues.
 
 Content selection rules:
 - Include only consumer-visible and developer-relevant changes.
@@ -108,3 +147,4 @@ Final editorial standard:
 - If a reader can’t act on it or understand why it matters, leave it out.
 - If a reader would not notice the change in real usage, leave it out.
 - If a reader must know it to upgrade safely, say it plainly.
+- If an example would make a migration safer or clearer, include it as a fenced code block rather than inline code.

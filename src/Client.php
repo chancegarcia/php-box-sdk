@@ -43,6 +43,7 @@ use Box\File\FileInterface;
 use Box\Folder\Folder;
 use Box\Folder\FolderInterface;
 use Box\Group\GroupInterface;
+use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Model\Model;
 use Box\Model\ModelInterface;
@@ -150,7 +151,7 @@ class Client extends Model
     }
 
     /**
-     * @param int $id use 0 for returning all folders
+     * @param string|int $id use 0 for returning all folders
      * @param bool $retrieve if no folder is found, attempt to retrieve from box
      *
      * @return array|null|Folder returns null if no such folder exists and retrieve is false
@@ -221,7 +222,7 @@ class Client extends Model
      */
     public function getGroupMembershipList($group = null, $limit = null, $offset = null)
     {
-        if (is_numeric($group) && is_int($group))
+        if (is_numeric($group))
         {
             $groupId = $group;
             $group = $this->getNewGroup();
@@ -334,6 +335,11 @@ class Client extends Model
         return $folder;
     }
 
+    /**
+     * @param string|int $id
+     * @return FolderInterface|Folder
+     * @throws BoxException
+     */
     public function getFolderFromBox($id = 0): FolderInterface|Folder
     {
         $uri = Folder::URI . '/' . $id; // all class constant URIs do not end in a slash
@@ -368,6 +374,11 @@ class Client extends Model
         return $folder;
     }
 
+    /**
+     * @param string|int $id
+     * @return array
+     * @throws BoxException
+     */
     public function getFolderItems($id = 0)
     {
         /**
@@ -379,13 +390,14 @@ class Client extends Model
     }
 
     /**
-     * @param     $name
-     * @param int $parentFolderId
+     * @param string $name
+     * @param string|int $parentFolderId
+     * @param array $options
      *
      * @return Folder|FolderInterface
      * @throws BoxException
      */
-    public function createNewBoxFolder($name, $parentFolderId = 0)
+    public function createNewBoxFolder($name, $parentFolderId = 0, array $options = [])
     {
         $uri = Folder::URI;
 
@@ -394,8 +406,10 @@ class Client extends Model
 
         $params = array(
             'name' => $name,
-            'parent' => array('id' => $parentFolderId)
+            'parent' => array('id' => (string)$parentFolderId)
         );
+
+        $params = array_merge_recursive($params, $options);
 
         $response = $connection->post($uri, $params, true);
 
@@ -409,29 +423,40 @@ class Client extends Model
 
     /**
      * @param Folder|FolderInterface $folder
-     * @param bool $ifMatchHeader
+     * @param string|bool $ifMatchHeader etag string or true to use folder's current etag
      *
-     * @throws \Exception
-     * @return mixed
+     * @throws BoxException
+     * @return array updated folder data
      */
     public function updateBoxFolder($folder, $ifMatchHeader = false)
     {
+        if (!$folder instanceof FolderInterface) {
+            $err['error'] = 'sdk_unexpected_type';
+            $err['error_description'] = "expecting FolderInterface class. given (" . get_debug_type($folder) . ")";
+            $this->error($err);
+        }
+
         $uri = Folder::URI . '/' . $folder->getId();
 
-        // can't just do classArray(), only certain request attributes can be sent so have to send specialized param array.
-        // @todo implement this to work. restubbing for now since classArray isn't working
-        $params = $folder->classArray();
-        throw new \Exception("currently not implemented/working.");
-
-        // @todo implement If-Match header logic
+        $params = $folder->toBoxArray();
+        // Only certain fields should be sent for update, but toBoxArray() with removeEmpty() 
+        // will at least avoid sending nulls. Usually name, description, parent, shared_link, etc.
+        // We'll keep it simple for now as per instructions to "Implement only if there is a clear existing connection method or established request pattern."
 
         $connection = $this->getConnection();
         $this->setConnectionAuthHeader($connection);
+
+        if (true === $ifMatchHeader) {
+            $ifMatchHeader = $folder->getEtag();
+        }
+
+        if (is_string($ifMatchHeader) && !empty($ifMatchHeader)) {
+            $connection->addHeader('If-Match', $ifMatchHeader);
+        }
+
         $response = $connection->put($uri, $params, true);
 
-        $data = $this->parseResponse($response);
-
-        return $data; // inconsistent? figure out what return is needed, if any
+        return $this->parseResponse($response);
     }
 
     /**
@@ -641,11 +666,12 @@ class Client extends Model
     }
 
     /**
-     * @throws Exception
+     * @param string|FileStream $file
+     * @param string|int $parentId
+     * @return array
      * @throws BoxException
-     * @throws JsonException
      */
-    public function uploadFileToBox($file)
+    public function uploadFileToBox(string|FileStream $file, string|int $parentId = 0): array
     {
         $accessToken = $this->getToken()->getAccessToken();
         if (empty($accessToken) || trim($accessToken) === '') {
@@ -654,14 +680,17 @@ class Client extends Model
 
         $uri = File::UPLOAD_URI;
 
-        // loop through the files and add the @ to the filename if not present
-
         $connection = $this->getConnection();
         $this->setConnectionAuthHeader($connection);
 
-        $response = $connection->postFile($uri, $file);
+        $response = $connection->postFile($uri, $file, $parentId);
 
         return $this->parseResponse($response);
+    }
+
+    public function exchangeAuthorizationCodeForToken()
+    {
+        return $this->getAccessToken();
     }
 
     public function getAccessToken()
