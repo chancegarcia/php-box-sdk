@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Http_Response
@@ -29,9 +30,10 @@ class StatusLine implements StatusLineInterface
     protected $statusCode = 200;
     protected $reasonPhrase = "OK";
 
-    public function __construct($sStatusLine = '') {
+    public function __construct($sStatusLine = '')
+    {
         if (!is_string($sStatusLine)) {
-            throw new \InvalidArgumentException("string value expected for parsing. given: ".gettype($sStatusLine));
+            throw new \InvalidArgumentException("string value expected for parsing. given: " . gettype($sStatusLine));
         }
 
         if (!empty($sStatusLine)) {
@@ -46,20 +48,21 @@ class StatusLine implements StatusLineInterface
             $this->statusCode = $code;
             $this->reasonPhrase = $reasonPhrase;
         }
-
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getHttpVersionPrefix(): string {
+    public function getHttpVersionPrefix(): string
+    {
         return $this->httpVersionPrefix;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setHttpVersionPrefix(?string $httpVersionPrefix = null): StatusLineInterface {
+    public function setHttpVersionPrefix(?string $httpVersionPrefix = null): StatusLineInterface
+    {
         $this->httpVersionPrefix = $httpVersionPrefix;
 
         return $this;
@@ -68,14 +71,16 @@ class StatusLine implements StatusLineInterface
     /**
      * {@inheritdoc}
      */
-    public function getHttpVersionNumber(): string {
+    public function getHttpVersionNumber(): string
+    {
         return $this->httpVersionNumber;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setHttpVersionNumber(?string $httpVersionNumber = null): StatusLineInterface {
+    public function setHttpVersionNumber(?string $httpVersionNumber = null): StatusLineInterface
+    {
         $this->httpVersionNumber = $httpVersionNumber;
 
         return $this;
@@ -84,14 +89,16 @@ class StatusLine implements StatusLineInterface
     /**
      * {@inheritdoc}
      */
-    public function getHttpVersion(): string {
+    public function getHttpVersion(): string
+    {
         return $this->httpVersion;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setHttpVersion(?string $httpVersion = null): StatusLineInterface {
+    public function setHttpVersion(?string $httpVersion = null): StatusLineInterface
+    {
         $this->httpVersion = $httpVersion;
 
         return $this;
@@ -100,14 +107,16 @@ class StatusLine implements StatusLineInterface
     /**
      * {@inheritdoc}
      */
-    public function getStatusCode(): int {
+    public function getStatusCode(): int
+    {
         return $this->statusCode;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setStatusCode(?int $statusCode = null): StatusLineInterface {
+    public function setStatusCode(?int $statusCode = null): StatusLineInterface
+    {
         $this->statusCode = $statusCode;
 
         return $this;
@@ -116,17 +125,18 @@ class StatusLine implements StatusLineInterface
     /**
      * {@inheritdoc}
      */
-    public function getReasonPhrase(): string {
+    public function getReasonPhrase(): string
+    {
         return $this->reasonPhrase;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setReasonPhrase(?string $reasonPhrase = null): StatusLineInterface {
+    public function setReasonPhrase(?string $reasonPhrase = null): StatusLineInterface
+    {
         $this->reasonPhrase = $reasonPhrase;
 
         return $this;
     }
-
 }

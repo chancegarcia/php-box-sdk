@@ -11,11 +11,11 @@ class FileStreamTest extends TestCase
     {
         $path = __FILE__;
         $stream = FileStream::fromPath($path);
-        
+
         $this->assertTrue(is_resource($stream->getResource()));
         $this->assertEquals(basename($path), $stream->getFilename());
         $this->assertNull($stream->getMimeType());
-        
+
         fclose($stream->getResource());
     }
 
@@ -25,12 +25,12 @@ class FileStreamTest extends TestCase
         $filename = "test.txt";
         $mimeType = "text/plain";
         $stream = FileStream::fromString($content, $filename, $mimeType);
-        
+
         $this->assertTrue(is_resource($stream->getResource()));
         $this->assertEquals($filename, $stream->getFilename());
         $this->assertEquals($mimeType, $stream->getMimeType());
         $this->assertEquals($content, stream_get_contents($stream->getResource()));
-        
+
         fclose($stream->getResource());
     }
 

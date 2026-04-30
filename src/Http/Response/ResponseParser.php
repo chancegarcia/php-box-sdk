@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package
  * @subpackage
@@ -42,10 +43,11 @@ class ResponseParser
      * @return array if non-associative, return in order: httpVersion, statusCode, reasonPhrase
      * @throws BoxException
      */
-    public static function parseHeaderStatusLine(string $sStatusLine = '', bool $associative = true): array {
+    public static function parseHeaderStatusLine(string $sStatusLine = '', bool $associative = true): array
+    {
 
         if (!is_string($sStatusLine)) {
-            throw new \InvalidArgumentException("string value expected for parsing. given: ".gettype($sStatusLine));
+            throw new \InvalidArgumentException("string value expected for parsing. given: " . gettype($sStatusLine));
         }
 
         list($httpVersion, $statusCode, $reasonPhrase) = explode(" ", $sStatusLine);
@@ -73,13 +75,15 @@ class ResponseParser
      * @param bool $replace
      * @return array
      */
-    public static function parseHeader(string $sHeaders = '', bool $replace = true): array {
+    public static function parseHeader(string $sHeaders = '', bool $replace = true): array
+    {
         if (!is_string($sHeaders)) {
-            throw new \InvalidArgumentException("string value expected for parsing. given: ".gettype($sHeaders));
+            throw new \InvalidArgumentException("string value expected for parsing. given: " . gettype($sHeaders));
         }
 
         $finalHeaders = array();
-        $aHeaders = explode(PHP_EOL, $sHeaders);;
+        $aHeaders = explode(PHP_EOL, $sHeaders);
+        ;
         foreach ($aHeaders as $headerLineKey => $headerLineValue) {
             // based on protocols found on https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html
             // first line is Status Line
@@ -102,7 +106,8 @@ class ResponseParser
         return $finalHeaders;
     }
 
-    public static function parseWwwAuthenticateHeader(?string $wwwAuthenticateHeaderValue = null): array {
+    public static function parseWwwAuthenticateHeader(?string $wwwAuthenticateHeaderValue = null): array
+    {
         if (!is_string($wwwAuthenticateHeaderValue) || empty($wwwAuthenticateHeaderValue)) {
             return array();
         }
