@@ -86,13 +86,34 @@ For detailed setup instructions, available commands, and logging options, see th
 - [CLI Test Harness Guide](docs/cli-test-harness.md)
 - [Project Roadmap](docs/roadmap.md)
 
-## Development and Testing
+## Development and Quality Checks
 
-Run the test suite:
-```bash
-./vendor/bin/phpunit
-```
+The following commands are available for local development and quality assurance:
 
+- **Run all checks (recommended before pushing):**
+  ```bash
+  composer review
+  ```
+- **Run tests:**
+  ```bash
+  composer test
+  ```
+- **Static analysis (PHPStan):**
+  ```bash
+  composer analyse
+  ```
+- **Check code style:**
+  ```bash
+  composer cs:check
+  ```
+- **Fix code style automatically:**
+  ```bash
+  composer cs:fix
+  ```
+- **Lint PHP syntax:**
+  ```bash
+  composer lint
+  ```
 
 ## License
 
