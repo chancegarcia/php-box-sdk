@@ -2,7 +2,7 @@
 
 namespace Box\Tests\Model\Mapper;
 
-use Box\Model\Mapper\Hydrator;
+use Box\Mapper\Hydrator;
 use Doctrine\Common\Collections\Collection;
 use PHPUnit\Framework\TestCase;
 
@@ -78,7 +78,7 @@ class HydratorTest extends TestCase
 }
 
 class Address { public string $street; }
-class User { 
+class User {
     public string $name;
     public ?Address $address = null;
 }
