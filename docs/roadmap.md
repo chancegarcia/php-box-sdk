@@ -2,9 +2,32 @@
 
 ## Project Vision
 
-Build a reliable, developer-friendly PHP SDK for working with Box-related functionality. The CLI exists mainly as a quick, practical test tool for verifying SDK behavior without needing to wire the package into an existing Composer project during every iteration.
+Build a reliable, developer-friendly PHP SDK for working with Box-related functionality. v0.11.0 is a **functional transition release** that modernization the codebase and introduces v1.0 architecture patterns while preserving backward compatibility.
 
-The CLI can also support native/manual tasks when helpful, but that is secondary to the SDK-first purpose of the project.
+The CLI exists mainly as a quick, practical test tool for verifying SDK behavior without needing to wire the package into an existing Composer project during every iteration.
+
+## Release Strategy
+
+### v0.11.0 (Functional Transition)
+- **Goal**: Bridge v0.10.x and v1.0.
+- **Status**: Current Release.
+- **Key Features**:
+    - PHP 8.4+ requirement.
+    - Flattened namespaces with legacy aliases.
+    - Recursive Hydration layer.
+    - Doctrine Collections.
+    - Transition layer for nested model fields (supporting both arrays and objects).
+    - Introduction of DTOs for complex payloads.
+    - Pluggable HTTP transports.
+
+### v1.0 (Design Perfection)
+- **Goal**: Full implementation of the future architecture with no legacy baggage.
+- **Planned Changes**:
+    - Remove all legacy aliases and deprecated namespaces.
+    - Enforce object-only types for nested model fields (remove array support).
+    - Stricter typing: IDs as `string`, Dates as `DateTimeImmutable`.
+    - Fully remove `Box\Model\ModelTrait` and `Box\Model\BaseModel` if replaced by modern alternatives.
+    - Standardize constructor injection across all services.
 
 ## Current Focus Areas
 
