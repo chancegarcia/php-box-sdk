@@ -96,6 +96,7 @@ class BoxException extends \Exception
     }
 
     public function addContext(mixed $contextInformation = null, ?string $key = null): void {
+        $contextInformation = $this->sanitize($contextInformation);
         if (is_string($key)) {
             $finalKey = $key;
             // if we have duplicate key for some reason, make it unique
@@ -109,6 +110,50 @@ class BoxException extends \Exception
         } else {
             $this->context[] = $contextInformation;
         }
+    }
+
+    protected function sanitize(mixed $data): mixed
+    {
+        if (is_string($data)) {
+            // Mask common tokens and secrets
+            $patterns = [
+                '/(access_token|refresh_token|client_secret|code)(=|":\s*")([^"&\s,]+)/i',
+                '/(Bearer\s+)([^"&\s,]+)/i'
+            ];
+            foreach ($patterns as $pattern) {
+                $data = preg_replace_callback($pattern, function($matches) {
+                    $secret = $matches[count($matches)-1];
+                    $masked = substr($secret, 0, 4) . '...' . substr($secret, -4);
+                    if (strlen($secret) <= 8) {
+                        $masked = '********';
+                    }
+                    // Reconstruct with the prefix groups
+                    $prefix = '';
+                    for ($i = 1; $i < count($matches)-1; $i++) {
+                        $prefix .= $matches[$i];
+                    }
+                    return $prefix . $masked;
+                }, $data);
+            }
+        } elseif (is_array($data)) {
+            foreach ($data as $k => $v) {
+                if (is_string($k) && preg_match('/(token|secret|code)/i', $k)) {
+                    $data[$k] = '********';
+                } else {
+                    $data[$k] = $this->sanitize($v);
+                }
+            }
+        } elseif ($data instanceof \stdClass) {
+            foreach (get_object_vars($data) as $k => $v) {
+                if (preg_match('/(token|secret|code)/i', $k)) {
+                    $data->$k = '********';
+                } else {
+                    $data->$k = $this->sanitize($v);
+                }
+            }
+        }
+
+        return $data;
     }
 
     public function getContext(?string $key = null): mixed {
