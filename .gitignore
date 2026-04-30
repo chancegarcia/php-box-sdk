@@ -15,6 +15,7 @@ composer.lock
 /.php-cs-fixer.cache
 /phpstan-result.cache
 /psalm.xml.cache
+/.phpcs-cache
 
 # Keep directory structure, ignore contents
 var/tmp/*
