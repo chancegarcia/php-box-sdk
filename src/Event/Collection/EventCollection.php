@@ -35,11 +35,11 @@
 
 namespace Box\Event\Collection;
 
-use Box\Collection\ArrayCollection;
-use Box\Collection\ArrayCollectionInterface;
 use Box\Exception\BoxException;
 use Box\Model\Model;
 use Box\Model\ModelInterface;
+use Doctrine\Common\Collections\ArrayCollection as DoctrineArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 class EventCollection extends Model implements EventCollectionInterface
 {
@@ -47,7 +47,7 @@ class EventCollection extends Model implements EventCollectionInterface
     protected $nextStreamPosition;
 
     /**
-     * @var ArrayCollectionInterface
+     * @var Collection
      */
     protected $entries;
     protected $originalEntries;
@@ -55,7 +55,7 @@ class EventCollection extends Model implements EventCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getOriginalEntries()
+    public function getOriginalEntries(): mixed
     {
         return $this->originalEntries;
     }
@@ -63,16 +63,17 @@ class EventCollection extends Model implements EventCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function setOriginalEntries($originalEntries = null)
+    public function setOriginalEntries($originalEntries = null): EventCollectionInterface
     {
         $this->originalEntries = $originalEntries;
 
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getChunkSize()
+    public function getChunkSize(): mixed
     {
         return $this->chunkSize;
     }
@@ -80,16 +81,17 @@ class EventCollection extends Model implements EventCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function setChunkSize($chunkSize = null)
+    public function setChunkSize($chunkSize = null): EventCollectionInterface|EventCollection
     {
         $this->chunkSize = $chunkSize;
 
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getNextStreamPosition()
+    public function getNextStreamPosition(): mixed
     {
         return $this->nextStreamPosition;
     }
@@ -97,16 +99,17 @@ class EventCollection extends Model implements EventCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function setNextStreamPosition($nextStreamPosition = null)
+    public function setNextStreamPosition($nextStreamPosition = null): EventCollectionInterface|EventCollection
     {
         $this->nextStreamPosition = $nextStreamPosition;
 
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getEntries()
+    public function getEntries(): Collection
     {
         return $this->entries;
     }
@@ -114,23 +117,24 @@ class EventCollection extends Model implements EventCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function setEntries($entries = null)
+    public function setEntries($entries = null): EventCollectionInterface
     {
         if (is_array($entries))
         {
             $this->originalEntries = $entries;
-            $entries = new ArrayCollection($entries);
+            $entries = new DoctrineArrayCollection($entries);
         }
         else
         {
-            if (!$entries instanceof ArrayCollectionInterface)
+            if (!$entries instanceof Collection)
             {
-                throw new BoxException('entries must be an array or instance of ArrayCollectionInterface');
+                throw new BoxException('entries must be an array or instance of \Doctrine\Common\Collections\Collection');
             }
         }
 
         $this->entries = $entries;
 
+        return $this;
     }
 
 }
