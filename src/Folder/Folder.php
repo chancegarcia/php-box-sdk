@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Folder
@@ -63,21 +64,22 @@ class Folder extends Model implements FolderInterface
     {
         $aFolder = parent::classArray();
 
-        if (!in_array($syncState,
-                      array(
+        if (
+            !in_array(
+                $syncState,
+                array(
                           "synced",
                           "not_synced",
                           "partially_synced"
-                      ))
-        )
-        {
+                )
+            )
+        ) {
             throw new BoxException("invalid sync state value given (" . var_export($syncState, true) . ").\n
             Expecting one of the following values: synced, not_synced, partially_synced
             ");
         }
 
-        foreach ($aFolder as $key => $value)
-        {
+        foreach ($aFolder as $key => $value) {
             $aAllowedRequestAttributes = array(
                 "name",
                 "description",
@@ -87,14 +89,12 @@ class Folder extends Model implements FolderInterface
                 "owned_by"
             );
 
-            if (!in_array($key, $aAllowedRequestAttributes))
-            {
+            if (!in_array($key, $aAllowedRequestAttributes)) {
                 unset($aFolder[$key]);
             }
         }
 
-        if (null === $aFolder['shared_link'])
-        {
+        if (null === $aFolder['shared_link']) {
             unset($aFolder['owned_by']);
         }
 
@@ -110,19 +110,16 @@ class Folder extends Model implements FolderInterface
     public function getBoxFolderItemsUri($limit = 100, $offset = 0)
     {
         $selfId = $this->getId();
-        if (!is_numeric($selfId))
-        {
+        if (!is_numeric($selfId)) {
             throw new BoxException("Please set the folder Id to retrieve items for this folder."
                                    . BoxException::MISSING_ID);
         }
 
-        if (!is_numeric($limit))
-        {
+        if (!is_numeric($limit)) {
             throw new BoxException("Limit must be a valid integer", BoxException::INVALID_INPUT);
         }
 
-        if (!is_numeric($offset))
-        {
+        if (!is_numeric($offset)) {
             throw new BoxException("Offset must be a valid integer", BoxException::INVALID_INPUT);
         }
 
@@ -140,16 +137,14 @@ class Folder extends Model implements FolderInterface
 
         $parentId = 0;
 
-        if (is_object($parent))
-        {
+        if (is_object($parent)) {
             /**
              * @var \Box\Folder\Folder|\Box\Folder\FolderInterface $parent
              */
             $parentId = $parent->getId();
         }
 
-        if (is_array($parent))
-        {
+        if (is_array($parent)) {
             $parentId = $parent['id'];
             return $parentId;
         }
@@ -167,8 +162,7 @@ class Folder extends Model implements FolderInterface
 
     public function getId(): mixed
     {
-        if (null === $this->id)
-        {
+        if (null === $this->id) {
             $this->setId(0);
         }
 

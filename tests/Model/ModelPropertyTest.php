@@ -12,17 +12,17 @@ class ModelPropertyTest extends TestCase
     public function testFileNewProperties(): void
     {
         $file = new File();
-        
+
         $file->setIsExternallyOwned(true);
         $this->assertTrue($file->getIsExternallyOwned());
-        
+
         $roles = ['editor', 'viewer'];
         $file->setAllowedInviteRoles($roles);
         $this->assertEquals($roles, $file->getAllowedInviteRoles());
-        
+
         $file->setHasCollaborations(false);
         $this->assertFalse($file->getHasCollaborations());
-        
+
         $metadata = ['enterprise_123' => ['key' => 'value']];
         $file->setMetadata($metadata);
         $this->assertEquals($metadata, $file->getMetadata());
@@ -31,10 +31,10 @@ class ModelPropertyTest extends TestCase
     public function testUserNewProperties(): void
     {
         $user = new User();
-        
+
         $user->setTimezone('America/Los_Angeles');
         $this->assertEquals('America/Los_Angeles', $user->getTimezone());
-        
+
         $user->setIsExternalCollabRestricted(true);
         $this->assertTrue($user->getIsExternalCollabRestricted());
     }
@@ -42,7 +42,7 @@ class ModelPropertyTest extends TestCase
     public function testFolderNewProperties(): void
     {
         $folder = new Folder();
-        
+
         $folder->setCanNonOwnersInvite(true);
         $this->assertTrue($folder->getCanNonOwnersInvite());
     }
@@ -56,9 +56,9 @@ class ModelPropertyTest extends TestCase
             'has_collaborations' => true,
             'metadata' => ['foo' => 'bar']
         ];
-        
+
         $file->mapBoxToClass($data);
-        
+
         $this->assertTrue($file->getIsExternallyOwned());
         $this->assertEquals(['editor'], $file->getAllowedInviteRoles());
         $this->assertTrue($file->getHasCollaborations());

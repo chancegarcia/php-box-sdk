@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_File
@@ -162,7 +163,6 @@ class File extends Model implements FileInterface
         }
 
         $this->createdBy = $createdBy;
-
     }
 
     /**
@@ -253,7 +253,6 @@ class File extends Model implements FileInterface
         }
 
         $this->modifiedBy = $modifiedBy;
-
     }
 
     /**
@@ -293,7 +292,6 @@ class File extends Model implements FileInterface
         }
 
         $this->ownedBy = $ownedBy;
-
     }
 
     /**
@@ -316,7 +314,6 @@ class File extends Model implements FileInterface
         }
 
         $this->parent = $parent;
-
     }
 
     /**
@@ -339,7 +336,6 @@ class File extends Model implements FileInterface
         }
 
         $this->pathCollection = $pathCollection;
-
     }
 
     /**
@@ -358,7 +354,6 @@ class File extends Model implements FileInterface
     public function setPermissions(mixed $permissions = null): void
     {
         $this->permissions = $permissions;
-
     }
 
     /**
@@ -394,7 +389,6 @@ class File extends Model implements FileInterface
     public function setSequenceId(string|int|null $sequenceId = null): void
     {
         $this->sequenceId = $sequenceId;
-
     }
 
     /**
@@ -413,7 +407,6 @@ class File extends Model implements FileInterface
     public function setSha1(?string $sha1 = null): void
     {
         $this->sha1 = $sha1;
-
     }
 
     /**
@@ -436,7 +429,6 @@ class File extends Model implements FileInterface
         }
 
         $this->sharedLink = $sharedLink;
-
     }
 
     /**
@@ -489,7 +481,6 @@ class File extends Model implements FileInterface
     public function setType(string $type = "file"): void
     {
         $this->type = $type;
-
     }
 
     /**
@@ -508,7 +499,6 @@ class File extends Model implements FileInterface
     public function setVersionNumber(string|int|null $versionNumber = null): void
     {
         $this->versionNumber = $versionNumber;
-
     }
 
     /**

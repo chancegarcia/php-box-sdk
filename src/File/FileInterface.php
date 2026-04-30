@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_File
@@ -28,6 +29,7 @@
  * SOFTWARE.
  *
  */
+
 /**
  * @todo flush out this interface more. not needed for current project but starting stub for client injection
  */
@@ -38,7 +40,7 @@ namespace Box\File;
 use Box\Item\SharedLink\SharedLinkInterface;
 use Box\Model\ModelInterface;
 
-interface FileInterface extends  ModelInterface
+interface FileInterface extends ModelInterface
 {
     const URI = "https://api.box.com/2.0/files";
     const UPLOAD_URI = "https://upload.box.com/api/2.0/files/content";

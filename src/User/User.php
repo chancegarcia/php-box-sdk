@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Model
@@ -80,7 +81,6 @@ class User extends Model implements UserInterface
     public function setAddress($address = null)
     {
         $this->address = $address;
-
     }
 
     public function getAddress()
@@ -91,7 +91,6 @@ class User extends Model implements UserInterface
     public function setAvatarUrl($avatarUrl = null)
     {
         $this->avatarUrl = $avatarUrl;
-
     }
 
     public function getAvatarUrl()
@@ -102,7 +101,6 @@ class User extends Model implements UserInterface
     public function setCanSeeManagedUsers($canSeeManagedUsers = null)
     {
         $this->canSeeManagedUsers = $canSeeManagedUsers;
-
     }
 
     public function getCanSeeManagedUsers()
@@ -139,7 +137,6 @@ class User extends Model implements UserInterface
         }
 
         $this->enterprise = $enterprise;
-
     }
 
     public function getEnterprise()
@@ -150,7 +147,6 @@ class User extends Model implements UserInterface
     public function setIsExemptFromDeviceLimits($isExemptFromDeviceLimits = null)
     {
         $this->isExemptFromDeviceLimits = $isExemptFromDeviceLimits;
-
     }
 
     public function getIsExemptFromDeviceLimits()
@@ -161,7 +157,6 @@ class User extends Model implements UserInterface
     public function setIsExemptFromLoginVerification($isExemptFromLoginVerification = null)
     {
         $this->isExemptFromLoginVerification = $isExemptFromLoginVerification;
-
     }
 
     public function getIsExemptFromLoginVerification()
@@ -172,7 +167,6 @@ class User extends Model implements UserInterface
     public function setIsSyncEnabled($isSyncEnabled = null)
     {
         $this->isSyncEnabled = $isSyncEnabled;
-
     }
 
     public function getIsSyncEnabled()
@@ -183,7 +177,6 @@ class User extends Model implements UserInterface
     public function setJobTitle($jobTitle = null)
     {
         $this->jobTitle = $jobTitle;
-
     }
 
     public function getJobTitle()
@@ -194,7 +187,6 @@ class User extends Model implements UserInterface
     public function setLanguage($language = null)
     {
         $this->language = $language;
-
     }
 
     public function getLanguage()
@@ -265,7 +257,6 @@ class User extends Model implements UserInterface
     public function setPhone($phone = null)
     {
         $this->phone = $phone;
-
     }
 
     public function getPhone()
@@ -276,7 +267,6 @@ class User extends Model implements UserInterface
     public function setRole($role = null)
     {
         $this->role = $role;
-
     }
 
     public function getRole()
@@ -287,7 +277,6 @@ class User extends Model implements UserInterface
     public function setSpaceAmount($spaceAmount = null)
     {
         $this->spaceAmount = $spaceAmount;
-
     }
 
     public function getSpaceAmount()
@@ -298,7 +287,6 @@ class User extends Model implements UserInterface
     public function setSpaceUsed($spaceUsed = null)
     {
         $this->spaceUsed = $spaceUsed;
-
     }
 
     public function getSpaceUsed()
@@ -324,7 +312,6 @@ class User extends Model implements UserInterface
     public function setTrackingCodes($trackingCodes = null)
     {
         $this->trackingCodes = $trackingCodes;
-
     }
 
     public function getTrackingCodes()
@@ -335,7 +322,6 @@ class User extends Model implements UserInterface
     public function setType($type = null)
     {
         $this->type = $type;
-
     }
 
     public function getType()
