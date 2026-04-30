@@ -313,15 +313,36 @@ class Connection extends Model implements ConnectionInterface
     {
         // @todo allow Content-MD5 header to be set
 
+        if (empty($parentId) && $parentId !== 0 && $parentId !== '0') {
+            throw new BoxException("Invalid parent ID. Parent ID cannot be empty.", BoxException::INVALID_INPUT);
+        }
+
         if ($file instanceof FileStream) {
             $resource = $file->getResource();
+            if (!is_resource($resource)) {
+                throw new BoxException("Invalid FileStream resource.", BoxException::INVALID_INPUT);
+            }
             $filename = $file->getFilename();
+            if (empty($filename)) {
+                throw new BoxException("FileStream must have a filename.", BoxException::INVALID_INPUT);
+            }
             $mimeType = $file->getMimeType() ?? 'application/octet-stream';
         } else {
-            $pathInfo = pathinfo($file);
+            if (empty($file)) {
+                throw new BoxException("File path cannot be empty.", BoxException::INVALID_INPUT);
+            }
+            if (!file_exists($file)) {
+                throw new BoxException("File does not exist: " . $file, BoxException::INVALID_INPUT);
+            }
+            if (!is_readable($file)) {
+                throw new BoxException("File is not readable: " . $file, BoxException::INVALID_INPUT);
+            }
             $filename = basename($file);
             $mimeType = $this->getMimeType($file);
             $resource = fopen($file, 'rb');
+            if (!$resource) {
+                throw new BoxException("Failed to open file: " . $file, BoxException::INVALID_INPUT);
+            }
         }
 
         if (self::TRANSPORT_GUZZLE === $this->getTransportName()) {
