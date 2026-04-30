@@ -56,6 +56,7 @@ class Folder extends Model implements FolderInterface
     protected mixed $itemCollection = null;
     protected mixed $syncState = null;
     protected ?bool $canNonOwnersInvite = null;
+    protected ?array $allowedInviteRoles = null;
     protected mixed $hasCollaborations = null;
 
     public function classArray(string $syncState = "synced"): array
@@ -419,5 +420,15 @@ class Folder extends Model implements FolderInterface
     public function getCanNonOwnersInvite(): ?bool
     {
         return $this->canNonOwnersInvite;
+    }
+
+    public function setAllowedInviteRoles(?array $allowedInviteRoles): void
+    {
+        $this->allowedInviteRoles = $allowedInviteRoles;
+    }
+
+    public function getAllowedInviteRoles(): ?array
+    {
+        return $this->allowedInviteRoles;
     }
 }

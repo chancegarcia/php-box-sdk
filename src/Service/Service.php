@@ -290,10 +290,9 @@ class Service extends BaseModel implements ServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function setTokenStorage(BaseTokenStorageInterface $tokenStorage = null)
+    public function setTokenStorage(?BaseTokenStorageInterface $tokenStorage = null)
     {
         $this->tokenStorage = $tokenStorage;
-
     }
 
     /**
@@ -416,7 +415,7 @@ class Service extends BaseModel implements ServiceInterface
         $uri = null,
         $params = array(),
         $type = 'original',
-        ModelInterface $class = null
+        ?ModelInterface $class = null
     ) {
         $this->validateReturnType($type);
         try {
@@ -506,7 +505,7 @@ class Service extends BaseModel implements ServiceInterface
      *     previous token information here if it isn't set already from the TokenStorageException. then rethrow; Token
      *     storage is expected to set all other context values for information.
      */
-    final public function getFromBox($uri = null, $type = 'original', ModelInterface $class = null)
+    final public function getFromBox($uri = null, $type = 'original', ?ModelInterface $class = null)
     {
         $this->validateReturnType($type);
 
@@ -790,7 +789,7 @@ class Service extends BaseModel implements ServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function handleBoxResponse(BoxResponseInterface $response = null, $returnType = 'decoded')
+    public function handleBoxResponse(?BoxResponseInterface $response = null, $returnType = 'decoded')
     {
         if (!$response instanceof BoxResponseInterface) {
             throw new BadMethodCallException("expecting instance of Box\\Http\\BoxResponseInterface. received: " . gettype($response));
