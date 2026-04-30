@@ -2,6 +2,8 @@
 
 A modern PHP SDK for interacting with the [Box.com API](https://developer.box.com/).
 
+**Version Note:** v0.11.0 is a **functional transition release** bridging the gap between legacy v0.10.x and the upcoming v1.0 architecture. It introduces v1.0-style infrastructure (Hydrators, DTOs, flattened namespaces) while maintaining reasonable backward compatibility where practical.
+
 This library is designed as a boundary layer for Box API access, suitable for standalone use or integration into frameworks like Symfony.
 
 ## Requirements
@@ -60,6 +62,11 @@ $response = $client->uploadFileToBox($stream, '0'); // '0' is the root folder ID
 $rootFolder = $client->getFolder();
 ```
 
+## v0.11.0 Transition & Compatibility
+- **Typed Models & DTOs**: v0.11 introduces recursive hydration into typed objects. Some nested fields now accept both objects and legacy arrays as a transition layer.
+- **Flattened Namespaces**: Primary classes are now found in shorter namespaces (e.g., `Box\Client`).
+- **Non-Fluent Setters**: Setters now return `void`. Chained setter calls are no longer supported.
+
 ## Advanced Documentation
 
 For in-depth architectural guidance, library integration patterns, and advanced usage, see the [Programmatic Usage Guide](docs/programmatic-usage.md).
@@ -73,18 +80,40 @@ For detailed setup instructions, available commands, and logging options, see th
 ---
 
 **See also:**
+- [Changelog](CHANGELOG.md)
 - [Upgrading from 0.10.x to 0.11.0](docs/upgrading-0.10-to-0.11.md)
 - [Programmatic Usage Guide](docs/programmatic-usage.md)
 - [CLI Test Harness Guide](docs/cli-test-harness.md)
 - [Project Roadmap](docs/roadmap.md)
 
-## Development and Testing
+## Development and Quality Checks
 
-Run the test suite:
-```bash
-./vendor/bin/phpunit
-```
+The following commands are available for local development and quality assurance:
 
+- **Run all checks (recommended before pushing):**
+  ```bash
+  composer review
+  ```
+- **Run tests:**
+  ```bash
+  composer test
+  ```
+- **Static analysis (PHPStan):**
+  ```bash
+  composer analyse
+  ```
+- **Check code style:**
+  ```bash
+  composer cs:check
+  ```
+- **Fix code style automatically:**
+  ```bash
+  composer cs:fix
+  ```
+- **Lint PHP syntax:**
+  ```bash
+  composer lint
+  ```
 
 ## License
 

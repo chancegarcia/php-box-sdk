@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package
  * @subpackage
@@ -33,7 +34,7 @@ namespace Box\Exception;
 
 use Box\Http\Response\BoxResponseInterface;
 use Box\Http\Response\ResponseParser;
-use \Exception;
+use Exception;
 
 class BoxResponseException extends BoxException
 {
@@ -52,7 +53,8 @@ class BoxResponseException extends BoxException
      *
      * @return BoxResponseException
      */
-    public function __construct($message = "", $code = 0, Exception $previous = null, BoxResponseInterface $response) {
+    public function __construct(string $message = "", mixed $code = 0, ?Exception $previous = null, ?BoxResponseInterface $response = null)
+    {
         parent::__construct($message, $code, $previous);
 
         if ($response instanceof BoxResponseInterface) {
@@ -63,20 +65,38 @@ class BoxResponseException extends BoxException
             $parsedLine = ResponseParser::parseWwwAuthenticateHeader($wwwAuthenticationHeaderLine);
 
             if (array_key_exists('error', $parsedLine)) {
-                $this->error = $this->boxCode = $parsedLine['error'];
+                $this->error = $this->boxCode = $this->sanitize($parsedLine['error']);
             }
 
             if (array_key_exists('error_description', $parsedLine)) {
-                $this->errorDescription = $parsedLine['error_description'];
+                $this->errorDescription = $this->sanitize($parsedLine['error_description']);
+            }
+
+            // attempt to parse response body for error details
+            $content = $response->getContent();
+            if (!empty($content)) {
+                $decoded = json_decode($content, true);
+                if (is_array($decoded)) {
+                    if (isset($decoded['code'])) {
+                        $this->boxCode = $this->sanitize($decoded['code']);
+                    }
+                    if (isset($decoded['message'])) {
+                        $sanitizedMessage = $this->sanitize($decoded['message']);
+                        $this->errorDescription = $this->errorDescription ? $this->errorDescription . " | " . $sanitizedMessage : $sanitizedMessage;
+                    }
+                    if (isset($decoded['context_info'])) {
+                        $this->addContext($decoded['context_info']);
+                    }
+                }
             }
         }
-
     }
 
     /**
      * @return null|BoxResponseInterface
      */
-    public function getResponse() {
+    public function getResponse()
+    {
         return $this->response;
     }
 
@@ -84,8 +104,8 @@ class BoxResponseException extends BoxException
      * @param BoxResponseInterface $response
      * @return BoxResponseException
      */
-    public function setResponse(BoxResponseInterface $response = null) {
+    public function setResponse(?BoxResponseInterface $response = null)
+    {
         $this->response = $response;
-
     }
 }

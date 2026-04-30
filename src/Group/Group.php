@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Group
@@ -38,28 +39,17 @@ use Box\Group\GroupInterface;
 
 class Group extends Model implements GroupInterface
 {
-    protected mixed $type = 'group';
-    protected mixed $id = null;
-    protected mixed $name = null;
-    protected mixed $createdAt = null;
-    protected mixed $modifiedAt = null;
+    protected string $type = 'group';
+    protected string|int|null $id = null;
+    protected ?string $name = null;
+    protected \DateTimeInterface|string|null $createdAt = null;
+    protected \DateTimeInterface|string|null $modifiedAt = null;
 
-    public function getMembershipListUri(mixed $limit = 100, mixed $offset = 0): string
+    public function getMembershipListUri(int|string $limit = 100, int|string $offset = 0): string
     {
         $selfId = $this->getId();
-        if (!is_numeric($selfId))
-        {
-            throw new BoxException("Please set the folder Id to retrieve items for this folder.". BoxException::MISSING_ID);
-        }
-
-        if (!is_numeric($limit))
-        {
-            throw new BoxException("Limit must be a valid integer", BoxException::INVALID_INPUT);
-        }
-
-        if (!is_numeric($offset))
-        {
-            throw new BoxException("Offset must be a valid integer", BoxException::INVALID_INPUT);
+        if ($selfId === null) {
+            throw new BoxException("Please set the folder Id to retrieve items for this folder." . BoxException::MISSING_ID);
         }
 
         $uri = self::URI . "/" . $selfId . "/memberships" . "?offset=" . $offset . "&limit=" . $limit;
@@ -67,65 +57,65 @@ class Group extends Model implements GroupInterface
         return $uri;
     }
 
-    public function setId(mixed $id = null): void
+    /**
+     * @param string|int|null $id
+     * @return void
+     */
+    public function setId(string|int|null $id = null): void
     {
         $this->id = $id;
     }
 
-    public function getId(): mixed
+    public function getId(): string|int|null
     {
         return $this->id;
     }
 
     /**
-     * @param mixed $createdAt
-     * @return \Box\Group\Group|\Box\Group\GroupInterface
+     * @param \DateTimeInterface|string|null $createdAt
+     * @return void
      */
-    public function setCreatedAt($createdAt = null)
+    public function setCreatedAt(\DateTimeInterface|string|null $createdAt = null): void
     {
         $this->createdAt = $createdAt;
     }
 
     /**
-     * @return mixed
+     * @return \DateTimeInterface|string|null
      */
-    public function getCreatedAt()
+    public function getCreatedAt(): \DateTimeInterface|string|null
     {
         return $this->createdAt;
     }
 
     /**
-     * @param mixed $modifiedAt
-     * @return \Box\Group\Group|\Box\Group\GroupInterface
+     * @param \DateTimeInterface|string|null $modifiedAt
+     * @return void
      */
-    public function setModifiedAt($modifiedAt = null)
+    public function setModifiedAt(\DateTimeInterface|string|null $modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
     }
 
     /**
-     * @return mixed
+     * @return \DateTimeInterface|string|null
      */
-    public function getModifiedAt()
+    public function getModifiedAt(): \DateTimeInterface|string|null
     {
         return $this->modifiedAt;
     }
 
     /**
-     * @param mixed $name
+     * @param string|null $name
      *
      * @throws GroupException
-     * @return \Box\Group\Group|\Box\Group\GroupInterface
+     * @return void
      */
-    public function setName($name = null)
+    public function setName(?string $name = null): void
     {
-
-        if (!is_string($name))
-        {
-            $name = null;
-        } else if (strlen($name) > 255) {
+        if ($name !== null && strlen($name) > 255) {
             throw new GroupException(
-                    "Box only supports group names of 255 characters or less. Names that will not be supported are the name “none” or a null name.",
+                "Box only supports group names of 255 characters or less. Names that will not be supported are the name “none” or a null name.",
                 GroupException::INVALID_NAME
             );
         }
@@ -134,12 +124,10 @@ class Group extends Model implements GroupInterface
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
-
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box_Connection
  * @subpackage  Box_Connection_Response

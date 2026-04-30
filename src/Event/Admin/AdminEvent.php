@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -69,14 +70,10 @@ class AdminEvent extends Event implements AdminEventInterface
     public function mapBoxToClass(array|\stdClass $aData): void
     {
         // @todo need to refactor base model to explicitly take an array as the argument
-        if (is_array($aData) && array_key_exists('stream_type', $aData))
-        {
+        if (is_array($aData) && array_key_exists('stream_type', $aData)) {
             unset($aData['stream_type']);
-        }
-        else
-        {
-            if (is_object($aData))
-            {
+        } else {
+            if (is_object($aData)) {
                 unset($aData->stream_type);
             }
         }
@@ -157,5 +154,4 @@ class AdminEvent extends Event implements AdminEventInterface
     }
 
     // GET
-
 }

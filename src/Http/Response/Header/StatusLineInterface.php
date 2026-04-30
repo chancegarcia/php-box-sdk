@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Http_Response
@@ -24,55 +25,60 @@ interface StatusLineInterface
     /**
      * @return string
      */
-    public function getHttpVersion();
+    public function getHttpVersion(): string;
 
     /**
-     * @param string $httpVersion
+     * @param string|null $httpVersion
      * @return StatusLineInterface
+     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setHttpVersion($httpVersion = null);
+    public function setHttpVersion(?string $httpVersion = null): StatusLineInterface;
 
     /**
      * @return int
      */
-    public function getStatusCode();
+    public function getStatusCode(): int;
 
     /**
-     * @param int $statusCode
+     * @param int|null $statusCode
      * @return StatusLineInterface
+     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setStatusCode($statusCode = null);
+    public function setStatusCode(?int $statusCode = null): StatusLineInterface;
 
     /**
      * @return string
      */
-    public function getReasonPhrase();
+    public function getReasonPhrase(): string;
 
     /**
-     * @param int $reasonPhrase
+     * @param string|null $reasonPhrase
      * @return StatusLineInterface
+     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setReasonPhrase($reasonPhrase = null);
+    public function setReasonPhrase(?string $reasonPhrase = null): StatusLineInterface;
 
     /**
      * @return string
      */
-    public function getHttpVersionPrefix();
+    public function getHttpVersionPrefix(): string;
 
     /**
-     * @param string $httpVersionPrefix
+     * @param string|null $httpVersionPrefix
      * @return StatusLineInterface
+     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setHttpVersionPrefix($httpVersionPrefix = null);
+    public function setHttpVersionPrefix(?string $httpVersionPrefix = null): StatusLineInterface;
 
     /**
      * @return string
      */
-    public function getHttpVersionNumber();
+    public function getHttpVersionNumber(): string;
 
     /**
-     * @param string $httpVersionNumber
+     * @param string|null $httpVersionNumber
      * @return StatusLineInterface
+     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setHttpVersionNumber($httpVersionNumber = null);
+    public function setHttpVersionNumber(?string $httpVersionNumber = null): StatusLineInterface;
 }

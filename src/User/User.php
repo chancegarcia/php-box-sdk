@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Model
@@ -59,11 +60,17 @@ class User extends Model implements UserInterface
     protected mixed $isExemptFromDeviceLimits = null;
     protected mixed $isExemptFromLoginVerification = null;
     protected mixed $enterprise = null;
+    protected ?string $timezone = null;
+    protected ?bool $isExternalCollabRestricted = null;
 
+    /**
+     * @param string|int|null $id
+     * @return void
+     * @todo v1.0 strict string type
+     */
     public function setId(mixed $id = null): void
     {
         $this->id = $id;
-
     }
 
     public function getId(): mixed
@@ -74,7 +81,6 @@ class User extends Model implements UserInterface
     public function setAddress($address = null)
     {
         $this->address = $address;
-
     }
 
     public function getAddress()
@@ -85,7 +91,6 @@ class User extends Model implements UserInterface
     public function setAvatarUrl($avatarUrl = null)
     {
         $this->avatarUrl = $avatarUrl;
-
     }
 
     public function getAvatarUrl()
@@ -96,7 +101,6 @@ class User extends Model implements UserInterface
     public function setCanSeeManagedUsers($canSeeManagedUsers = null)
     {
         $this->canSeeManagedUsers = $canSeeManagedUsers;
-
     }
 
     public function getCanSeeManagedUsers()
@@ -104,21 +108,35 @@ class User extends Model implements UserInterface
         return $this->canSeeManagedUsers;
     }
 
-    public function setCreatedAt($createdAt = null)
+    /**
+     * @param \DateTimeInterface|string|null $createdAt
+     * @return void
+     * @todo v1.0 \DateTimeImmutable|null type
+     */
+    public function setCreatedAt($createdAt = null): void
     {
         $this->createdAt = $createdAt;
-
     }
 
+    /**
+     * @return \DateTimeInterface|string|null
+     */
     public function getCreatedAt()
     {
         return $this->createdAt;
     }
 
-    public function setEnterprise($enterprise = null)
+    /**
+     * @param object|array|null $enterprise
+     * @return void
+     */
+    public function setEnterprise($enterprise = null): void
     {
-        $this->enterprise = $enterprise;
+        if (is_array($enterprise)) {
+            // @todo v1.0 remove array support
+        }
 
+        $this->enterprise = $enterprise;
     }
 
     public function getEnterprise()
@@ -129,7 +147,6 @@ class User extends Model implements UserInterface
     public function setIsExemptFromDeviceLimits($isExemptFromDeviceLimits = null)
     {
         $this->isExemptFromDeviceLimits = $isExemptFromDeviceLimits;
-
     }
 
     public function getIsExemptFromDeviceLimits()
@@ -140,7 +157,6 @@ class User extends Model implements UserInterface
     public function setIsExemptFromLoginVerification($isExemptFromLoginVerification = null)
     {
         $this->isExemptFromLoginVerification = $isExemptFromLoginVerification;
-
     }
 
     public function getIsExemptFromLoginVerification()
@@ -151,7 +167,6 @@ class User extends Model implements UserInterface
     public function setIsSyncEnabled($isSyncEnabled = null)
     {
         $this->isSyncEnabled = $isSyncEnabled;
-
     }
 
     public function getIsSyncEnabled()
@@ -162,7 +177,6 @@ class User extends Model implements UserInterface
     public function setJobTitle($jobTitle = null)
     {
         $this->jobTitle = $jobTitle;
-
     }
 
     public function getJobTitle()
@@ -173,7 +187,6 @@ class User extends Model implements UserInterface
     public function setLanguage($language = null)
     {
         $this->language = $language;
-
     }
 
     public function getLanguage()
@@ -181,10 +194,13 @@ class User extends Model implements UserInterface
         return $this->language;
     }
 
-    public function setLogin($login = null)
+    /**
+     * @param string|null $login
+     * @return void
+     */
+    public function setLogin($login = null): void
     {
         $this->login = $login;
-
     }
 
     public function getLogin()
@@ -192,10 +208,13 @@ class User extends Model implements UserInterface
         return $this->login;
     }
 
-    public function setMaxUploadSize($maxUploadSize = null)
+    /**
+     * @param float|int|null $maxUploadSize
+     * @return void
+     */
+    public function setMaxUploadSize($maxUploadSize = null): void
     {
         $this->maxUploadSize = $maxUploadSize;
-
     }
 
     public function getMaxUploadSize()
@@ -203,21 +222,31 @@ class User extends Model implements UserInterface
         return $this->maxUploadSize;
     }
 
-    public function setModifiedAt($modifiedAt = null)
+    /**
+     * @param \DateTimeInterface|string|null $modifiedAt
+     * @return void
+     * @todo v1.0 \DateTimeImmutable|null type
+     */
+    public function setModifiedAt($modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
-
     }
 
+    /**
+     * @return \DateTimeInterface|string|null
+     */
     public function getModifiedAt()
     {
         return $this->modifiedAt;
     }
 
-    public function setName($name = null)
+    /**
+     * @param string|null $name
+     * @return void
+     */
+    public function setName($name = null): void
     {
         $this->name = $name;
-
     }
 
     public function getName()
@@ -228,7 +257,6 @@ class User extends Model implements UserInterface
     public function setPhone($phone = null)
     {
         $this->phone = $phone;
-
     }
 
     public function getPhone()
@@ -239,7 +267,6 @@ class User extends Model implements UserInterface
     public function setRole($role = null)
     {
         $this->role = $role;
-
     }
 
     public function getRole()
@@ -250,7 +277,6 @@ class User extends Model implements UserInterface
     public function setSpaceAmount($spaceAmount = null)
     {
         $this->spaceAmount = $spaceAmount;
-
     }
 
     public function getSpaceAmount()
@@ -261,7 +287,6 @@ class User extends Model implements UserInterface
     public function setSpaceUsed($spaceUsed = null)
     {
         $this->spaceUsed = $spaceUsed;
-
     }
 
     public function getSpaceUsed()
@@ -269,10 +294,14 @@ class User extends Model implements UserInterface
         return $this->spaceUsed;
     }
 
-    public function setStatus($status = null)
+    /**
+     * @param string|null $status
+     * @return void
+     * @todo v1.0 Enum status
+     */
+    public function setStatus($status = null): void
     {
         $this->status = $status;
-
     }
 
     public function getStatus()
@@ -283,7 +312,6 @@ class User extends Model implements UserInterface
     public function setTrackingCodes($trackingCodes = null)
     {
         $this->trackingCodes = $trackingCodes;
-
     }
 
     public function getTrackingCodes()
@@ -294,7 +322,6 @@ class User extends Model implements UserInterface
     public function setType($type = null)
     {
         $this->type = $type;
-
     }
 
     public function getType()
@@ -302,5 +329,23 @@ class User extends Model implements UserInterface
         return $this->type;
     }
 
+    public function setTimezone(?string $timezone): void
+    {
+        $this->timezone = $timezone;
+    }
 
+    public function getTimezone(): ?string
+    {
+        return $this->timezone;
+    }
+
+    public function setIsExternalCollabRestricted(?bool $isExternalCollabRestricted): void
+    {
+        $this->isExternalCollabRestricted = $isExternalCollabRestricted;
+    }
+
+    public function getIsExternalCollabRestricted(): ?bool
+    {
+        return $this->isExternalCollabRestricted;
+    }
 }

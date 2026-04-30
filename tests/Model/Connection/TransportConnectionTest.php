@@ -25,8 +25,8 @@ class TransportConnectionTest extends TestCase
             'transport' => Connection::TRANSPORT_GUZZLE,
             'accessToken' => 'fake_token'
         ]);
-        
-        // Inject mock guzzle client via transport if we had a setter, 
+
+        // Inject mock guzzle client via transport if we had a setter,
         // but for now let's test if it uses the transport.
         // Better: create a GuzzleTransport with the mock client and set it.
         $transport = new \Box\Http\Transport\GuzzleTransport($client);
@@ -45,10 +45,10 @@ class TransportConnectionTest extends TestCase
     {
         $mockTransport = $this->createMock(TransportInterface::class);
         $mockResponse = $this->createMock(BoxResponseInterface::class);
-        
+
         $mockTransport->expects($this->once())
             ->method('request')
-            ->with('GET', 'http://example.com/test', $this->callback(function($options) {
+            ->with('GET', 'http://example.com/test', $this->callback(function ($options) {
                 return $options['headers']['Authorization'] === 'Bearer test_token';
             }))
             ->willReturn($mockResponse);

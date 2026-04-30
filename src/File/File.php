@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_File
@@ -37,292 +38,288 @@ use Box\File\FileInterface;
 
 class File extends Model implements FileInterface
 {
-    protected mixed $id = null;
-    protected mixed $type = "file";
-    protected mixed $sequenceId = null;
-    protected mixed $etag = null;
-    protected mixed $sha1 = null;
-    protected mixed $name = null;
-    protected mixed $description = null;
-    protected mixed $size = null;
+    protected string|int|null $id = null;
+    protected string $type = "file";
+    protected ?string $sequenceId = null;
+    protected ?string $etag = null;
+    protected ?string $sha1 = null;
+    protected ?string $name = null;
+    protected ?string $description = null;
+    protected ?int $size = null;
     protected mixed $pathCollection = null;
-    protected mixed $createdAt = null;
-    protected mixed $modifiedAt = null;
-    protected mixed $trashedAt = null;
-    protected mixed $purgedAt = null;
-    protected mixed $contentCreatedAt = null;
-    protected mixed $contentModifiedAt = null;
+    protected \DateTimeInterface|string|null $createdAt = null;
+    protected \DateTimeInterface|string|null $modifiedAt = null;
+    protected \DateTimeInterface|string|null $trashedAt = null;
+    protected \DateTimeInterface|string|null $purgedAt = null;
+    protected \DateTimeInterface|string|null $contentCreatedAt = null;
+    protected \DateTimeInterface|string|null $contentModifiedAt = null;
     protected mixed $createdBy = null;
     protected mixed $modifiedBy = null;
     protected mixed $ownedBy = null;
     protected mixed $sharedLink = null;
     protected mixed $parent = null;
-    protected mixed $itemStatus = null;
+    protected ?string $itemStatus = null;
 
     // the following will not appear in default file requests and must be explicitly asked for using the fields parameter.
-    protected mixed $versionNumber = null;
-    protected mixed $commentCount = null;
+    protected ?string $versionNumber = null;
+    protected ?int $commentCount = null;
     protected mixed $permissions = null;
+    protected ?bool $isExternallyOwned = null;
+    protected mixed $allowedInviteRoles = null;
+    protected ?bool $hasCollaborations = null;
+    protected mixed $metadata = null;
 
-    public function getId(): mixed
+    public function getId(): string|int|null
     {
         return $this->id;
     }
 
-    public function setId(mixed $id = null): void
+    /**
+     * @param string|int|null $id
+     * @return void
+     */
+    public function setId(string|int|null $id = null): void
     {
-        if (!is_numeric($id))
-        {
-            $id = null;
-        }
-
         $this->id = $id;
-
     }
 
     /**
-     * @param mixed $commentCount
-     *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @param int|null $commentCount
+     * @return void
      */
-    public function setCommentCount($commentCount = null)
+    public function setCommentCount(?int $commentCount = null): void
     {
         $this->commentCount = $commentCount;
-
     }
 
     /**
-     * @return mixed
+     * @return int|null
      */
-    public function getCommentCount()
+    public function getCommentCount(): ?int
     {
         return $this->commentCount;
     }
 
     /**
-     * @param mixed $contentCreatedAt
-     *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @param \DateTimeInterface|string|null $contentCreatedAt
+     * @return void
      */
-    public function setContentCreatedAt($contentCreatedAt = null)
+    public function setContentCreatedAt(\DateTimeInterface|string|null $contentCreatedAt = null): void
     {
         $this->contentCreatedAt = $contentCreatedAt;
-
     }
 
     /**
-     * @return mixed
+     * @return \DateTimeInterface|string|null
      */
-    public function getContentCreatedAt()
+    public function getContentCreatedAt(): \DateTimeInterface|string|null
     {
         return $this->contentCreatedAt;
     }
 
     /**
-     * @param mixed $contentModifiedAt
-     *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @param \DateTimeInterface|string|null $contentModifiedAt
+     * @return void
      */
-    public function setContentModifiedAt($contentModifiedAt = null)
+    public function setContentModifiedAt(\DateTimeInterface|string|null $contentModifiedAt = null): void
     {
         $this->contentModifiedAt = $contentModifiedAt;
-
     }
 
     /**
-     * @return mixed
+     * @return \DateTimeInterface|string|null
      */
-    public function getContentModifiedAt()
+    public function getContentModifiedAt(): \DateTimeInterface|string|null
     {
         return $this->contentModifiedAt;
     }
 
     /**
-     * @param mixed $createdAt
-     *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @param \DateTimeInterface|string|null $createdAt
+     * @return void
      */
-    public function setCreatedAt($createdAt = null)
+    public function setCreatedAt(\DateTimeInterface|string|null $createdAt = null): void
     {
         $this->createdAt = $createdAt;
-
     }
 
     /**
-     * @return mixed
+     * @return \DateTimeInterface|string|null
      */
-    public function getCreatedAt()
+    public function getCreatedAt(): \DateTimeInterface|string|null
     {
         return $this->createdAt;
     }
 
     /**
-     * @param mixed $createdBy
+     * @param \Box\User\User|array|null $createdBy
      *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @return void
      */
-    public function setCreatedBy($createdBy = null)
+    public function setCreatedBy(mixed $createdBy = null): void
     {
-        $this->createdBy = $createdBy;
+        if (is_array($createdBy)) {
+            // @todo v1.0 remove array support
+        }
 
+        $this->createdBy = $createdBy;
     }
 
     /**
      * @return mixed
      */
-    public function getCreatedBy()
+    public function getCreatedBy(): mixed
     {
         return $this->createdBy;
     }
 
     /**
-     * @param mixed $description
-     *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @param string|null $description
+     * @return void
      */
-    public function setDescription($description = null)
+    public function setDescription(?string $description = null): void
     {
         $this->description = $description;
-
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
     /**
-     * @param mixed $etag
-     *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @param string|null $etag
+     * @return void
      */
-    public function setEtag($etag = null)
+    public function setEtag(?string $etag = null): void
     {
         $this->etag = $etag;
-
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getEtag()
+    public function getEtag(): ?string
     {
         return $this->etag;
     }
 
     /**
-     * @param mixed $itemStatus
-     *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @param string|null $itemStatus
+     * @return void
      */
-    public function setItemStatus($itemStatus = null)
+    public function setItemStatus(?string $itemStatus = null): void
     {
         $this->itemStatus = $itemStatus;
-
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getItemStatus()
+    public function getItemStatus(): ?string
     {
         return $this->itemStatus;
     }
 
     /**
-     * @param mixed $modifiedAt
-     *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @param \DateTimeInterface|string|null $modifiedAt
+     * @return void
      */
-    public function setModifiedAt($modifiedAt = null)
+    public function setModifiedAt(\DateTimeInterface|string|null $modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
-
     }
 
     /**
-     * @return mixed
+     * @return \DateTimeInterface|string|null
      */
-    public function getModifiedAt()
+    public function getModifiedAt(): \DateTimeInterface|string|null
     {
         return $this->modifiedAt;
     }
 
     /**
-     * @param mixed $modifiedBy
+     * @param \Box\User\User|array|null $modifiedBy
      *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @return void
      */
-    public function setModifiedBy($modifiedBy = null)
+    public function setModifiedBy(mixed $modifiedBy = null): void
     {
-        $this->modifiedBy = $modifiedBy;
+        if (is_array($modifiedBy)) {
+            // @todo v1.0 remove array support
+        }
 
+        $this->modifiedBy = $modifiedBy;
     }
 
     /**
      * @return mixed
      */
-    public function getModifiedBy()
+    public function getModifiedBy(): mixed
     {
         return $this->modifiedBy;
     }
 
     /**
-     * @param mixed $name
-     *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @param string|null $name
+     * @return void
      */
-    public function setName($name = null)
+    public function setName(?string $name = null): void
     {
         $this->name = $name;
-
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     /**
-     * @param mixed $ownedBy
+     * @param \Box\User\User|array|null $ownedBy
      *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @return void
      */
-    public function setOwnedBy($ownedBy = null)
+    public function setOwnedBy(mixed $ownedBy = null): void
     {
-        $this->ownedBy = $ownedBy;
+        if (is_array($ownedBy)) {
+            // @todo v1.0 remove array support
+        }
 
+        $this->ownedBy = $ownedBy;
     }
 
     /**
      * @return mixed
      */
-    public function getOwnedBy()
+    public function getOwnedBy(): mixed
     {
         return $this->ownedBy;
     }
 
     /**
-     * @param mixed $parent
+     * @param \Box\Folder\Folder|array|null $parent
      *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @return void
      */
-    public function setParent($parent = null)
+    public function setParent(mixed $parent = null): void
     {
-        $this->parent = $parent;
+        if (is_array($parent)) {
+            // @todo v1.0 remove array support
+        }
 
+        $this->parent = $parent;
     }
 
     /**
      * @return mixed
      */
-    public function getParent()
+    public function getParent(): mixed
     {
         return $this->parent;
     }
@@ -330,18 +327,21 @@ class File extends Model implements FileInterface
     /**
      * @param mixed $pathCollection
      *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @return void
      */
-    public function setPathCollection($pathCollection = null)
+    public function setPathCollection(mixed $pathCollection = null): void
     {
-        $this->pathCollection = $pathCollection;
+        if (is_array($pathCollection)) {
+            // @todo v1.0 remove array support once PathCollection DTO is implemented
+        }
 
+        $this->pathCollection = $pathCollection;
     }
 
     /**
      * @return mixed
      */
-    public function getPathCollection()
+    public function getPathCollection(): mixed
     {
         return $this->pathCollection;
     }
@@ -349,88 +349,86 @@ class File extends Model implements FileInterface
     /**
      * @param mixed $permissions
      *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @return void
      */
-    public function setPermissions($permissions = null)
+    public function setPermissions(mixed $permissions = null): void
     {
         $this->permissions = $permissions;
-
     }
 
     /**
      * @return mixed
      */
-    public function getPermissions()
+    public function getPermissions(): mixed
     {
         return $this->permissions;
     }
 
     /**
-     * @param mixed $purgedAt
-     *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @param \DateTimeInterface|string|null $purgedAt
+     * @return void
      */
-    public function setPurgedAt($purgedAt = null)
+    public function setPurgedAt(\DateTimeInterface|string|null $purgedAt = null): void
     {
         $this->purgedAt = $purgedAt;
-
     }
 
     /**
-     * @return mixed
+     * @return \DateTimeInterface|string|null
      */
-    public function getPurgedAt()
+    public function getPurgedAt(): \DateTimeInterface|string|null
     {
         return $this->purgedAt;
     }
 
     /**
-     * @param mixed $sequenceId
+     * @param string|int|null $sequenceId
      *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @return void
      */
-    public function setSequenceId($sequenceId = null)
+    public function setSequenceId(string|int|null $sequenceId = null): void
     {
         $this->sequenceId = $sequenceId;
-
     }
 
     /**
-     * @return mixed
+     * @return string|int|null
      */
-    public function getSequenceId()
+    public function getSequenceId(): string|int|null
     {
         return $this->sequenceId;
     }
 
     /**
-     * @param mixed $sha1
+     * @param string|null $sha1
      *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @return void
      */
-    public function setSha1($sha1 = null)
+    public function setSha1(?string $sha1 = null): void
     {
         $this->sha1 = $sha1;
-
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getSha1()
+    public function getSha1(): ?string
     {
         return $this->sha1;
     }
 
     /**
-     * @param mixed $sharedLink
+     * @param \Box\Item\SharedLink\SharedLink|array|null $sharedLink
      *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @return void
      */
     public function setSharedLink(mixed $sharedLink = null): void
     {
-        $this->sharedLink = $sharedLink;
+        if (is_array($sharedLink)) {
+            // @todo v1.0 remove array support
+        }
 
+        $this->sharedLink = $sharedLink;
     }
 
     /**
@@ -442,79 +440,112 @@ class File extends Model implements FileInterface
     }
 
     /**
-     * @param mixed $size
-     *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @param int|null $size
+     * @return void
      */
-    public function setSize($size = null)
+    public function setSize(?int $size = null): void
     {
         $this->size = $size;
-
     }
 
     /**
-     * @return mixed
+     * @return int|null
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         return $this->size;
     }
 
     /**
-     * @param mixed $trashedAt
-     *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @param \DateTimeInterface|string|null $trashedAt
+     * @return void
      */
-    public function setTrashedAt($trashedAt = null)
+    public function setTrashedAt(\DateTimeInterface|string|null $trashedAt = null): void
     {
         $this->trashedAt = $trashedAt;
-
     }
 
     /**
-     * @return mixed
+     * @return \DateTimeInterface|string|null
      */
-    public function getTrashedAt()
+    public function getTrashedAt(): \DateTimeInterface|string|null
     {
         return $this->trashedAt;
     }
 
     /**
-     * @param mixed $type
+     * @param string $type
      *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @return void
      */
-    public function setType($type = null)
+    public function setType(string $type = "file"): void
     {
         $this->type = $type;
-
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
     /**
-     * @param mixed $versionNumber
+     * @param string|int|null $versionNumber
      *
-     * @return \Box\File\File|\Box\File\FileInterface
+     * @return void
      */
-    public function setVersionNumber($versionNumber = null)
+    public function setVersionNumber(string|int|null $versionNumber = null): void
     {
         $this->versionNumber = $versionNumber;
-
     }
 
     /**
-     * @return mixed
+     * @return string|int|null
      */
-    public function getVersionNumber()
+    public function getVersionNumber(): string|int|null
     {
         return $this->versionNumber;
     }
 
+    public function setIsExternallyOwned(?bool $isExternallyOwned): void
+    {
+        $this->isExternallyOwned = $isExternallyOwned;
+    }
+
+    public function getIsExternallyOwned(): ?bool
+    {
+        return $this->isExternallyOwned;
+    }
+
+    public function setAllowedInviteRoles(mixed $allowedInviteRoles): void
+    {
+        $this->allowedInviteRoles = $allowedInviteRoles;
+    }
+
+    public function getAllowedInviteRoles(): mixed
+    {
+        return $this->allowedInviteRoles;
+    }
+
+    public function setHasCollaborations(?bool $hasCollaborations): void
+    {
+        $this->hasCollaborations = $hasCollaborations;
+    }
+
+    public function getHasCollaborations(): ?bool
+    {
+        return $this->hasCollaborations;
+    }
+
+    public function setMetadata(mixed $metadata): void
+    {
+        $this->metadata = $metadata;
+    }
+
+    public function getMetadata(): mixed
+    {
+        return $this->metadata;
+    }
 }

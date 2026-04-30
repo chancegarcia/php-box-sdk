@@ -108,7 +108,20 @@ class FileUploadCommand extends AbstractBoxCommand
             $this->logger->info('File upload completed successfully', ['result' => $result]);
             return Command::SUCCESS;
         } catch (Exception $e) {
-            $io->error('Failed to upload file: ' . $e->getMessage());
+            $message = 'Failed to upload file: ' . $e->getMessage();
+            if ($e instanceof \Box\Exception\BoxResponseException) {
+                if ($e->getBoxCode()) {
+                    $message .= " (Box Code: " . $e->getBoxCode() . ")";
+                }
+                if ($e->getErrorDescription()) {
+                    $message .= "\nDescription: " . $e->getErrorDescription();
+                }
+                $retryAfter = $e->getContext('retry_after_header');
+                if ($retryAfter) {
+                    $message .= "\nRetry After: " . $retryAfter;
+                }
+            }
+            $io->error($message);
             $this->logger->error('Failed to upload file', ['exception' => $e]);
             return Command::FAILURE;
         }

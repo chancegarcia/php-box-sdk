@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -34,7 +35,6 @@
  */
 
 namespace Box\Service\Event;
-
 
 use Box\Event\Collection\EventCollectionInterface;
 use Box\Service\ServiceInterface;

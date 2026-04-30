@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Connection
@@ -41,7 +42,7 @@ use Box\Http\Transport\GuzzleTransport;
 use Box\Http\Transport\TransportInterface;
 use Box\Model\Model;
 use Box\Exception\BoxException;
-use \CURLFile;
+use CURLFile;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -132,11 +133,11 @@ class Connection extends Model implements ConnectionInterface
         //curl_setopt($ch, CURLOPT_VERBOSE, true);
         // get full response with headers
         // http://stackoverflow.com/questions/9183178/php-curl-retrieving-response-headers-and-body-in-a-single-request
-        curl_setopt($ch , CURLOPT_RETURNTRANSFER , true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, true);
 
         // note: disable should only be used for development purposes.
-        curl_setopt($ch , CURLOPT_SSL_VERIFYPEER , !$this->getDisableSslVerification());
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, !$this->getDisableSslVerification());
         return $ch;
     }
 
@@ -172,21 +173,17 @@ class Connection extends Model implements ConnectionInterface
     public function initAdditionalCurlOpts(\CurlHandle $ch): \CurlHandle
     {
         $opts = $this->getCurlOpts();
-        if (0 != count($opts))
-        {
-            foreach ($opts as $opt=>$optValue)
-            {
+        if (0 != count($opts)) {
+            foreach ($opts as $opt => $optValue) {
                 // CURLOPT_HTTPHEADER, CURLOPT_QUOTE, CURLOPT_HTTP200ALIASES and CURLOPT_POSTQUOTE require array or object arguments
 
-                switch ($opt)
-                {
+                switch ($opt) {
                     case "CURLOPT_HTTPHEADER":
                     case "CURLOPT_QUOTE":
                     case "CURLOPT_HTTP200ALIASES":
                     case "CURLOPT_POSTQUOTE":
                         // throw exception so it doesn't throw a warning
-                        if (!is_array($optValue))
-                        {
+                        if (!is_array($optValue)) {
                             $this->error(
                                 array(
                                     'error' => 'curl opt (' . $opt . ') needs to be an array or object',
@@ -200,7 +197,6 @@ class Connection extends Model implements ConnectionInterface
                         curl_setopt($ch, constant($opt), $optValue);
                         break;
                 }
-
             }
         }
         return $ch;
@@ -248,14 +244,13 @@ class Connection extends Model implements ConnectionInterface
      */
     public function put(string $uri, array|string $params = []): BoxResponseInterface
     {
-        if (is_array($params))
-        {
+        if (is_array($params)) {
             $postParams = $this->buildQuery($params);
-            @trigger_error('the `params` value as an array will be deprecated in the future. Please provide a json encoded string',
-                           E_USER_DEPRECATED);
-        }
-        else
-        {
+            @trigger_error(
+                'the `params` value as an array will be deprecated in the future. Please provide a json encoded string',
+                E_USER_DEPRECATED
+            );
+        } else {
             $postParams = $params;
         }
 
@@ -267,21 +262,21 @@ class Connection extends Model implements ConnectionInterface
      */
     public function post(string $uri, array|string $params = [], bool $nameValuePair = false): BoxResponseInterface
     {
-        if ($nameValuePair)
-        {
+        if ($nameValuePair) {
             $params = json_encode($params);
-            @trigger_error('the `nameValuePair` switch will be deprecated in the future; all values will be json encoded values',
-                           E_USER_DEPRECATED);
+            @trigger_error(
+                'the `nameValuePair` switch will be deprecated in the future; all values will be json encoded values',
+                E_USER_DEPRECATED
+            );
         }
 
-        if (is_array($params))
-        {
+        if (is_array($params)) {
             $postParams = $this->buildQuery($params);
-            @trigger_error('the `params` value as an array will be deprecated in the future. Please provide a json encoded string',
-                           E_USER_DEPRECATED);
-        }
-        else
-        {
+            @trigger_error(
+                'the `params` value as an array will be deprecated in the future. Please provide a json encoded string',
+                E_USER_DEPRECATED
+            );
+        } else {
             $postParams = $params;
         }
 
@@ -293,7 +288,7 @@ class Connection extends Model implements ConnectionInterface
      */
     public function createCurlFile(string $pathToFile, string $mimeType, string $filename): CURLFile
     {
-        return new CURLFile($pathToFile,$mimeType, $filename);
+        return new CURLFile($pathToFile, $mimeType, $filename);
     }
 
     /**
@@ -313,15 +308,36 @@ class Connection extends Model implements ConnectionInterface
     {
         // @todo allow Content-MD5 header to be set
 
+        if (empty($parentId) && $parentId !== 0 && $parentId !== '0') {
+            throw new BoxException("Invalid parent ID. Parent ID cannot be empty.", BoxException::INVALID_INPUT);
+        }
+
         if ($file instanceof FileStream) {
             $resource = $file->getResource();
+            if (!is_resource($resource)) {
+                throw new BoxException("Invalid FileStream resource.", BoxException::INVALID_INPUT);
+            }
             $filename = $file->getFilename();
+            if (empty($filename)) {
+                throw new BoxException("FileStream must have a filename.", BoxException::INVALID_INPUT);
+            }
             $mimeType = $file->getMimeType() ?? 'application/octet-stream';
         } else {
-            $pathInfo = pathinfo($file);
+            if (empty($file)) {
+                throw new BoxException("File path cannot be empty.", BoxException::INVALID_INPUT);
+            }
+            if (!file_exists($file)) {
+                throw new BoxException("File does not exist: " . $file, BoxException::INVALID_INPUT);
+            }
+            if (!is_readable($file)) {
+                throw new BoxException("File is not readable: " . $file, BoxException::INVALID_INPUT);
+            }
             $filename = basename($file);
             $mimeType = $this->getMimeType($file);
             $resource = fopen($file, 'rb');
+            if (!$resource) {
+                throw new BoxException("Failed to open file: " . $file, BoxException::INVALID_INPUT);
+            }
         }
 
         if (self::TRANSPORT_GUZZLE === $this->getTransportName()) {
@@ -348,7 +364,7 @@ class Connection extends Model implements ConnectionInterface
             // But CurlTransport's request() method just passes $options['multipart'] to curl_setopt(..., CURLOPT_POSTFIELDS, $fields)
             // If we use Guzzle's approach of passing the resource, curl might not handle it correctly in an array for multipart.
             // Actually, curl_setopt with an array for CURLOPT_POSTFIELDS expects CURLFile or string (starting with @ is deprecated).
-            
+
             // To be safe and compatible with CurlTransport's current implementation:
             $tmpFile = tempnam(sys_get_temp_dir(), 'box_upload_');
             $tmpResource = fopen($tmpFile, 'wb');
@@ -357,7 +373,7 @@ class Connection extends Model implements ConnectionInterface
             rewind($resource); // keep original resource state if possible, though it's probably better to just use the path now
 
             $curlFile = $this->createCurlFile($tmpFile, $mimeType, $filename);
-            
+
             $response = $this->request('POST', $uri, [
                 'multipart' => [
                     ['name' => 'file', 'contents' => $curlFile],
@@ -387,8 +403,7 @@ class Connection extends Model implements ConnectionInterface
      */
     public function setCurlOpts(?array $curlOpts = null): void
     {
-        if (!is_array($curlOpts))
-        {
+        if (!is_array($curlOpts)) {
             $curlOpts = $curlOpts !== null ? array($curlOpts) : [];
         }
         $this->curlOpts = $curlOpts;
@@ -407,7 +422,7 @@ class Connection extends Model implements ConnectionInterface
      */
     public function setAuthenticationResponseClass(?string $authenticationResponseClass = null): void
     {
-        $this->validateClass($authenticationResponseClass,'AuthenticationResponseInterface');
+        $this->validateClass($authenticationResponseClass, 'AuthenticationResponseInterface');
         $this->authenticationResponseClass = $authenticationResponseClass;
     }
 

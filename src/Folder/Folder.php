@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Folder
@@ -55,27 +56,30 @@ class Folder extends Model implements FolderInterface
     protected mixed $itemStatus = null;
     protected mixed $itemCollection = null;
     protected mixed $syncState = null;
+    protected ?bool $canNonOwnersInvite = null;
+    protected ?array $allowedInviteRoles = null;
     protected mixed $hasCollaborations = null;
 
     public function classArray(string $syncState = "synced"): array
     {
         $aFolder = parent::classArray();
 
-        if (!in_array($syncState,
-                      array(
+        if (
+            !in_array(
+                $syncState,
+                array(
                           "synced",
                           "not_synced",
                           "partially_synced"
-                      ))
-        )
-        {
+                )
+            )
+        ) {
             throw new BoxException("invalid sync state value given (" . var_export($syncState, true) . ").\n
             Expecting one of the following values: synced, not_synced, partially_synced
             ");
         }
 
-        foreach ($aFolder as $key => $value)
-        {
+        foreach ($aFolder as $key => $value) {
             $aAllowedRequestAttributes = array(
                 "name",
                 "description",
@@ -85,14 +89,12 @@ class Folder extends Model implements FolderInterface
                 "owned_by"
             );
 
-            if (!in_array($key, $aAllowedRequestAttributes))
-            {
+            if (!in_array($key, $aAllowedRequestAttributes)) {
                 unset($aFolder[$key]);
             }
         }
 
-        if (null === $aFolder['shared_link'])
-        {
+        if (null === $aFolder['shared_link']) {
             unset($aFolder['owned_by']);
         }
 
@@ -108,19 +110,16 @@ class Folder extends Model implements FolderInterface
     public function getBoxFolderItemsUri($limit = 100, $offset = 0)
     {
         $selfId = $this->getId();
-        if (!is_numeric($selfId))
-        {
+        if (!is_numeric($selfId)) {
             throw new BoxException("Please set the folder Id to retrieve items for this folder."
                                    . BoxException::MISSING_ID);
         }
 
-        if (!is_numeric($limit))
-        {
+        if (!is_numeric($limit)) {
             throw new BoxException("Limit must be a valid integer", BoxException::INVALID_INPUT);
         }
 
-        if (!is_numeric($offset))
-        {
+        if (!is_numeric($offset)) {
             throw new BoxException("Offset must be a valid integer", BoxException::INVALID_INPUT);
         }
 
@@ -138,16 +137,14 @@ class Folder extends Model implements FolderInterface
 
         $parentId = 0;
 
-        if (is_object($parent))
-        {
+        if (is_object($parent)) {
             /**
              * @var \Box\Folder\Folder|\Box\Folder\FolderInterface $parent
              */
             $parentId = $parent->getId();
         }
 
-        if (is_array($parent))
-        {
+        if (is_array($parent)) {
             $parentId = $parent['id'];
             return $parentId;
         }
@@ -165,24 +162,36 @@ class Folder extends Model implements FolderInterface
 
     public function getId(): mixed
     {
-        if (null === $this->id)
-        {
+        if (null === $this->id) {
             $this->setId(0);
         }
 
         return $this->id;
     }
 
-    public function setId($id = null)
+    /**
+     * @param string|int|null $id
+     * @return void
+     * @todo v1.0 strict string type
+     */
+    public function setId($id = null): void
     {
         $this->id = $id;
     }
 
-    public function setCreatedAt($createdAt = null)
+    /**
+     * @param \DateTimeInterface|string|null $createdAt
+     * @return void
+     * @todo v1.0 \DateTimeImmutable|null type
+     */
+    public function setCreatedAt($createdAt = null): void
     {
         $this->createdAt = $createdAt;
     }
 
+    /**
+     * @return \DateTimeInterface|string|null
+     */
     public function getCreatedAt()
     {
         return $this->createdAt;
@@ -198,7 +207,11 @@ class Folder extends Model implements FolderInterface
         return $this->createdBy;
     }
 
-    public function setDescription($description = null)
+    /**
+     * @param string|null $description
+     * @return void
+     */
+    public function setDescription($description = null): void
     {
         $this->description = $description;
     }
@@ -208,7 +221,11 @@ class Folder extends Model implements FolderInterface
         return $this->description;
     }
 
-    public function setEtag($etag = null)
+    /**
+     * @param string|null $etag
+     * @return void
+     */
+    public function setEtag($etag = null): void
     {
         $this->etag = $etag;
     }
@@ -248,7 +265,12 @@ class Folder extends Model implements FolderInterface
         return $this->itemCollection;
     }
 
-    public function setItemStatus($itemStatus = null)
+    /**
+     * @param string|null $itemStatus
+     * @return void
+     * @todo v1.0 Enum status
+     */
+    public function setItemStatus($itemStatus = null): void
     {
         $this->itemStatus = $itemStatus;
     }
@@ -258,11 +280,19 @@ class Folder extends Model implements FolderInterface
         return $this->itemStatus;
     }
 
-    public function setModifiedAt($modifiedAt = null)
+    /**
+     * @param \DateTimeInterface|string|null $modifiedAt
+     * @return void
+     * @todo v1.0 \DateTimeImmutable|null type
+     */
+    public function setModifiedAt($modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
     }
 
+    /**
+     * @return \DateTimeInterface|string|null
+     */
     public function getModifiedAt()
     {
         return $this->modifiedAt;
@@ -278,7 +308,11 @@ class Folder extends Model implements FolderInterface
         return $this->modifiedBy;
     }
 
-    public function setName($name = null)
+    /**
+     * @param string|null $name
+     * @return void
+     */
+    public function setName($name = null): void
     {
         $this->name = $name;
     }
@@ -338,7 +372,11 @@ class Folder extends Model implements FolderInterface
         return $this->sharedLink;
     }
 
-    public function setSize($size = null)
+    /**
+     * @param int|null $size
+     * @return void
+     */
+    public function setSize($size = null): void
     {
         $this->size = $size;
     }
@@ -368,4 +406,23 @@ class Folder extends Model implements FolderInterface
         return $this->type;
     }
 
+    public function setCanNonOwnersInvite(?bool $canNonOwnersInvite): void
+    {
+        $this->canNonOwnersInvite = $canNonOwnersInvite;
+    }
+
+    public function getCanNonOwnersInvite(): ?bool
+    {
+        return $this->canNonOwnersInvite;
+    }
+
+    public function setAllowedInviteRoles(?array $allowedInviteRoles): void
+    {
+        $this->allowedInviteRoles = $allowedInviteRoles;
+    }
+
+    public function getAllowedInviteRoles(): ?array
+    {
+        return $this->allowedInviteRoles;
+    }
 }

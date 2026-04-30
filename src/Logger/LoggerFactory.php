@@ -16,7 +16,8 @@ class LoggerFactory
 {
     public function __construct(
         private ConfigNormalizer $normalizer
-    ) {}
+    ) {
+    }
 
     public function createLogger(array $config, array $overrides = []): LoggerInterface
     {
@@ -62,7 +63,7 @@ class LoggerFactory
     private function createHandler(array $handlerConfig): RotatingFileHandler|FilterHandler
     {
         $level = Level::fromName(ucfirst($handlerConfig['level']));
-        
+
         $handler = new RotatingFileHandler(
             $handlerConfig['path'],
             $handlerConfig['max_files'],

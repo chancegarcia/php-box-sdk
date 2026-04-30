@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -72,7 +73,6 @@ class EntrySource extends Model implements SourceInterface
     public function setSequenceId($sequenceId = null)
     {
         $this->sequenceId = $sequenceId;
-
     }
 
     /**
@@ -91,7 +91,6 @@ class EntrySource extends Model implements SourceInterface
     public function setType($type = null)
     {
         $this->type = $type;
-
     }
 
     /**
@@ -110,7 +109,6 @@ class EntrySource extends Model implements SourceInterface
     public function setId($id = null)
     {
         $this->id = $id;
-
     }
 
     /**
@@ -129,7 +127,6 @@ class EntrySource extends Model implements SourceInterface
     public function setEtag($etag = null)
     {
         $this->etag = $etag;
-
     }
 
     /**
@@ -148,7 +145,6 @@ class EntrySource extends Model implements SourceInterface
     public function setName($name = null)
     {
         $this->name = $name;
-
     }
 
     /**
@@ -167,7 +163,6 @@ class EntrySource extends Model implements SourceInterface
     public function setCreatedAt($createdAt = null)
     {
         $this->createdAt = $createdAt;
-
     }
 
     /**
@@ -186,7 +181,6 @@ class EntrySource extends Model implements SourceInterface
     public function setModifiedAt($modifiedAt = null)
     {
         $this->modifiedAt = $modifiedAt;
-
     }
 
     /**
@@ -205,7 +199,6 @@ class EntrySource extends Model implements SourceInterface
     public function setDescription($description = null)
     {
         $this->description = $description;
-
     }
 
     /**
@@ -224,7 +217,6 @@ class EntrySource extends Model implements SourceInterface
     public function setSize($size = null)
     {
         $this->size = $size;
-
     }
 
     /**
@@ -243,7 +235,6 @@ class EntrySource extends Model implements SourceInterface
     public function setCreatedBy($createdBy = null)
     {
         $this->createdBy = $createdBy;
-
     }
 
     /**
@@ -262,7 +253,6 @@ class EntrySource extends Model implements SourceInterface
     public function setModifiedBy($modifiedBy = null)
     {
         $this->modifiedBy = $modifiedBy;
-
     }
 
     /**
@@ -281,7 +271,6 @@ class EntrySource extends Model implements SourceInterface
     public function setOwnedBy($ownedBy = null)
     {
         $this->ownedBy = $ownedBy;
-
     }
 
     /**
@@ -300,7 +289,6 @@ class EntrySource extends Model implements SourceInterface
     public function setSharedLink($sharedLink = null)
     {
         $this->sharedLink = $sharedLink;
-
     }
 
     /**
@@ -319,7 +307,6 @@ class EntrySource extends Model implements SourceInterface
     public function setParent($parent = null)
     {
         $this->parent = $parent;
-
     }
 
     /**
@@ -338,7 +325,6 @@ class EntrySource extends Model implements SourceInterface
     public function setItemStatus($itemStatus = null)
     {
         $this->itemStatus = $itemStatus;
-
     }
 
     /**
@@ -357,6 +343,5 @@ class EntrySource extends Model implements SourceInterface
     public function setSynced($synced = null)
     {
         $this->synced = $synced;
-
     }
 }

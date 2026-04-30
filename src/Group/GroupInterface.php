@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Group
@@ -38,6 +39,12 @@ interface GroupInterface extends ModelInterface
     const URI = "https://api.box.com/2.0/groups";
     const MEMBERSHIP_URI = "https://api.box.com/2.0/group_memberships";
 
-    public function getId(): mixed;
-    public function getMembershipListUri(mixed $limit = 100, mixed $offset = 0): string;
+    public function getId(): string|int|null;
+
+    /**
+     * @param int|string $limit
+     * @param int|string $offset
+     * @return string
+     */
+    public function getMembershipListUri(int|string $limit = 100, int|string $offset = 0): string;
 }

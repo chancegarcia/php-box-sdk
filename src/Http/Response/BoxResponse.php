@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Http_Response
@@ -49,7 +50,8 @@ class BoxResponse extends Response implements BoxResponseInterface
     /**
      * @throws BoxException
      */
-    public function __construct(mixed $content = '', string $header = '', ?PsrResponseInterface $psrResponse = null) {
+    public function __construct(mixed $content = '', string $header = '', ?PsrResponseInterface $psrResponse = null)
+    {
         $this->psrResponse = $psrResponse;
         $this->responseHeader = new ResponseHeader($header);
 
@@ -66,21 +68,25 @@ class BoxResponse extends Response implements BoxResponseInterface
         }
     }
 
-    public function getPsrResponse(): ?PsrResponseInterface {
+    public function getPsrResponse(): ?PsrResponseInterface
+    {
         return $this->psrResponse;
     }
 
-    public function getProtocolVersion(): string {
+    public function getProtocolVersion(): string
+    {
         return parent::getProtocolVersion();
     }
 
-    public function withProtocolVersion(string $version): static {
+    public function withProtocolVersion(string $version): static
+    {
         $new = clone $this;
         $new->setProtocolVersion($version);
         return $new;
     }
 
-    public function getHeaders(): array {
+    public function getHeaders(): array
+    {
         $headers = $this->headers->all();
         // PSR-7 headers are array of strings
         foreach ($headers as $name => $values) {
@@ -91,48 +97,57 @@ class BoxResponse extends Response implements BoxResponseInterface
         return $headers;
     }
 
-    public function getHeader(string $name): array {
+    public function getHeader(string $name): array
+    {
         $values = $this->headers->all(strtolower($name));
         return is_array($values) ? $values : [$values];
     }
 
-    public function getHeaderLine(string $name): string {
+    public function getHeaderLine(string $name): string
+    {
         return implode(', ', $this->getHeader($name));
     }
 
-    public function withHeader(string $name, $value): static {
+    public function withHeader(string $name, $value): static
+    {
         $new = clone $this;
         $new->headers->set($name, $value);
         return $new;
     }
 
-    public function withAddedHeader(string $name, $value): static {
+    public function withAddedHeader(string $name, $value): static
+    {
         $new = clone $this;
         $new->headers->set($name, $value, false);
         return $new;
     }
 
-    public function withoutHeader(string $name): static {
+    public function withoutHeader(string $name): static
+    {
         $new = clone $this;
         $new->headers->remove($name);
         return $new;
     }
 
-    public function getBody(): StreamInterface {
+    public function getBody(): StreamInterface
+    {
         return Utils::streamFor($this->getContent());
     }
 
-    public function withBody(StreamInterface $body): static {
+    public function withBody(StreamInterface $body): static
+    {
         $new = clone $this;
         $new->setContent((string)$body);
         return $new;
     }
 
-    public function getReasonPhrase(): string {
+    public function getReasonPhrase(): string
+    {
         return Response::$statusTexts[$this->getStatusCode()] ?? '';
     }
 
-    public function withStatus(int $code, string $reasonPhrase = ''): static {
+    public function withStatus(int $code, string $reasonPhrase = ''): static
+    {
         $new = clone $this;
         $new->setStatusCode($code);
         // Symfony Response handles reason phrase internally if we don't set it explicitly
@@ -142,11 +157,13 @@ class BoxResponse extends Response implements BoxResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getResponseHeader(): ResponseHeaderInterface {
+    public function getResponseHeader(): ResponseHeaderInterface
+    {
         return $this->responseHeader;
     }
 
-    public function hasHeader(string $name): bool {
+    public function hasHeader(string $name): bool
+    {
         return $this->headers->has($name);
     }
 }

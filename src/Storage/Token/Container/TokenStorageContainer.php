@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -63,7 +64,6 @@ class TokenStorageContainer implements BaseTokenStorageInterface
     public function setPreviousToken(TokenInterface $previousToken = null)
     {
         $this->previousToken = $previousToken;
-
     }
 
     /**
@@ -80,7 +80,6 @@ class TokenStorageContainer implements BaseTokenStorageInterface
     public function storeToken(TokenInterface $token = null)
     {
         $this->token = $token;
-
     }
 
     /**

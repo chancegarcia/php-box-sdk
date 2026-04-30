@@ -70,33 +70,45 @@ if ($token->isExpired()) {
 
 ## 5. Response and Error Model
 
-The SDK uses `Box\Http\Response\BoxResponseInterface` for all API responses and throws `Box\Exception\BoxException` when things go wrong.
+The SDK uses `Box\Http\Response\BoxResponseInterface` for all API responses and throws `Box\Exception\BoxException` (or `Box\Exception\BoxResponseException`) when things go wrong.
 
 ### Robust Error Handling
-A `BoxException` may contain a `BoxResponseInterface` if the error originated from the Box API. This allows you to inspect the JSON payload for specific Box error codes.
+A `BoxResponseException` may contain a `BoxResponseInterface` if the error originated from the Box API. This allows you to inspect the JSON payload for specific Box error codes.
 
-The SDK follows a "fail-fast" principle for client-side validation (e.g., missing tokens or invalid parameters) while providing detailed information for server-side errors.
+**Key Security Feature:** The SDK automatically sanitizes sensitive data (access tokens, refresh tokens, client secrets) from exception messages and context information.
+
+### Auth Aliases and Exchange
+In v0.11, `exchangeAuthorizationCodeForToken()` is preferred for the OAuth2 code exchange step for better clarity.
+
+```php
+$client->setAuthorizationCode($_GET['code']);
+$token = $client->exchangeAuthorizationCodeForToken();
+// Equivalent to: $token = $client->getAccessToken();
+```
+
+### Advanced Context and Retry-After
+When Box returns a `429 Too Many Requests` status, the SDK parses the `Retry-After` header and includes it in the exception context.
 
 ```php
 try {
     $response = $client->uploadFileToBox($path, $folderId);
-} catch (Box\Exception\BoxException $e) {
-    // Check if the exception has an associated API response
-    $apiResponse = $e->getBoxResponse();
-    
-    if ($apiResponse) {
-        $statusCode = $apiResponse->getStatusCode();
-        $errorBody = $apiResponse->getBody(); // Returns array if JSON, or string
+} catch (Box\Exception\BoxResponseException $e) {
+    // Check if it's a rate limit error
+    if ($e->getCode() === 429) {
+        $retryAfter = $e->getContext('retry_after_header'); // Original header value
+        $delaySeconds = $e->getContext('retry_after_seconds'); // Parsed numeric seconds
         
-        if ($statusCode === 409) {
-            // Handle name collision
-        }
-    } else {
-        // Handle client-side exception (e.g., local file not found, missing config)
-        echo "Client error: " . $e->getMessage();
+        sleep($delaySeconds);
+        // ... retry request
     }
+
+    // Inspect Box-specific error code
+    $boxCode = $e->getBoxCode(); // e.g., 'item_name_in_use'
+    $description = $e->getErrorDescription(); // Sanitized descriptive message
 }
 ```
+
+The SDK follows a "fail-fast" principle for client-side validation (e.g., missing tokens or invalid parameters) while providing detailed information for server-side errors.
 
 ## 6. File Uploads and Streaming
 
@@ -109,6 +121,8 @@ $client->uploadFileToBox('/path/to/local/file.txt', 'target_folder_id');
 
 ### File Streaming with `FileStream`
 For in-memory content or resources from other streams, use `Box\Http\FileStream`. This avoids writing temporary files to disk.
+
+**Validation:** The SDK validates upload arguments (paths, parent IDs, and resources) before initiating network requests.
 
 ```php
 use Box\Http\FileStream;

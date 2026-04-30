@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -32,203 +33,203 @@
  * SOFTWARE.
  *
  */
+
 namespace Box\Model;
 
 interface BoxModelInterface
 {
     /**
-     * @return mixed
+     * @return string
      */
-    public function getType();
-    
+    public function getType(): string;
+
     /**
-     * @param mixed $type
+     * @param string $type
      *
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setType($type = null);
-    
+    public function setType(string $type = "file"): void;
+
     /**
-     * @return mixed
+     * @return string|int|null
      */
-    public function getId();
-    
+    public function getId(): string|int|null;
+
     /**
-     * @param mixed $id
+     * @param string|int|null $id
      *
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setId($id = null);
-    
+    public function setId(string|int|null $id = null): void;
+
     /**
-     * @return mixed
+     * @return string|int|null
      */
-    public function getSequenceId();
-    
+    public function getSequenceId(): string|int|null;
+
     /**
-     * @param mixed $sequenceId
+     * @param string|int|null $sequenceId
      *
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setSequenceId($sequenceId = null);
-    
+    public function setSequenceId(string|int|null $sequenceId = null): void;
+
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getEtag();
-    
+    public function getEtag(): ?string;
+
     /**
-     * @param mixed $etag
+     * @param string|null $etag
      *
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setEtag($etag = null);
-    
+    public function setEtag(?string $etag = null): void;
+
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getName();
-    
+    public function getName(): ?string;
+
     /**
-     * @param mixed $name
+     * @param string|null $name
      *
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setName($name = null);
-    
+    public function setName(?string $name = null): void;
+
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getDescription();
-    
+    public function getDescription(): ?string;
+
     /**
-     * @param mixed $description
+     * @param string|null $description
      *
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setDescription($description = null);
-    
+    public function setDescription(?string $description = null): void;
+
     /**
-     * @return mixed
+     * @return int|null
      */
-    public function getSize();
-    
+    public function getSize(): ?int;
+
     /**
-     * @param mixed $size
+     * @param int|null $size
      *
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setSize($size = null);
-    
+    public function setSize(?int $size = null): void;
+
     /**
-     * @return mixed
+     * @return \DateTimeInterface|string|null
      */
-    public function getCreatedAt();
-    
+    public function getCreatedAt(): \DateTimeInterface|string|null;
+
     /**
-     * @param mixed $createdAt
+     * @param \DateTimeInterface|string|null $createdAt
      *
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setCreatedAt($createdAt = null);
-    
+    public function setCreatedAt(\DateTimeInterface|string|null $createdAt = null): void;
+
     /**
-     * @return mixed
+     * @return \DateTimeInterface|string|null
      */
-    public function getModifiedAt();
-    
+    public function getModifiedAt(): \DateTimeInterface|string|null;
+
     /**
-     * @param mixed $modifiedAt
+     * @param \DateTimeInterface|string|null $modifiedAt
      *
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setModifiedAt($modifiedAt = null);
-    
+    public function setModifiedAt(\DateTimeInterface|string|null $modifiedAt = null): void;
+
     /**
-     * @return mixed
+     * @return \Box\User\User|array|null
      */
-    public function getCreatedBy();
-    
+    public function getCreatedBy(): mixed;
+
     /**
-     * @param mixed $createdBy
+     * @param \Box\User\User|array|null $createdBy
      *
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setCreatedBy($createdBy = null);
-    
+    public function setCreatedBy(mixed $createdBy = null): void;
+
     /**
-     * @return mixed
+     * @return \Box\User\User|array|null
      */
-    public function getModifiedBy();
-    
+    public function getModifiedBy(): mixed;
+
     /**
-     * @param mixed $modifiedBy
+     * @param \Box\User\User|array|null $modifiedBy
      *
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setModifiedBy($modifiedBy = null);
-    
+    public function setModifiedBy(mixed $modifiedBy = null): void;
+
     /**
-     * @return mixed
+     * @return \Box\User\User|array|null
      */
-    public function getOwnedBy();
-    
+    public function getOwnedBy(): mixed;
+
     /**
-     * @param mixed $ownedBy
+     * @param \Box\User\User|array|null $ownedBy
      *
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setOwnedBy($ownedBy = null);
-    
+    public function setOwnedBy(mixed $ownedBy = null): void;
+
     /**
-     * @return mixed
+     * @return \Box\Item\SharedLink\SharedLink|array|null
      */
-    public function getSharedLink();
-    
+    public function getSharedLink(): mixed;
+
     /**
-     * @param mixed $sharedLink
+     * @param \Box\Item\SharedLink\SharedLink|array|null $sharedLink
      *
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setSharedLink($sharedLink = null);
-    
+    public function setSharedLink(mixed $sharedLink = null): void;
+
     /**
-     * @return mixed
+     * @return \Box\Folder\Folder|array|null
      */
-    public function getParent();
-    
+    public function getParent(): mixed;
+
     /**
-     * @param mixed $parent
+     * @param \Box\Folder\Folder|array|null $parent
      *
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setParent($parent = null);
-    
+    public function setParent(mixed $parent = null): void;
+
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getItemStatus();
-    
+    public function getItemStatus(): ?string;
+
     /**
-     * @param mixed $itemStatus
+     * @param string|null $itemStatus
      *
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setItemStatus($itemStatus = null);
-    
+    public function setItemStatus(?string $itemStatus = null): void;
 }

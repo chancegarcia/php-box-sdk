@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -57,7 +58,6 @@ class Permissions extends Model implements PermissionsInterface
     public function setCanDownload($canDownload = null)
     {
         $this->canDownload = $canDownload;
-
     }
 
     /**
@@ -74,6 +74,5 @@ class Permissions extends Model implements PermissionsInterface
     public function setCanPreview($canPreview = null)
     {
         $this->canPreview = $canPreview;
-
     }
 }

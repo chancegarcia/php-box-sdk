@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package
  * @subpackage
@@ -42,10 +43,11 @@ class ResponseParser
      * @return array if non-associative, return in order: httpVersion, statusCode, reasonPhrase
      * @throws BoxException
      */
-    public static function parseHeaderStatusLine($sStatusLine = '', $associative = true) {
+    public static function parseHeaderStatusLine(string $sStatusLine = '', bool $associative = true): array
+    {
 
         if (!is_string($sStatusLine)) {
-            throw new \InvalidArgumentException("string value expected for parsing. given: ".gettype($sStatusLine));
+            throw new \InvalidArgumentException("string value expected for parsing. given: " . gettype($sStatusLine));
         }
 
         list($httpVersion, $statusCode, $reasonPhrase) = explode(" ", $sStatusLine);
@@ -70,16 +72,18 @@ class ResponseParser
 
     /**
      * @param string $sHeaders
-     * @param bool|true $replace
+     * @param bool $replace
      * @return array
      */
-    public static function parseHeader($sHeaders = '', $replace = true) {
+    public static function parseHeader(string $sHeaders = '', bool $replace = true): array
+    {
         if (!is_string($sHeaders)) {
-            throw new \InvalidArgumentException("string value expected for parsing. given: ".gettype($sHeaders));
+            throw new \InvalidArgumentException("string value expected for parsing. given: " . gettype($sHeaders));
         }
 
         $finalHeaders = array();
-        $aHeaders = explode(PHP_EOL, $sHeaders);;
+        $aHeaders = explode(PHP_EOL, $sHeaders);
+        ;
         foreach ($aHeaders as $headerLineKey => $headerLineValue) {
             // based on protocols found on https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html
             // first line is Status Line
@@ -102,36 +106,36 @@ class ResponseParser
         return $finalHeaders;
     }
 
-    public static function parseWwwAuthenticateHeader($wwwAuthenticateHeaderValue = null) {
-        if (!is_string($wwwAuthenticateHeaderValue)) {
-            // maybe make more verbose in the future by switching on gettype()==object to get class?
-            throw new \InvalidArgumentException("string value expected for parsing. given: ".gettype($wwwAuthenticateHeaderValue));
-        }
-
-        if (empty($wwwAuthenticateHeaderValue)) {
+    public static function parseWwwAuthenticateHeader(?string $wwwAuthenticateHeaderValue = null): array
+    {
+        if (!is_string($wwwAuthenticateHeaderValue) || empty($wwwAuthenticateHeaderValue)) {
             return array();
         }
+
         $valuePairs = array_map("trim", explode(",", $wwwAuthenticateHeaderValue));
-        $keys = array();
-        $values = array();
+        $parsed = array();
 
         foreach ($valuePairs as $valuePair) {
             $tempPair = explode("=", $valuePair);
-            $tempkey = array_shift($tempPair);
-            $aKey = explode(" ", $tempkey);
-            $tempValue = (count($tempPair) > 1) ? $tempPair : array_shift($tempPair);
-            if (count($aKey) > 1) {
-                $key = array_shift($aKey);
-                $value = array(array_shift($aKey) => $tempValue);
-            } else {
-                $key = $tempkey;
-                $value = $tempValue;
+            $tempkey = trim(array_shift($tempPair));
+            $tempValue = (count($tempPair) > 1) ? implode("=", $tempPair) : array_shift($tempPair);
+
+            if (is_string($tempValue)) {
+                $tempValue = trim($tempValue, '"');
             }
 
-            $keys[] = $key;
-            $values[] = $value;
+            $aKey = explode(" ", $tempkey);
+            if (count($aKey) > 1) {
+                // Handle scheme (e.g. "Bearer error")
+                $scheme = array_shift($aKey);
+                $key = array_shift($aKey);
+                $parsed['scheme'] = $scheme;
+                $parsed[$key] = $tempValue;
+            } else {
+                $parsed[$tempkey] = $tempValue;
+            }
         }
 
-        return array_combine($keys, $values);
+        return $parsed;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Collaboration
@@ -54,16 +55,19 @@ class Collaboration extends Model implements CollaborationInterface
         return $this->id;
     }
 
+    /**
+     * @param string|int|null $id
+     * @return void
+     * @todo v1.0 strict string type
+     */
     public function setId(mixed $id = null): void
     {
         $this->id = $id;
-
     }
 
     public function setAccessibleBy($accessibleBy = null)
     {
         $this->accessibleBy = $accessibleBy;
-
     }
 
     public function getAccessibleBy()
@@ -71,23 +75,37 @@ class Collaboration extends Model implements CollaborationInterface
         return $this->accessibleBy;
     }
 
-    public function setAcknowledgedAt($acknowledgedAt = null)
+    /**
+     * @param \DateTimeInterface|string|null $acknowledgedAt
+     * @return void
+     * @todo v1.0 \DateTimeImmutable|null type
+     */
+    public function setAcknowledgedAt($acknowledgedAt = null): void
     {
         $this->acknowledgedAt = $acknowledgedAt;
-
     }
 
+    /**
+     * @return \DateTimeInterface|string|null
+     */
     public function getAcknowledgedAt()
     {
         return $this->acknowledgedAt;
     }
 
-    public function setCreatedAt($createdAt = null)
+    /**
+     * @param \DateTimeInterface|string|null $createdAt
+     * @return void
+     * @todo v1.0 \DateTimeImmutable|null type
+     */
+    public function setCreatedAt($createdAt = null): void
     {
         $this->createdAt = $createdAt;
-
     }
 
+    /**
+     * @return \DateTimeInterface|string|null
+     */
     public function getCreatedAt()
     {
         return $this->createdAt;
@@ -96,7 +114,6 @@ class Collaboration extends Model implements CollaborationInterface
     public function setCreatedBy($createdBy = null)
     {
         $this->createdBy = $createdBy;
-
     }
 
     public function getCreatedBy()
@@ -104,12 +121,19 @@ class Collaboration extends Model implements CollaborationInterface
         return $this->createdBy;
     }
 
-    public function setExpiresAt($expiresAt = null)
+    /**
+     * @param \DateTimeInterface|string|null $expiresAt
+     * @return void
+     * @todo v1.0 \DateTimeImmutable|null type
+     */
+    public function setExpiresAt($expiresAt = null): void
     {
         $this->expiresAt = $expiresAt;
-
     }
 
+    /**
+     * @return \DateTimeInterface|string|null
+     */
     public function getExpiresAt()
     {
         return $this->expiresAt;
@@ -118,7 +142,6 @@ class Collaboration extends Model implements CollaborationInterface
     public function setItem($item = null)
     {
         $this->item = $item;
-
     }
 
     public function getItem()
@@ -126,21 +149,32 @@ class Collaboration extends Model implements CollaborationInterface
         return $this->item;
     }
 
-    public function setModifiedAt($modifiedAt = null)
+    /**
+     * @param \DateTimeInterface|string|null $modifiedAt
+     * @return void
+     * @todo v1.0 \DateTimeImmutable|null type
+     */
+    public function setModifiedAt($modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
-
     }
 
+    /**
+     * @return \DateTimeInterface|string|null
+     */
     public function getModifiedAt()
     {
         return $this->modifiedAt;
     }
 
-    public function setRole($role = null)
+    /**
+     * @param string|null $role
+     * @return void
+     * @todo v1.0 Enum role
+     */
+    public function setRole($role = null): void
     {
         $this->role = $role;
-
     }
 
     public function getRole()
@@ -148,7 +182,12 @@ class Collaboration extends Model implements CollaborationInterface
         return $this->role;
     }
 
-    public function setStatus($status = null)
+    /**
+     * @param string|null $status
+     * @return void
+     * @todo v1.0 Enum status
+     */
+    public function setStatus($status = null): void
     {
         $status = strtolower($status); // normalize
         $acceptable = array(
@@ -157,15 +196,13 @@ class Collaboration extends Model implements CollaborationInterface
             'rejected'
         );
 
-        if (!in_array($status, $acceptable))
-        {
+        if (!in_array($status, $acceptable)) {
             $err['error'] = "sdk_invalid_collaboration_status";
             $err['error_description'] = "status can only be one of the following values: " . implode(', ', $acceptable);
             $this->error($err);
         }
 
         $this->status = $status;
-
     }
 
     public function getStatus()
@@ -176,13 +213,10 @@ class Collaboration extends Model implements CollaborationInterface
     public function setType($type = null)
     {
         $this->type = $type;
-
     }
 
     public function getType()
     {
         return $this->type;
     }
-
-
 }

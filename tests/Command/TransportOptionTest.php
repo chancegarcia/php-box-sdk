@@ -31,10 +31,10 @@ class TransportOptionTest extends TestCase
         $this->configProvider = $this->createMock(ConfigProviderInterface::class);
         $this->outputFormatter = $this->createMock(ConsoleOutputFormatter::class);
         $this->loggerFactory = new LoggerFactory(new ConfigNormalizer());
-        
+
         $this->client = $this->createMock(Client::class);
         $this->connection = $this->createMock(ConnectionInterface::class);
-        
+
         $this->clientFactory->method('createClient')->willReturn($this->client);
         $this->client->method('getConnection')->willReturn($this->connection);
     }
@@ -51,7 +51,7 @@ class TransportOptionTest extends TestCase
     public function testApplyCurlTransport(): void
     {
         $this->configProvider->method('getRefreshToken')->willReturn('some-token');
-        
+
         $token = $this->createMock(\Box\Connection\Token\TokenInterface::class);
         $token->method('toBoxArray')->willReturn([]);
         $this->client->method('refreshToken')->willReturn($token);
@@ -65,7 +65,7 @@ class TransportOptionTest extends TestCase
 
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);
-        
+
         $commandTester->execute(['--transport' => 'curl']);
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
@@ -77,7 +77,7 @@ class TransportOptionTest extends TestCase
         $token = $this->createMock(\Box\Connection\Token\TokenInterface::class);
         $token->method('toBoxArray')->willReturn([]);
         $this->client->method('refreshToken')->willReturn($token);
-        
+
         $this->connection->expects($this->once())
             ->method('setTransportName')
             ->with(Connection::TRANSPORT_GUZZLE);
@@ -87,7 +87,7 @@ class TransportOptionTest extends TestCase
 
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);
-        
+
         $commandTester->execute(['--transport' => 'guzzle']);
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
@@ -99,10 +99,10 @@ class TransportOptionTest extends TestCase
 
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);
-        
+
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid transport "foo". Allowed transports: curl, guzzle.');
-        
+
         $commandTester->execute(['--transport' => 'foo']);
     }
 
@@ -113,7 +113,7 @@ class TransportOptionTest extends TestCase
         $token = $this->createMock(\Box\Connection\Token\TokenInterface::class);
         $token->method('toBoxArray')->willReturn([]);
         $this->client->method('refreshToken')->willReturn($token);
-        
+
         $this->connection->expects($this->never())
             ->method('setTransportName');
 
@@ -122,7 +122,7 @@ class TransportOptionTest extends TestCase
 
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);
-        
+
         $commandTester->execute([]);
         $this->assertEquals(0, $commandTester->getStatusCode());
     }

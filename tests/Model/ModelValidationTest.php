@@ -4,19 +4,9 @@ namespace Box\Tests\Model;
 
 use Box\Exception\BoxException;
 use Box\Model\Model;
+use Box\Tests\Model\Fixtures\ClassImplementingSomething;
+use Box\Tests\Model\Fixtures\ClassWithFailingConstructor;
 use PHPUnit\Framework\TestCase;
-
-class ClassWithFailingConstructor
-{
-    public function __construct()
-    {
-        throw new \RuntimeException('Constructor should not be called');
-    }
-}
-
-class ClassImplementingSomething extends Model
-{
-}
 
 class ModelValidationTest extends TestCase
 {
@@ -37,7 +27,7 @@ class ModelValidationTest extends TestCase
     public function testValidateClassThrowsBoxExceptionForMissingClass()
     {
         $this->expectException(BoxException::class);
-        
+
         try {
             $this->model->validateClass('NonExistentClass', 'SomeInterface');
         } catch (BoxException $e) {
@@ -57,7 +47,7 @@ class ModelValidationTest extends TestCase
             throw $e;
         }
     }
-    
+
     public function testValidateClassPassesForValidSubclass()
     {
         $result = $this->model->validateClass(ClassImplementingSomething::class, Model::class);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -73,7 +74,6 @@ class TokenStorageException extends \Exception
     public function setToken(TokenInterface $token = null)
     {
         $this->token = $token;
-
     }
 
     /**
@@ -92,7 +92,6 @@ class TokenStorageException extends \Exception
     public function setPreviousToken(TokenInterface $previousToken = null)
     {
         $this->previousToken = $previousToken;
-
     }
 
     /**
@@ -111,7 +110,6 @@ class TokenStorageException extends \Exception
     public function setTokenStorage($tokenStorage = null)
     {
         $this->tokenStorage = $tokenStorage;
-
     }
 
     /**
@@ -130,7 +128,6 @@ class TokenStorageException extends \Exception
     public function setTokenStorageContext($tokenStorageContext = null)
     {
         $this->tokenStorageContext = $tokenStorageContext;
-
     }
 
     /**
@@ -149,6 +146,5 @@ class TokenStorageException extends \Exception
     public function setCallingClass($callingClass = null)
     {
         $this->callingClass = $callingClass;
-
     }
 }

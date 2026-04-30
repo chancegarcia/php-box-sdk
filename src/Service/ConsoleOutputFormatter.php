@@ -9,7 +9,8 @@ class ConsoleOutputFormatter
 {
     public function __construct(
         private JsonFormatterInterface $jsonFormatter
-    ) {}
+    ) {
+    }
 
     public function formatMasked(SymfonyStyle $io, array $data, bool $isJson = false): void
     {

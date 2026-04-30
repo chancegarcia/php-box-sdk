@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Http_Response
@@ -43,13 +44,14 @@ class ResponseHeader implements ResponseHeaderInterface
      * @param string $sHeader
      * @throws BoxException
      */
-    public function __construct($sHeader = '', $statusLineClass = "\\Box\\Http\\Response\\Header\\StatusLine") {
+    public function __construct($sHeader = '', $statusLineClass = "\\Box\\Http\\Response\\Header\\StatusLine")
+    {
         $aHeader = ResponseParser::parseHeader($sHeader);
         $sStatusLine = array_shift($aHeader);
         if (!is_subclass_of($statusLineClass, "\\Box\\Http\\Response\\Header\\StatusLineInterface")) {
             throw new BoxException("status line class must be an instance of \\Box\\Http\\Response\\Header\\StatusLineInterface. ("
-                .$statusLineClass
-                .") given.", BoxException::INVALID_CLASS_TYPE);
+                . $statusLineClass
+                . ") given.", BoxException::INVALID_CLASS_TYPE);
         }
 
         /**
@@ -59,42 +61,49 @@ class ResponseHeader implements ResponseHeaderInterface
 
         $this->setStatusLine($oStatusLine);
         $this->setHeaderLines($aHeader);
-
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getStatusLine() {
+    public function getStatusLine(): ?StatusLineInterface
+    {
         return $this->statusLine;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setStatusLine(?StatusLineInterface $statusLine = null) {
+    public function setStatusLine(?StatusLineInterface $statusLine = null): ResponseHeaderInterface
+    {
         $this->statusLine = $statusLine;
 
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getHeaderLines() {
+    public function getHeaderLines(): array
+    {
         return $this->headerLines;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setHeaderLines(?array $headerLines = null) {
+    public function setHeaderLines(?array $headerLines = null): ResponseHeaderInterface
+    {
         $this->headerLines = $headerLines;
 
+        return $this;
     }
 
-    public static function parseHeader($sHeaders = '', $replace = true) {
+    public static function parseHeader($sHeaders = '', $replace = true)
+    {
         $finalHeaders = array();
-        $aHeaders = explode(PHP_EOL, $sHeaders);;
+        $aHeaders = explode(PHP_EOL, $sHeaders);
+        ;
         foreach ($aHeaders as $headerLineKey => $headerLineValue) {
             // based on protocols found on https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html
             // first line is Status Line

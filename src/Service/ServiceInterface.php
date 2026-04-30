@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -195,7 +196,7 @@ interface ServiceInterface extends BaseModelInterface
      * @throws \Box\Exception\BoxException
      * @throws BadMethodCallException
      */
-    public function handleBoxResponse(BoxResponseInterface $response = null, $returnType = 'decoded');
+    public function handleBoxResponse(?BoxResponseInterface $response = null, $returnType = 'decoded');
 
     /**
      * @param null $json
@@ -257,7 +258,7 @@ interface ServiceInterface extends BaseModelInterface
      *
      * @return ModelInterface|Model
      */
-    public function getFromBox($uri = null, $type = 'original', ModelInterface $class = null);
+    public function getFromBox($uri = null, $type = 'original', ?ModelInterface $class = null);
 
     /**
      * @param null $uri box uri to query
@@ -275,7 +276,7 @@ interface ServiceInterface extends BaseModelInterface
      * @throws \Box\Exception\TokenStorageException
      * @throws \Exception
      */
-    public function sendUpdateToBox($uri = null, $params = array(), $type = 'original', ModelInterface $class = null);
+    public function sendUpdateToBox($uri = null, $params = array(), $type = 'original', ?ModelInterface $class = null);
 
     /**
      * refreshes the token and returns new token; it is up to the application to persist the new token data
@@ -309,7 +310,7 @@ interface ServiceInterface extends BaseModelInterface
      *
      * @return ServiceInterface
      */
-    public function setTokenStorage(BaseTokenStorageInterface $tokenStorage = null);
+    public function setTokenStorage(?BaseTokenStorageInterface $tokenStorage = null);
 
     /**
      * @return mixed

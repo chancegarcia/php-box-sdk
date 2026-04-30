@@ -1,0 +1,18 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 0
+    paths:
+        - src
+        - tests
+        - bin
+    excludePaths:
+        - vendor
+        - var
+        - src/Event/Collection/Entry/Source/EntrySource.php
+        - src/Model/BoxModel.php
+    ignoreErrors:
+        -
+            message: '#implicitly nullable via default value null#'
+            reportUnmatched: false

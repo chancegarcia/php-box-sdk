@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Connection
@@ -43,5 +44,4 @@ class AuthenticationResponse extends Model implements AuthenticationResponseInte
     protected $refreshToken;
     protected $error;
     protected $errorDescription;
-
 }

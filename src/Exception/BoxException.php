@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Exception
@@ -35,7 +36,6 @@ use Box\Http\Response\BoxResponseInterface;
 
 class BoxException extends \Exception
 {
-
     const INVALID_CLASS_TYPE = "Invalid Class Type";
     const UNKNOWN_CLASS = "Unknown Class";
     const INVALID_CLASS = "Invalid Class";
@@ -73,12 +73,13 @@ class BoxException extends \Exception
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setError(mixed $error = null): void {
+    public function setError(mixed $error = null): void
+    {
         $this->error = $error;
-
     }
 
-    public function getError(): mixed {
+    public function getError(): mixed
+    {
         return $this->error;
     }
 
@@ -86,22 +87,25 @@ class BoxException extends \Exception
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setErrorDescription(mixed $errorDescription = null): void {
+    public function setErrorDescription(mixed $errorDescription = null): void
+    {
         $this->errorDescription = $errorDescription;
-
     }
 
-    public function getErrorDescription(): mixed {
+    public function getErrorDescription(): mixed
+    {
         return $this->errorDescription;
     }
 
-    public function addContext(mixed $contextInformation = null, ?string $key = null): void {
+    public function addContext(mixed $contextInformation = null, ?string $key = null): void
+    {
+        $contextInformation = $this->sanitize($contextInformation);
         if (is_string($key)) {
             $finalKey = $key;
             // if we have duplicate key for some reason, make it unique
             if (array_key_exists($key, $this->context)) {
                 do {
-                    $finalKey = uniqid($key."_", true);
+                    $finalKey = uniqid($key . "_", true);
                 } while (array_key_exists($finalKey, $this->context));
             }
 
@@ -111,7 +115,52 @@ class BoxException extends \Exception
         }
     }
 
-    public function getContext(?string $key = null): mixed {
+    protected function sanitize(mixed $data): mixed
+    {
+        if (is_string($data)) {
+            // Mask common tokens and secrets
+            $patterns = [
+                '/(access_token|refresh_token|client_secret|code)(=|":\s*")([^"&\s,]+)/i',
+                '/(Bearer\s+)([^"&\s,]+)/i'
+            ];
+            foreach ($patterns as $pattern) {
+                $data = preg_replace_callback($pattern, function ($matches) {
+                    $secret = $matches[count($matches) - 1];
+                    $masked = substr($secret, 0, 4) . '...' . substr($secret, -4);
+                    if (strlen($secret) <= 8) {
+                        $masked = '********';
+                    }
+                    // Reconstruct with the prefix groups
+                    $prefix = '';
+                    for ($i = 1; $i < count($matches) - 1; $i++) {
+                        $prefix .= $matches[$i];
+                    }
+                    return $prefix . $masked;
+                }, $data);
+            }
+        } elseif (is_array($data)) {
+            foreach ($data as $k => $v) {
+                if (is_string($k) && preg_match('/(token|secret|code)/i', $k)) {
+                    $data[$k] = '********';
+                } else {
+                    $data[$k] = $this->sanitize($v);
+                }
+            }
+        } elseif ($data instanceof \stdClass) {
+            foreach (get_object_vars($data) as $k => $v) {
+                if (preg_match('/(token|secret|code)/i', $k)) {
+                    $data->$k = '********';
+                } else {
+                    $data->$k = $this->sanitize($v);
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    public function getContext(?string $key = null): mixed
+    {
         // make sure we have a key value and avoid false negative; allow null to returned on non-existent key
         if (!is_null($key)) {
             if (array_key_exists($key, $this->context)) {
@@ -128,7 +177,8 @@ class BoxException extends \Exception
     /**
      * @return mixed
      */
-    public function getBoxCode(): mixed {
+    public function getBoxCode(): mixed
+    {
         return $this->boxCode;
     }
 
@@ -140,9 +190,9 @@ class BoxException extends \Exception
      * @return void
      * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setBoxCode(mixed $boxCode = null): void {
+    public function setBoxCode(mixed $boxCode = null): void
+    {
         $this->boxCode = $boxCode;
-
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Box
  * @subpackage  Box_Http_Response
@@ -22,26 +23,28 @@ namespace Box\Http\Response\Header;
 interface ResponseHeaderInterface
 {
     /**
-     * @return StatusLineInterface
+     * @return StatusLineInterface|null
      */
-    public function getStatusLine();
+    public function getStatusLine(): ?StatusLineInterface;
 
     /**
      * @param StatusLineInterface|null $statusLine
      *
      * @return ResponseHeaderInterface
+     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setStatusLine(?StatusLineInterface $statusLine = null);
+    public function setStatusLine(?StatusLineInterface $statusLine = null): ResponseHeaderInterface;
 
     /**
      * @return array
      */
-    public function getHeaderLines();
+    public function getHeaderLines(): array;
 
     /**
      * @param array|null $headerLines
      *
      * @return ResponseHeaderInterface
+     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setHeaderLines(?array $headerLines = null);
+    public function setHeaderLines(?array $headerLines = null): ResponseHeaderInterface;
 }

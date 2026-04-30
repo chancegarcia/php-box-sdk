@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -56,16 +57,16 @@ class SharedLink extends Model implements SharedLinkInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|null $access
+     * @return void
      */
-    public function setAccess($access = null)
+    public function setAccess($access = null): void
     {
         $this->access = $access;
-
     }
 
     /**
-     * {@inheritdoc}
+     * @return \DateTimeInterface|string|null
      */
     public function getUnsharedAt()
     {
@@ -73,12 +74,13 @@ class SharedLink extends Model implements SharedLinkInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param \DateTimeInterface|string|null $unsharedAt
+     * @return void
+     * @todo v1.0 \DateTimeImmutable|null type
      */
-    public function setUnsharedAt($unsharedAt = null)
+    public function setUnsharedAt($unsharedAt = null): void
     {
         $this->unsharedAt = $unsharedAt;
-
     }
 
     /**
@@ -90,12 +92,12 @@ class SharedLink extends Model implements SharedLinkInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|null $password
+     * @return void
      */
-    public function setPassword($password = null)
+    public function setPassword($password = null): void
     {
         $this->password = $password;
-
     }
 
     /**
@@ -107,12 +109,12 @@ class SharedLink extends Model implements SharedLinkInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param PermissionsInterface|null $permissions
+     * @return void
      */
-    public function setPermissions(PermissionsInterface $permissions = null)
+    public function setPermissions(PermissionsInterface $permissions = null): void
     {
         $this->permissions = $permissions;
-
     }
 
     /**

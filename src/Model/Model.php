@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package        Box
  * @subpackage     Box_Model
@@ -44,8 +45,7 @@ class Model extends BaseModel implements ModelInterface
      */
     public function __construct(?array $options = null)
     {
-        if (null !== $options)
-        {
+        if (null !== $options) {
             $this->mapBoxToClass($options);
         }
     }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chance
@@ -35,56 +36,56 @@
 
 namespace Box\Event\Collection;
 
-use Box\Collection\ArrayCollectionInterface;
 use Box\Model\ModelInterface;
+use Doctrine\Common\Collections\Collection;
 
 interface EventCollectionInterface extends ModelInterface
 {
     /**
      * @return mixed
      */
-    public function getChunkSize();
+    public function getChunkSize(): mixed;
 
     /**
      * @param mixed $chunkSize
      *
      * @return EventCollectionInterface|EventCollection
      */
-    public function setChunkSize($chunkSize = null);
+    public function setChunkSize($chunkSize = null): EventCollectionInterface|EventCollection;
 
     /**
      * @return mixed
      */
-    public function getNextStreamPosition();
+    public function getNextStreamPosition(): mixed;
 
     /**
      * @param mixed $nextStreamPosition
      *
      * @return EventCollectionInterface|EventCollection
      */
-    public function setNextStreamPosition($nextStreamPosition = null);
+    public function setNextStreamPosition($nextStreamPosition = null): EventCollectionInterface|EventCollection;
 
     /**
-     * @return ArrayCollectionInterface
+     * @return Collection
      */
-    public function getEntries();
+    public function getEntries(): Collection;
 
     /**
-     * @param ArrayCollectionInterface|array $entries
+     * @param Collection|array $entries
      *
      * @return EventCollectionInterface
      */
-    public function setEntries($entries = null);
+    public function setEntries($entries = null): EventCollectionInterface;
 
     /**
      * @return mixed
      */
-    public function getOriginalEntries();
+    public function getOriginalEntries(): mixed;
 
     /**
      * @param mixed $originalEntries
      *
      * @return EventCollectionInterface
      */
-    public function setOriginalEntries($originalEntries = null);
+    public function setOriginalEntries($originalEntries = null): EventCollectionInterface;
 }

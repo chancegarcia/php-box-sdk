@@ -42,7 +42,7 @@ class AuthRefreshCommand extends AbstractBoxCommand
     {
         $io = new SymfonyStyle($input, $output);
         $this->logger->info('Starting token refresh command');
-        
+
         $client = $this->clientFactory->createClient();
         $this->applyTransportOption($input, $client);
 
@@ -82,7 +82,16 @@ class AuthRefreshCommand extends AbstractBoxCommand
             $this->logger->info('Token refresh completed successfully');
             return Command::SUCCESS;
         } catch (Exception $e) {
-            $io->error('Failed to refresh token: ' . $e->getMessage());
+            $message = 'Failed to refresh token: ' . $e->getMessage();
+            if ($e instanceof \Box\Exception\BoxResponseException) {
+                if ($e->getBoxCode()) {
+                    $message .= " (Box Code: " . $e->getBoxCode() . ")";
+                }
+                if ($e->getErrorDescription()) {
+                    $message .= "\nDescription: " . $e->getErrorDescription();
+                }
+            }
+            $io->error($message);
             $this->logger->error('Failed to refresh token', ['exception' => $e]);
             return Command::FAILURE;
         }

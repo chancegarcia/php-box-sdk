@@ -43,7 +43,7 @@ class ReproIssueTest extends TestCase
         $configProvider = $this->createMock(\Box\Contract\ConfigProviderInterface::class);
         $outputFormatter = new \Box\Service\ConsoleOutputFormatter(new \Box\Service\DefaultJsonFormatter());
         $loggerFactory = new \Box\Logger\LoggerFactory(new \Box\Logger\ConfigNormalizer());
-        
+
         $client = $this->createMock(Client::class);
         $connection = $this->createMock(Connection::class);
 
@@ -58,7 +58,7 @@ class ReproIssueTest extends TestCase
         $response->method('isSuccessful')->willReturn(false);
 
         $connection->method('postFile')->willReturn($response);
-        
+
         // Setup parseResponse to throw as it would in real Client
         $client->method('parseResponse')->willThrowException(new BoxException('Box API request failed with HTTP 401'));
 
