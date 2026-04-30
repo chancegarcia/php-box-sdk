@@ -82,8 +82,7 @@ class ResponseParser
         }
 
         $finalHeaders = array();
-        $aHeaders = explode(PHP_EOL, $sHeaders);
-        ;
+        $aHeaders = preg_split('/\r\n|\r|\n/', $sHeaders);
         foreach ($aHeaders as $headerLineKey => $headerLineValue) {
             // based on protocols found on https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html
             // first line is Status Line
@@ -91,7 +90,7 @@ class ResponseParser
                 $finalHeaders[] = $headerLineValue;
             } else {
                 // rest of the lines are headers
-                $aLine = explode(":", $headerLineValue);
+                $aLine = explode(":", $headerLineValue, 2);
                 if (2 === count($aLine)) {
                     list($key, $value) = array_map("trim", $aLine);
                     if (true === $replace || !array_key_exists($key, $finalHeaders)) {

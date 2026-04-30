@@ -72,4 +72,42 @@ class BoxResponseExceptionTest extends TestCase
         $this->assertEquals('********', $context['access_token']);
         $this->assertEquals('bar', $context['foo']);
     }
+
+    public function testExceptionParsesConflictErrorExample(): void
+    {
+        $json = <<<'JSON'
+{
+    "type": "error",
+    "status": 409,
+    "code": "conflict",
+    "context_info": {
+        "errors": [
+            {
+                "reason": "invalid_parameter",
+                "name": "group_tag_name",
+                "message": "Invalid value 'All Box '. A resource with value 'All Box ' already exists"
+            }
+        ]
+    },
+    "help_url": "http://developers.box.com/docs/#errors",
+    "message": "Resource with the same name already exists",
+    "request_id": "2132632057555f584de87b7"
+}
+JSON;
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('getContent')->willReturn($json);
+        $response->method('getHeaderLine')->willReturn('');
+
+        $e = new BoxResponseException("Error", 409, null, $response);
+
+        $this->assertEquals('conflict', $e->getBoxCode());
+        $this->assertStringContainsString('Resource with the same name already exists', $e->getErrorDescription());
+
+        $context = $e->getContext();
+        // BoxException::addContext with null key appends the array to context
+        $this->assertArrayHasKey(0, $context);
+        $this->assertArrayHasKey('errors', $context[0]);
+        $this->assertCount(1, $context[0]['errors']);
+        $this->assertEquals('invalid_parameter', $context[0]['errors'][0]['reason']);
+    }
 }
