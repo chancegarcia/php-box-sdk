@@ -52,77 +52,81 @@ class StatusLine implements StatusLineInterface
     /**
      * {@inheritdoc}
      */
-    public function getHttpVersionPrefix() {
+    public function getHttpVersionPrefix(): string {
         return $this->httpVersionPrefix;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setHttpVersionPrefix($httpVersionPrefix = null) {
+    public function setHttpVersionPrefix(?string $httpVersionPrefix = null): StatusLineInterface {
         $this->httpVersionPrefix = $httpVersionPrefix;
 
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getHttpVersionNumber() {
+    public function getHttpVersionNumber(): string {
         return $this->httpVersionNumber;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setHttpVersionNumber($httpVersionNumber = null) {
+    public function setHttpVersionNumber(?string $httpVersionNumber = null): StatusLineInterface {
         $this->httpVersionNumber = $httpVersionNumber;
 
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getHttpVersion() {
+    public function getHttpVersion(): string {
         return $this->httpVersion;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setHttpVersion($httpVersion = null) {
+    public function setHttpVersion(?string $httpVersion = null): StatusLineInterface {
         $this->httpVersion = $httpVersion;
 
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getStatusCode() {
+    public function getStatusCode(): int {
         return $this->statusCode;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setStatusCode($statusCode = null) {
+    public function setStatusCode(?int $statusCode = null): StatusLineInterface {
         $this->statusCode = $statusCode;
 
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getReasonPhrase() {
+    public function getReasonPhrase(): string {
         return $this->reasonPhrase;
     }
 
     /**
-     * @param int $reasonPhrase
-     * @return StatusLineInterface
+     * {@inheritdoc}
      */
-    public function setReasonPhrase($reasonPhrase = null) {
+    public function setReasonPhrase(?string $reasonPhrase = null): StatusLineInterface {
         $this->reasonPhrase = $reasonPhrase;
 
+        return $this;
     }
 
 }

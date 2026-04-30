@@ -65,31 +65,36 @@ class ResponseHeader implements ResponseHeaderInterface
     /**
      * {@inheritdoc}
      */
-    public function getStatusLine() {
+    public function getStatusLine(): ?StatusLineInterface {
         return $this->statusLine;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setStatusLine(?StatusLineInterface $statusLine = null) {
+    public function setStatusLine(?StatusLineInterface $statusLine = null): ResponseHeaderInterface
+    {
         $this->statusLine = $statusLine;
 
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getHeaderLines() {
+    public function getHeaderLines(): array
+    {
         return $this->headerLines;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setHeaderLines(?array $headerLines = null) {
+    public function setHeaderLines(?array $headerLines = null): ResponseHeaderInterface
+    {
         $this->headerLines = $headerLines;
 
+        return $this;
     }
 
     public static function parseHeader($sHeaders = '', $replace = true) {

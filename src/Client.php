@@ -115,7 +115,7 @@ class Client extends Model
      *
      * @return Folder|FolderInterface
      */
-    public function getNewFolder($options = null)
+    public function getNewFolder(mixed $options = null): Folder|FolderInterface
     {
         return $this->getNewClass('Folder', $options);
     }
@@ -125,7 +125,7 @@ class Client extends Model
      *
      * @return \Box\User\User|\Box\User\UserInterface
      */
-    public function getNewUser($options = null)
+    public function getNewUser(mixed $options = null): \Box\User\User|\Box\User\UserInterface
     {
         return $this->getNewClass('User', $options);
     }
@@ -135,7 +135,7 @@ class Client extends Model
      *
      * @return \Box\Group\Group|\Box\Group\GroupInterface
      */
-    public function getNewGroup($options = null)
+    public function getNewGroup(mixed $options = null): \Box\Group\Group|\Box\Group\GroupInterface
     {
         return $this->getNewClass('Group', $options);
     }
@@ -145,7 +145,7 @@ class Client extends Model
      *
      * @return \Box\Collaboration\Collaboration|\Box\Collaboration\CollaborationInterface
      */
-    public function getNewCollaboration($options = null)
+    public function getNewCollaboration(mixed $options = null): \Box\Collaboration\Collaboration|\Box\Collaboration\CollaborationInterface
     {
         return $this->getNewClass('Collaboration', $options);
     }
@@ -156,7 +156,7 @@ class Client extends Model
      *
      * @return array|null|Folder returns null if no such folder exists and retrieve is false
      */
-    public function getFolder($id = 0, $retrieve = true)
+    public function getFolder(string|int $id = 0, bool $retrieve = true): array|null|FolderInterface|Folder
     {
         $folders = $this->getFolders($retrieve);
 
@@ -182,7 +182,7 @@ class Client extends Model
 
     }
 
-    public function addFolder($folder)
+    public function addFolder(mixed $folder): void
     {
         $folders = $this->getFolders();
         $folders[] = $folder;
@@ -190,7 +190,7 @@ class Client extends Model
 
     }
 
-    public function getFolders($retrieve = true)
+    public function getFolders(bool $retrieve = true): mixed
     {
         if (!$retrieve)
         {
