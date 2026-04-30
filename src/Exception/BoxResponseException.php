@@ -52,7 +52,7 @@ class BoxResponseException extends BoxException
      *
      * @return BoxResponseException
      */
-    public function __construct($message = "", $code = 0, Exception $previous = null, BoxResponseInterface $response) {
+    public function __construct(string $message = "", mixed $code = 0, ?Exception $previous = null, ?BoxResponseInterface $response = null) {
         parent::__construct($message, $code, $previous);
 
         if ($response instanceof BoxResponseInterface) {
@@ -69,6 +69,23 @@ class BoxResponseException extends BoxException
             if (array_key_exists('error_description', $parsedLine)) {
                 $this->errorDescription = $parsedLine['error_description'];
             }
+
+            // attempt to parse response body for error details
+            $content = $response->getContent();
+            if (!empty($content)) {
+                $decoded = json_decode($content, true);
+                if (is_array($decoded)) {
+                    if (isset($decoded['code'])) {
+                        $this->boxCode = $decoded['code'];
+                    }
+                    if (isset($decoded['message'])) {
+                        $this->errorDescription = $this->errorDescription ? $this->errorDescription . " | " . $decoded['message'] : $decoded['message'];
+                    }
+                    if (isset($decoded['context_info'])) {
+                        $this->context = array_merge($this->context, (array)$decoded['context_info']);
+                    }
+                }
+            }
         }
 
     }
@@ -84,7 +101,7 @@ class BoxResponseException extends BoxException
      * @param BoxResponseInterface $response
      * @return BoxResponseException
      */
-    public function setResponse(BoxResponseInterface $response = null) {
+    public function setResponse(?BoxResponseInterface $response = null) {
         $this->response = $response;
 
     }
