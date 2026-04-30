@@ -1,15 +1,30 @@
 {
     "name": "chancegarcia/box-api-v2-sdk",
     "license": "MIT",
-    "description": "PHP SDK to interact with the box.com API",
+    "description": "PHP SDK and API client for Box API workflows compatible with Box API v2024.0, including OAuth2 authentication, file and folder operations, uploads, typed models, PSR-3 logging, and pluggable HTTP transports.",
     "keywords": [
-        "box.com",
-        "box.com API",
-        "PHP",
-        "box.com SDK",
-        "box.com API v2"
+        "box",
+        "box-api",
+        "box-api-v2024",
+        "box-sdk",
+        "box-v2",
+        "box-platform",
+        "cloud-storage",
+        "file-storage",
+        "file-upload",
+        "oauth2",
+        "php-sdk",
+        "sdk",
+        "api-client",
+        "psr-3",
+        "guzzle"
     ],
     "homepage": "https://github.com/chancegarcia/box.net-v2api-sdk",
+    "support": {
+        "docs": "https://developer.box.com/reference",
+        "source": "https://github.com/chancegarcia/box.net-v2api-sdk",
+        "issues": "https://github.com/chancegarcia/box.net-v2api-sdk/issues"
+    },
     "autoload": {
         "psr-4": {
             "Box\\": "src/"
