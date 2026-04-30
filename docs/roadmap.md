@@ -32,6 +32,7 @@ The CLI exists mainly as a quick, practical test tool for verifying SDK behavior
     - **Service Consistency**: Services will return mapped model objects or typed DTOs consistently.
     - **Modern DI**: Replace class-string setters with constructor injection or factories.
     - **Expanded Coverage**: Implement high-priority endpoints like Collections, Metadata, and File Versions.
+    - **PSR Compliance**: Achieve full PSR-12 compliance and align with PSR-7, PSR-17, and PSR-18 for HTTP interoperability.
 - **Release Tasks**: See [v1.0 Release Task List](release-task-lists.md#v10-release-task-list).
 
 ## Current Focus Areas
@@ -127,3 +128,4 @@ The CLI exists mainly as a quick, practical test tool for verifying SDK behavior
 - [README.md](../README.md)
 - [Programmatic Usage Guide](programmatic-usage.md)
 - [CLI Test Harness Guide](cli-test-harness.md)
+- [PSR Compliance Assessment](psr-compliance-assessment.md)

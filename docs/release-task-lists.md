@@ -51,6 +51,8 @@ This document details the planned tasks for the `v0.11` transition release and t
 
 ### API Coverage
 - **Must**: Implement missing high-priority endpoints. *Rationale: Complete the SDK's utility.*
+- **Must**: Achieve full PSR-12 compliance across the codebase. *Rationale: Modernize code quality and maintainability.*
+- **Should**: Align HTTP layer with PSR-7, PSR-17, and PSR-18. *Rationale: Better interoperability with the PHP ecosystem.*
     - File Versions
     - Collections
     - Comments
