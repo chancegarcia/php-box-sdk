@@ -59,6 +59,8 @@ class User extends Model implements UserInterface
     protected mixed $isExemptFromDeviceLimits = null;
     protected mixed $isExemptFromLoginVerification = null;
     protected mixed $enterprise = null;
+    protected ?string $timezone = null;
+    protected ?bool $isExternalCollabRestricted = null;
 
     /**
      * @param string|int|null $id
@@ -341,5 +343,23 @@ class User extends Model implements UserInterface
         return $this->type;
     }
 
+    public function setTimezone(?string $timezone): void
+    {
+        $this->timezone = $timezone;
+    }
 
+    public function getTimezone(): ?string
+    {
+        return $this->timezone;
+    }
+
+    public function setIsExternalCollabRestricted(?bool $isExternalCollabRestricted): void
+    {
+        $this->isExternalCollabRestricted = $isExternalCollabRestricted;
+    }
+
+    public function getIsExternalCollabRestricted(): ?bool
+    {
+        return $this->isExternalCollabRestricted;
+    }
 }

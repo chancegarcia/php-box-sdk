@@ -63,6 +63,10 @@ class File extends Model implements FileInterface
     protected ?string $versionNumber = null;
     protected ?int $commentCount = null;
     protected mixed $permissions = null;
+    protected ?bool $isExternallyOwned = null;
+    protected mixed $allowedInviteRoles = null;
+    protected ?bool $hasCollaborations = null;
+    protected mixed $metadata = null;
 
     public function getId(): string|int|null
     {
@@ -515,4 +519,43 @@ class File extends Model implements FileInterface
         return $this->versionNumber;
     }
 
+    public function setIsExternallyOwned(?bool $isExternallyOwned): void
+    {
+        $this->isExternallyOwned = $isExternallyOwned;
+    }
+
+    public function getIsExternallyOwned(): ?bool
+    {
+        return $this->isExternallyOwned;
+    }
+
+    public function setAllowedInviteRoles(mixed $allowedInviteRoles): void
+    {
+        $this->allowedInviteRoles = $allowedInviteRoles;
+    }
+
+    public function getAllowedInviteRoles(): mixed
+    {
+        return $this->allowedInviteRoles;
+    }
+
+    public function setHasCollaborations(?bool $hasCollaborations): void
+    {
+        $this->hasCollaborations = $hasCollaborations;
+    }
+
+    public function getHasCollaborations(): ?bool
+    {
+        return $this->hasCollaborations;
+    }
+
+    public function setMetadata(mixed $metadata): void
+    {
+        $this->metadata = $metadata;
+    }
+
+    public function getMetadata(): mixed
+    {
+        return $this->metadata;
+    }
 }

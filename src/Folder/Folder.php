@@ -55,6 +55,7 @@ class Folder extends Model implements FolderInterface
     protected mixed $itemStatus = null;
     protected mixed $itemCollection = null;
     protected mixed $syncState = null;
+    protected ?bool $canNonOwnersInvite = null;
     protected mixed $hasCollaborations = null;
 
     public function classArray(string $syncState = "synced"): array
@@ -410,4 +411,13 @@ class Folder extends Model implements FolderInterface
         return $this->type;
     }
 
+    public function setCanNonOwnersInvite(?bool $canNonOwnersInvite): void
+    {
+        $this->canNonOwnersInvite = $canNonOwnersInvite;
+    }
+
+    public function getCanNonOwnersInvite(): ?bool
+    {
+        return $this->canNonOwnersInvite;
+    }
 }
