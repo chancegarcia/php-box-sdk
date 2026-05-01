@@ -31,8 +31,14 @@ class Hydrator
             $setter = 'set' . ucfirst($camelKey);
 
             if (method_exists($target, $setter)) {
-                $this->hydrateViaSetter($target, $setter, $camelKey, $value);
-            } elseif (property_exists($target, $camelKey)) {
+                $reflection = new ReflectionClass($target);
+                if ($reflection->hasMethod($setter) && $reflection->getMethod($setter)->isPublic()) {
+                    $this->hydrateViaSetter($target, $setter, $camelKey, $value);
+                    continue;
+                }
+            }
+
+            if (property_exists($target, $camelKey)) {
                 $this->hydrateViaProperty($target, $camelKey, $value);
             }
         }
@@ -58,11 +64,11 @@ class Hydrator
 
     private function hydrateViaProperty(object $target, string $propertyName, mixed $value): void
     {
-        $reflection = new ReflectionProperty($target, $propertyName);
-        $type = $reflection->getType();
+        $reflectionProperty = new ReflectionProperty($target, $propertyName);
+        $type = $reflectionProperty->getType();
 
         $hydratedValue = $this->hydrateValue($type, $value, $target, $propertyName);
-        $target->$propertyName = $hydratedValue;
+        $reflectionProperty->setValue($target, $hydratedValue);
     }
 
     private function hydrateValue(?ReflectionType $type, mixed $value, object $target, string $propertyName): mixed
