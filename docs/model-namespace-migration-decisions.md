@@ -1,5 +1,7 @@
 ### Model Namespace Migration Decisions
 
+**Status**: Historical / Reference only. Active decisions are consolidated in [v1.0 Planning](v1-planning.md).
+
 This document lists classes currently under `Box\Model` where the long-term namespace/location is ambiguous or where movement is deferred.
 
 | Current Class | Current Role | Recommended v1 Destination | Migration Strategy | Compatibility Concern | Recommended Action for v0.11.0 | Maintainer Decision | Status |

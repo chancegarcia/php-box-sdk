@@ -24,6 +24,7 @@ The CLI exists mainly as a quick, practical test tool for verifying SDK behavior
 
 ### v1.0 (Design Perfection)
 - **Goal**: Full implementation of the future architecture with no legacy baggage.
+- **Key Focus**: See [v1.0 Planning](v1-planning.md) for detailed technical goals.
 - **Planned Changes**:
     - **Client as Facade**: `Client` will become a lightweight facade over focused services (e.g., `FileService`, `UserService`).
     - **No Legacy Baggage**: Remove all legacy aliases and deprecated namespaces.
@@ -62,6 +63,11 @@ The CLI exists mainly as a quick, practical test tool for verifying SDK behavior
 - Expand PHPUnit coverage across commands, services, and client behavior.
 - Add tests for edge cases and failure scenarios.
 - Cover critical hydration and mapping paths.
+
+### 6. PSR Compliance
+- Achieve full PSR-12 compliance before v1.0.
+- Decouple HTTP layer to align with PSR-7/18.
+- Use PSR-17 factories for requests and streams.
 
 ### 7. Documentation
 - Improve project documentation for setup and usage

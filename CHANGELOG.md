@@ -8,6 +8,7 @@
 - **Advanced Model Mapping**: Introduced a recursive `Hydrator` service for complex API response mapping.
 - **Namespace Simplification**: Flattened structure for easier imports (e.g., `Box\Client` instead of `Box\Model\Client\Client`).
 - **Standardized Collections**: Migrated to Doctrine Collections for improved consistency and power.
+- **Comprehensive Documentation Pass**: Consolidated all audit and planning material into long-lived documentation. Introduced [v1.0 Planning](docs/v1-planning.md) to track technical goals and architectural decisions for the next major release.
 - **Improved Tooling**: New CLI test harness for managing OAuth2 and API interactions without writing code.
 
 ### Developer Details

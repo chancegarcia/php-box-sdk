@@ -169,46 +169,18 @@ To maintain a clean boundary:
 - **Infrastructure:** Treat the SDK as infrastructure. Your business logic shouldn't know how Box handles OAuth2; it should only care about "storing a file."
 - **Testing:** Use the SDK's interfaces to mock the `Client` in your unit tests.
 
-## 11. Minimal Examples
+## 12. Design Patterns and Robustness
 
-### Service Wrapper
-```php
-use Box\Client;
-use Box\Connection\Token\Token;
+The SDK follows several internal design patterns to ensure robustness and ease of use.
 
-class BoxIntegration
-{
-    private Client $client;
+### ID Handling
+Box IDs are handled as `string|int` throughout the v0.11.x branch. This ensures compatibility with large numeric IDs that might exceed 32-bit integer limits or contain leading zeros while still allowing convenient integer usage for legacy code.
 
-    public function __construct(string $clientId, string $clientSecret)
-    {
-        $this->client = new Client();
-        $this->client->setClientId($clientId);
-        $this->client->setClientSecret($clientSecret);
-    }
+### File Streaming
+The `Box\Http\FileStream` abstraction allows the SDK to handle file content from various sources (strings, resources, local paths) uniformly. This is particularly useful for serverless environments or memory-constrained integrations where writing to disk is undesirable.
 
-    public function setToken(array $tokenData): void
-    {
-        $this->client->setToken(new Token($tokenData));
-    }
-
-    public function upload(string $path, string $folderId = '0')
-    {
-        return $this->client->uploadFileToBox($path, $folderId);
-    }
-}
-```
-
-### Response Inspection
-```php
-/** @var \Box\Http\Response\BoxResponseInterface $response */
-$status = $response->getStatusCode();
-$data = json_decode($response->getContent(), true);
-
-if ($status === 201) {
-    echo "File uploaded: " . $data['entries'][0]['name'];
-}
-```
+### Model Validation
+Models use `Box\Model\BaseModelTrait` and `Box\Model\ModelTrait` for shared logic. Validation in v0.11.x avoids side effects during class verification, ensuring that simply instantiating or checking a model doesn't trigger unexpected state changes.
 
 ---
 
@@ -216,3 +188,4 @@ if ($status === 201) {
 - [README.md](../README.md)
 - [CLI Test Harness Guide](cli-test-harness.md)
 - [Project Roadmap](roadmap.md)
+- [v1.0 Planning](v1-planning.md)

@@ -1,5 +1,7 @@
 ### Model Typing Decisions (Ambiguous Cases)
 
+**Status**: Historical Reference. Decisions implemented as of v0.11.0. Final v1.0 typing strategy is in [v1.0 Planning](v1-planning.md).
+
 This document lists classes, properties, and setters where the correct type could not be confidently determined during the v0.11.0 type-safety audit.
 
 | Class | Property | Current Type | Recommended Type | Reasoning | Maintainer Decision | Status |

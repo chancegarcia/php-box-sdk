@@ -1,5 +1,7 @@
 # Box SDK Model Signature Audit
 
+**Status**: Historical / Research Reference. See [v1.0 Planning](v1-planning.md) for current implementation goals and typing rules.
+
 ## Summary
 The purpose of this audit is to evaluate the current type specificity of models and class signatures within the `box-sdk` PHP project. This SDK is currently targeting v0.11.0 with PHP 8.4 as the baseline. The eventual goal for v1 is to move towards stronger model typing, particularly for date/time fields and identifiers.
 
