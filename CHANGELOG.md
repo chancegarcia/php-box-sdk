@@ -1,5 +1,30 @@
 # Changelog
 
+## v0.11.1
+
+### Summary
+- **PHP 8.5 Support**: Added initial testing and compatibility for the upcoming PHP 8.5 release while maintaining full support for PHP 8.4.
+- **Enhanced Token Lifecycle**: Added native methods to track token expiration and remaining lifetime, simplifying authentication management.
+- **Model Utility Helpers**: New methods on `File` and `Folder` models make it easier to extract extensions and check for empty folders.
+- **Improved Hydration**: The internal mapping engine now uses reflection for property assignment, better supporting hydrated typed properties.
+- **Type Safety & Modernization**: Tightened type hints across the SDK and completed the migration to PHP short array syntax `[]`.
+
+### Developer Details
+- **Token Management**:
+    - Added `receivedAt` property and `isExpired()` method to `TokenInterface`.
+    - `Client` now exposes `isTokenExpired()` and `getRemainingTokenLifetime()` helpers.
+- **Model Extensions**:
+    - Added `FileInterface::getExtension()` to simplify file path handling.
+    - Added `FolderInterface::isEmpty()` to check for the presence of items in a folder.
+- **Hydrator Refactor**:
+    - Switched to `ReflectionProperty::setValue()` in `Hydrator`, allowing hydration of protected/private properties without requiring public setters.
+- **API & Type Cleanup**:
+    - Standardized parameter and return types to specific types or `mixed` where previously omitted.
+    - Updated `BaseTokenStorageInterface` with more accurate type hints for token context.
+    - Enforced PHP short array syntax `[]` across the entire codebase and documentation.
+- **CI/CD Improvements**:
+    - Updated GitHub Actions workflow matrix to include PHP 8.5 testing on Ubuntu.
+
 ## v0.11.0
 
 ### Summary
@@ -38,10 +63,13 @@
 - **Namespace Refactor**: Update imports to the flattened structure.
 - **Unchain Setters**: Break any chained setter calls into individual statements.
     - *Before*:
+
       ~~~~php
       $folder->setName('New Name')->setParentId('0');
       ~~~~
+
     - *After*:
+
       ~~~~php
       $folder->setName('New Name');
       $folder->setParentId('0');

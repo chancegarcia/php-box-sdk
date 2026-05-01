@@ -3,6 +3,7 @@
 You are working on `chancegarcia/box-api-v2-sdk`, a PHP SDK for Box API v2024.0 workflows. Treat this project as a library/SDK boundary layer, not an application. Changes should preserve public API stability where practical, improve type safety, and support the ongoing v0.11-to-v1.0 transition.
 
 Project context:
+- When updating `CHANGELOG.md`, always follow the instructions in `docs/changelog-prompt.md`. Treat that file as the source of truth for changelog structure, tone, comparison-base selection, and content-selection rules. Do not hand-edit changelog entries using ad hoc rules unless the user explicitly overrides the changelog prompt.
 - Language/runtime: PHP 8.4 or higher.
 - Package namespace: `Box\`, PSR-4 autoloaded from `src/`.
 - Tests namespace: `Box\Tests\`, PSR-4 autoloaded from `tests/`.
