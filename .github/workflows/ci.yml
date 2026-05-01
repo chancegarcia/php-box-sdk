@@ -8,13 +8,21 @@ on:
 
 jobs:
   tests:
-    name: "PHP ${{ matrix.php-version }}"
-    runs-on: ubuntu-latest
+    name: "${{ matrix.os }} / PHP ${{ matrix.php-version }}"
+    runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['8.4']
+        os: [ubuntu-latest]
+        php-version: ['8.4', '8.5']
+        include:
+          - os: macos-15
+            php-version: '8.4'
+          - os: macos-15
+            php-version: '8.5'
+
+    if: matrix.os == 'ubuntu-latest' || github.event_name == 'pull_request'
 
     steps:
       - name: Checkout
