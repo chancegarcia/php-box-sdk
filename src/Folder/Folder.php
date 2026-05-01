@@ -160,6 +160,28 @@ class Folder extends Model implements FolderInterface
         return $this->getItemCollection();
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function isEmpty(): bool
+    {
+        $itemCollection = $this->getItemCollection();
+
+        if (is_array($itemCollection) && isset($itemCollection['total_count'])) {
+            return 0 === (int) $itemCollection['total_count'];
+        }
+
+        if ($itemCollection instanceof \Countable) {
+            return 0 === count($itemCollection);
+        }
+
+        if (is_array($itemCollection)) {
+            return 0 === count($itemCollection);
+        }
+
+        return true;
+    }
+
     public function getId(): mixed
     {
         if (null === $this->id) {
