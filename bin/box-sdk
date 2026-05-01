@@ -1,0 +1,39 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__.'/../vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+use Symfony\Component\Dotenv\Dotenv;
+
+$dotenv = new Dotenv();
+if (file_exists(__DIR__ . '/../.env')) {
+    $dotenv->load(__DIR__ . '/../.env');
+}
+
+$application = new Application('Box SDK CLI', '1.0.0');
+
+$configProvider = new \Box\Service\EnvConfigProvider();
+$clientFactory = new \Box\Service\BoxClientFactory($configProvider);
+
+// Resolve JSON formatter
+$jsonFormatterClass = $configProvider->getJsonFormatterClass() ?? \Box\Service\DefaultJsonFormatter::class;
+if (!class_exists($jsonFormatterClass)) {
+    throw new \RuntimeException(sprintf('JSON formatter class "%s" not found.', $jsonFormatterClass));
+}
+$jsonFormatter = new $jsonFormatterClass();
+if (!$jsonFormatter instanceof \Box\Contract\JsonFormatterInterface) {
+    throw new \RuntimeException(sprintf('JSON formatter class "%s" must implement Box\Contract\JsonFormatterInterface.', $jsonFormatterClass));
+}
+
+$outputFormatter = new \Box\Service\ConsoleOutputFormatter($jsonFormatter);
+
+$configNormalizer = new \Box\Logger\ConfigNormalizer();
+$loggerFactory = new \Box\Logger\LoggerFactory($configNormalizer);
+
+$application->addCommand(new \Box\Command\AuthUrlCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->addCommand(new \Box\Command\AuthExchangeCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->addCommand(new \Box\Command\AuthRefreshCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->addCommand(new \Box\Command\FileUploadCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+
+$application->run();
