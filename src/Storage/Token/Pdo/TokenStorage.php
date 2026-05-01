@@ -52,14 +52,14 @@ class TokenStorage implements TokenStorageInterface
     protected $dsn;
     protected $username;
     protected $password;
-    protected $options = array();
+    protected $options = [];
     protected $pdo;
 
     protected $tokenTableName = 'box_token';
-    protected $tokenTableId = array(
+    protected $tokenTableId = [
         'access_token',
         'refresh_token',
-    );
+    ];
     protected $previousToken;
 
     /**
@@ -82,20 +82,20 @@ class TokenStorage implements TokenStorageInterface
      * map for persistence
      * @var array map contains the database column as the key and the token object getter method as the value.
      */
-    protected $tokenMap = array(
+    protected $tokenMap = [
         'access_token' => 'getAccessToken',
         'refresh_token' => 'getRefreshToken',
         'grant_type' => 'getGrantType',
         'expires_in' => 'getExpiresIn',
         'token_type' => 'getTokenType',
         'restricted_to' => 'getRestrictedTo',
-    );
+    ];
     protected $useCompositeKey = true;
-    protected $tokenCompositeKeyMap = array(
+    protected $tokenCompositeKeyMap = [
         'access_token' => 'getAccessToken',
         '',
-    );
-    protected $additionalTokenTableData = array();
+    ];
+    protected $additionalTokenTableData = [];
 
     /**
      * construct with pdo constructor arguments
@@ -105,7 +105,7 @@ class TokenStorage implements TokenStorageInterface
      * @param null $password
      * @param array $options
      */
-    public function __construct($dsn = null, $username = null, $password = null, $options = array())
+    public function __construct($dsn = null, $username = null, $password = null, $options = [])
     {
         $this->setDsn($dsn);
         $this->setUsername($username);

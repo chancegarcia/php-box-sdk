@@ -27,7 +27,7 @@ trait BaseModelTrait
     public function mapBoxToClass(array|\stdClass $aData): void
     {
         if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug('map data: ' . var_export($aData, true), array(__METHOD__ . ":" . __LINE__));
+            $this->getLogger()->debug('map data: ' . var_export($aData, true), [__METHOD__ . ":" . __LINE__]);
         }
 
         ModelMapper::mapBoxToClass($this, $aData);

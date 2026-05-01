@@ -147,16 +147,16 @@ class Connection extends Model implements ConnectionInterface
     public function getCurlData(\CurlHandle $ch): BoxResponseInterface
     {
         if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug('before curl_exec curl opts', array(
+            $this->getLogger()->debug('before curl_exec curl opts', [
                 __METHOD__ . ":" . __LINE__,
                 var_export(curl_getinfo($ch), true),
-            ));
+            ]);
         }
         $sResponse = curl_exec($ch);
         if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug('curl_exec response: ' . $sResponse, array(
+            $this->getLogger()->debug('curl_exec response: ' . $sResponse, [
                 __METHOD__ . ":" . __LINE__,
-            ));
+            ]);
         }
 
         // split curl result into header and body
@@ -185,10 +185,10 @@ class Connection extends Model implements ConnectionInterface
                         // throw exception so it doesn't throw a warning
                         if (!is_array($optValue)) {
                             $this->error(
-                                array(
+                                [
                                     'error' => 'curl opt (' . $opt . ') needs to be an array or object',
                                     'error_description' => 'curl opt (' . $opt . ') needs to be an array or object'
-                                )
+                                ]
                             );
                         }
                         curl_setopt($ch, constant($opt), $optValue);
@@ -233,7 +233,7 @@ class Connection extends Model implements ConnectionInterface
     public function delete(string $uri): BoxResponseInterface
     {
         if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug("delete uri: " . $uri, array(__METHOD__ . ":" . __LINE__));
+            $this->getLogger()->debug("delete uri: " . $uri, [__METHOD__ . ":" . __LINE__]);
         }
 
         return $this->request('DELETE', $uri);
@@ -404,7 +404,7 @@ class Connection extends Model implements ConnectionInterface
     public function setCurlOpts(?array $curlOpts = null): void
     {
         if (!is_array($curlOpts)) {
-            $curlOpts = $curlOpts !== null ? array($curlOpts) : [];
+            $curlOpts = $curlOpts !== null ? [$curlOpts] : [];
         }
         $this->curlOpts = $curlOpts;
     }

@@ -190,11 +190,11 @@ class Collaboration extends Model implements CollaborationInterface
     public function setStatus($status = null): void
     {
         $status = strtolower($status); // normalize
-        $acceptable = array(
+        $acceptable = [
             'accepted',
             'pending',
             'rejected'
-        );
+        ];
 
         if (!in_array($status, $acceptable)) {
             $err['error'] = "sdk_invalid_collaboration_status";

@@ -33,7 +33,7 @@ class ResponseHeader implements ResponseHeaderInterface
     /**
      * @var array
      */
-    protected $headerLines = array();
+    protected $headerLines = [];
 
     /**
      * @todo parse groupings based on the header line keys and the groupings (general, response, entity)
@@ -101,7 +101,7 @@ class ResponseHeader implements ResponseHeaderInterface
 
     public static function parseHeader($sHeaders = '', $replace = true)
     {
-        $finalHeaders = array();
+        $finalHeaders = [];
         $aHeaders = explode(PHP_EOL, $sHeaders);
         ;
         foreach ($aHeaders as $headerLineKey => $headerLineValue) {

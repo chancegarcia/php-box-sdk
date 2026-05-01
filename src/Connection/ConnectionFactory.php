@@ -93,14 +93,14 @@ class ConnectionFactory extends AbstractFactory
             }
         }
 
-        $headers = array("Authorization: Bearer " . $token->getAccessToken());
+        $headers = ["Authorization: Bearer " . $token->getAccessToken()];
 
         if (is_array($additionalHeaders)) {
             $headers = array_merge($headers, $additionalHeaders);
         }
 
         $connection = static::getConnection($options);
-        $connection->setCurlOpts(array('CURLOPT_HTTPHEADER' => $headers));
+        $connection->setCurlOpts(['CURLOPT_HTTPHEADER' => $headers]);
 
         return $connection;
     }

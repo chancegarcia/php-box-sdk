@@ -210,7 +210,7 @@ interface ServiceInterface extends BaseModelInterface
      *
      * @deprecated
      */
-    public function getFinalConnectionResult($json = null, $returnType = 'decoded', $errorData = array());
+    public function getFinalConnectionResult($json = null, $returnType = 'decoded', $errorData = []);
 
     /**
      * @param null $uri
@@ -225,7 +225,7 @@ interface ServiceInterface extends BaseModelInterface
      *
      * @throws BadMethodCallException
      */
-    public function putIntoBox($uri = null, $params = array(), $returnType = 'decoded');
+    public function putIntoBox($uri = null, $params = [], $returnType = 'decoded');
 
     /**
      *
@@ -276,7 +276,7 @@ interface ServiceInterface extends BaseModelInterface
      * @throws \Box\Exception\TokenStorageException
      * @throws \Exception
      */
-    public function sendUpdateToBox($uri = null, $params = array(), $type = 'original', ?ModelInterface $class = null);
+    public function sendUpdateToBox($uri = null, $params = [], $type = 'original', ?ModelInterface $class = null);
 
     /**
      * refreshes the token and returns new token; it is up to the application to persist the new token data

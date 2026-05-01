@@ -62,9 +62,9 @@ class FileService extends Service implements FileServiceInterface
             $sharedLink = (new \Box\Model\Mapper\Hydrator())->hydrate(CreateSharedLinkRequest::class, $sharedLink);
         }
 
-        $params = array(
+        $params = [
             'shared_link' => ($sharedLink instanceof CreateSharedLinkRequest) ? $sharedLink->toArray() : $sharedLink->toBoxArray()
-        );
+        ];
 
         $updatedFile = $this->createNewFile();
 

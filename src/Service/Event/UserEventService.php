@@ -54,7 +54,7 @@ use Psr\Log\LoggerInterface;
  */
 class UserEventService extends Service implements UserEventServiceInterface
 {
-    protected $validStreamTypes = array(
+    protected $validStreamTypes = [
         'all'
         /* returns everything */
         ,
@@ -63,7 +63,7 @@ class UserEventService extends Service implements UserEventServiceInterface
         ,
         'sync'
         /* returns tree changes only for sync folders */
-    );
+    ];
 
     protected $streamType = "all";
     protected $streamPosition = 0;
@@ -160,9 +160,9 @@ class UserEventService extends Service implements UserEventServiceInterface
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug(
                 'events data: ' . var_export($eventsData, true),
-                array(
+                [
                                           __METHOD__ . ":" . __LINE__,
-                )
+                ]
             );
         }
 
