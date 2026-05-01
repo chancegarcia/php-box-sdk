@@ -75,10 +75,11 @@ class ClientTest extends TestCase
         $this->client->setConnection($connection);
         $this->client->setAuthorizationCode('test_code');
 
-        $token = $this->client->getAccessToken();
+        $token = $this->client->exchangeAuthorizationCodeForToken();
         $this->assertInstanceOf(Token::class, $token);
         $this->assertEquals('access_foo', $token->getAccessToken());
         $this->assertEquals('refresh_bar', $token->getRefreshToken());
+        $this->assertNotNull($token->getReceivedAt());
     }
 
     public function testRefreshTokenSuccess(): void
@@ -106,6 +107,7 @@ class ClientTest extends TestCase
         $this->assertSame($token, $newToken);
         $this->assertEquals('new_access', $token->getAccessToken());
         $this->assertEquals('new_refresh', $token->getRefreshToken());
+        $this->assertNotNull($token->getReceivedAt());
     }
 
     public function testGetAuthorizationHeader()
@@ -435,5 +437,49 @@ class ClientTest extends TestCase
         $folder = new Folder(['id' => '123']);
         $this->client->setFolders(['123' => $folder]);
         $this->assertSame($folder, $this->client->getFolder('123', false));
+    }
+
+    public function testIsTokenExpired()
+    {
+        $client = new Client();
+        $this->assertFalse($client->isTokenExpired());
+
+        $token = $this->createMock(Token::class);
+        $token->method('isExpired')->willReturn(true);
+        $client->setToken($token);
+        $this->assertTrue($client->isTokenExpired());
+
+        $token = $this->createMock(Token::class);
+        $token->method('isExpired')->willReturn(false);
+        $client->setToken($token);
+        $this->assertFalse($client->isTokenExpired());
+    }
+
+    public function testGetRemainingTokenLifetime()
+    {
+        $client = new Client();
+        $this->assertNull($client->getRemainingTokenLifetime());
+
+        $token = $this->createMock(Token::class);
+        $token->method('getExpiresIn')->willReturn(3600);
+        $token->method('getReceivedAt')->willReturn(time() - 600);
+        $client->setToken($token);
+
+        $remaining = $client->getRemainingTokenLifetime();
+        $this->assertGreaterThan(2900, $remaining);
+        $this->assertLessThanOrEqual(3000, $remaining);
+
+        // Test clamping to 0
+        $token = $this->createMock(Token::class);
+        $token->method('getExpiresIn')->willReturn(3600);
+        $token->method('getReceivedAt')->willReturn(time() - 4000);
+        $client->setToken($token);
+        $this->assertEquals(0, $client->getRemainingTokenLifetime());
+
+        // Test null if missing metadata
+        $token = $this->createMock(Token::class);
+        $token->method('getExpiresIn')->willReturn(null);
+        $client->setToken($token);
+        $this->assertNull($client->getRemainingTokenLifetime());
     }
 }

@@ -43,6 +43,7 @@ class Token extends Model implements TokenInterface
     protected mixed $expiresIn = null;
     protected mixed $tokenType = null;
     protected array $restrictedTo = [];
+    protected ?int $receivedAt = null;
 
     /**
      * @param mixed $expiresIn
@@ -50,6 +51,9 @@ class Token extends Model implements TokenInterface
     public function setExpiresIn(mixed $expiresIn = null): void
     {
         $this->expiresIn = $expiresIn;
+        if (null !== $expiresIn && null === $this->receivedAt) {
+            $this->receivedAt = time();
+        }
     }
 
     public function getExpiresIn(): mixed
@@ -124,6 +128,29 @@ class Token extends Model implements TokenInterface
     public function setRestrictedTo(?array $restrictedTo = null): void
     {
         $this->restrictedTo = $restrictedTo ?? [];
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getReceivedAt(): ?int
+    {
+        return $this->receivedAt;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isExpired(): bool
+    {
+        if (null === $this->expiresIn || null === $this->receivedAt) {
+            return false;
+        }
+
+        $now = time();
+        $expirationTime = $this->receivedAt + (int) $this->expiresIn;
+
+        return $now >= $expirationTime;
     }
 
     // all parameters must be url encoded

@@ -927,6 +927,41 @@ class Client extends Model
     }
 
     /**
+     * @return bool
+     */
+    public function isTokenExpired(): bool
+    {
+        if (null === $this->token) {
+            return false;
+        }
+
+        return $this->token->isExpired();
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getRemainingTokenLifetime(): ?int
+    {
+        if (null === $this->token) {
+            return null;
+        }
+
+        $expiresIn = $this->token->getExpiresIn();
+        $receivedAt = $this->token->getReceivedAt();
+
+        if (null === $expiresIn || null === $receivedAt) {
+            return null;
+        }
+
+        $now = time();
+        $expirationTime = $receivedAt + (int) $expiresIn;
+        $remaining = $expirationTime - $now;
+
+        return max(0, $remaining);
+    }
+
+    /**
      * @param mixed $tokenClass
      * @return void
      */
