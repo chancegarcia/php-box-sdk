@@ -53,7 +53,7 @@ class TokenStorageContainer implements BaseTokenStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function getPreviousToken()
+    public function getPreviousToken(): TokenInterface
     {
         return $this->previousToken;
     }
@@ -61,7 +61,7 @@ class TokenStorageContainer implements BaseTokenStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function setPreviousToken(TokenInterface $previousToken = null)
+    public function setPreviousToken(?TokenInterface $previousToken = null): void
     {
         $this->previousToken = $previousToken;
     }
@@ -69,7 +69,7 @@ class TokenStorageContainer implements BaseTokenStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function retrieveToken($retrievalUpdateClause = null)
+    public function retrieveToken(mixed $retrievalWhereClause = null)
     {
         return $this->token;
     }
@@ -77,7 +77,7 @@ class TokenStorageContainer implements BaseTokenStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function storeToken(TokenInterface $token = null)
+    public function storeToken(?TokenInterface $token = null)
     {
         $this->token = $token;
     }
@@ -85,7 +85,7 @@ class TokenStorageContainer implements BaseTokenStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function updateToken(TokenInterface $token, $tokenUpdateClause = null)
+    public function updateToken(TokenInterface $token, mixed $tokenUpdateClause = null)
     {
         $this->token = $token;
     }
@@ -93,7 +93,7 @@ class TokenStorageContainer implements BaseTokenStorageInterface
     /**
      * remove token from storage
      *
-     * @param \Box\Connection\Token\TokenInterface $token
+     * @param TokenInterface $token
      * @param null $tokenContext
      *
      */

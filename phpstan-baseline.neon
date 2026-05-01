@@ -240,11 +240,6 @@ parameters:
 			count: 1
 			path: src/Service/Service.php
 
-		-
-			message: '#^Method Box\\Storage\\Token\\Container\\TokenStorageContainer\:\:setPreviousToken\(\) should return Box\\Storage\\Token\\BaseTokenStorageInterface but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/Storage/Token/Container/TokenStorageContainer.php
 
 		-
 			message: '#^Method Box\\Storage\\Token\\Container\\TokenStorageContainer\:\:storeToken\(\) should return bool but return statement is missing\.$#'
@@ -294,11 +289,6 @@ parameters:
 			count: 1
 			path: src/Storage/Token/Pdo/TokenStorage.php
 
-		-
-			message: '#^Method Box\\Storage\\Token\\Pdo\\TokenStorage\:\:setPreviousToken\(\) should return Box\\Storage\\Token\\BaseTokenStorageInterface but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/Storage/Token/Pdo/TokenStorage.php
 
 		-
 			message: '#^Method Box\\Storage\\Token\\Pdo\\TokenStorage\:\:setTokenCompositeKeyMap\(\) should return Box\\Storage\\Token\\Pdo\\TokenStorageInterface but return statement is missing\.$#'

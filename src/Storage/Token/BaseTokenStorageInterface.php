@@ -44,47 +44,47 @@ interface BaseTokenStorageInterface
     /**
      * add/insert/store token to storage
      *
-     * @param \Box\Connection\Token\TokenInterface $token
+     * @param TokenInterface $token
      *
      * @return bool return value is success of storage
      */
     public function storeToken(TokenInterface $token);
 
     /**
-     * @param \Box\Connection\Token\TokenInterface $token
-     * @param mixed $tokenUpdateClause update context such as a where clause
+     * @param TokenInterface $token
+     * @param mixed|null $tokenUpdateClause update context such as a where clause
      *
      * @return bool return value is success of storage
      */
-    public function updateToken(TokenInterface $token, $tokenUpdateClause = null);
+    public function updateToken(TokenInterface $token, mixed $tokenUpdateClause = null);
 
     /**
-     * @param mixed $retrievalWhereClause retrieval context such as a where clause
+     * @param mixed|null $retrievalWhereClause retrieval context such as a where clause
      *
      * @return TokenInterface
      */
-    public function retrieveToken($retrievalWhereClause = null);
+    public function retrieveToken(mixed $retrievalWhereClause = null);
 
     /**
      * @return TokenInterface
      */
-    public function getPreviousToken();
+    public function getPreviousToken(): TokenInterface;
 
     /**
      * store previous token for usage
      *
      * @param TokenInterface|null $previousToken
      *
-     * @return BaseTokenStorageInterface
+     * @return void
      */
-    public function setPreviousToken(TokenInterface $previousToken = null);
+    public function setPreviousToken(?TokenInterface $previousToken = null): void;
 
     /**
      * remove token from storage
      *
-     * @param \Box\Connection\Token\TokenInterface $token
-     * @param null $tokenContext
+     * @param TokenInterface $token
+     * @param mixed $tokenContext
      *
      */
-    public function removeToken(TokenInterface $token, $tokenContext = null);
+    public function removeToken(TokenInterface $token, mixed $tokenContext = null);
 }

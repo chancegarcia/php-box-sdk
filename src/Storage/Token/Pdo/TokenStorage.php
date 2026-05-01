@@ -36,8 +36,8 @@
 
 namespace Box\Storage\Token\Pdo;
 
-use Box\Connection\Token\Token;
 use Box\Connection\Token\TokenInterface;
+use Box\Storage\Token\BaseTokenStorageInterface;
 use PDO;
 
 /**
@@ -65,7 +65,7 @@ class TokenStorage implements TokenStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function getPreviousToken()
+    public function getPreviousToken(): TokenInterface
     {
         return $this->previousToken;
     }
@@ -73,7 +73,7 @@ class TokenStorage implements TokenStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function setPreviousToken(TokenInterface $previousToken = null)
+    public function setPreviousToken(?TokenInterface $previousToken = null): void
     {
         $this->previousToken = $previousToken;
     }
@@ -198,11 +198,11 @@ class TokenStorage implements TokenStorageInterface
     }
 
     /**
-     * @param PDO $pdo
+     * @param ?\PDO $pdo
      *
      * @return TokenStorage
      */
-    public function setPdo(PDO $pdo = null)
+    public function setPdo(?\PDO $pdo = null)
     {
         $this->pdo = $pdo;
     }
@@ -329,7 +329,7 @@ class TokenStorage implements TokenStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function updateToken(TokenInterface $token, $tokenUpdateClause = null)
+    public function updateToken(TokenInterface $token, mixed $tokenUpdateClause = null)
     {
         // TODO: Implement updateToken() method.
     }
@@ -337,7 +337,7 @@ class TokenStorage implements TokenStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function retrieveToken($retrievalWhereClause = null)
+    public function retrieveToken(mixed $retrievalWhereClause = null)
     {
         // TODO: Implement retrieveToken() method.
     }
