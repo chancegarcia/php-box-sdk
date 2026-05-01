@@ -1,0 +1,140 @@
+<?php
+
+/**
+ * @package
+ * @subpackage
+ * @author      Chance Garcia
+ * @copyright   (C)Copyright 2013-2016 Chance Garcia, chancegarcia.com
+ *
+ *    The MIT License (MIT)
+ *
+ * Copyright (c) 2013-2016 Chance Garcia
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
+namespace Box\Http\Response;
+
+use Box\Http\Response\Header\StatusLineInterface;
+use Box\Exception\BoxException;
+
+class ResponseParser
+{
+    /**
+     * @param string $sStatusLine
+     * @param bool $associative  if true, then returns with keys: httpVersion, statusCode, reasonPhrase
+     * @return array if non-associative, return in order: httpVersion, statusCode, reasonPhrase
+     * @throws BoxException
+     */
+    public static function parseHeaderStatusLine(string $sStatusLine = '', bool $associative = true): array
+    {
+
+        if (!is_string($sStatusLine)) {
+            throw new \InvalidArgumentException("string value expected for parsing. given: " . gettype($sStatusLine));
+        }
+
+        list($httpVersion, $statusCode, $reasonPhrase) = explode(" ", $sStatusLine);
+        $code = filter_var($statusCode, FILTER_VALIDATE_INT);
+
+        if (true === $associative) {
+            $statusLine = array(
+                'httpVersion' => $httpVersion,
+                'statusCode' => $code,
+                'reasonPhrase' => $reasonPhrase,
+            );
+        } else {
+            $statusLine = array(
+                $httpVersion,
+                $code,
+                $reasonPhrase,
+            );
+        }
+
+        return $statusLine;
+    }
+
+    /**
+     * @param string $sHeaders
+     * @param bool $replace
+     * @return array
+     */
+    public static function parseHeader(string $sHeaders = '', bool $replace = true): array
+    {
+        if (!is_string($sHeaders)) {
+            throw new \InvalidArgumentException("string value expected for parsing. given: " . gettype($sHeaders));
+        }
+
+        $finalHeaders = array();
+        $aHeaders = preg_split('/\r\n|\r|\n/', $sHeaders);
+        foreach ($aHeaders as $headerLineKey => $headerLineValue) {
+            // based on protocols found on https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html
+            // first line is Status Line
+            if (0 === $headerLineKey) {
+                $finalHeaders[] = $headerLineValue;
+            } else {
+                // rest of the lines are headers
+                $aLine = explode(":", $headerLineValue, 2);
+                if (2 === count($aLine)) {
+                    list($key, $value) = array_map("trim", $aLine);
+                    if (true === $replace || !array_key_exists($key, $finalHeaders)) {
+                        $finalHeaders[$key] = $value;
+                    } else {
+                        $finalHeaders[$key] = array_merge((array)$finalHeaders[$key], (array)$value);
+                    }
+                }
+            }
+        }
+
+        return $finalHeaders;
+    }
+
+    public static function parseWwwAuthenticateHeader(?string $wwwAuthenticateHeaderValue = null): array
+    {
+        if (!is_string($wwwAuthenticateHeaderValue) || empty($wwwAuthenticateHeaderValue)) {
+            return array();
+        }
+
+        $valuePairs = array_map("trim", explode(",", $wwwAuthenticateHeaderValue));
+        $parsed = array();
+
+        foreach ($valuePairs as $valuePair) {
+            $tempPair = explode("=", $valuePair);
+            $tempkey = trim(array_shift($tempPair));
+            $tempValue = (count($tempPair) > 1) ? implode("=", $tempPair) : array_shift($tempPair);
+
+            if (is_string($tempValue)) {
+                $tempValue = trim($tempValue, '"');
+            }
+
+            $aKey = explode(" ", $tempkey);
+            if (count($aKey) > 1) {
+                // Handle scheme (e.g. "Bearer error")
+                $scheme = array_shift($aKey);
+                $key = array_shift($aKey);
+                $parsed['scheme'] = $scheme;
+                $parsed[$key] = $tempValue;
+            } else {
+                $parsed[$tempkey] = $tempValue;
+            }
+        }
+
+        return $parsed;
+    }
+}
