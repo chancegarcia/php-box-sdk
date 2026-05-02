@@ -1,5 +1,11 @@
 # Box PHP SDK
 
+[![CI](https://github.com/chancegarcia/box.net-v2api-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/chancegarcia/box.net-v2api-sdk/actions/workflows/ci.yml)
+[![Latest Stable Version](https://poser.pugx.org/chancegarcia/box-api-v2-sdk/v/stable)](https://packagist.org/packages/chancegarcia/box-api-v2-sdk)
+[![PHP Version Require](https://poser.pugx.org/chancegarcia/box-api-v2-sdk/require/php)](https://packagist.org/packages/chancegarcia/box-api-v2-sdk)
+[![License](https://poser.pugx.org/chancegarcia/box-api-v2-sdk/license)](https://packagist.org/packages/chancegarcia/box-api-v2-sdk)
+[![Total Downloads](https://poser.pugx.org/chancegarcia/box-api-v2-sdk/downloads)](https://packagist.org/packages/chancegarcia/box-api-v2-sdk)
+
 A modern PHP SDK for interacting with the [Box.com API](https://developer.box.com/).
 
 **Version Note:** v0.11.0 is a **functional transition release** bridging the gap between legacy v0.10.x and the upcoming v1.0 architecture. It introduces v1.0-style infrastructure (Hydrators, DTOs, flattened namespaces) while maintaining reasonable backward compatibility where practical.

@@ -1,13 +1,5 @@
 # Changelog Generation Prompt
 
-You are working in the current project.
-
-Project context:
-- This is an open source SDK, client library, package, framework integration, or developer-facing library project.
-- The changelog audience includes library users, application developers, maintainers, release reviewers, contributors, and package consumers.
-- The changelog should help readers understand what changed in the public API, behavior, compatibility, installation requirements, dependency expectations, integrations, documentation, testing support, and migration path.
-- Keep the prompt applicable to any open source SDK or library. Do not assume a specific programming language, package manager, vendor, framework, cloud service, or runtime unless the repository clearly shows one.
-
 User inputs:
 - Release Tag: upcoming-release-tag
     - Optional.
@@ -19,6 +11,12 @@ User inputs:
     - Replace last-release-tag with a specific git tag only when you want to force the changelog comparison base.
     - This value represents the starting tag for the changelog comparison.
     - If the value is still last-release-tag, blank, missing, or otherwise not set, treat it as not provided and determine the comparison base automatically using the rules below.
+
+Project context:
+- This is an open source SDK, client library, package, framework integration, or developer-facing library project.
+- The changelog audience includes library users, application developers, maintainers, release reviewers, contributors, and package consumers.
+- The changelog should help readers understand what changed in the public API, behavior, compatibility, installation requirements, dependency expectations, integrations, documentation, testing support, and migration path.
+- Keep the prompt applicable to any open source SDK or library. Do not assume a specific programming language, package manager, vendor, framework, cloud service, or runtime unless the repository clearly shows one.
 
 Task:
 Create or update CHANGELOG.md by comparing the current codebase against the selected previous release point.

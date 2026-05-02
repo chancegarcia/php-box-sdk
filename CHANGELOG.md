@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.11.3
+
+### Summary
+- Hardened the CI workflow with explicit minimal repository permissions, reducing default token scope during automated checks.
+- Improved package discoverability in the project README by adding common ecosystem badges for CI status, supported PHP version, Packagist release, license, and downloads.
+- Refined changelog authoring guidance to preserve full project-context instructions for maintainers preparing future release notes.
+
+### Developer Details
+- **CI security posture**:
+    - Added top-level `permissions: contents: read` to `.github/workflows/ci.yml` so the workflow runs with an explicitly restricted GitHub token scope.
+- **Documentation and release visibility**:
+    - Added README badges for CI status, latest stable version, PHP requirement, license, and total downloads to improve quick release and compatibility checks for consumers.
+- **Maintainer workflow**:
+    - Updated `docs/changelog-prompt.md` to keep the project-context section in the expected location and wording, helping keep changelog generation aligned with SDK/library release-note standards.
+
 ## v0.11.2
 
 ### Summary
