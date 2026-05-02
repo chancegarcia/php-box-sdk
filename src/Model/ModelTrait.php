@@ -15,7 +15,7 @@ trait ModelTrait
     public function classArray(): array
     {
         $aModel = get_object_vars($this);
-        $aArray = array();
+        $aArray = [];
 
         foreach ($aModel as $k => $v) {
             $sKey = $this->toBoxVar($k);

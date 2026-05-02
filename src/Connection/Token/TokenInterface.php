@@ -55,6 +55,11 @@ interface TokenInterface extends ModelInterface
     public function setTokenType(mixed $tokenType = null): void;
 
     /**
+     * @return int|null
+     */
+    public function getReceivedAt(): ?int;
+
+    /**
      * @return array
      */
     public function getRestrictedTo(): array;
@@ -63,4 +68,9 @@ interface TokenInterface extends ModelInterface
      * @param array|null $restrictedTo
      */
     public function setRestrictedTo(?array $restrictedTo = null): void;
+
+    /**
+     * @return bool
+     */
+    public function isExpired(): bool;
 }

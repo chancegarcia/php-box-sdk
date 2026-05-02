@@ -225,8 +225,8 @@ class Client extends Model
             throw new BoxException("Group object expected", BoxException::INVALID_INPUT);
         }
 
-        $members = array();
-        $entries = array();
+        $members = [];
+        $entries = [];
 
         if (is_numeric($limit) || is_numeric($offset)) {
             if (!is_numeric($limit)) {
@@ -287,7 +287,7 @@ class Client extends Model
 
         $uri = Folder::SHARED_ITEM_URI;
         $sSharedLinkHeader = "BoxApi: shared_link=" . $sharedUri;
-        $aSharedLinkHeader = array($sSharedLinkHeader);
+        $aSharedLinkHeader = [$sSharedLinkHeader];
 
         $connection = $this->getConnection();
         $this->setConnectionAuthHeader($connection, $aSharedLinkHeader);
@@ -381,10 +381,10 @@ class Client extends Model
         $connection = $this->getConnection();
         $this->setConnectionAuthHeader($connection);
 
-        $params = array(
+        $params = [
             'name' => $name,
-            'parent' => array('id' => (string)$parentFolderId)
-        );
+            'parent' => ['id' => (string)$parentFolderId]
+        ];
 
         $params = array_merge_recursive($params, $options);
 
@@ -488,17 +488,17 @@ class Client extends Model
         $folderId = $folder->getId();
         $collaboratorId = $collaborator->getId();
 
-        $params = array(
-            'item' => array(
+        $params = [
+            'item' => [
                 "id" => $folderId,
                 "type" => "folder"
-            ),
-            'accessible_by' => array(
+            ],
+            'accessible_by' => [
                 "id" => $collaboratorId
-            ),
+            ],
 
             'role' => $role
-        );
+        ];
 
         // can be refactored a bit more but the json encode works in the connection class
         $connection = $this->getConnection();
@@ -537,11 +537,11 @@ class Client extends Model
         $uri .= "/" . $folderId;
 
         if (!is_array($params)) {
-            $params = array(
-                'shared_link' => array(
+            $params = [
+                'shared_link' => [
                     'access' => 'collaborators'
-                )
-            );
+                ]
+            ];
         }
 
         // can be refactored a bit more but the json encode works in the connection class
@@ -572,10 +572,10 @@ class Client extends Model
     public function copyBoxFolder($originalFolder, $parent, $name = null, $addToFolders = true)
     {
         if (!$originalFolder instanceof FolderInterface) {
-            $this->error(array(
+            $this->error([
                 'error' => 'Folder or FolderInterface expected',
                 'error_description' => $originalFolder
-            ));
+            ]);
         }
 
         $uri = Folder::URI . '/' . $originalFolder->getId() . '/copy';
@@ -589,13 +589,13 @@ class Client extends Model
         }
 
         if (!$parent instanceof FolderInterface) {
-            $this->error(array(
+            $this->error([
                 'error' => 'Folder or FolderInterface expected',
                 'error_description' => $parent
-            ));
+            ]);
         }
 
-        $params['parent'] = array('id' => $parent->getId());
+        $params['parent'] = ['id' => $parent->getId()];
         if (null !== $name) {
             $params['name'] = $name;
         }
@@ -768,7 +768,7 @@ class Client extends Model
     public function buildAuthQuery()
     {
         $uri = self::AUTH_URI . '?';
-        $params = array();
+        $params = [];
 
         $params['response_type'] = "code";
 
@@ -833,11 +833,11 @@ class Client extends Model
         // header opt will require a merge with other headers to not overwrite.
         // @todo refactor to allow additional headers with auth header
         // For compatibility, we still call setCurlOpts if it's a CurlTransport or if someone depends on it
-        $headers = array($authorizationHeader);
+        $headers = [$authorizationHeader];
         if (is_array($additionalHeaders)) {
             $headers = array_merge($headers, $additionalHeaders);
         }
-        $connection->setCurlOpts(array('CURLOPT_HTTPHEADER' => $headers));
+        $connection->setCurlOpts(['CURLOPT_HTTPHEADER' => $headers]);
     }
 
     /**
@@ -924,6 +924,41 @@ class Client extends Model
         }
 
         return $this->token;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTokenExpired(): bool
+    {
+        if (null === $this->token) {
+            return false;
+        }
+
+        return $this->token->isExpired();
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getRemainingTokenLifetime(): ?int
+    {
+        if (null === $this->token) {
+            return null;
+        }
+
+        $expiresIn = $this->token->getExpiresIn();
+        $receivedAt = $this->token->getReceivedAt();
+
+        if (null === $expiresIn || null === $receivedAt) {
+            return null;
+        }
+
+        $now = time();
+        $expirationTime = $receivedAt + (int) $expiresIn;
+        $remaining = $expirationTime - $now;
+
+        return max(0, $remaining);
     }
 
     /**

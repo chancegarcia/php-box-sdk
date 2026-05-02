@@ -53,4 +53,9 @@ interface FileInterface extends ModelInterface
     public function getSharedLink(): mixed;
 
     public function setSharedLink(mixed $sharedLink = null): void;
+
+    /**
+     * @return string
+     */
+    public function getExtension(): string;
 }

@@ -68,7 +68,7 @@ class Service extends BaseModel implements ServiceInterface
      */
     protected $authorizedConnection;
 
-    protected $additionalConnectionHeaders = array();
+    protected $additionalConnectionHeaders = [];
 
     /**
      * @var Token|TokenInterface
@@ -91,11 +91,11 @@ class Service extends BaseModel implements ServiceInterface
     protected $lastResultDecoded;
     protected $lastResultFlat;
     protected $defaultReturnType = 'decoded';
-    private $allowedReturnTypes = array(
+    private $allowedReturnTypes = [
         'decoded',
         'original',
         'flat',
-    );
+    ];
 
     /**
      * {@inheritdoc}
@@ -138,7 +138,7 @@ class Service extends BaseModel implements ServiceInterface
 
         $headers = $this->getConnectionHeaders();
 
-        $this->authorizedConnection->setCurlOpts(array('CURLOPT_HTTPHEADER' => $headers));
+        $this->authorizedConnection->setCurlOpts(['CURLOPT_HTTPHEADER' => $headers]);
 
         return $this->authorizedConnection;
     }
@@ -336,13 +336,13 @@ class Service extends BaseModel implements ServiceInterface
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->error(
                 $message,
-                array(
+                [
                     __METHOD__ . ":" . __LINE__,
                     $data,
                     $error,
                     $errorDescription,
                     $exception->getTraceAsString(),
-                )
+                ]
             );
         }
 
@@ -352,7 +352,7 @@ class Service extends BaseModel implements ServiceInterface
     /**
      * {@inheritdoc}
      */
-    final public function putIntoBox($uri = null, $params = array(), $returnType = 'decoded')
+    final public function putIntoBox($uri = null, $params = [], $returnType = 'decoded')
     {
         $this->validateReturnType($returnType);
 
@@ -368,10 +368,10 @@ class Service extends BaseModel implements ServiceInterface
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug(
                 'raw return: ' . $response,
-                array(
+                [
                     __METHOD__ . ":" . __LINE__,
                     var_export($response, true),
-                )
+                ]
             );
         }
 
@@ -396,10 +396,10 @@ class Service extends BaseModel implements ServiceInterface
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug(
                 'raw return: ' . $response,
-                array(
+                [
                     __METHOD__ . ":" . __LINE__,
                     var_export($response, true),
-                )
+                ]
             );
         }
 
@@ -412,7 +412,7 @@ class Service extends BaseModel implements ServiceInterface
      */
     final public function sendUpdateToBox(
         $uri = null,
-        $params = array(),
+        $params = [],
         $type = 'original',
         ?ModelInterface $class = null
     ) {
@@ -423,26 +423,26 @@ class Service extends BaseModel implements ServiceInterface
             if ($this->getLogger() instanceof LoggerInterface) {
                 $this->getLogger()->error(
                     'box exception caught',
-                    array(
+                    [
                         __METHOD__ . ":" . __LINE__,
                         $bre->getTraceAsString(),
                         $bre->getBoxCode(),
                         $bre->getError(),
                         $bre->getErrorDescription(),
                         implode("\n", $bre->getContext()),
-                    )
+                    ]
                 );
             }
 
-            $callBackParams = array(
+            $callBackParams = [
                 $uri,
                 $params,
                 $type,
-            );
+            ];
 
             switch ($bre->getCode()) {
                 case 401:
-                    $boxData = $this->refreshConnection(array($this, 'putIntoBox'), $callBackParams, $bre);
+                    $boxData = $this->refreshConnection([$this, 'putIntoBox'], $callBackParams, $bre);
                     break;
                 default:
                     throw $bre;
@@ -451,14 +451,14 @@ class Service extends BaseModel implements ServiceInterface
             if ($this->getLogger() instanceof LoggerInterface) {
                 $this->getLogger()->error(
                     'box exception caught',
-                    array(
+                    [
                         __METHOD__ . ":" . __LINE__,
                         $be->getTraceAsString(),
                         $be->getBoxCode(),
                         $be->getError(),
                         $be->getErrorDescription(),
                         implode("\n", $be->getContext()),
-                    )
+                    ]
                 );
             }
 
@@ -468,9 +468,9 @@ class Service extends BaseModel implements ServiceInterface
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug(
                 'final box data: ' . var_export($boxData, true),
-                array(
+                [
                     __METHOD__ . ":" . __LINE__,
-                )
+                ]
             );
         }
 
@@ -495,9 +495,9 @@ class Service extends BaseModel implements ServiceInterface
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug(
                 'return data: ' . var_export($returnData, true),
-                array(
+                [
                     __METHOD__ . ":" . __LINE__,
-                )
+                ]
             );
         }
 
@@ -522,25 +522,25 @@ class Service extends BaseModel implements ServiceInterface
             if ($this->getLogger() instanceof LoggerInterface) {
                 $this->getLogger()->error(
                     'box exception caught',
-                    array(
+                    [
                         __METHOD__ . ":" . __LINE__,
                         $bre->getTraceAsString(),
                         $bre->getBoxCode(),
                         $bre->getError(),
                         $bre->getErrorDescription(),
                         implode("\n", $bre->getContext()),
-                    )
+                    ]
                 );
             }
 
-            $callBackParams = array(
+            $callBackParams = [
                 $uri,
                 $type,
-            );
+            ];
 
             switch ($bre->getCode()) {
                 case 401:
-                    $boxData = $this->refreshConnection(array($this, 'queryBox'), $callBackParams, $bre);
+                    $boxData = $this->refreshConnection([$this, 'queryBox'], $callBackParams, $bre);
                     break;
                 default:
                     throw $bre;
@@ -549,14 +549,14 @@ class Service extends BaseModel implements ServiceInterface
             if ($this->getLogger() instanceof LoggerInterface) {
                 $this->getLogger()->error(
                     'box exception caught',
-                    array(
+                    [
                         __METHOD__ . ":" . __LINE__,
                         $be->getTraceAsString(),
                         $be->getBoxCode(),
                         $be->getError(),
                         $be->getErrorDescription(),
                         implode("\n", $be->getContext()),
-                    )
+                    ]
                 );
             }
 
@@ -567,9 +567,9 @@ class Service extends BaseModel implements ServiceInterface
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug(
                 'error check: ' . var_export($errorCheck, true),
-                array(
+                [
                     __METHOD__ . ":" . __LINE__,
-                )
+                ]
             );
         }
 
@@ -588,9 +588,9 @@ class Service extends BaseModel implements ServiceInterface
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug(
                 'final box data: ' . var_export($decodedBoxData, true),
-                array(
+                [
                     __METHOD__ . ":" . __LINE__,
-                )
+                ]
             );
         }
 
@@ -603,9 +603,9 @@ class Service extends BaseModel implements ServiceInterface
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug(
                 'return data: ' . var_export($returnData, true),
-                array(
+                [
                     __METHOD__ . ":" . __LINE__,
-                )
+                ]
             );
         }
 
@@ -618,7 +618,7 @@ class Service extends BaseModel implements ServiceInterface
      */
     public function getConnectionHeaders()
     {
-        $headers = array($this->getAuthorizationHeader());
+        $headers = [$this->getAuthorizationHeader()];
 
         $additionalConnectionHeaders = $this->getAdditionalConnectionHeaders();
 
@@ -633,9 +633,9 @@ class Service extends BaseModel implements ServiceInterface
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug(
                 'connection headers: ' . var_export($headers, true),
-                array(
+                [
                     __METHOD__ . ":" . __LINE__,
-                )
+                ]
             );
         }
 
@@ -683,9 +683,9 @@ class Service extends BaseModel implements ServiceInterface
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug(
                 'refresh token params: ' . var_export($params, true),
-                array(
+                [
                     __METHOD__ . ":" . __LINE__,
-                )
+                ]
             );
         }
 
@@ -694,9 +694,9 @@ class Service extends BaseModel implements ServiceInterface
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug(
                 'raw refresh return: ' . var_export($json, true),
-                array(
+                [
                     __METHOD__ . ":" . __LINE__,
-                )
+                ]
             );
         }
 
@@ -733,9 +733,9 @@ class Service extends BaseModel implements ServiceInterface
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug(
                 'token data: ' . var_export($data, true),
-                array(
+                [
                     __METHOD__ . ":" . __LINE__,
-                )
+                ]
             );
         }
 
@@ -803,7 +803,7 @@ class Service extends BaseModel implements ServiceInterface
         }
     }
 
-    public function getFinalConnectionResult($json = null, $returnType = 'decoded', $errorData = array())
+    public function getFinalConnectionResult($json = null, $returnType = 'decoded', $errorData = [])
     {
         @trigger_error('The ' . __NAMESPACE__ . __METHOD__
             . ' method will be removed', E_USER_DEPRECATED);
@@ -863,11 +863,11 @@ class Service extends BaseModel implements ServiceInterface
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug(
                 'currentToken: ' . var_export($currentToken, true),
-                array(
+                [
                     __METHOD__ . ":" . __LINE__,
                     $be->getTraceAsString(),
                     $be->getBoxCode(),
-                )
+                ]
             );
         }
 
@@ -880,9 +880,9 @@ class Service extends BaseModel implements ServiceInterface
             if ($this->getLogger() instanceof LoggerInterface) {
                 $this->getLogger()->debug(
                     'token storage context: ' . var_export($tokenStorageContext, true),
-                    array(
+                    [
                         __METHOD__ . ":" . __LINE__,
-                    )
+                    ]
                 );
             }
 
@@ -896,9 +896,9 @@ class Service extends BaseModel implements ServiceInterface
             if ($this->getLogger() instanceof LoggerInterface) {
                 $this->getLogger()->debug(
                     'retry put return: ' . var_export($boxData, true),
-                    array(
+                    [
                         __METHOD__ . ":" . __LINE__,
-                    )
+                    ]
                 );
             }
         } catch (BoxException $refreshException) {
@@ -910,14 +910,14 @@ class Service extends BaseModel implements ServiceInterface
             if ($this->getLogger() instanceof LoggerInterface) {
                 $this->getLogger()->error(
                     $refreshMessage,
-                    array(
+                    [
                         __METHOD__ . ":" . __LINE__,
                         $finalException->getTraceAsString(),
                         $refreshException->getBoxCode(),
                         $refreshException->getError(),
                         $refreshException->getErrorDescription(),
                         implode("\n", $refreshException->getContext()),
-                    )
+                    ]
                 );
             }
             throw $finalException;
@@ -930,11 +930,11 @@ class Service extends BaseModel implements ServiceInterface
             if ($this->getLogger() instanceof LoggerInterface) {
                 $this->getLogger()->error(
                     "token storage exception: " . $tse->getMessage(),
-                    array(
+                    [
                         __METHOD__ . ":" . __LINE__,
                         $tse->getTraceAsString(),
                         var_export($tse, true),
-                    )
+                    ]
                 );
             }
 
@@ -959,7 +959,7 @@ class Service extends BaseModel implements ServiceInterface
         $this->lastResultFlat = json_decode($json, true);
 
         $data = $this->getLastResult($returnType);
-        $errorData = array();
+        $errorData = [];
 
         if (null === $this->lastResultFlat) {
             $errorData['error'] = "sdk_json_decode";

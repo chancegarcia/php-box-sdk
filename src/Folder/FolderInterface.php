@@ -44,6 +44,11 @@ interface FolderInterface extends ModelInterface
     public function getItems(): mixed;
 
     /**
+     * @return bool
+     */
+    public function isEmpty(): bool;
+
+    /**
      * @param string $syncState
      * @return array
      */

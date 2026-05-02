@@ -281,6 +281,38 @@ class File extends Model implements FileInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getExtension(): string
+    {
+        $name = $this->getName();
+
+        if (null === $name || '' === $name) {
+            return '';
+        }
+
+        $pathInfo = pathinfo($name);
+
+        if (!isset($pathInfo['extension'])) {
+            return '';
+        }
+
+        // handle .env style files (no extension in common parlance if only leading dot)
+        if (isset($pathInfo['filename']) && '' === $pathInfo['filename'] && str_starts_with($name, '.')) {
+            // Check if there's actually an extension part after the first dot
+            // pathinfo('.env') gives extension='env', filename=''
+            // pathinfo('.gitignore') gives extension='gitignore', filename=''
+            // If the user wants .env to have NO extension, we keep it this way.
+            // But if they want .gitignore to have NO extension too, then we are fine.
+            // Typically .env and .gitignore are considered to have no extension or the extension IS the name.
+            // The requirement said: For names like .env, treat them as having no extension unless existing project conventions suggest otherwise.
+            return '';
+        }
+
+        return $pathInfo['extension'];
+    }
+
+    /**
      * @param \Box\User\User|array|null $ownedBy
      *
      * @return void

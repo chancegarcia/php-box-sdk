@@ -54,17 +54,17 @@ class ResponseParser
         $code = filter_var($statusCode, FILTER_VALIDATE_INT);
 
         if (true === $associative) {
-            $statusLine = array(
+            $statusLine = [
                 'httpVersion' => $httpVersion,
                 'statusCode' => $code,
                 'reasonPhrase' => $reasonPhrase,
-            );
+            ];
         } else {
-            $statusLine = array(
+            $statusLine = [
                 $httpVersion,
                 $code,
                 $reasonPhrase,
-            );
+            ];
         }
 
         return $statusLine;
@@ -81,7 +81,7 @@ class ResponseParser
             throw new \InvalidArgumentException("string value expected for parsing. given: " . gettype($sHeaders));
         }
 
-        $finalHeaders = array();
+        $finalHeaders = [];
         $aHeaders = preg_split('/\r\n|\r|\n/', $sHeaders);
         foreach ($aHeaders as $headerLineKey => $headerLineValue) {
             // based on protocols found on https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html
@@ -108,11 +108,11 @@ class ResponseParser
     public static function parseWwwAuthenticateHeader(?string $wwwAuthenticateHeaderValue = null): array
     {
         if (!is_string($wwwAuthenticateHeaderValue) || empty($wwwAuthenticateHeaderValue)) {
-            return array();
+            return [];
         }
 
         $valuePairs = array_map("trim", explode(",", $wwwAuthenticateHeaderValue));
-        $parsed = array();
+        $parsed = [];
 
         foreach ($valuePairs as $valuePair) {
             $tempPair = explode("=", $valuePair);

@@ -47,7 +47,7 @@ class ArrayCollection extends \Doctrine\Common\Collections\ArrayCollection imple
      *
      * @param array $elements
      */
-    public function __construct(array $elements = array())
+    public function __construct(array $elements = [])
     {
         parent::__construct($elements);
     }
