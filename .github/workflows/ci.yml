@@ -14,15 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        php-version: ['8.4', '8.5']
-        include:
-          - os: macos-15
-            php-version: '8.4'
-          - os: macos-15
-            php-version: '8.5'
-
-    if: matrix.os == 'ubuntu-latest' || github.event_name == 'pull_request'
+        include: ${{ fromJSON(github.event_name == 'pull_request' && '[{"os":"ubuntu-latest","php-version":"8.4"},{"os":"ubuntu-latest","php-version":"8.5"},{"os":"macos-15","php-version":"8.4"},{"os":"macos-15","php-version":"8.5"}]' || '[{"os":"ubuntu-latest","php-version":"8.4"},{"os":"ubuntu-latest","php-version":"8.5"}]') }}
 
     steps:
       - name: Checkout

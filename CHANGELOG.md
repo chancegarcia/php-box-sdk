@@ -1,29 +1,39 @@
 # Changelog
 
+## v0.11.2
+
+### Summary
+- Updated CI workflow behavior to keep the full cross-platform matrix for pull requests while running a leaner default matrix for non-PR runs.
+- Reduced workflow complexity by replacing separate matrix and job-condition logic with a single JSON-driven matrix definition.
+- Improved release and contribution maintainability by making CI execution rules easier to audit and less error-prone when adjusting OS/PHP coverage.
+
+### Developer Details
+- **CI matrix selection logic**:
+    - Replaced static `matrix.os`/`matrix.php-version` plus `if` filtering with `include: ${{ fromJSON(...) }}` in `.github/workflows/ci.yml`.
+    - Pull requests now explicitly run `ubuntu-latest` and `macos-15` for PHP `8.4` and `8.5`; non-PR runs keep Ubuntu-only checks for the same PHP versions.
+
 ## v0.11.1
 
 ### Summary
-- **PHP 8.5 Support**: Added initial testing and compatibility for the upcoming PHP 8.5 release while maintaining full support for PHP 8.4.
-- **Enhanced Token Lifecycle**: Added native methods to track token expiration and remaining lifetime, simplifying authentication management.
-- **Model Utility Helpers**: New methods on `File` and `Folder` models make it easier to extract extensions and check for empty folders.
-- **Improved Hydration**: The internal mapping engine now uses reflection for property assignment, better supporting hydrated typed properties.
-- **Type Safety & Modernization**: Tightened type hints across the SDK and completed the migration to PHP short array syntax `[]`.
+- Added token lifecycle helpers so SDK consumers can check expiration status and remaining token lifetime directly from the client and token objects.
+- Added utility methods for common model checks: file extension extraction and folder emptiness detection.
+- Improved hydration behavior for typed/private properties, reducing edge-case mapping failures during response-to-model conversion.
+- Tightened type declarations across core services and token storage interfaces, improving static-analysis friendliness and integration reliability.
+- Completed the short array syntax migration (`[]`) across the codebase, with corresponding coding-standard enforcement.
 
 ### Developer Details
-- **Token Management**:
-    - Added `receivedAt` property and `isExpired()` method to `TokenInterface`.
-    - `Client` now exposes `isTokenExpired()` and `getRemainingTokenLifetime()` helpers.
-- **Model Extensions**:
-    - Added `FileInterface::getExtension()` to simplify file path handling.
-    - Added `FolderInterface::isEmpty()` to check for the presence of items in a folder.
-- **Hydrator Refactor**:
-    - Switched to `ReflectionProperty::setValue()` in `Hydrator`, allowing hydration of protected/private properties without requiring public setters.
-- **API & Type Cleanup**:
-    - Standardized parameter and return types to specific types or `mixed` where previously omitted.
-    - Updated `BaseTokenStorageInterface` with more accurate type hints for token context.
-    - Enforced PHP short array syntax `[]` across the entire codebase and documentation.
-- **CI/CD Improvements**:
-    - Updated GitHub Actions workflow matrix to include PHP 8.5 testing on Ubuntu.
+- **Authentication and token handling**:
+    - Added `TokenInterface::getReceivedAt()` and `TokenInterface::isExpired()` and implemented expiration tracking in `Token` when `expiresIn` is set.
+    - Added `Client::isTokenExpired()` and `Client::getRemainingTokenLifetime()` for first-class token lifetime checks.
+- **Model API additions**:
+    - Added `FileInterface::getExtension()` / `File::getExtension()` for safer extension parsing (including leading-dot filename handling).
+    - Added `FolderInterface::isEmpty()` / `Folder::isEmpty()` with support for array and `Countable` item collections.
+- **Hydration and typing improvements**:
+    - Updated hydrator assignment flow to prefer public setters and use reflection-based property assignment where appropriate.
+    - Added and refined parameter/return type hints in connection, service, parser, and token-storage related components.
+- **Tooling and maintainability**:
+    - Added unit tests covering token expiration logic and the new file/folder helper methods.
+    - Updated CI workflow coverage for broader environment checks, including PHP 8.5 and macOS jobs.
 
 ## v0.11.0
 
