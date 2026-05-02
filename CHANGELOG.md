@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.11.2
+
+### Summary
+- Updated CI workflow behavior to keep the full cross-platform matrix for pull requests while running a leaner default matrix for non-PR runs.
+- Reduced workflow complexity by replacing separate matrix and job-condition logic with a single JSON-driven matrix definition.
+- Improved release and contribution maintainability by making CI execution rules easier to audit and less error-prone when adjusting OS/PHP coverage.
+
+### Developer Details
+- **CI matrix selection logic**:
+    - Replaced static `matrix.os`/`matrix.php-version` plus `if` filtering with `include: ${{ fromJSON(...) }}` in `.github/workflows/ci.yml`.
+    - Pull requests now explicitly run `ubuntu-latest` and `macos-15` for PHP `8.4` and `8.5`; non-PR runs keep Ubuntu-only checks for the same PHP versions.
+
 ## v0.11.1
 
 ### Summary
