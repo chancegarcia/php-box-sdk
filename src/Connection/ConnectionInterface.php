@@ -148,4 +148,9 @@ interface ConnectionInterface extends ModelInterface
     public function setTransportName(string $transportName): void;
 
     public function getTransportName(): string;
+    public function setClientId(mixed $clientId = null): void;
+
+    public function setClientSecret(mixed $clientSecret = null): void;
+
+    public function setRedirectUri(mixed $redirectUri = null): void;
 }

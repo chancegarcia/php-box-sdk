@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Created by PhpStorm . 
+ * Created by PhpStorm .
  * User: chance
  * Date: 9/18/15
  * Time: 5:25 PM
@@ -22,7 +22,7 @@
  * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software . 
+ * copies or substantial portions of the Software .
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -30,7 +30,7 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE . 
+ * SOFTWARE .
  *
  */
 
@@ -43,19 +43,19 @@ interface BaseModelInterface
  *
  * @return string
  */
- public function toClassVar(string $str): string;
+    public function toClassVar(string $str): string;
 
  /**
  * @param string $str
  *
  * @return string
  */
- public function toBoxVar(string $str): string;
+    public function toBoxVar(string $str): string;
 
  /**
  * @param array|\stdClass $aData
  */
- public function mapBoxToClass(array|\stdClass $aData): void;
+    public function mapBoxToClass(array|\stdClass $aData): void;
 
  /**
  * validate integer value even if it is a string value, unlike is_int()
@@ -64,7 +64,7 @@ interface BaseModelInterface
  *
  * @return bool
  */
- public function isInt(mixed $number = null): bool;
+    public function isInt(mixed $number = null): bool;
 
  /**
  * recursively remove empty elements from an array (trim is applied to string values)
@@ -73,5 +73,5 @@ interface BaseModelInterface
  *
  * @return array
  */
- public function removeEmpty(array $haystack = []): array;
+    public function removeEmpty(array $haystack = []): array;
 }

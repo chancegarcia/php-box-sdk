@@ -32,26 +32,32 @@
 
 namespace Box;
 
-use Box\Collaboration\Collaboration;
 use Box\Collaboration\CollaborationInterface;
-use Box\Connection\Connection;
 use Box\Connection\ConnectionInterface;
-use Box\Connection\Token\Token;
 use Box\Connection\Token\TokenInterface;
 use Box\Exception\BoxException;
-use Box\File\File;
+use Box\Factory\CollaborationFactory;
+use Box\Factory\CollaborationFactoryInterface;
+use Box\Factory\ConnectionFactory;
+use Box\Factory\ConnectionFactoryInterface;
+use Box\Factory\FileFactory;
+use Box\Factory\FileFactoryInterface;
+use Box\Factory\FolderFactory;
+use Box\Factory\FolderFactoryInterface;
+use Box\Factory\GroupFactory;
+use Box\Factory\GroupFactoryInterface;
+use Box\Factory\TokenFactory;
+use Box\Factory\TokenFactoryInterface;
+use Box\Factory\UserFactory;
+use Box\Factory\UserFactoryInterface;
 use Box\File\FileInterface;
 use Box\Folder\Folder;
 use Box\Folder\FolderInterface;
-use Box\Group\Group;
 use Box\Group\GroupInterface;
 use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Model\Model;
-use Box\Model\ModelInterface;
-use Box\User\User;
 use Box\User\UserInterface;
-use JsonException;
 
 /**
  * Class Client
@@ -67,9 +73,9 @@ class Client extends Model
     protected ?string $state = null;
 
     /**
-     * @var Connection|ConnectionInterface|null
+     * @var ConnectionInterface|null
      */
-    protected null|Connection|ConnectionInterface $connection = null;
+    protected ?ConnectionInterface $connection = null;
     /**
      * @var array of folder items indexed by the folder ID
      * @internal should just be an array of any folder known/retrieved by the client. does not need to be recursive
@@ -87,9 +93,6 @@ class Client extends Model
      */
     protected ?FolderInterface $root = null;
 
-    /**
-     * @var Token|TokenInterface|null
-     */
     protected ?TokenInterface $token = null;
 
     protected ?string $authorizationCode = null;
@@ -100,57 +103,102 @@ class Client extends Model
     protected ?string $deviceId = null;
     protected ?string $deviceName = null;
 
+    protected FolderFactoryInterface $folderFactory;
+    protected FileFactoryInterface $fileFactory;
+    protected UserFactoryInterface $userFactory;
+    protected GroupFactoryInterface $groupFactory;
+    protected CollaborationFactoryInterface $collaborationFactory;
+    protected TokenFactoryInterface $tokenFactory;
+    protected ConnectionFactoryInterface $connectionFactory;
 
-    /**
-     * allow for class injection by using an interface for these classes
-     */
-    protected string $folderClass = Folder::class;
-    protected string $fileClass = File::class;
-    protected string $connectionClass = Connection::class;
-    protected string $tokenClass = Token::class;
-    protected string $collaborationClass = Collaboration::class;
-    protected string $userClass = User::class;
-    protected string $groupClass = Group::class;
-
-
-    /**
-     * @param mixed $options
-     *
-     * @return Folder|FolderInterface
-     */
-    public function getNewFolder(mixed $options = null): Folder|FolderInterface
-    {
-        return $this->getNewClass('Folder', $options);
+    public function __construct(
+        ?array $options = null,
+        ?FolderFactoryInterface $folderFactory = null,
+        ?FileFactoryInterface $fileFactory = null,
+        ?UserFactoryInterface $userFactory = null,
+        ?GroupFactoryInterface $groupFactory = null,
+        ?CollaborationFactoryInterface $collaborationFactory = null,
+        ?TokenFactoryInterface $tokenFactory = null,
+        ?ConnectionFactoryInterface $connectionFactory = null
+    ) {
+        parent::__construct($options);
+        $this->folderFactory = $folderFactory ?? new FolderFactory();
+        $this->fileFactory = $fileFactory ?? new FileFactory();
+        $this->userFactory = $userFactory ?? new UserFactory();
+        $this->groupFactory = $groupFactory ?? new GroupFactory();
+        $this->collaborationFactory = $collaborationFactory ?? new CollaborationFactory();
+        $this->tokenFactory = $tokenFactory ?? new TokenFactory();
+        $this->connectionFactory = $connectionFactory ?? new ConnectionFactory();
     }
 
     /**
      * @param mixed $options
      *
-     * @return User|UserInterface
+     * @return FolderInterface
      */
-    public function getNewUser(mixed $options = null): User|UserInterface
+    public function getNewFolder(mixed $options = null): FolderInterface
     {
-        return $this->getNewClass('User', $options);
+        $instance = $this->folderFactory->createFolder($options);
+        if ($this->logger && method_exists($instance, 'setLogger')) {
+            $instance->setLogger($this->logger);
+        }
+
+        return $instance;
     }
 
     /**
      * @param mixed $options
      *
-     * @return Group|GroupInterface
+     * @return UserInterface
      */
-    public function getNewGroup(mixed $options = null): Group|GroupInterface
+    public function getNewUser(mixed $options = null): UserInterface
     {
-        return $this->getNewClass('Group', $options);
+        $instance = $this->userFactory->createUser($options);
+        if ($this->logger && method_exists($instance, 'setLogger')) {
+            $instance->setLogger($this->logger);
+        }
+
+        return $instance;
     }
 
     /**
      * @param mixed $options
      *
-     * @return Collaboration|CollaborationInterface
+     * @return GroupInterface
      */
-    public function getNewCollaboration(mixed $options = null): Collaboration|CollaborationInterface
+    public function getNewGroup(mixed $options = null): GroupInterface
     {
-        return $this->getNewClass('Collaboration', $options);
+        $instance = $this->groupFactory->createGroup($options);
+        if ($this->logger && method_exists($instance, 'setLogger')) {
+            $instance->setLogger($this->logger);
+        }
+
+        return $instance;
+    }
+
+    public function getNewCollaboration(mixed $options = null): CollaborationInterface
+    {
+        $instance = $this->collaborationFactory->createCollaboration($options);
+        if ($this->logger && method_exists($instance, 'setLogger')) {
+            $instance->setLogger($this->logger);
+        }
+
+        return $instance;
+    }
+
+    /**
+     * @param mixed $options
+     *
+     * @return FileInterface
+     */
+    public function getNewFile(mixed $options = null): FileInterface
+    {
+        $instance = $this->fileFactory->createFile($options);
+        if ($this->logger && method_exists($instance, 'setLogger')) {
+            $instance->setLogger($this->logger);
+        }
+
+        return $instance;
     }
 
     /**
@@ -159,12 +207,12 @@ class Client extends Model
      *
      * @return array|null|Folder returns null if no such folder exists and retrieve is false
      */
-    public function getFolder(string|int $id = 0, bool $retrieve = true): array|null|FolderInterface|Folder
+    public function getFolder(string|int $id = 0, bool $retrieve = true): ?FolderInterface
     {
         $folders = $this->getFolders($retrieve);
 
         if (0 === $id) {
-            return $folders;
+            return $folders[0] ?? null;
         }
 
         if (!array_key_exists($id, $folders)) {
@@ -175,10 +223,7 @@ class Client extends Model
             $this->addFolder($folder);
         }
 
-
-        $folder = $folders[ $id ] ?? null;
-
-        return $folder;
+        return $folders[$id] ?? null;
     }
 
     public function addFolder(mixed $folder): void
@@ -323,9 +368,9 @@ class Client extends Model
      * @return FolderInterface|Folder
      * @throws BoxException
      */
-    public function getFolderFromBox($id = 0): FolderInterface|Folder
+    public function getFolderFromBox($id = 0): FolderInterface
     {
-        $uri = Folder::URI . '/' . $id; // all class constant URIs do not end in a slash
+        $uri = FolderInterface::URI . '/' . $id; // all class constant URIs do not end in a slash
 
         $connection = $this->getConnection();
         $this->setConnectionAuthHeader($connection);
@@ -382,7 +427,7 @@ class Client extends Model
      */
     public function createNewBoxFolder($name, $parentFolderId = 0, ?array $options = [])
     {
-        $uri = Folder::URI;
+        $uri = FolderInterface::URI;
 
         $connection = $this->getConnection();
         $this->setConnectionAuthHeader($connection);
@@ -419,7 +464,7 @@ class Client extends Model
             $this->error($err);
         }
 
-        $uri = Folder::URI . '/' . $folder->getId();
+        $uri = FolderInterface::URI . '/' . $folder->getId();
 
         $params = $folder->toBoxArray();
         // Only certain fields should be sent for update, but toBoxArray() with removeEmpty()
@@ -456,7 +501,7 @@ class Client extends Model
             $this->error($err);
         }
         $folderId = $folder->getId();
-        $uri = Folder::URI . '/' . $folderId . '/collaborations';
+        $uri = FolderInterface::URI . '/' . $folderId . '/collaborations';
 
         $connection = $this->getConnection();
         $this->setConnectionAuthHeader($connection);
@@ -489,7 +534,7 @@ class Client extends Model
             $this->error($err);
         }
 
-        $uri = Collaboration::URI;
+        $uri = CollaborationInterface::URI;
 
         $folderId = $folder->getId();
         $collaboratorId = $collaborator->getId();
@@ -536,7 +581,7 @@ class Client extends Model
             $this->error($err);
         }
 
-        $uri = Folder::URI;
+        $uri = FolderInterface::URI;
 
         $folderId = $folder->getId();
 
@@ -584,7 +629,7 @@ class Client extends Model
             ]);
         }
 
-        $uri = Folder::URI . '/' . $originalFolder->getId() . '/copy';
+        $uri = FolderInterface::URI . '/' . $originalFolder->getId() . '/copy';
         $this->debug("copy uri: " . $uri, [__METHOD__, __LINE__]);
         $this->debug("initial parent: " . var_export($parent, true), [__METHOD__, __LINE__]);
 
@@ -601,7 +646,7 @@ class Client extends Model
             ]);
         }
 
-        $params['parent'] = ['id' => $parent->getId()];
+        $params['parent'] = ['id' => (string)$parent->getId()];
         if (null !== $name) {
             $params['name'] = $name;
         }
@@ -651,7 +696,7 @@ class Client extends Model
             throw new BoxException('BOX_ACCESS_TOKEN is required for upload.', BoxException::INVALID_INPUT);
         }
 
-        $uri = File::UPLOAD_URI;
+        $uri = FileInterface::UPLOAD_URI;
 
         $connection = $this->getConnection();
         $this->setConnectionAuthHeader($connection);
@@ -805,13 +850,15 @@ class Client extends Model
      *
      * @throws BoxException
      */
-    public function setConnectionAuthHeader($connection, $additionalHeaders = null): void
+    public function setConnectionAuthHeader(ConnectionInterface $connection, ?array $additionalHeaders = null): void
     {
-        $authorizationHeader = $this->getAuthorizationHeader();
-
-        if (str_ends_with($authorizationHeader, ' ')) {
+        $token = $this->getToken();
+        $accessToken = $token->getAccessToken();
+        if (null === $accessToken || "" === $accessToken) {
              throw new BoxException('BOX_ACCESS_TOKEN is required for upload.', BoxException::INVALID_INPUT);
         }
+
+        $authorizationHeader = 'Authorization: Bearer ' . $accessToken;
 
         // SYNC: ensure connection has the access token
         if ($connection instanceof ConnectionInterface) {
@@ -914,21 +961,18 @@ class Client extends Model
         return $this->authorizationCode;
     }
 
-    /**
-     * @param string|TokenInterface|null $token
-     * @return void
-     */
-    public function setToken(mixed $token = null): void
+    public function setToken(?TokenInterface $token = null): void
     {
         $this->token = $token;
     }
 
-    public function getToken()
+    public function getToken(): TokenInterface
     {
         if (null === $this->token) {
-            $tokenClass = $this->getTokenClass();
-            $token = new $tokenClass();
-            $this->token = $token;
+            $this->token = $this->tokenFactory->createToken();
+            if ($this->logger && method_exists($this->token, 'setLogger')) {
+                $this->token->setLogger($this->logger);
+            }
         }
 
         return $this->token;
@@ -969,84 +1013,30 @@ class Client extends Model
         return max(0, $remaining);
     }
 
-    /**
-     * @param string|null $tokenClass
-     * @return void
-     */
-    public function setTokenClass(?string $tokenClass = null): void
-    {
-        $this->validateClass($tokenClass, TokenInterface::class);
-        $this->tokenClass = $tokenClass;
-    }
 
-    public function getTokenClass(): ?string
+    public function setConnection(?ConnectionInterface $connection = null): void
     {
-        return $this->tokenClass;
-    }
-
-    /**
-     * @param mixed $connectionClass
-     * @return void
-     */
-    public function setConnectionClass(mixed $connectionClass = null): void
-    {
-        $this->validateClass($connectionClass, ConnectionInterface::class);
-        $this->connectionClass = $connectionClass;
-    }
-
-    public function getConnectionClass()
-    {
-        return $this->connectionClass;
-    }
-
-    /**
-     * @param mixed $connection
-     * @return void
-     * @throws BoxException
-     */
-    public function setConnection(mixed $connection = null): void
-    {
-        if (!$connection instanceof ConnectionInterface) {
-            throw new BoxException("Invalid Class", BoxException::INVALID_CLASS);
-        }
         $this->connection = $connection;
     }
 
-    public function getConnection()
+    public function getConnection(): ConnectionInterface
     {
         if (null === $this->connection) {
-            $connectionClass = $this->getConnectionClass();
-            /** @var ConnectionInterface $connection */
-            $connection = new $connectionClass();
+            $this->connection = $this->connectionFactory->createConnection();
             if ($this->logger) {
-                $connection->setLogger($this->logger);
+                $this->connection->setLogger($this->logger);
             }
-            $connection->setClientId($this->getClientId());
-            $connection->setClientSecret($this->getClientSecret());
-            $connection->setRedirectUri($this->getRedirectUri());
+            $this->connection->setClientId($this->getClientId());
+            $this->connection->setClientSecret($this->getClientSecret());
+            $this->connection->setRedirectUri($this->getRedirectUri());
             if ($this->token) {
-                $connection->setAccessToken($this->token->getAccessToken());
+                $this->connection->setAccessToken($this->token->getAccessToken());
             }
-            $this->connection = $connection;
         }
 
         return $this->connection;
     }
 
-    /**
-     * @param mixed $fileClass
-     * @return void
-     */
-    public function setFileClass(mixed $fileClass = null): void
-    {
-        $this->validateClass($fileClass, FileInterface::class);
-        $this->fileClass = $fileClass;
-    }
-
-    public function getFileClass()
-    {
-        return $this->fileClass;
-    }
 
     /**
      * @todo determine best validation for this
@@ -1069,20 +1059,6 @@ class Client extends Model
         return $this->files;
     }
 
-    /**
-     * @param mixed $folderClass
-     * @return void
-     */
-    public function setFolderClass(mixed $folderClass = null): void
-    {
-        $this->validateClass($folderClass, FolderInterface::class);
-        $this->folderClass = $folderClass;
-    }
-
-    public function getFolderClass()
-    {
-        return $this->folderClass;
-    }
 
     /**
      * @param mixed $folders
@@ -1093,50 +1069,6 @@ class Client extends Model
         $this->folders = $folders;
     }
 
-    /**
-     * @param mixed $collaborationClass
-     * @return void
-     */
-    public function setCollaborationClass(mixed $collaborationClass = null): void
-    {
-        $this->validateClass($collaborationClass, CollaborationInterface::class);
-        $this->collaborationClass = $collaborationClass;
-    }
-
-    public function getCollaborationClass()
-    {
-        return $this->collaborationClass;
-    }
-
-    /**
-     * @param mixed $userClass
-     * @return void
-     */
-    public function setUserClass(mixed $userClass = null): void
-    {
-        $this->validateClass($userClass, UserInterface::class);
-        $this->userClass = $userClass;
-    }
-
-    public function getUserClass()
-    {
-        return $this->userClass;
-    }
-
-    /**
-     * @param mixed $groupClass
-     * @return void
-     */
-    public function setGroupClass(mixed $groupClass = null): void
-    {
-        $this->validateClass($groupClass, GroupInterface::class);
-        $this->groupClass = $groupClass;
-    }
-
-    public function getGroupClass()
-    {
-        return $this->groupClass;
-    }
 
     /**
      * @param array $collaborations

@@ -6,9 +6,9 @@ use Box\Client;
 use Box\Contract\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Service\BoxClientFactory;
-use Box\Connection\Connection;
-use Box\Folder\Folder;
-use Box\Collaboration\Collaboration;
+use Box\Connection\ConnectionInterface;
+use Box\Folder\FolderInterface;
+use Box\Collaboration\CollaborationInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -36,11 +36,11 @@ class LoggerPropagationTest extends TestCase
 
         $connection = $client->getConnection();
 
-        $this->assertInstanceOf(Connection::class, $connection);
+        $this->assertInstanceOf(ConnectionInterface::class, $connection);
         $this->assertSame($logger, $connection->getLogger());
     }
 
-    public function testLoggerPropagatesViaGetNewClass(): void
+    public function testLoggerPropagatesViaFactory(): void
     {
         $logger = $this->createMock(LoggerInterface::class);
         $client = new Client();
@@ -48,7 +48,7 @@ class LoggerPropagationTest extends TestCase
 
         $folder = $client->getNewFolder(['id' => '123']);
 
-        $this->assertInstanceOf(Folder::class, $folder);
+        $this->assertInstanceOf(FolderInterface::class, $folder);
         $this->assertSame($logger, $folder->getLogger());
     }
 
@@ -60,20 +60,10 @@ class LoggerPropagationTest extends TestCase
 
         $collaboration = $client->getNewCollaboration(['id' => '123']);
 
-        $this->assertInstanceOf(Collaboration::class, $collaboration);
+        $this->assertInstanceOf(CollaborationInterface::class, $collaboration);
         $this->assertSame($logger, $collaboration->getLogger());
     }
 
-    public function testLoggerPropagatesViaValidateClass(): void
-    {
-        $logger = $this->createMock(LoggerInterface::class);
-        $client = new Client();
-        $client->setLogger($logger);
-
-        $client->setFolderClass(Folder::class);
-
-        $this->assertEquals(Folder::class, $client->getFolderClass());
-    }
 
     public function testCliCommandInjectsLoggerIntoFactory(): void
     {

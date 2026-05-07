@@ -34,7 +34,7 @@ class FileUploadCommandTest extends TestCase
         $this->outputFormatter = new ConsoleOutputFormatter(new DefaultJsonFormatter());
         $this->loggerFactory = new LoggerFactory(new ConfigNormalizer());
         $this->client = $this->createMock(Client::class);
-        $this->connection = $this->createMock(Connection::class);
+        $this->connection = $this->createMock(\Box\Connection\ConnectionInterface::class);
 
         $this->clientFactory->method('createClient')->willReturn($this->client);
         $this->client->method('getConnection')->willReturn($this->connection);

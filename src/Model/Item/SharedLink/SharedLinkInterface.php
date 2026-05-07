@@ -2,7 +2,7 @@
 
 namespace Box\Model\Item\SharedLink;
 
-$msg = 'Box\Model\Item\SharedLink\SharedLinkInterface is deprecated . ' . 
+$msg = 'Box\Model\Item\SharedLink\SharedLinkInterface is deprecated . ' .
  ' Use Box\Item\SharedLink\SharedLinkInterface instead . ';
 @trigger_error($msg, E_USER_DEPRECATED);
 

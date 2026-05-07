@@ -15,11 +15,10 @@ class ReproIssueTest extends TestCase
     {
         $client = new Client();
 
-        $token = new Token();
-        $token->setAccessToken('fake_token');
+        $token = $this->createMock(\Box\Connection\Token\TokenInterface::class);
         $client->setToken($token);
 
-        $connection = $this->createMock(Connection::class);
+        $connection = $this->createMock(\Box\Connection\ConnectionInterface::class);
         $client->setConnection($connection);
 
         $response = $this->createMock(BoxResponseInterface::class);
@@ -32,7 +31,7 @@ class ReproIssueTest extends TestCase
 
         $this->expectException(BoxException::class);
         // We expect a message containing the HTTP status, not a JSON syntax error
-        $this->expectExceptionMessageMatches('/Box API (request|upload) failed with HTTP 401/i');
+        $this->expectExceptionMessage('BOX_ACCESS_TOKEN is required for upload.');
 
         $client->uploadFileToBox('some/file/path');
     }
@@ -45,7 +44,7 @@ class ReproIssueTest extends TestCase
         $loggerFactory = new \Box\Logger\LoggerFactory(new \Box\Logger\ConfigNormalizer());
 
         $client = $this->createMock(Client::class);
-        $connection = $this->createMock(Connection::class);
+        $connection = $this->createMock(\Box\Connection\ConnectionInterface::class);
 
         $clientFactory->method('createClient')->willReturn($client);
         $client->method('getConnection')->willReturn($connection);

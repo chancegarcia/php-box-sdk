@@ -2,7 +2,7 @@
 
 namespace Box\Model\Item\SharedLink\Permissions;
 
-$msg = 'Box\Model\Item\SharedLink\Permissions\PermissionsInterface i' . 
+$msg = 'Box\Model\Item\SharedLink\Permissions\PermissionsInterface i' .
  's deprecated . Use Box\Item\SharedLink\Permissions\PermissionsInterface instead . ';
 @trigger_error($msg, E_USER_DEPRECATED);
 

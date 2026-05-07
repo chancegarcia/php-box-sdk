@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Created by PhpStorm . 
+ * Created by PhpStorm .
  * User: chance
  * Date: 9/17/15
  * Time: 5:36 PM
@@ -22,7 +22,7 @@
  * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software . 
+ * copies or substantial portions of the Software .
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -30,7 +30,7 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE . 
+ * SOFTWARE .
  *
  */
 
@@ -41,20 +41,20 @@ use Box\Http\Response\BoxResponseInterface;
 
 interface ModelInterface extends BaseModelInterface
 {
- public function __construct(?array $options = null);
+    public function __construct(?array $options = null);
 
  /**
  * class properties as an array
  *
  * @return array
  */
- public function classArray(): array;
+    public function classArray(): array;
 
  /**
  * same as class array except empty elements are filtered out
  * @return array
  */
- public function toBoxArray(): array;
+    public function toBoxArray(): array;
 
  /**
  * used to throw exceptions that need to contain error information returned from Box
@@ -65,28 +65,12 @@ interface ModelInterface extends BaseModelInterface
  *
  * @throws BoxException
  */
- public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null): void;
+    public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null): void;
 
- /**
- * @param string $class
- * @param string $classType
- *
- * @throws BoxException
- * @return bool returns true if validation passes . Throws exception if unable to validate or validation doesn't pass
- */
- public function validateClass(string $class, string $classType): bool;
-
- /**
- * @param array $params
- * @param string $numericPrefix
- * @return string
- */
- public function buildQuery(array $params, string $numericPrefix = ''): string;
-
- /**
- * @param string|null $className
- * @param mixed $classConstructorOptions
- * @return mixed
- */
- public function getNewClass(?string $className = null, mixed $classConstructorOptions = null): mixed;
+    /**
+     * @param array $params
+     * @param string $numericPrefix
+     * @return string
+     */
+    public function buildQuery(array $params, string $numericPrefix = ''): string;
 }

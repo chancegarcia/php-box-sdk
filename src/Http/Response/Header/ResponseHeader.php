@@ -22,6 +22,7 @@ namespace Box\Http\Response\Header;
 
 use Box\Exception\BoxException;
 use Box\Http\Response\ResponseParser;
+use Box\Http\Response\Header\StatusLine;
 use Box\Http\Response\Header\StatusLineInterface;
 
 class ResponseHeader implements ResponseHeaderInterface
@@ -45,11 +46,11 @@ class ResponseHeader implements ResponseHeaderInterface
      * @param string $sHeader
      * @throws BoxException
      */
-    public function __construct($sHeader = '', $statusLineClass = StatusLineInterface::class)
+    public function __construct($sHeader = '', $statusLineClass = StatusLine::class)
     {
         $aHeader = ResponseParser::parseHeader($sHeader);
         $sStatusLine = array_shift($aHeader);
-        if (!is_subclass_of($statusLineClass, StatusLineInterface::class)) {
+        if ($statusLineClass !== StatusLine::class && !is_subclass_of($statusLineClass, StatusLineInterface::class)) {
             $msg = "status line class must be an instance of " . StatusLineInterface::class . " ("
                 . $statusLineClass
                 . ") given.";

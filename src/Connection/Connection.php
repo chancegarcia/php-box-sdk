@@ -34,6 +34,9 @@
 
 namespace Box\Connection;
 
+use Box\Exception\BoxException;
+use Box\Factory\AuthenticationResponseFactory;
+use Box\Factory\AuthenticationResponseFactoryInterface;
 use Box\Http\FileStream;
 use Box\Http\Response\BoxResponse;
 use Box\Http\Response\BoxResponseInterface;
@@ -41,7 +44,6 @@ use Box\Http\Transport\CurlTransport;
 use Box\Http\Transport\GuzzleTransport;
 use Box\Http\Transport\TransportInterface;
 use Box\Model\Model;
-use Box\Exception\BoxException;
 use CURLFile;
 use Psr\Log\LoggerInterface;
 
@@ -72,7 +74,7 @@ class Connection extends Model implements ConnectionInterface
     protected array $guzzleOptions = [];
 
     protected mixed $authenticationResponse = null;
-    protected string $authenticationResponseClass = 'Box\Connection\AuthenticationResponse';
+    protected AuthenticationResponseFactoryInterface $authenticationResponseFactory;
 
     /**
      * @var array array of options with the options as the key and the option values as the value
@@ -81,7 +83,7 @@ class Connection extends Model implements ConnectionInterface
 
     private bool $disableSslVerification = false;
 
-    public function __construct(?array $options = null)
+    public function __construct(?array $options = null, ?AuthenticationResponseFactoryInterface $authenticationResponseFactory = null)
     {
         // Don't pass transport to parent construct if it's a string,
         // handle it manually to avoid BaseModel trying to call setTransport(string)
@@ -92,6 +94,8 @@ class Connection extends Model implements ConnectionInterface
         }
 
         parent::__construct($options);
+
+        $this->authenticationResponseFactory = $authenticationResponseFactory ?? new AuthenticationResponseFactory();
 
         if ($transport) {
             $this->setTransportName($transport);
@@ -423,19 +427,6 @@ class Connection extends Model implements ConnectionInterface
         return $this->curlOpts;
     }
 
-    /**
-     * @param string|null $authenticationResponseClass
-     */
-    public function setAuthenticationResponseClass(?string $authenticationResponseClass = null): void
-    {
-        $this->validateClass($authenticationResponseClass, 'AuthenticationResponseInterface');
-        $this->authenticationResponseClass = $authenticationResponseClass;
-    }
-
-    public function getAuthenticationResponseClass(): string
-    {
-        return $this->authenticationResponseClass;
-    }
 
     /**
      * @param mixed $clientId

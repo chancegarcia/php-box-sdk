@@ -18,7 +18,7 @@
  * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software . 
+ * copies or substantial portions of the Software .
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,7 +26,7 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE . 
+ * SOFTWARE .
  *
  */
 
@@ -38,15 +38,15 @@ use Psr\Log\LoggerInterface;
 
 class Model extends BaseModel implements ModelInterface
 {
- use ModelTrait;
+    use ModelTrait;
 
  /**
  * @param array|null $options
  */
- public function __construct(?array $options = null)
- {
- if (null !== $options) {
- $this->mapBoxToClass($options);
- }
- }
+    public function __construct(?array $options = null)
+    {
+        if (null !== $options) {
+            $this->mapBoxToClass($options);
+        }
+    }
 }
