@@ -138,6 +138,28 @@ V1.0 typing decisions:
 - Use PHP 8.4 enums for fixed value sets, such as roles, statuses, types, item statuses, and similar API-defined finite values.
 - Use Doctrine Collections for resource sets and remove custom collection classes where practical.
 
+## Collection Policy
+
+Doctrine Collections may be used for SDK list response entry sets, such as folder items, group memberships, collaborations, events, file versions, comments, tasks, and similar paginated API responses.
+
+Doctrine Collections do not require Doctrine ORM or database mapping. `ArrayCollection`, `Collection::filter()`, and `Criteria::matching()` can operate in memory on plain PHP objects.
+
+However, this is not a substitute for Box API search/filter endpoints. Collection filtering only applies to entries already fetched from Box.
+
+V1.0 should prefer specific response DTOs that wrap a Doctrine Collection plus pagination metadata, rather than exposing one generic collection response for all endpoints.
+
+Examples:
+
+- `FolderItemsResponse`
+- `GroupMembershipListResponse`
+- `FileVersionListResponse`
+- `CollaborationListResponse`
+- `EventListResponse`
+
+Small value objects, simple enum lists, shared link permissions, and dynamic metadata values should not be forced into Doctrine Collections unless there is a clear benefit.
+
+Custom SDK collection classes should generally be removed unless they provide specific behavior that Doctrine Collections and response DTOs cannot provide cleanly.
+
 ## Hydration and Mapping Rules
 
 Hydration should be handled by dedicated hydrator/mapper components.
@@ -556,6 +578,23 @@ After Junie completes the first audit-only task, bring back:
 
 The AI Assistant should then generate refined, narrow Junie prompts for each migration step.
 
+## Resolved V1.0 Design Decisions
+
+| Decision | Resolution |
+|---|---|
+| Generic resource interface | Do not keep initially; use concrete resources unless a real use case appears. |
+| SharedLink | Model as a DTO/value object, not a top-level Resource initially. |
+| Collection responses | Use specific response DTOs that wrap Doctrine Collections for entries and expose pagination metadata. |
+| Metadata | Use typed metadata DTO envelopes with flexible `array<string, mixed>` custom values. |
+| Resource factory interfaces | Remove per-resource factory interfaces; use hydrator/mapper as the construction boundary. |
+| Raw API payloads | Optional debug capture only, disabled by default. Prefer a separate debug payload store (e.g. WeakMap-backed) if feasible. |
+| Raw payload usage | Raw payloads must not be logged, serialized, or treated as the primary SDK API. |
+| Doctrine Collections | Use selectively for list response entries; do not force into all array-shaped fields. |
+| Doctrine Collections scope | Doctrine Collections do not require Doctrine ORM or database mapping; they operate in memory on plain PHP objects. |
+| Doctrine Collections filtering | Filtering/searching only applies to already-fetched entries and is not a replacement for Box API search or server-side filtering. |
+| Value objects in Collections | Do not force small value-object arrays, enum lists, permissions, or dynamic metadata values into Doctrine Collections without a clear benefit. |
+| Factory interface policy | Per-resource factory interfaces should be removed unless a specific public extension-point need is discovered. |
+
 ## Definition of Done for the V1.0 Refactor
 
 The architectural refactor is done when:
@@ -574,7 +613,7 @@ The architectural refactor is done when:
 - IDs are consistently typed as `string`.
 - Dates are consistently typed as `DateTimeImmutable`.
 - Nested resources are object-only.
-- Doctrine Collections are used for resource sets where appropriate.
+- Use Doctrine Collections selectively for list response entry sets where a standard in-memory collection API adds value. Do not force every array-shaped field into a Doctrine Collection.
 - `Client` is a facade, not a god object.
 - Missing Box API resources are either implemented in focused phases or documented as deferred.
 - `composer test` passes.
