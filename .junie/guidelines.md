@@ -30,6 +30,7 @@ General development rules:
 - Write PHP 8.4-compatible code only. Do not introduce features requiring newer PHP versions.
 - Follow PSR-12 formatting.
 - Always use PHP short array syntax `[]` for array literals. Legacy `array(...)` syntax must not be used.
+- Use Yoda conditions where practical, such as to help prevent accidental assignments, but do not prefer them when they reduce readability.
 - Prefer strict, explicit types for parameters, return values, and properties.
 - Preserve backward compatibility unless the task explicitly asks for a breaking change.
 - When changing public behavior, update or add tests.
