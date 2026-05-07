@@ -47,14 +47,14 @@ This checklist is the operational progress tracker. Architectural decisions belo
 
 ## 4. Core Enum Foundation
 
-- [ ] Status: Not started
+- [x] Status: Completed
 - Goal: Implement first set of PHP 8.4 enums for common Box API values.
-- Scope: `BoxItemType`, `CollaborationRole`, `UserStatus`.
+- Scope: `BoxItemType`, `CollaborationRole`, `UserStatus`, `SharedLinkAccess`.
 - Dependencies: 2.
-- Validation: `composer analyse`.
+- Validation: `composer analyse`, `composer test`.
 - Documentation updates: None.
-- Test updates: Add tests for Enum-to-string conversion if needed.
-- Completion notes: 
+- Test updates: Added `tests/Enum/EnumTest.php`.
+- Completion notes: Created `BoxItemType`, `UserStatus`, `CollaborationRole`, and `SharedLinkAccess` backed enums. Verified against Box API reference. Unblocks Step 5 (User Resource Migration).
 
 ## 5. User Resource Migration
 

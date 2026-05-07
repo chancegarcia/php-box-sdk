@@ -2,11 +2,13 @@
 
 namespace Box\Tests\Model\Mapper\Fixtures\V1;
 
+use DateTimeImmutable;
+
 class PlainUserResource
 {
     private string|int|null $id = null;
     private ?string $name = null;
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?DateTimeImmutable $createdAt = null;
 
     public function getId(): string|int|null
     {
@@ -28,12 +30,12 @@ class PlainUserResource
         $this->name = $name;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(?\DateTimeImmutable $createdAt): void
+    public function setCreatedAt(?DateTimeImmutable $createdAt): void
     {
         $this->createdAt = $createdAt;
     }

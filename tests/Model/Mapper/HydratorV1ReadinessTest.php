@@ -7,6 +7,7 @@ use Box\Tests\Model\Mapper\Fixtures\V1\PlainCollectionHolder;
 use Box\Tests\Model\Mapper\Fixtures\V1\PlainEnterpriseResource;
 use Box\Tests\Model\Mapper\Fixtures\V1\PlainUserResource;
 use PHPUnit\Framework\TestCase;
+use DateTimeImmutable;
 
 class HydratorV1ReadinessTest extends TestCase
 {
@@ -51,7 +52,7 @@ class HydratorV1ReadinessTest extends TestCase
         $data = ['created_at' => '2024-01-01T00:00:00Z'];
         $result = $this->hydrator->hydrate(PlainUserResource::class, $data);
 
-        $this->assertInstanceOf(\DateTimeImmutable::class, $result->getCreatedAt());
+        $this->assertInstanceOf(DateTimeImmutable::class, $result->getCreatedAt());
         $this->assertEquals('2024-01-01T00:00:00Z', $result->getCreatedAt()->format('Y-m-d\TH:i:s\Z'));
     }
 
