@@ -803,12 +803,6 @@ class Service extends BaseModel implements ServiceInterface
         }
     }
 
-    public function getFinalConnectionResult($json = null, $returnType = 'decoded', $errorData = [])
-    {
-        @trigger_error('The ' . __NAMESPACE__ . __METHOD__
-            . ' method will be removed', E_USER_DEPRECATED);
-        return $this->handleBoxResponse($json, $returnType);
-    }
 
     /**
      * {@inheritdoc}

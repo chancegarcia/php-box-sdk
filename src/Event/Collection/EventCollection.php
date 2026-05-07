@@ -63,11 +63,9 @@ class EventCollection extends Model implements EventCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function setOriginalEntries($originalEntries = null): EventCollectionInterface
+    public function setOriginalEntries($originalEntries = null): void
     {
         $this->originalEntries = $originalEntries;
-
-        return $this;
     }
 
     /**
@@ -81,11 +79,9 @@ class EventCollection extends Model implements EventCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function setChunkSize($chunkSize = null): EventCollectionInterface|EventCollection
+    public function setChunkSize($chunkSize = null): void
     {
         $this->chunkSize = $chunkSize;
-
-        return $this;
     }
 
     /**
@@ -99,11 +95,9 @@ class EventCollection extends Model implements EventCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function setNextStreamPosition($nextStreamPosition = null): EventCollectionInterface|EventCollection
+    public function setNextStreamPosition($nextStreamPosition = null): void
     {
         $this->nextStreamPosition = $nextStreamPosition;
-
-        return $this;
     }
 
     /**
@@ -117,7 +111,7 @@ class EventCollection extends Model implements EventCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function setEntries($entries = null): EventCollectionInterface
+    public function setEntries($entries = null): void
     {
         if (is_array($entries)) {
             $this->originalEntries = $entries;
@@ -129,7 +123,5 @@ class EventCollection extends Model implements EventCollectionInterface
         }
 
         $this->entries = $entries;
-
-        return $this;
     }
 }

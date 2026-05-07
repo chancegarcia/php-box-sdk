@@ -22,7 +22,6 @@ namespace Box\Http\Response;
 
 use Box\Http\Response\Header\ResponseHeaderInterface;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 interface BoxResponseInterface extends PsrResponseInterface
 {
@@ -68,10 +67,8 @@ interface BoxResponseInterface extends PsrResponseInterface
      *
      * @param string $version The HTTP protocol version
      *
-     * @return Response
-     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
-    public function setProtocolVersion(string $version): Response;
+    public function setProtocolVersion(string $version): void;
 
     // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
     /**

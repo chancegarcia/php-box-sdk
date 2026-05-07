@@ -36,6 +36,9 @@
 
 namespace Box\Model;
 
+use Box\Folder\Folder;
+use DateTimeInterface;
+
 class BoxModel implements BoxModelInterface
 {
     protected $type;
@@ -54,152 +57,143 @@ class BoxModel implements BoxModelInterface
     protected $parent;
     protected $itemStatus;
 
-    public function getType(): mixed
+    public function getType(): string
     {
         return $this->type;
     }
 
  /**
- * @param mixed $type
+ * @param string $type
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setType($type = null): void
+    public function setType(string $type = "file"): void
     {
         $this->type = $type;
     }
 
-    public function getId(): mixed
+    public function getId(): string|int|null
     {
         return $this->id;
     }
 
  /**
- * @param mixed $id
+ * @param string|int|null $id
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setId($id = null): void
+    public function setId(string|int|null $id = null): void
     {
         $this->id = $id;
     }
 
-    public function getSequenceId(): mixed
+    public function getSequenceId(): string|int|null
     {
         return $this->sequenceId;
     }
 
  /**
- * @param mixed $sequenceId
+ * @param string|int|null $sequenceId
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setSequenceId($sequenceId = null): void
+    public function setSequenceId(string|int|null $sequenceId = null): void
     {
         $this->sequenceId = $sequenceId;
     }
 
-    public function getEtag(): mixed
+    public function getEtag(): ?string
     {
         return $this->etag;
     }
 
  /**
- * @param mixed $etag
+ * @param string|null $etag
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setEtag($etag = null): void
+    public function setEtag(?string $etag = null): void
     {
         $this->etag = $etag;
     }
 
-    public function getName(): mixed
+    public function getName(): ?string
     {
         return $this->name;
     }
 
  /**
- * @param mixed $name
+ * @param string|null $name
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setName($name = null): void
+    public function setName(?string $name = null): void
     {
         $this->name = $name;
     }
 
-    public function getDescription(): mixed
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
  /**
- * @param mixed $description
+ * @param string|null $description
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setDescription($description = null): void
+    public function setDescription(?string $description = null): void
     {
         $this->description = $description;
     }
 
-    public function getSize(): mixed
+    public function getSize(): ?int
     {
         return $this->size;
     }
 
  /**
- * @param mixed $size
+ * @param int|null $size
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setSize($size = null): void
+    public function setSize(?int $size = null): void
     {
         $this->size = $size;
     }
 
-    public function getCreatedAt(): mixed
+    public function getCreatedAt(): DateTimeInterface|string|null
     {
         return $this->createdAt;
     }
 
  /**
- * @param mixed $createdAt
+ * @param DateTimeInterface|string|null $createdAt
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setCreatedAt($createdAt = null): void
+    public function setCreatedAt(DateTimeInterface|string|null $createdAt = null): void
     {
         $this->createdAt = $createdAt;
     }
 
-    public function getModifiedAt(): mixed
+    public function getModifiedAt(): DateTimeInterface|string|null
     {
         return $this->modifiedAt;
     }
 
  /**
- * @param mixed $modifiedAt
+ * @param DateTimeInterface|string|null $modifiedAt
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setModifiedAt($modifiedAt = null): void
+    public function setModifiedAt(DateTimeInterface|string|null $modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
     }
 
-    public function getCreatedBy(): mixed
+    public function getCreatedBy(): ?string
     {
         return $this->createdBy;
     }
 
  /**
- * @param mixed $createdBy
+ * @param string|null $createdBy
+ *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setCreatedBy($createdBy = null): void
+    public function setCreatedBy(?string $createdBy = null): void
     {
         $this->createdBy = $createdBy;
     }
@@ -210,11 +204,11 @@ class BoxModel implements BoxModelInterface
     }
 
  /**
- * @param mixed $modifiedBy
+ * @param string|null $modifiedBy
+ *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setModifiedBy($modifiedBy = null): void
+    public function setModifiedBy(?string $modifiedBy = null): void
     {
         $this->modifiedBy = $modifiedBy;
     }
@@ -225,11 +219,11 @@ class BoxModel implements BoxModelInterface
     }
 
  /**
- * @param mixed $ownedBy
+ * @param string|null $ownedBy
+ *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setOwnedBy($ownedBy = null): void
+    public function setOwnedBy(?string $ownedBy = null): void
     {
         $this->ownedBy = $ownedBy;
     }
@@ -240,41 +234,40 @@ class BoxModel implements BoxModelInterface
     }
 
  /**
- * @param mixed $sharedLink
+ * @param string|null $sharedLink
+ *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setSharedLink($sharedLink = null): void
+    public function setSharedLink(?string $sharedLink = null): void
     {
         $this->sharedLink = $sharedLink;
     }
 
-    public function getParent(): mixed
+    public function getParent(): Folder|array|null
     {
         return $this->parent;
     }
 
  /**
- * @param mixed $parent
+ * @param Folder|array|null $parent
+ *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setParent($parent = null): void
+    public function setParent(Folder|array|null $parent = null): void
     {
         $this->parent = $parent;
     }
 
-    public function getItemStatus(): mixed
+    public function getItemStatus(): ?string
     {
         return $this->itemStatus;
     }
 
  /**
- * @param mixed $itemStatus
+ * @param string|null $itemStatus
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setItemStatus($itemStatus = null): void
+    public function setItemStatus(?string $itemStatus = null): void
     {
         $this->itemStatus = $itemStatus;
     }

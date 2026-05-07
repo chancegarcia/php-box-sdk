@@ -52,7 +52,6 @@ interface BoxModelInterface
  * @param string $type
  *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
     public function setType(string $type = "file"): void;
 
@@ -65,7 +64,6 @@ interface BoxModelInterface
  * @param string|int|null $id
  *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
     public function setId(string|int|null $id = null): void;
 
@@ -78,7 +76,6 @@ interface BoxModelInterface
  * @param string|int|null $sequenceId
  *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
     public function setSequenceId(string|int|null $sequenceId = null): void;
 
@@ -91,7 +88,6 @@ interface BoxModelInterface
  * @param string|null $etag
  *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
     public function setEtag(?string $etag = null): void;
 
@@ -104,7 +100,6 @@ interface BoxModelInterface
  * @param string|null $name
  *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
     public function setName(?string $name = null): void;
 
@@ -117,7 +112,6 @@ interface BoxModelInterface
  * @param string|null $description
  *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
     public function setDescription(?string $description = null): void;
 
@@ -130,7 +124,6 @@ interface BoxModelInterface
  * @param int|null $size
  *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
     public function setSize(?int $size = null): void;
 
@@ -143,7 +136,6 @@ interface BoxModelInterface
  * @param DateTimeInterface|string|null $createdAt
  *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
     public function setCreatedAt(DateTimeInterface|string|null $createdAt = null): void;
 
@@ -156,7 +148,6 @@ interface BoxModelInterface
  * @param DateTimeInterface|string|null $modifiedAt
  *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
     public function setModifiedAt(DateTimeInterface|string|null $modifiedAt = null): void;
 
@@ -166,25 +157,23 @@ interface BoxModelInterface
     public function getCreatedBy(): mixed;
 
  /**
- * @param User|array|null $createdBy
+ * @param string|null $createdBy
  *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setCreatedBy(mixed $createdBy = null): void;
+    public function setCreatedBy(?string $createdBy = null): void;
 
  /**
  * @return User|array|null
  */
-    public function getModifiedBy(): mixed;
+    public function getModifiedBy(): ?string;
 
  /**
- * @param User|array|null $modifiedBy
+ * @param string|null $modifiedBy
  *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setModifiedBy(mixed $modifiedBy = null): void;
+    public function setModifiedBy(?string $modifiedBy = null): void;
 
  /**
  * @return User|array|null
@@ -192,12 +181,11 @@ interface BoxModelInterface
     public function getOwnedBy(): mixed;
 
  /**
- * @param User|array|null $ownedBy
+ * @param string|null $ownedBy
  *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setOwnedBy(mixed $ownedBy = null): void;
+    public function setOwnedBy(?string $ownedBy = null): void;
 
  /**
  * @return SharedLink|array|null
@@ -205,25 +193,23 @@ interface BoxModelInterface
     public function getSharedLink(): mixed;
 
  /**
- * @param SharedLink|array|null $sharedLink
+ * @param string|null $sharedLink
  *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setSharedLink(mixed $sharedLink = null): void;
+    public function setSharedLink(?string $sharedLink = null): void;
 
  /**
  * @return Folder|array|null
  */
-    public function getParent(): mixed;
+    public function getParent(): Folder|array|null;
 
- /**
- * @param Folder|array|null $parent
- *
- * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
- */
-    public function setParent(mixed $parent = null): void;
+    /**
+     * @param Folder|array|null $parent
+     *
+     * @return void
+     */
+    public function setParent(Folder|array|null $parent = null): void;
 
  /**
  * @return string|null
@@ -234,7 +220,6 @@ interface BoxModelInterface
  * @param string|null $itemStatus
  *
  * @return void
- * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
     public function setItemStatus(?string $itemStatus = null): void;
 }

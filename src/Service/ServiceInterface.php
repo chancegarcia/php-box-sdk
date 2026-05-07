@@ -198,19 +198,6 @@ interface ServiceInterface extends BaseModelInterface
      */
     public function handleBoxResponse(?BoxResponseInterface $response = null, $returnType = 'decoded');
 
-    /**
-     * @param null $json
-     * @param string $returnType valid types are:
-     *                           'original' (the return from the connection query {@see Connection::query()}),
-     *                           'decoded' (normal json decode of the connection query [json_decode(original)]),
-     *                           'flat' (associative array json decode of the connection query [json_decode(original,
-     *                           true)])
-     * @param array $errorData
-     * @return mixed
-     *
-     * @deprecated
-     */
-    public function getFinalConnectionResult($json = null, $returnType = 'decoded', $errorData = []);
 
     /**
      * @param null $uri

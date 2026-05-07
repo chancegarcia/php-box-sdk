@@ -72,7 +72,6 @@ class BoxException extends \Exception
 
     /**
      * @return void
-     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setError(mixed $error = null): void
     {
@@ -86,7 +85,6 @@ class BoxException extends \Exception
 
     /**
      * @return void
-     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setErrorDescription(mixed $errorDescription = null): void
     {
@@ -189,7 +187,6 @@ class BoxException extends \Exception
      */
     /**
      * @return void
-     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setBoxCode(mixed $boxCode = null): void
     {

@@ -36,7 +36,9 @@
 
 namespace Box\Event\Collection\Entry\Source;
 
+use Box\Folder\Folder;
 use Box\Model\Model;
+use DateTimeInterface;
 
 class EntrySource extends Model implements SourceInterface
 {
@@ -58,19 +60,19 @@ class EntrySource extends Model implements SourceInterface
     protected $sequenceId;
 
     /**
-     * @return mixed
+     * @return string|int|null
      */
-    public function getSequenceId()
+    public function getSequenceId(): string|int|null
     {
         return $this->sequenceId;
     }
 
     /**
-     * @param mixed $sequenceId
+     * @param string|int|null $sequenceId
      *
      * @return SourceInterface
      */
-    public function setSequenceId($sequenceId = null)
+    public function setSequenceId(string|int|null $sequenceId = null): void
     {
         $this->sequenceId = $sequenceId;
     }
@@ -78,43 +80,41 @@ class EntrySource extends Model implements SourceInterface
     /**
      * @return mixed
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
     /**
-     * @param mixed $type
+     * @param string $type
      *
-     * @return SourceInterface
      */
-    public function setType($type = null)
+    public function setType(string $type = "file"): void
     {
         $this->type = $type;
     }
 
     /**
-     * @return mixed
+     * @return int|string|null
      */
-    public function getId()
+    public function getId(): int|string|null
     {
         return $this->id;
     }
 
     /**
-     * @param mixed $id
+     * @param string|int|null $id
      *
-     * @return SourceInterface
      */
-    public function setId($id = null)
+    public function setId(string|int|null $id = null): void
     {
         $this->id = $id;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getEtag()
+    public function getEtag(): ?string
     {
         return $this->etag;
     }
@@ -122,207 +122,190 @@ class EntrySource extends Model implements SourceInterface
     /**
      * @param mixed $etag
      *
-     * @return SourceInterface
      */
-    public function setEtag($etag = null)
+    public function setEtag(?string $etag = null): void
     {
         $this->etag = $etag;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     /**
-     * @param mixed $name
-     *
-     * @return SourceInterface
+     * @param string|null $name
      */
-    public function setName($name = null)
+    public function setName(?string $name = null): void
     {
         $this->name = $name;
     }
 
     /**
-     * @return mixed
+     * @return DateTimeInterface|string|null
      */
-    public function getCreatedAt()
+    public function getCreatedAt(): DateTimeInterface|string|null
     {
         return $this->createdAt;
     }
 
     /**
-     * @param mixed $createdAt
-     *
-     * @return SourceInterface
+     * @param DateTimeInterface|string|null $createdAt
      */
-    public function setCreatedAt($createdAt = null)
+    public function setCreatedAt(DateTimeInterface|string|null $createdAt = null): void
     {
         $this->createdAt = $createdAt;
     }
 
     /**
-     * @return mixed
+     * @return DateTimeInterface|string|null
      */
-    public function getModifiedAt()
+    public function getModifiedAt(): DateTimeInterface|string|null
     {
         return $this->modifiedAt;
     }
 
     /**
-     * @param mixed $modifiedAt
+     * @param DateTimeInterface|string|null $modifiedAt
      *
      * @return SourceInterface
      */
-    public function setModifiedAt($modifiedAt = null)
+    public function setModifiedAt(DateTimeInterface|string|null $modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
     /**
-     * @param mixed $description
+     * @param string|null $description
      *
-     * @return SourceInterface
      */
-    public function setDescription($description = null)
+    public function setDescription(?string $description = null): void
     {
         $this->description = $description;
     }
 
     /**
-     * @return mixed
+     * @return int|null
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         return $this->size;
     }
 
     /**
-     * @param mixed $size
-     *
-     * @return SourceInterface
+     * @param int|null $size
      */
-    public function setSize($size = null)
+    public function setSize(?int $size = null): void
     {
         $this->size = $size;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getCreatedBy()
+    public function getCreatedBy(): ?string
     {
         return $this->createdBy;
     }
 
     /**
-     * @param mixed $createdBy
-     *
-     * @return SourceInterface
+     * @param string|null $createdBy
      */
-    public function setCreatedBy($createdBy = null)
+    public function setCreatedBy(?string $createdBy = null): void
     {
         $this->createdBy = $createdBy;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getModifiedBy()
+    public function getModifiedBy(): ?string
     {
         return $this->modifiedBy;
     }
 
     /**
-     * @param mixed $modifiedBy
+     * @param string|null $modifiedBy
      *
-     * @return SourceInterface
      */
-    public function setModifiedBy($modifiedBy = null)
+    public function setModifiedBy(?string $modifiedBy = null): void
     {
         $this->modifiedBy = $modifiedBy;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getOwnedBy()
+    public function getOwnedBy(): ?string
     {
         return $this->ownedBy;
     }
 
     /**
-     * @param mixed $ownedBy
+     * @param string|null $ownedBy
      *
      * @return SourceInterface
      */
-    public function setOwnedBy($ownedBy = null)
+    public function setOwnedBy(?string $ownedBy = null): void
     {
         $this->ownedBy = $ownedBy;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getSharedLink()
+    public function getSharedLink(): ?string
     {
         return $this->sharedLink;
     }
 
     /**
-     * @param mixed $sharedLink
-     *
-     * @return SourceInterface
+     * @param string|null $sharedLink
      */
-    public function setSharedLink($sharedLink = null)
+    public function setSharedLink(?string $sharedLink = null): void
     {
         $this->sharedLink = $sharedLink;
     }
 
     /**
-     * @return mixed
+     * @return Folder|array|null
      */
-    public function getParent()
+    public function getParent(): Folder|array|null
     {
         return $this->parent;
     }
 
     /**
-     * @param mixed $parent
-     *
-     * @return SourceInterface
+     * @param string|null $parent
      */
-    public function setParent($parent = null)
+    public function setParent(Folder|array|null $parent = null): void
     {
         $this->parent = $parent;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getItemStatus()
+    public function getItemStatus(): ?string
     {
         return $this->itemStatus;
     }
 
     /**
-     * @param mixed $itemStatus
-     *
-     * @return SourceInterface
+     * @param string|null $itemStatus
      */
-    public function setItemStatus($itemStatus = null)
+    public function setItemStatus(?string $itemStatus = null): void
     {
         $this->itemStatus = $itemStatus;
     }

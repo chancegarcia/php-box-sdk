@@ -61,11 +61,9 @@ class StatusLine implements StatusLineInterface
     /**
      * {@inheritdoc}
      */
-    public function setHttpVersionPrefix(?string $httpVersionPrefix = null): StatusLineInterface
+    public function setHttpVersionPrefix(?string $httpVersionPrefix = null): void
     {
         $this->httpVersionPrefix = $httpVersionPrefix;
-
-        return $this;
     }
 
     /**
@@ -79,11 +77,9 @@ class StatusLine implements StatusLineInterface
     /**
      * {@inheritdoc}
      */
-    public function setHttpVersionNumber(?string $httpVersionNumber = null): StatusLineInterface
+    public function setHttpVersionNumber(?string $httpVersionNumber = null): void
     {
         $this->httpVersionNumber = $httpVersionNumber;
-
-        return $this;
     }
 
     /**
@@ -97,11 +93,9 @@ class StatusLine implements StatusLineInterface
     /**
      * {@inheritdoc}
      */
-    public function setHttpVersion(?string $httpVersion = null): StatusLineInterface
+    public function setHttpVersion(?string $httpVersion = null): void
     {
         $this->httpVersion = $httpVersion;
-
-        return $this;
     }
 
     /**
@@ -115,11 +109,9 @@ class StatusLine implements StatusLineInterface
     /**
      * {@inheritdoc}
      */
-    public function setStatusCode(?int $statusCode = null): StatusLineInterface
+    public function setStatusCode(?int $statusCode = null): void
     {
         $this->statusCode = $statusCode;
-
-        return $this;
     }
 
     /**
@@ -133,10 +125,8 @@ class StatusLine implements StatusLineInterface
     /**
      * {@inheritdoc}
      */
-    public function setReasonPhrase(?string $reasonPhrase = null): StatusLineInterface
+    public function setReasonPhrase(?string $reasonPhrase = null): void
     {
         $this->reasonPhrase = $reasonPhrase;
-
-        return $this;
     }
 }

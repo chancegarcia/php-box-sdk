@@ -49,9 +49,9 @@ interface EventCollectionInterface extends ModelInterface
     /**
      * @param mixed $chunkSize
      *
-     * @return EventCollectionInterface|EventCollection
+     * @return void
      */
-    public function setChunkSize($chunkSize = null): EventCollectionInterface|EventCollection;
+    public function setChunkSize($chunkSize = null): void;
 
     /**
      * @return mixed
@@ -61,9 +61,9 @@ interface EventCollectionInterface extends ModelInterface
     /**
      * @param mixed $nextStreamPosition
      *
-     * @return EventCollectionInterface|EventCollection
+     * @return void
      */
-    public function setNextStreamPosition($nextStreamPosition = null): EventCollectionInterface|EventCollection;
+    public function setNextStreamPosition($nextStreamPosition = null): void;
 
     /**
      * @return Collection
@@ -73,9 +73,9 @@ interface EventCollectionInterface extends ModelInterface
     /**
      * @param Collection|array $entries
      *
-     * @return EventCollectionInterface
+     * @return void
      */
-    public function setEntries($entries = null): EventCollectionInterface;
+    public function setEntries($entries = null): void;
 
     /**
      * @return mixed
@@ -85,7 +85,7 @@ interface EventCollectionInterface extends ModelInterface
     /**
      * @param mixed $originalEntries
      *
-     * @return EventCollectionInterface
+     * @return void
      */
-    public function setOriginalEntries($originalEntries = null): EventCollectionInterface;
+    public function setOriginalEntries($originalEntries = null): void;
 }

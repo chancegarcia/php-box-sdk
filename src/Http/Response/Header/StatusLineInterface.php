@@ -29,10 +29,9 @@ interface StatusLineInterface
 
     /**
      * @param string|null $httpVersion
-     * @return StatusLineInterface
-     * @deprecated since 0.11.0, use non-fluent setter instead.
+     * @return void
      */
-    public function setHttpVersion(?string $httpVersion = null): StatusLineInterface;
+    public function setHttpVersion(?string $httpVersion = null): void;
 
     /**
      * @return int
@@ -41,10 +40,9 @@ interface StatusLineInterface
 
     /**
      * @param int|null $statusCode
-     * @return StatusLineInterface
-     * @deprecated since 0.11.0, use non-fluent setter instead.
+     * @return void
      */
-    public function setStatusCode(?int $statusCode = null): StatusLineInterface;
+    public function setStatusCode(?int $statusCode = null): void;
 
     /**
      * @return string
@@ -53,10 +51,9 @@ interface StatusLineInterface
 
     /**
      * @param string|null $reasonPhrase
-     * @return StatusLineInterface
-     * @deprecated since 0.11.0, use non-fluent setter instead.
+     * @return void
      */
-    public function setReasonPhrase(?string $reasonPhrase = null): StatusLineInterface;
+    public function setReasonPhrase(?string $reasonPhrase = null): void;
 
     /**
      * @return string
@@ -65,10 +62,9 @@ interface StatusLineInterface
 
     /**
      * @param string|null $httpVersionPrefix
-     * @return StatusLineInterface
-     * @deprecated since 0.11.0, use non-fluent setter instead.
+     * @return void
      */
-    public function setHttpVersionPrefix(?string $httpVersionPrefix = null): StatusLineInterface;
+    public function setHttpVersionPrefix(?string $httpVersionPrefix = null): void;
 
     /**
      * @return string
@@ -77,8 +73,7 @@ interface StatusLineInterface
 
     /**
      * @param string|null $httpVersionNumber
-     * @return StatusLineInterface
-     * @deprecated since 0.11.0, use non-fluent setter instead.
+     * @return void
      */
-    public function setHttpVersionNumber(?string $httpVersionNumber = null): StatusLineInterface;
+    public function setHttpVersionNumber(?string $httpVersionNumber = null): void;
 }
