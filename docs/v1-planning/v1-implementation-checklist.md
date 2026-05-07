@@ -12,6 +12,22 @@ This checklist is the operational progress tracker. Architectural decisions belo
 - Blocked
 - Deferred
 
+## Validation Policy
+
+For implementation steps, use Composer scripts for validation:
+
+- `composer dump-autoload`
+- `composer test`
+- `composer analyse`
+- `composer cs:check`
+
+If code style violations are automatically fixable, run:
+
+- `composer cs:fix`
+- `composer cs:check`
+
+Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacement for `composer cs:check`.
+
 ## 1. Planning and Documentation Checkpoint
 
 - [x] Status: Completed

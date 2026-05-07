@@ -559,6 +559,27 @@ After Junie completes the first audit-only task, bring back:
 
 The AI Assistant should then generate refined, narrow Junie prompts for each migration step.
 
+## Validation and Code Style Tooling Policy
+
+For V1.0 refactor tasks, Composer scripts are the source of truth for validation and code style.
+
+Use:
+
+- `composer dump-autoload`
+- `composer test`
+- `composer analyse`
+- `composer cs:check`
+
+For automatic code style fixes, use:
+
+- `composer cs:fix`
+
+Do not replace `composer cs:check` with ad hoc commands like `vendor/bin/phpcs --standard=PSR12 ...`, because those may bypass project-specific configuration in `phpcs.xml.dist`.
+
+If style output reports that PHPCBF can automatically fix violations, run `composer cs:fix`, then re-run `composer cs:check`.
+
+Direct PHPCS/PHPCBF commands should only be used when explicitly requested or for investigation. Final validation for implementation tasks must use the Composer scripts.
+
 ## Resolved V1.0 Design Decisions
 
 | Decision | Resolution |

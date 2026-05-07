@@ -159,6 +159,27 @@ Code review priorities:
 - Adequate tests and documentation
 - Avoiding unnecessary architectural churn
 
+## Code Style and Validation
+
+Use Composer scripts as the source of truth for project validation.
+
+Required validation commands:
+
+- `composer dump-autoload`
+- `composer test`
+- `composer analyse`
+- `composer cs:check`
+
+Required automatic code style fix command:
+
+- `composer cs:fix`
+
+Do not use ad hoc PHPCS commands such as `vendor/bin/phpcs --standard=PSR12 ...` as a replacement for `composer cs:check`. The Composer script uses the project’s configured ruleset and should be treated as canonical.
+
+If code style output says that PHPCBF can fix violations automatically, run `composer cs:fix`, then run `composer cs:check` again.
+
+Direct `vendor/bin/phpcs` or `vendor/bin/phpcbf` usage is allowed only when explicitly requested by the user or when investigating a tool issue. Final reported validation must still include `composer cs:check`.
+
 When uncertain:
 - Ask for clarification before making large public API or architectural changes.
 - Prefer preserving existing behavior.
