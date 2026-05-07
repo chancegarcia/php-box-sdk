@@ -2,8 +2,10 @@
 
 namespace Box\Mapper;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Exception;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionProperty;
@@ -91,6 +93,14 @@ class Hydrator
 
             if (is_array($value) || $value instanceof stdClass) {
                 return $this->hydrate($className, $value);
+            }
+
+            if ($className === DateTimeImmutable::class && is_string($value)) {
+                try {
+                    return new DateTimeImmutable($value);
+                } catch (Exception) {
+                    return $value;
+                }
             }
         }
 

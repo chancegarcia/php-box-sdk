@@ -36,14 +36,14 @@ This checklist is the operational progress tracker. Architectural decisions belo
 
 ## 3. Hydrator/Mapper Plain-Object Readiness
 
-- [ ] Status: Not started
+- [x] Status: Completed
 - Goal: Ensure the Hydrator can populate concrete resource objects without requiring legacy model traits or interfaces.
 - Scope: Update `Mapper\Hydrator` to handle hydration of passive objects.
 - Dependencies: 2.
 - Validation: Unit tests for Hydrator with non-model-based objects.
 - Documentation updates: `v1-architecture-rules.md` (Hydration section).
-- Test updates: `HydratorTest`.
-- Completion notes: 
+- Test updates: `HydratorTest`, `HydratorV1ReadinessTest`.
+- Completion notes: Verified that `Hydrator` is independent of legacy `Model` abstractions. Added support for `DateTimeImmutable` hydration from strings. Verified hydration of plain objects via setters and public properties, nested objects, and collection item type inference via PHPDoc. No blockers found for User resource migration.
 
 ## 4. Core Enum Foundation
 
