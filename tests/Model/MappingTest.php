@@ -2,7 +2,6 @@
 
 namespace Box\Tests\Model;
 
-use Box\Model\Model;
 use Box\Tests\Model\Fixtures\MappingTestModel;
 use PHPUnit\Framework\TestCase;
 

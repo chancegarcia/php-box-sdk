@@ -2,10 +2,12 @@
 
 namespace Box\DTO\File\Request;
 
+use DateTimeInterface;
+
 class CreateSharedLinkRequest
 {
     private ?string $access = null;
-    private ?\DateTimeInterface $unsharedAt = null;
+    private ?DateTimeInterface $unsharedAt = null;
     private ?bool $canDownload = null;
     private ?bool $canPreview = null;
 
@@ -20,7 +22,7 @@ class CreateSharedLinkRequest
         return $clone;
     }
 
-    public function withUnsharedAt(\DateTimeInterface $unsharedAt): self
+    public function withUnsharedAt(DateTimeInterface $unsharedAt): self
     {
         $clone = clone $this;
         $clone->unsharedAt = $unsharedAt;
@@ -48,7 +50,7 @@ class CreateSharedLinkRequest
             $data['access'] = $this->access;
         }
         if ($this->unsharedAt !== null) {
-            $data['unshared_at'] = $this->unsharedAt->format(\DateTimeInterface::RFC3339);
+            $data['unshared_at'] = $this->unsharedAt->format(DateTimeInterface::RFC3339);
         }
         if ($this->canDownload !== null) {
             $data['permissions']['can_download'] = $this->canDownload;

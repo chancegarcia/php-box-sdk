@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use InvalidArgumentException;
+use Box\Connection\Token\TokenInterface;
 
 class TransportOptionTest extends TestCase
 {
@@ -57,7 +58,7 @@ class TransportOptionTest extends TestCase
     {
         $this->configProvider->method('getRefreshToken')->willReturn('some-token');
 
-        $token = $this->createMock(\Box\Connection\Token\TokenInterface::class);
+        $token = $this->createMock(TokenInterface::class);
         $token->method('toBoxArray')->willReturn([]);
         $this->client->method('refreshToken')->willReturn($token);
 
@@ -84,7 +85,7 @@ class TransportOptionTest extends TestCase
     {
         $this->configProvider->method('getRefreshToken')->willReturn('some-token');
 
-        $token = $this->createMock(\Box\Connection\Token\TokenInterface::class);
+        $token = $this->createMock(TokenInterface::class);
         $token->method('toBoxArray')->willReturn([]);
         $this->client->method('refreshToken')->willReturn($token);
 
@@ -130,7 +131,7 @@ class TransportOptionTest extends TestCase
     {
         $this->configProvider->method('getRefreshToken')->willReturn('some-token');
 
-        $token = $this->createMock(\Box\Connection\Token\TokenInterface::class);
+        $token = $this->createMock(TokenInterface::class);
         $token->method('toBoxArray')->willReturn([]);
         $this->client->method('refreshToken')->willReturn($token);
 

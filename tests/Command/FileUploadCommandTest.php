@@ -8,7 +8,6 @@ use Box\Contract\ConfigProviderInterface;
 use Box\Client;
 use Box\Logger\ConfigNormalizer;
 use Box\Logger\LoggerFactory;
-use Box\Connection\Connection;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Service\ConsoleOutputFormatter;
 use Box\Service\DefaultJsonFormatter;
@@ -16,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Console\Command\Command;
+use Box\Connection\ConnectionInterface;
 
 class FileUploadCommandTest extends TestCase
 {
@@ -34,7 +34,7 @@ class FileUploadCommandTest extends TestCase
         $this->outputFormatter = new ConsoleOutputFormatter(new DefaultJsonFormatter());
         $this->loggerFactory = new LoggerFactory(new ConfigNormalizer());
         $this->client = $this->createMock(Client::class);
-        $this->connection = $this->createMock(\Box\Connection\ConnectionInterface::class);
+        $this->connection = $this->createMock(ConnectionInterface::class);
 
         $this->clientFactory->method('createClient')->willReturn($this->client);
         $this->client->method('getConnection')->willReturn($this->connection);

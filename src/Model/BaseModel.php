@@ -37,7 +37,6 @@
 namespace Box\Model;
 
 use Box\Logger\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
 
 abstract class BaseModel implements BaseModelInterface, LoggerAwareInterface
 {

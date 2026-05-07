@@ -36,6 +36,8 @@
 
 namespace Box\Model;
 
+use stdClass;
+
 interface BaseModelInterface
 {
  /**
@@ -53,9 +55,9 @@ interface BaseModelInterface
     public function toBoxVar(string $str): string;
 
  /**
- * @param array|\stdClass $aData
+ * @param array|stdClass $aData
  */
-    public function mapBoxToClass(array|\stdClass $aData): void;
+    public function mapBoxToClass(array|stdClass $aData): void;
 
  /**
  * validate integer value even if it is a string value, unlike is_int()

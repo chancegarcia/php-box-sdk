@@ -60,7 +60,8 @@
         ,
         "phpunit/phpunit": "^10.5",
         "squizlabs/php_codesniffer": "^4.0",
-        "phpstan/phpstan": "^2.1"
+        "phpstan/phpstan": "^2.1",
+        "slevomat/coding-standard": "^8.29"
     },
     "scripts": {
         "cs:check": "phpcs",
@@ -75,5 +76,10 @@
             "@analyse",
             "@test"
         ]
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }

@@ -2,8 +2,6 @@
 
 namespace Box\Model;
 
-use Box\Exception\BoxException;
-use Box\Http\Response\BoxResponseInterface;
 use Box\Mapper\ModelMapper;
 use Box\Trait\BoxLoggerTrait;
 use Psr\Log\LoggerInterface;

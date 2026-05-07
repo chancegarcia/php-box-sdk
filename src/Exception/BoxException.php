@@ -33,6 +33,7 @@
 namespace Box\Exception;
 
 use Box\Http\Response\BoxResponseInterface;
+use stdClass;
 
 class BoxException extends \Exception
 {
@@ -146,7 +147,7 @@ class BoxException extends \Exception
                     $data[$k] = $this->sanitize($v);
                 }
             }
-        } elseif ($data instanceof \stdClass) {
+        } elseif ($data instanceof stdClass) {
             foreach (get_object_vars($data) as $k => $v) {
                 if (preg_match('/(token|secret|code)/i', $k)) {
                     $data->$k = '********';

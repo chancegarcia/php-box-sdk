@@ -32,7 +32,6 @@
 
 namespace Box\Http\Response;
 
-use Box\Http\Response\Header\StatusLineInterface;
 use Box\Exception\BoxException;
 
 class ResponseParser

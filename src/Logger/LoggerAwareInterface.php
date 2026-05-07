@@ -36,9 +36,10 @@
 
 namespace Box\Logger;
 
+use Psr\Log\LoggerAwareInterface as PsrLoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 
-interface LoggerAwareInterface extends \Psr\Log\LoggerAwareInterface
+interface LoggerAwareInterface extends PsrLoggerAwareInterface
 {
     /**
      * @return LoggerInterface|null

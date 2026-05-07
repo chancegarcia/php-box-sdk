@@ -9,16 +9,17 @@ use ReflectionNamedType;
 use ReflectionProperty;
 use ReflectionType;
 use ReflectionUnionType;
+use stdClass;
 
 class Hydrator
 {
     /**
      * @template T of object
      * @param class-string<T>|T $target
-     * @param array|\stdClass $data
+     * @param array|stdClass $data
      * @return T
      */
-    public function hydrate(string|object $target, array|\stdClass $data): object
+    public function hydrate(string|object $target, array|stdClass $data): object
     {
         if (is_string($target)) {
             $target = new $target();
@@ -88,7 +89,7 @@ class Hydrator
                 return $this->hydrateCollection($className, $value, $target, $propertyName);
             }
 
-            if (is_array($value) || $value instanceof \stdClass) {
+            if (is_array($value) || $value instanceof stdClass) {
                 return $this->hydrate($className, $value);
             }
         }
@@ -97,7 +98,7 @@ class Hydrator
             foreach ($type->getTypes() as $unionType) {
                 if ($unionType instanceof ReflectionNamedType && !$unionType->isBuiltin()) {
                     $className = $unionType->getName();
-                    if (is_array($value) || $value instanceof \stdClass) {
+                    if (is_array($value) || $value instanceof stdClass) {
                         // Attempt to hydrate into the first non-builtin class in the union
                         // This might need more sophisticated logic if multiple classes are possible
                         return $this->hydrate($className, $value);
@@ -124,7 +125,7 @@ class Hydrator
         $itemType = $this->inferItemType($target, $propertyName);
 
         foreach ($items as $item) {
-            if ($itemType && (is_array($item) || $item instanceof \stdClass)) {
+            if ($itemType && (is_array($item) || $item instanceof stdClass)) {
                 $collection->add($this->hydrate($itemType, $item));
             } else {
                 $collection->add($item);
@@ -142,8 +143,9 @@ class Hydrator
         if ($reflection->hasProperty($propertyName)) {
             $prop = $reflection->getProperty($propertyName);
             $doc = $prop->getDocComment();
-            if ($doc && preg_match('/@var\s+([\w\\\]+)\[\]|Collection<([\w\\\]+)>/', $doc, $matches)) {
-                return $matches[1] ?: $matches[2];
+            if ($doc && preg_match('/@var\s+([\\\\A-Za-z0-9_]+)\[\]|Collection<([\\\\A-Za-z0-9_]+)>/', $doc, $matches)) {
+                $type = $matches[1] ?: $matches[2];
+                return $this->resolveType($type, $reflection);
             }
         }
 
@@ -152,11 +154,30 @@ class Hydrator
         if ($reflection->hasMethod($setter)) {
             $method = $reflection->getMethod($setter);
             $doc = $method->getDocComment();
-            if ($doc && preg_match('/@param\s+([\w\\\]+)\[\]|Collection<([\w\\\]+)>/', $doc, $matches)) {
-                return $matches[1] ?: $matches[2];
+            if ($doc && preg_match('/@param\s+([\\\\A-Za-z0-9_]+)\[\]|Collection<([\\\\A-Za-z0-9_]+)>/', $doc, $matches)) {
+                $type = $matches[1] ?: $matches[2];
+                return $this->resolveType($type, $reflection);
             }
         }
 
         return null;
+    }
+
+    private function resolveType(string $type, ReflectionClass $context): string
+    {
+        if (str_starts_with($type, '\\')) {
+            return ltrim($type, '\\');
+        }
+
+        $namespace = $context->getNamespaceName();
+        if ($namespace && class_exists($namespace . '\\' . $type)) {
+            return $namespace . '\\' . $type;
+        }
+
+        if (class_exists($type)) {
+            return $type;
+        }
+
+        return $type;
     }
 }

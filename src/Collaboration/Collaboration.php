@@ -33,8 +33,8 @@
 namespace Box\Collaboration;
 
 use Box\Model\Model;
-use Box\Exception\BoxException;
 use Box\Collaboration\CollaborationInterface;
+use DateTimeInterface;
 
 class Collaboration extends Model implements CollaborationInterface
 {
@@ -76,7 +76,7 @@ class Collaboration extends Model implements CollaborationInterface
     }
 
     /**
-     * @param \DateTimeInterface|string|null $acknowledgedAt
+     * @param DateTimeInterface|string|null $acknowledgedAt
      * @return void
      * @todo v1.0 \DateTimeImmutable|null type
      */
@@ -86,7 +86,7 @@ class Collaboration extends Model implements CollaborationInterface
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
     public function getAcknowledgedAt()
     {
@@ -94,7 +94,7 @@ class Collaboration extends Model implements CollaborationInterface
     }
 
     /**
-     * @param \DateTimeInterface|string|null $createdAt
+     * @param DateTimeInterface|string|null $createdAt
      * @return void
      * @todo v1.0 \DateTimeImmutable|null type
      */
@@ -104,7 +104,7 @@ class Collaboration extends Model implements CollaborationInterface
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
     public function getCreatedAt()
     {
@@ -122,7 +122,7 @@ class Collaboration extends Model implements CollaborationInterface
     }
 
     /**
-     * @param \DateTimeInterface|string|null $expiresAt
+     * @param DateTimeInterface|string|null $expiresAt
      * @return void
      * @todo v1.0 \DateTimeImmutable|null type
      */
@@ -132,7 +132,7 @@ class Collaboration extends Model implements CollaborationInterface
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
     public function getExpiresAt()
     {
@@ -150,7 +150,7 @@ class Collaboration extends Model implements CollaborationInterface
     }
 
     /**
-     * @param \DateTimeInterface|string|null $modifiedAt
+     * @param DateTimeInterface|string|null $modifiedAt
      * @return void
      * @todo v1.0 \DateTimeImmutable|null type
      */
@@ -160,7 +160,7 @@ class Collaboration extends Model implements CollaborationInterface
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
     public function getModifiedAt()
     {

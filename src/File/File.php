@@ -32,9 +32,12 @@
 
 namespace Box\File;
 
-use Box\Exception\BoxException;
 use Box\Model\Model;
 use Box\File\FileInterface;
+use DateTimeInterface;
+use Box\User\User;
+use Box\Folder\Folder;
+use Box\Item\SharedLink\SharedLink;
 
 class File extends Model implements FileInterface
 {
@@ -47,12 +50,12 @@ class File extends Model implements FileInterface
     protected ?string $description = null;
     protected ?int $size = null;
     protected mixed $pathCollection = null;
-    protected \DateTimeInterface|string|null $createdAt = null;
-    protected \DateTimeInterface|string|null $modifiedAt = null;
-    protected \DateTimeInterface|string|null $trashedAt = null;
-    protected \DateTimeInterface|string|null $purgedAt = null;
-    protected \DateTimeInterface|string|null $contentCreatedAt = null;
-    protected \DateTimeInterface|string|null $contentModifiedAt = null;
+    protected DateTimeInterface|string|null $createdAt = null;
+    protected DateTimeInterface|string|null $modifiedAt = null;
+    protected DateTimeInterface|string|null $trashedAt = null;
+    protected DateTimeInterface|string|null $purgedAt = null;
+    protected DateTimeInterface|string|null $contentCreatedAt = null;
+    protected DateTimeInterface|string|null $contentModifiedAt = null;
     protected mixed $createdBy = null;
     protected mixed $modifiedBy = null;
     protected mixed $ownedBy = null;
@@ -102,58 +105,58 @@ class File extends Model implements FileInterface
     }
 
     /**
-     * @param \DateTimeInterface|string|null $contentCreatedAt
+     * @param DateTimeInterface|string|null $contentCreatedAt
      * @return void
      */
-    public function setContentCreatedAt(\DateTimeInterface|string|null $contentCreatedAt = null): void
+    public function setContentCreatedAt(DateTimeInterface|string|null $contentCreatedAt = null): void
     {
         $this->contentCreatedAt = $contentCreatedAt;
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
-    public function getContentCreatedAt(): \DateTimeInterface|string|null
+    public function getContentCreatedAt(): DateTimeInterface|string|null
     {
         return $this->contentCreatedAt;
     }
 
     /**
-     * @param \DateTimeInterface|string|null $contentModifiedAt
+     * @param DateTimeInterface|string|null $contentModifiedAt
      * @return void
      */
-    public function setContentModifiedAt(\DateTimeInterface|string|null $contentModifiedAt = null): void
+    public function setContentModifiedAt(DateTimeInterface|string|null $contentModifiedAt = null): void
     {
         $this->contentModifiedAt = $contentModifiedAt;
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
-    public function getContentModifiedAt(): \DateTimeInterface|string|null
+    public function getContentModifiedAt(): DateTimeInterface|string|null
     {
         return $this->contentModifiedAt;
     }
 
     /**
-     * @param \DateTimeInterface|string|null $createdAt
+     * @param DateTimeInterface|string|null $createdAt
      * @return void
      */
-    public function setCreatedAt(\DateTimeInterface|string|null $createdAt = null): void
+    public function setCreatedAt(DateTimeInterface|string|null $createdAt = null): void
     {
         $this->createdAt = $createdAt;
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
-    public function getCreatedAt(): \DateTimeInterface|string|null
+    public function getCreatedAt(): DateTimeInterface|string|null
     {
         return $this->createdAt;
     }
 
     /**
-     * @param \Box\User\User|array|null $createdBy
+     * @param User|array|null $createdBy
      *
      * @return void
      */
@@ -226,24 +229,24 @@ class File extends Model implements FileInterface
     }
 
     /**
-     * @param \DateTimeInterface|string|null $modifiedAt
+     * @param DateTimeInterface|string|null $modifiedAt
      * @return void
      */
-    public function setModifiedAt(\DateTimeInterface|string|null $modifiedAt = null): void
+    public function setModifiedAt(DateTimeInterface|string|null $modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
-    public function getModifiedAt(): \DateTimeInterface|string|null
+    public function getModifiedAt(): DateTimeInterface|string|null
     {
         return $this->modifiedAt;
     }
 
     /**
-     * @param \Box\User\User|array|null $modifiedBy
+     * @param User|array|null $modifiedBy
      *
      * @return void
      */
@@ -315,7 +318,7 @@ class File extends Model implements FileInterface
     }
 
     /**
-     * @param \Box\User\User|array|null $ownedBy
+     * @param User|array|null $ownedBy
      *
      * @return void
      */
@@ -337,7 +340,7 @@ class File extends Model implements FileInterface
     }
 
     /**
-     * @param \Box\Folder\Folder|array|null $parent
+     * @param Folder|array|null $parent
      *
      * @return void
      */
@@ -399,18 +402,18 @@ class File extends Model implements FileInterface
     }
 
     /**
-     * @param \DateTimeInterface|string|null $purgedAt
+     * @param DateTimeInterface|string|null $purgedAt
      * @return void
      */
-    public function setPurgedAt(\DateTimeInterface|string|null $purgedAt = null): void
+    public function setPurgedAt(DateTimeInterface|string|null $purgedAt = null): void
     {
         $this->purgedAt = $purgedAt;
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
-    public function getPurgedAt(): \DateTimeInterface|string|null
+    public function getPurgedAt(): DateTimeInterface|string|null
     {
         return $this->purgedAt;
     }
@@ -452,7 +455,7 @@ class File extends Model implements FileInterface
     }
 
     /**
-     * @param \Box\Item\SharedLink\SharedLink|array|null $sharedLink
+     * @param SharedLink|array|null $sharedLink
      *
      * @return void
      */
@@ -491,18 +494,18 @@ class File extends Model implements FileInterface
     }
 
     /**
-     * @param \DateTimeInterface|string|null $trashedAt
+     * @param DateTimeInterface|string|null $trashedAt
      * @return void
      */
-    public function setTrashedAt(\DateTimeInterface|string|null $trashedAt = null): void
+    public function setTrashedAt(DateTimeInterface|string|null $trashedAt = null): void
     {
         $this->trashedAt = $trashedAt;
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
-    public function getTrashedAt(): \DateTimeInterface|string|null
+    public function getTrashedAt(): DateTimeInterface|string|null
     {
         return $this->trashedAt;
     }

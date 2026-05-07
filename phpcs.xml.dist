@@ -26,4 +26,24 @@
 
     <!-- Enforce short array syntax -->
     <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+
+    <!-- Slevomat sniffs -->
+    <config name="installed_paths" value="vendor/slevomat/coding-standard"/>
+
+    <!-- Remove unused use statements -->
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
+        <properties>
+            <property name="searchAnnotations" value="true"/>
+        </properties>
+    </rule>
+
+    <!-- Remove unnecessary fully qualified names -->
+    <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly">
+        <properties>
+            <property name="searchAnnotations" value="true"/>
+            <property name="allowFallbackGlobalFunctions" value="true"/>
+            <property name="allowFallbackGlobalConstants" value="true"/>
+            <property name="allowFullyQualifiedExceptions" value="true"/>
+        </properties>
+    </rule>
 </ruleset>

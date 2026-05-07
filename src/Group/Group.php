@@ -36,14 +36,15 @@ use Box\Model\Model;
 use Box\Exception\BoxException;
 use Box\Exception\GroupException;
 use Box\Group\GroupInterface;
+use DateTimeInterface;
 
 class Group extends Model implements GroupInterface
 {
     protected string $type = 'group';
     protected string|int|null $id = null;
     protected ?string $name = null;
-    protected \DateTimeInterface|string|null $createdAt = null;
-    protected \DateTimeInterface|string|null $modifiedAt = null;
+    protected DateTimeInterface|string|null $createdAt = null;
+    protected DateTimeInterface|string|null $modifiedAt = null;
 
     public function getMembershipListUri(int|string $limit = 100, int|string $offset = 0): string
     {
@@ -74,35 +75,35 @@ class Group extends Model implements GroupInterface
     }
 
     /**
-     * @param \DateTimeInterface|string|null $createdAt
+     * @param DateTimeInterface|string|null $createdAt
      * @return void
      */
-    public function setCreatedAt(\DateTimeInterface|string|null $createdAt = null): void
+    public function setCreatedAt(DateTimeInterface|string|null $createdAt = null): void
     {
         $this->createdAt = $createdAt;
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
-    public function getCreatedAt(): \DateTimeInterface|string|null
+    public function getCreatedAt(): DateTimeInterface|string|null
     {
         return $this->createdAt;
     }
 
     /**
-     * @param \DateTimeInterface|string|null $modifiedAt
+     * @param DateTimeInterface|string|null $modifiedAt
      * @return void
      */
-    public function setModifiedAt(\DateTimeInterface|string|null $modifiedAt = null): void
+    public function setModifiedAt(DateTimeInterface|string|null $modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
-    public function getModifiedAt(): \DateTimeInterface|string|null
+    public function getModifiedAt(): DateTimeInterface|string|null
     {
         return $this->modifiedAt;
     }

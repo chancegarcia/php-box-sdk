@@ -37,6 +37,7 @@ use Box\Http\Response\BoxResponseInterface;
 use Box\Model\ModelInterface;
 use Box\Http\FileStream;
 use CURLFile;
+use CurlHandle;
 
 interface ConnectionInterface extends ModelInterface
 {
@@ -67,11 +68,11 @@ interface ConnectionInterface extends ModelInterface
     public function post(string $uri, array|string $params = [], bool $nameValuePair = false): BoxResponseInterface;
 
     /**
-     * @param \CurlHandle $ch
-     * @return \CurlHandle
+     * @param CurlHandle $ch
+     * @return CurlHandle
      * @throws BoxException
      */
-    public function initAdditionalCurlOpts(\CurlHandle $ch): \CurlHandle;
+    public function initAdditionalCurlOpts(CurlHandle $ch): CurlHandle;
 
     /**
      * @param array|null $curlOpts
@@ -84,21 +85,21 @@ interface ConnectionInterface extends ModelInterface
     public function getCurlOpts(): array;
 
     /**
-     * @return \CurlHandle
+     * @return CurlHandle
      */
-    public function initCurl(): \CurlHandle;
+    public function initCurl(): CurlHandle;
 
     /**
-     * @param \CurlHandle $ch
-     * @return \CurlHandle
+     * @param CurlHandle $ch
+     * @return CurlHandle
      */
-    public function initCurlOpts(\CurlHandle $ch): \CurlHandle;
+    public function initCurlOpts(CurlHandle $ch): CurlHandle;
 
     /**
-     * @param \CurlHandle $ch
+     * @param CurlHandle $ch
      * @return BoxResponseInterface
      */
-    public function getCurlData(\CurlHandle $ch): BoxResponseInterface;
+    public function getCurlData(CurlHandle $ch): BoxResponseInterface;
 
     /**
      * @param string $uri

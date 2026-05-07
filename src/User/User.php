@@ -33,8 +33,8 @@
 namespace Box\User;
 
 use Box\Model\Model;
-use Box\Exception\BoxException;
 use Box\User\UserInterface;
+use DateTimeInterface;
 
 class User extends Model implements UserInterface
 {
@@ -109,7 +109,7 @@ class User extends Model implements UserInterface
     }
 
     /**
-     * @param \DateTimeInterface|string|null $createdAt
+     * @param DateTimeInterface|string|null $createdAt
      * @return void
      * @todo v1.0 \DateTimeImmutable|null type
      */
@@ -119,7 +119,7 @@ class User extends Model implements UserInterface
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
     public function getCreatedAt()
     {
@@ -223,7 +223,7 @@ class User extends Model implements UserInterface
     }
 
     /**
-     * @param \DateTimeInterface|string|null $modifiedAt
+     * @param DateTimeInterface|string|null $modifiedAt
      * @return void
      * @todo v1.0 \DateTimeImmutable|null type
      */
@@ -233,7 +233,7 @@ class User extends Model implements UserInterface
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
     public function getModifiedAt()
     {

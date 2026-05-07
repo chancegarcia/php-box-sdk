@@ -38,6 +38,7 @@ namespace Box\Storage\Token\Pdo;
 
 use Box\Storage\Token\BaseTokenStorageInterface;
 use PDO;
+use Traversable;
 
 interface TokenStorageInterface extends BaseTokenStorageInterface
 {
@@ -75,7 +76,7 @@ interface TokenStorageInterface extends BaseTokenStorageInterface
     public function getAdditionalTokenTableData();
 
     /**
-     * @param array|\Traversable $additionalTokenTableData
+     * @param array|Traversable $additionalTokenTableData
      *
      * @return TokenStorageInterface
      */
@@ -94,24 +95,24 @@ interface TokenStorageInterface extends BaseTokenStorageInterface
     public function setUseCompositeKey($useCompositeKey = null);
 
     /**
-     * @return array|\Traversable
+     * @return array|Traversable
      */
     public function getTokenCompositeKeyMap();
 
     /**
-     * @param array|\Traversable $tokenCompositeKeyMap
+     * @param array|Traversable $tokenCompositeKeyMap
      *
      * @return TokenStorageInterface
      */
     public function setTokenCompositeKeyMap($tokenCompositeKeyMap = null);
 
     /**
-     * @return array|\Traversable
+     * @return array|Traversable
      */
     public function getTokenMap();
 
     /**
-     * @param array|\Traversable $tokenMap
+     * @param array|Traversable $tokenMap
      *
      * @return TokenStorageInterface
      */

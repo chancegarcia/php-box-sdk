@@ -5,6 +5,8 @@ namespace Box\Tests\Model\Connection;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Connection\Connection;
 use PHPUnit\Framework\TestCase;
+use CurlHandle;
+use Box\Http\FileStream;
 
 class ConnectionTest extends TestCase
 {
@@ -21,13 +23,13 @@ class ConnectionTest extends TestCase
 
     public function testInitCurlReturnsResource()
     {
-        $this->assertInstanceOf(\CurlHandle::class, $this->connection->initCurl());
+        $this->assertInstanceOf(CurlHandle::class, $this->connection->initCurl());
     }
 
     public function testInitAdditionalCurlOptsReturnsResource()
     {
         $ch = $this->connection->initCurl();
-        $this->assertInstanceOf(\CurlHandle::class, $this->connection->initAdditionalCurlOpts($ch));
+        $this->assertInstanceOf(CurlHandle::class, $this->connection->initAdditionalCurlOpts($ch));
     }
 
     public function testSetCurlOpts()
@@ -47,7 +49,7 @@ class ConnectionTest extends TestCase
         $this->connection->initAdditionalCurlOpts($ch);
         // We can't easily verify curl options from the handle in PHP without extra extensions
         // but we can ensure it doesn't crash and returns the handle.
-        $this->assertInstanceOf(\CurlHandle::class, $ch);
+        $this->assertInstanceOf(CurlHandle::class, $ch);
     }
 
     public function testGetSetClientId()
@@ -165,7 +167,7 @@ class ConnectionTest extends TestCase
             ->onlyMethods(['request'])
             ->getMock();
 
-        $stream = \Box\Http\FileStream::fromString("test content", "test.txt", "text/plain");
+        $stream = FileStream::fromString("test content", "test.txt", "text/plain");
 
         $connection->expects($this->once())
             ->method('request')

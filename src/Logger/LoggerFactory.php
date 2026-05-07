@@ -10,7 +10,6 @@ use Monolog\Handler\FilterHandler;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Level;
 use Psr\Log\LoggerInterface;
-use InvalidArgumentException;
 
 class LoggerFactory
 {

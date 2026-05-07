@@ -37,8 +37,8 @@
 namespace Box\File;
 
 
-use Box\Item\SharedLink\SharedLinkInterface;
 use Box\Model\ModelInterface;
+use Box\Item\SharedLink\SharedLink;
 
 interface FileInterface extends ModelInterface
 {
@@ -48,7 +48,7 @@ interface FileInterface extends ModelInterface
     public function getId(): string|int|null;
 
     /**
-     * @return \Box\Item\SharedLink\SharedLink|array|null
+     * @return SharedLink|array|null
      */
     public function getSharedLink(): mixed;
 

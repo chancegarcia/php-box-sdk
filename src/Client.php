@@ -58,6 +58,8 @@ use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Model\Model;
 use Box\User\UserInterface;
+use Box\Collaboration\Collaboration;
+use Box\Connection\Token\Token;
 
 /**
  * Class Client
@@ -517,7 +519,7 @@ class Client extends Model
      * @param string $role see {@link http://developers.box.com/docs/#collaborations box documentation for all possible
      *     roles} default is viewer
      *
-     * @return \Box\Collaboration\Collaboration|\Box\Collaboration\CollaborationInterface
+     * @return Collaboration|CollaborationInterface
      * @throws BoxException
      */
     public function addCollaboration($folder = null, $collaborator = null, $role = 'viewer')
@@ -731,7 +733,7 @@ class Client extends Model
     }
 
     /**
-     * @return \Box\Connection\Token\Token|\Box\Connection\Token\TokenInterface
+     * @return Token|TokenInterface
      */
     public function refreshToken()
     {
@@ -1135,8 +1137,6 @@ class Client extends Model
 
     /**
      * @param Folder|FolderInterface $root
-     *
-     * @return \Box\Model\Client\Client
      */
     /**
      * @param mixed $root

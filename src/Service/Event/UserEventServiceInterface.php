@@ -38,7 +38,6 @@ namespace Box\Service\Event;
 
 use Box\Event\Collection\EventCollectionInterface;
 use Box\Service\ServiceInterface;
-use Box\Event\User\UserEventInterface;
 use Box\Model\ModelInterface;
 
 /**

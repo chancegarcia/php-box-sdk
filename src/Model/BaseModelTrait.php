@@ -2,10 +2,10 @@
 
 namespace Box\Model;
 
-use Box\Logger\LoggerAwareInterface;
 use Box\Mapper\ModelMapper;
 use Box\Trait\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
+use stdClass;
 
 trait BaseModelTrait
 {
@@ -22,9 +22,9 @@ trait BaseModelTrait
     }
 
  /**
- * @param array|\stdClass $aData
+ * @param array|stdClass $aData
  */
-    public function mapBoxToClass(array|\stdClass $aData): void
+    public function mapBoxToClass(array|stdClass $aData): void
     {
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug('map data: ' . var_export($aData, true), [__METHOD__ . ":" . __LINE__]);

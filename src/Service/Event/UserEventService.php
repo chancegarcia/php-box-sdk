@@ -36,13 +36,13 @@
 
 namespace Box\Service\Event;
 
+use Box\Event\Collection\EventCollectionInterface;
 use Box\Exception\BoxException;
-use Box\Event\Collection\EventCollection,
-
-Box\Event\Collection\EventCollectionInterface;
 use Box\Event\User\UserEventInterface;
 use Box\Service\Service;
-use Box\Event\EventInterface, Box\Event\Event;
+use Box\Event\EventInterface,
+
+Box\Event\Event;
 use Box\Model\ModelInterface;
 use Psr\Log\LoggerInterface;
 

@@ -5,7 +5,6 @@ namespace Box\Tests\Model\Mapper;
 use Box\Mapper\Hydrator;
 use Box\Tests\Model\Mapper\Fixtures\Group;
 use Box\Tests\Model\Mapper\Fixtures\User;
-use Doctrine\Common\Collections\Collection;
 use PHPUnit\Framework\TestCase;
 
 class HydratorTest extends TestCase

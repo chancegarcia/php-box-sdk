@@ -38,6 +38,7 @@
 namespace Box\Event\Admin;
 
 use Box\Event\Event;
+use stdClass;
 
 /**
  * Class AdminEvent
@@ -65,9 +66,9 @@ class AdminEvent extends Event implements AdminEventInterface
      * remove any attempt to map to the private property
      *
      * {@inheritdoc}
-     * @param array|\stdClass $aData
+     * @param array|stdClass $aData
      */
-    public function mapBoxToClass(array|\stdClass $aData): void
+    public function mapBoxToClass(array|stdClass $aData): void
     {
         // @todo need to refactor base model to explicitly take an array as the argument
         if (is_array($aData) && array_key_exists('stream_type', $aData)) {

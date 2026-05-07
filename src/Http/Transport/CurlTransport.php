@@ -2,7 +2,6 @@
 
 namespace Box\Http\Transport;
 
-use Box\Http\Response\BoxResponse;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Connection\ConnectionInterface;
 

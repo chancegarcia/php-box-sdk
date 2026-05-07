@@ -34,13 +34,12 @@
 
 namespace Box\Collection;
 
-use Closure;
-use ArrayIterator;
+use Doctrine\Common\Collections\ArrayCollection as DoctrineArrayCollection;
 
 /**
  * @deprecated Use \Doctrine\Common\Collections\ArrayCollection instead.
  */
-class ArrayCollection extends \Doctrine\Common\Collections\ArrayCollection implements ArrayCollectionInterface
+class ArrayCollection extends DoctrineArrayCollection implements ArrayCollectionInterface
 {
     /**
      * Initializes a new ArrayCollectionInterface compatible class.

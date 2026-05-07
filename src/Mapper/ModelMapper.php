@@ -2,6 +2,8 @@
 
 namespace Box\Mapper;
 
+use stdClass;
+
 class ModelMapper
 {
     public static function toClassVar(string $str): string
@@ -24,7 +26,7 @@ class ModelMapper
         return implode("_", $aTokens);
     }
 
-    public static function mapBoxToClass(object $target, array|\stdClass $aData): void
+    public static function mapBoxToClass(object $target, array|stdClass $aData): void
     {
         (new Hydrator())->hydrate($target, $aData);
     }

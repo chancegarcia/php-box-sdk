@@ -37,7 +37,6 @@
 namespace Box\Storage\Token\Pdo;
 
 use Box\Connection\Token\TokenInterface;
-use Box\Storage\Token\BaseTokenStorageInterface;
 use PDO;
 
 /**
@@ -198,11 +197,11 @@ class TokenStorage implements TokenStorageInterface
     }
 
     /**
-     * @param ?\PDO $pdo
+     * @param ?PDO $pdo
      *
      * @return TokenStorage
      */
-    public function setPdo(?\PDO $pdo = null)
+    public function setPdo(?PDO $pdo = null)
     {
         $this->pdo = $pdo;
     }
@@ -345,7 +344,7 @@ class TokenStorage implements TokenStorageInterface
     /**
      * remove token from storage
      *
-     * @param \Box\Connection\Token\TokenInterface $token
+     * @param TokenInterface $token
      * @param null $tokenContext
      *
      */

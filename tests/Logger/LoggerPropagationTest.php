@@ -11,6 +11,11 @@ use Box\Folder\FolderInterface;
 use Box\Collaboration\CollaborationInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Box\Logger\LoggerFactory;
+use Box\Service\ConsoleOutputFormatter;
+use Box\Command\FileUploadCommand;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Tester\CommandTester;
 
 class LoggerPropagationTest extends TestCase
 {
@@ -68,7 +73,7 @@ class LoggerPropagationTest extends TestCase
     public function testCliCommandInjectsLoggerIntoFactory(): void
     {
         $factory = $this->createMock(BoxClientFactoryInterface::class);
-        $loggerFactory = $this->createMock(\Box\Logger\LoggerFactory::class);
+        $loggerFactory = $this->createMock(LoggerFactory::class);
         $logger = $this->createMock(LoggerInterface::class);
 
         $loggerFactory->method('createLogger')->willReturn($logger);
@@ -79,14 +84,14 @@ class LoggerPropagationTest extends TestCase
             ->with($logger);
 
         $configProvider = $this->createMock(ConfigProviderInterface::class);
-        $outputFormatter = $this->createMock(\Box\Service\ConsoleOutputFormatter::class);
+        $outputFormatter = $this->createMock(ConsoleOutputFormatter::class);
 
-        $command = new \Box\Command\FileUploadCommand($factory, $configProvider, $outputFormatter, $loggerFactory);
+        $command = new FileUploadCommand($factory, $configProvider, $outputFormatter, $loggerFactory);
 
-        $application = new \Symfony\Component\Console\Application();
+        $application = new Application();
         $application->add($command);
 
-        $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
+        $commandTester = new CommandTester($command);
         $commandTester->execute([
             'file-path' => 'dummy.txt',
         ]);

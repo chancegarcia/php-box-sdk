@@ -38,7 +38,6 @@ namespace Box\Event\Collection;
 
 use Box\Exception\BoxException;
 use Box\Model\Model;
-use Box\Model\ModelInterface;
 use Doctrine\Common\Collections\ArrayCollection as DoctrineArrayCollection;
 use Doctrine\Common\Collections\Collection;
 

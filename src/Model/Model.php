@@ -32,10 +32,6 @@
 
 namespace Box\Model;
 
-use Box\Exception\BoxException;
-use Box\Http\Response\BoxResponseInterface;
-use Psr\Log\LoggerInterface;
-
 class Model extends BaseModel implements ModelInterface
 {
     use ModelTrait;

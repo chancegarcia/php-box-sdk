@@ -34,6 +34,9 @@ namespace Box\Folder;
 
 use Box\Exception\BoxException;
 use Box\Model\Model;
+use Countable;
+use Box\Folder\FolderInterface;
+use DateTimeInterface;
 
 class Folder extends Model implements FolderInterface
 {
@@ -139,7 +142,7 @@ class Folder extends Model implements FolderInterface
 
         if (is_object($parent)) {
             /**
-             * @var \Box\Folder\Folder|\Box\Folder\FolderInterface $parent
+             * @var Folder|FolderInterface $parent
              */
             $parentId = $parent->getId();
         }
@@ -171,7 +174,7 @@ class Folder extends Model implements FolderInterface
             return 0 === (int) $itemCollection['total_count'];
         }
 
-        if ($itemCollection instanceof \Countable) {
+        if ($itemCollection instanceof Countable) {
             return 0 === count($itemCollection);
         }
 
@@ -202,7 +205,7 @@ class Folder extends Model implements FolderInterface
     }
 
     /**
-     * @param \DateTimeInterface|string|null $createdAt
+     * @param DateTimeInterface|string|null $createdAt
      * @return void
      * @todo v1.0 \DateTimeImmutable|null type
      */
@@ -212,7 +215,7 @@ class Folder extends Model implements FolderInterface
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
     public function getCreatedAt()
     {
@@ -303,7 +306,7 @@ class Folder extends Model implements FolderInterface
     }
 
     /**
-     * @param \DateTimeInterface|string|null $modifiedAt
+     * @param DateTimeInterface|string|null $modifiedAt
      * @return void
      * @todo v1.0 \DateTimeImmutable|null type
      */
@@ -313,7 +316,7 @@ class Folder extends Model implements FolderInterface
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
     public function getModifiedAt()
     {

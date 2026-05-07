@@ -39,6 +39,7 @@ namespace Box\Item\SharedLink;
 use Box\Item\SharedLink\Permissions\PermissionsInterface;
 use Box\Item\SharedLink\SharedLinkInterface;
 use Box\Model\Model;
+use DateTimeInterface;
 
 class SharedLink extends Model implements SharedLinkInterface
 {
@@ -66,7 +67,7 @@ class SharedLink extends Model implements SharedLinkInterface
     }
 
     /**
-     * @return \DateTimeInterface|string|null
+     * @return DateTimeInterface|string|null
      */
     public function getUnsharedAt()
     {
@@ -74,7 +75,7 @@ class SharedLink extends Model implements SharedLinkInterface
     }
 
     /**
-     * @param \DateTimeInterface|string|null $unsharedAt
+     * @param DateTimeInterface|string|null $unsharedAt
      * @return void
      * @todo v1.0 \DateTimeImmutable|null type
      */

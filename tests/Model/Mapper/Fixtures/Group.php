@@ -3,10 +3,11 @@
 namespace Box\Tests\Model\Mapper\Fixtures;
 
 use Doctrine\Common\Collections\Collection;
+use Box\Tests\Model\Mapper\Fixtures\User;
 
 class Group
 {
     public string $name;
-    /** @var \Box\Tests\Model\Mapper\Fixtures\User[] */
+    /** @var User[] */
     public Collection $users;
 }

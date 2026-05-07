@@ -36,6 +36,11 @@
 
 namespace Box\Model;
 
+use DateTimeInterface;
+use Box\User\User;
+use Box\Item\SharedLink\SharedLink;
+use Box\Folder\Folder;
+
 interface BoxModelInterface
 {
  /**
@@ -130,38 +135,38 @@ interface BoxModelInterface
     public function setSize(?int $size = null): void;
 
  /**
- * @return \DateTimeInterface|string|null
+ * @return DateTimeInterface|string|null
  */
-    public function getCreatedAt(): \DateTimeInterface|string|null;
+    public function getCreatedAt(): DateTimeInterface|string|null;
 
  /**
- * @param \DateTimeInterface|string|null $createdAt
+ * @param DateTimeInterface|string|null $createdAt
  *
  * @return void
  * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setCreatedAt(\DateTimeInterface|string|null $createdAt = null): void;
+    public function setCreatedAt(DateTimeInterface|string|null $createdAt = null): void;
 
  /**
- * @return \DateTimeInterface|string|null
+ * @return DateTimeInterface|string|null
  */
-    public function getModifiedAt(): \DateTimeInterface|string|null;
+    public function getModifiedAt(): DateTimeInterface|string|null;
 
  /**
- * @param \DateTimeInterface|string|null $modifiedAt
+ * @param DateTimeInterface|string|null $modifiedAt
  *
  * @return void
  * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
  */
-    public function setModifiedAt(\DateTimeInterface|string|null $modifiedAt = null): void;
+    public function setModifiedAt(DateTimeInterface|string|null $modifiedAt = null): void;
 
  /**
- * @return \Box\User\User|array|null
+ * @return User|array|null
  */
     public function getCreatedBy(): mixed;
 
  /**
- * @param \Box\User\User|array|null $createdBy
+ * @param User|array|null $createdBy
  *
  * @return void
  * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
@@ -169,12 +174,12 @@ interface BoxModelInterface
     public function setCreatedBy(mixed $createdBy = null): void;
 
  /**
- * @return \Box\User\User|array|null
+ * @return User|array|null
  */
     public function getModifiedBy(): mixed;
 
  /**
- * @param \Box\User\User|array|null $modifiedBy
+ * @param User|array|null $modifiedBy
  *
  * @return void
  * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
@@ -182,12 +187,12 @@ interface BoxModelInterface
     public function setModifiedBy(mixed $modifiedBy = null): void;
 
  /**
- * @return \Box\User\User|array|null
+ * @return User|array|null
  */
     public function getOwnedBy(): mixed;
 
  /**
- * @param \Box\User\User|array|null $ownedBy
+ * @param User|array|null $ownedBy
  *
  * @return void
  * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
@@ -195,12 +200,12 @@ interface BoxModelInterface
     public function setOwnedBy(mixed $ownedBy = null): void;
 
  /**
- * @return \Box\Item\SharedLink\SharedLink|array|null
+ * @return SharedLink|array|null
  */
     public function getSharedLink(): mixed;
 
  /**
- * @param \Box\Item\SharedLink\SharedLink|array|null $sharedLink
+ * @param SharedLink|array|null $sharedLink
  *
  * @return void
  * @deprecated since 0 . 11 . 0, use non-fluent setter instead .
@@ -208,12 +213,12 @@ interface BoxModelInterface
     public function setSharedLink(mixed $sharedLink = null): void;
 
  /**
- * @return \Box\Folder\Folder|array|null
+ * @return Folder|array|null
  */
     public function getParent(): mixed;
 
  /**
- * @param \Box\Folder\Folder|array|null $parent
+ * @param Folder|array|null $parent
  *
  * @return void
  * @deprecated since 0 . 11 . 0, use non-fluent setter instead .

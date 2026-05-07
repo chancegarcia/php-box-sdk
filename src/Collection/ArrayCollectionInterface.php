@@ -31,15 +31,12 @@
 
 namespace Box\Collection;
 
-use ArrayAccess;
-use Closure;
-use Countable;
-use IteratorAggregate;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @deprecated Use \Doctrine\Common\Collections\Collection instead.
  */
-interface ArrayCollectionInterface extends \Doctrine\Common\Collections\Collection
+interface ArrayCollectionInterface extends Collection
 {
     /**
      * @return array

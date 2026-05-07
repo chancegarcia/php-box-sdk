@@ -32,7 +32,6 @@
 
 namespace Box\Connection\Token;
 
-use Box\Connection\Response;
 use Box\Model\Model;
 
 class Token extends Model implements TokenInterface

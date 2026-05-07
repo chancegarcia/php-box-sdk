@@ -46,6 +46,7 @@ use Box\Http\Transport\TransportInterface;
 use Box\Model\Model;
 use CURLFile;
 use Psr\Log\LoggerInterface;
+use CurlHandle;
 
 /**
  * Class Connection
@@ -122,7 +123,7 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function initCurl(): \CurlHandle
+    public function initCurl(): CurlHandle
     {
         $ch = curl_init();
         $this->initCurlOpts($ch);
@@ -132,7 +133,7 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function initCurlOpts(\CurlHandle $ch): \CurlHandle
+    public function initCurlOpts(CurlHandle $ch): CurlHandle
     {
         // figure out how to log to verbose output to file. maybe make a box logger? or do output buffer capture?
         //curl_setopt($ch, CURLOPT_VERBOSE, true);
@@ -149,7 +150,7 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getCurlData(\CurlHandle $ch): BoxResponseInterface
+    public function getCurlData(CurlHandle $ch): BoxResponseInterface
     {
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug('before curl_exec curl opts', [
@@ -175,7 +176,7 @@ class Connection extends Model implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function initAdditionalCurlOpts(\CurlHandle $ch): \CurlHandle
+    public function initAdditionalCurlOpts(CurlHandle $ch): CurlHandle
     {
         $opts = $this->getCurlOpts();
         if (0 != count($opts)) {
