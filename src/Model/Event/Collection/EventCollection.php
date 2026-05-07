@@ -2,6 +2,8 @@
 
 namespace Box\Model\Event\Collection;
 
-@trigger_error('Box\Model\Event\Collection\EventCollection is deprecated. Use Box\Event\Collection\EventCollection instead.', E_USER_DEPRECATED);
+$msg = 'Box\Model\Event\Collection\EventCollection is deprecated . Us' . 
+ 'e Box\Event\Collection\EventCollection instead . ';
+@trigger_error($msg, E_USER_DEPRECATED);
 
 class_alias('\Box\Event\Collection\EventCollection', __NAMESPACE__ . '\EventCollection');

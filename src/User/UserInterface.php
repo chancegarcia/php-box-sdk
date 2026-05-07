@@ -36,8 +36,8 @@ use Box\Model\ModelInterface;
 
 interface UserInterface extends ModelInterface
 {
-    const URI = 'https://api.box.com/2.0/users';
-    const CURRENT_USER_URI = 'https://api.box.com/2.0/users/me';
+    public const URI = 'https://api.box.com/2.0/users';
+    public const CURRENT_USER_URI = 'https://api.box.com/2.0/users/me';
 
     public function getId(): mixed;
 }

@@ -80,7 +80,11 @@ class Hydrator
         if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
             $className = $type->getName();
 
-            if (is_subclass_of($className, Collection::class) || $className === Collection::class || $className === ArrayCollection::class) {
+            if (
+                is_subclass_of($className, Collection::class) ||
+                $className === Collection::class ||
+                $className === ArrayCollection::class
+            ) {
                 return $this->hydrateCollection($className, $value, $target, $propertyName);
             }
 
@@ -105,10 +109,15 @@ class Hydrator
         return $value;
     }
 
-    private function hydrateCollection(string $collectionClass, mixed $value, object $target, string $propertyName): Collection
-    {
+    private function hydrateCollection(
+        string $collectionClass,
+        mixed $value,
+        object $target,
+        string $propertyName
+    ): Collection {
         $items = is_array($value) ? $value : [$value];
-        $collection = ($collectionClass === Collection::class || $collectionClass === ArrayCollection::class)
+        $isGeneric = $collectionClass === Collection::class || $collectionClass === ArrayCollection::class;
+        $collection = ($isGeneric)
             ? new ArrayCollection()
             : new $collectionClass();
 

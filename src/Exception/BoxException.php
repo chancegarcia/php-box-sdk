@@ -36,12 +36,12 @@ use Box\Http\Response\BoxResponseInterface;
 
 class BoxException extends \Exception
 {
-    const INVALID_CLASS_TYPE = "Invalid Class Type";
-    const UNKNOWN_CLASS = "Unknown Class";
-    const INVALID_CLASS = "Invalid Class";
-    const INVALID_INPUT = "Invalid Input";
-    const MISSING_ID = "Missing Id";
-    const BOX_API_ERROR = "Box API Error";
+    public const INVALID_CLASS_TYPE = "Invalid Class Type";
+    public const UNKNOWN_CLASS = "Unknown Class";
+    public const INVALID_CLASS = "Invalid Class";
+    public const INVALID_INPUT = "Invalid Input";
+    public const MISSING_ID = "Missing Id";
+    public const BOX_API_ERROR = "Box API Error";
 
     protected mixed $error = null;
     protected mixed $errorDescription = null;

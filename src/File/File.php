@@ -60,7 +60,8 @@ class File extends Model implements FileInterface
     protected mixed $parent = null;
     protected ?string $itemStatus = null;
 
-    // the following will not appear in default file requests and must be explicitly asked for using the fields parameter.
+    // the following will not appear in default file requests and must be explicitly asked for
+    // using the fields parameter.
     protected ?string $versionNumber = null;
     protected ?int $commentCount = null;
     protected mixed $permissions = null;
@@ -305,7 +306,8 @@ class File extends Model implements FileInterface
             // If the user wants .env to have NO extension, we keep it this way.
             // But if they want .gitignore to have NO extension too, then we are fine.
             // Typically .env and .gitignore are considered to have no extension or the extension IS the name.
-            // The requirement said: For names like .env, treat them as having no extension unless existing project conventions suggest otherwise.
+            // The requirement said: For names like .env, treat them as having no extension unless
+            // existing project conventions suggest otherwise.
             return '';
         }
 

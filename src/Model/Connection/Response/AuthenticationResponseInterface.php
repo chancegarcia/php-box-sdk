@@ -2,6 +2,8 @@
 
 namespace Box\Model\Connection\Response;
 
-@trigger_error('Box\Model\Connection\Response\AuthenticationResponseInterface is deprecated. Use Box\Connection\Response\AuthenticationResponseInterface instead.', E_USER_DEPRECATED);
+$msg = 'Box\Model\Connection\Response\AuthenticationResponseInterfac' . 
+ 'e is deprecated . Use Box\Connection\Response\AuthenticationResponseInterface instead . ';
+@trigger_error($msg, E_USER_DEPRECATED);
 
 class_alias('\Box\Connection\Response\AuthenticationResponseInterface', __NAMESPACE__ . '\AuthenticationResponseInterface');

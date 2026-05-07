@@ -42,8 +42,8 @@ use Box\Model\ModelInterface;
 
 interface FileInterface extends ModelInterface
 {
-    const URI = "https://api.box.com/2.0/files";
-    const UPLOAD_URI = "https://upload.box.com/api/2.0/files/content";
+    public const URI = "https://api.box.com/2.0/files";
+    public const UPLOAD_URI = "https://upload.box.com/api/2.0/files/content";
 
     public function getId(): string|int|null;
 

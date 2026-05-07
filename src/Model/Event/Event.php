@@ -2,6 +2,8 @@
 
 namespace Box\Model\Event;
 
-@trigger_error('Box\Model\Event\Event is deprecated. Use Box\Event\Event instead.', E_USER_DEPRECATED);
+$msg = 'Box\Model\Event\Event is deprecated . Use Box\Event\Event ins' . 
+ 'tead . ';
+@trigger_error($msg, E_USER_DEPRECATED);
 
 class_alias('\Box\Event\Event', __NAMESPACE__ . '\Event');

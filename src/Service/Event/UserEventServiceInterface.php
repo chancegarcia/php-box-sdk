@@ -49,8 +49,8 @@ use Box\Model\ModelInterface;
  */
 interface UserEventServiceInterface extends ServiceInterface
 {
-    const LIMIT_MAX = 800;
-    const LIMIT_DEFAULT = 100;
+    public const LIMIT_MAX = 800;
+    public const LIMIT_DEFAULT = 100;
 
     /**
      * @return array

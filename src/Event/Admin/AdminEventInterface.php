@@ -48,181 +48,181 @@ use Box\Event\EventInterface;
  */
 interface AdminEventInterface extends EventInterface
 {
-    const URI = "https://api.box.com/2.0/events?stream_type=admin_logs";
-    const STREAM_TYPE = "admin_logs";
+    public const URI = "https://api.box.com/2.0/events?stream_type=admin_logs";
+    public const STREAM_TYPE = "admin_logs";
 
     /**
      * Added user to group
      */
-    const GROUP_ADD_USER = "GROUP_ADD_USER";
+    public const GROUP_ADD_USER = "GROUP_ADD_USER";
     /**
      * Created user
      */
-    const NEW_USER = "NEW_USER";
+    public const NEW_USER = "NEW_USER";
     /**
      * Created new group
      */
-    const GROUP_CREATION = "GROUP_CREATION";
+    public const GROUP_CREATION = "GROUP_CREATION";
     /**
      * Deleted group
      */
-    const GROUP_DELETION = "GROUP_DELETION";
+    public const GROUP_DELETION = "GROUP_DELETION";
     /**
      * Deleted user
      */
-    const DELETE_USER = "DELETE_USER";
+    public const DELETE_USER = "DELETE_USER";
     /**
      * Edited group
      */
-    const GROUP_EDITED = "GROUP_EDITED";
+    public const GROUP_EDITED = "GROUP_EDITED";
     /**
      * Edited user
      */
-    const EDIT_USER = "EDIT_USER";
+    public const EDIT_USER = "EDIT_USER";
     /**
      * Granted folder access
      */
-    const GROUP_ADD_FOLDER = "GROUP_ADD_FOLDER";
+    public const GROUP_ADD_FOLDER = "GROUP_ADD_FOLDER";
     /**
      * Removed from group
      */
-    const GROUP_REMOVE_USER = "GROUP_REMOVE_USER";
+    public const GROUP_REMOVE_USER = "GROUP_REMOVE_USER";
     /**
      * Removed folder access
      */
-    const GROUP_REMOVE_FOLDER = "GROUP_REMOVE_FOLDER";
+    public const GROUP_REMOVE_FOLDER = "GROUP_REMOVE_FOLDER";
     /**
      * Admin login
      */
-    const ADMIN_LOGIN = "ADMIN_LOGIN";
+    public const ADMIN_LOGIN = "ADMIN_LOGIN";
     /**
      * Added device association
      */
-    const ADD_DEVICE_ASSOCIATION = "ADD_DEVICE_ASSOCIATION";
+    public const ADD_DEVICE_ASSOCIATION = "ADD_DEVICE_ASSOCIATION";
     /**
      * Failed login
      */
-    const FAILED_LOGIN = "FAILED_LOGIN";
+    public const FAILED_LOGIN = "FAILED_LOGIN";
     /**
      * Login
      */
-    const LOGIN = "LOGIN";
+    public const LOGIN = "LOGIN";
     /**
      * OAuth2 token was refreshed for this user
      */
-    const USER_AUTHENTICATE_OAUTH2_TOKEN_REFRESH = "USER_AUTHENTICATE_OAUTH2_TOKEN_REFRESH";
+    public const USER_AUTHENTICATE_OAUTH2_TOKEN_REFRESH = "USER_AUTHENTICATE_OAUTH2_TOKEN_REFRESH";
     /**
      * Removed device association
      */
-    const REMOVE_DEVICE_ASSOCIATION = "REMOVE_DEVICE_ASSOCIATION";
+    public const REMOVE_DEVICE_ASSOCIATION = "REMOVE_DEVICE_ASSOCIATION";
     /**
      * Agreed to terms
      */
-    const TERMS_OF_SERVICE_AGREE = "TERMS_OF_SERVICE_AGREE";
+    public const TERMS_OF_SERVICE_AGREE = "TERMS_OF_SERVICE_AGREE";
     /**
      * Rejected terms
      */
-    const TERMS_OF_SERVICE_REJECT = "TERMS_OF_SERVICE_REJECT";
+    public const TERMS_OF_SERVICE_REJECT = "TERMS_OF_SERVICE_REJECT";
     /**
      * Copied
      */
-    const COPY = "COPY";
+    public const COPY = "COPY";
     /**
      * Deleted
      */
-    const DELETE = "DELETE";
+    public const DELETE = "DELETE";
     /**
      * Downloaded
      */
-    const DOWNLOAD = "DOWNLOAD";
+    public const DOWNLOAD = "DOWNLOAD";
     /**
      * Edited
      */
-    const EDIT = "EDIT";
+    public const EDIT = "EDIT";
     /**
      * Locked
      */
-    const LOCK = "LOCK";
+    public const LOCK = "LOCK";
     /**
      * Moved
      */
-    const MOVE = "MOVE";
+    public const MOVE = "MOVE";
     /**
      * Previewed
      */
-    const PREVIEW = "PREVIEW";
+    public const PREVIEW = "PREVIEW";
     /**
      * Renamed
      */
-    const RENAME = "RENAME";
+    public const RENAME = "RENAME";
     /**
      * Set file auto-delete
      */
-    const STORAGE_EXPIRATION = "STORAGE_EXPIRATION";
+    public const STORAGE_EXPIRATION = "STORAGE_EXPIRATION";
     /**
      * Undeleted
      */
-    const UNDELETE = "UNDELETE";
+    public const UNDELETE = "UNDELETE";
     /**
      * Unlocked
      */
-    const UNLOCK = "UNLOCK";
+    public const UNLOCK = "UNLOCK";
     /**
      * Uploaded
      */
-    const UPLOAD = "UPLOAD";
+    public const UPLOAD = "UPLOAD";
     /**
      * Enabled shared links
      */
-    const SHARE = "SHARE";
+    public const SHARE = "SHARE";
     /**
      * Share links settings updated
      */
-    const ITEM_SHARED_UPDATE = "ITEM_SHARED_UPDATE";
+    public const ITEM_SHARED_UPDATE = "ITEM_SHARED_UPDATE";
     /**
      * Extend shared link expiration
      */
-    const UPDATE_SHARE_EXPIRATION = "UPDATE_SHARE_EXPIRATION";
+    public const UPDATE_SHARE_EXPIRATION = "UPDATE_SHARE_EXPIRATION";
     /**
      * Set shared link expiration
      */
-    const SHARE_EXPIRATION = "SHARE_EXPIRATION";
+    public const SHARE_EXPIRATION = "SHARE_EXPIRATION";
     /**
      * Unshared links
      */
-    const UNSHARE = "UNSHARE";
+    public const UNSHARE = "UNSHARE";
     /**
      * Accepted invites
      */
-    const COLLABORATION_ACCEPT = "COLLABORATION_ACCEPT";
+    public const COLLABORATION_ACCEPT = "COLLABORATION_ACCEPT";
     /**
      * Changed user roles
      */
-    const COLLABORATION_ROLE_CHANGE = "COLLABORATION_ROLE_CHANGE";
+    public const COLLABORATION_ROLE_CHANGE = "COLLABORATION_ROLE_CHANGE";
     /**
      * Extend collaborator expiration
      */
-    const UPDATE_COLLABORATION_EXPIRATION = "UPDATE_COLLABORATION_EXPIRATION";
+    public const UPDATE_COLLABORATION_EXPIRATION = "UPDATE_COLLABORATION_EXPIRATION";
     /**
      * Removed collaborators
      */
-    const COLLABORATION_REMOVE = "COLLABORATION_REMOVE";
+    public const COLLABORATION_REMOVE = "COLLABORATION_REMOVE";
     /**
      * Invited
      */
-    const COLLABORATION_INVITE = "COLLABORATION_INVITE";
+    public const COLLABORATION_INVITE = "COLLABORATION_INVITE";
     /**
      * Set collaborator expiration
      */
-    const COLLABORATION_EXPIRATION = "COLLABORATION_EXPIRATION";
+    public const COLLABORATION_EXPIRATION = "COLLABORATION_EXPIRATION";
     /**
      * Synced folder
      */
-    const ITEM_SYNC = "ITEM_SYNC";
+    public const ITEM_SYNC = "ITEM_SYNC";
     /**
      * Un-synced folder
      */
-    const ITEM_UNSYNC = "ITEM_UNSYNC";
+    public const ITEM_UNSYNC = "ITEM_UNSYNC";
 
     /**
      * @return mixed

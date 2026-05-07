@@ -36,8 +36,8 @@ use Box\Model\ModelInterface;
 
 interface GroupInterface extends ModelInterface
 {
-    const URI = "https://api.box.com/2.0/groups";
-    const MEMBERSHIP_URI = "https://api.box.com/2.0/group_memberships";
+    public const URI = "https://api.box.com/2.0/groups";
+    public const MEMBERSHIP_URI = "https://api.box.com/2.0/group_memberships";
 
     public function getId(): string|int|null;
 

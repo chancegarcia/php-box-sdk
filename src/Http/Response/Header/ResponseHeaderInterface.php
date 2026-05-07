@@ -30,8 +30,6 @@ interface ResponseHeaderInterface
     /**
      * @param StatusLineInterface|null $statusLine
      *
-     * @return ResponseHeaderInterface
-     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setStatusLine(?StatusLineInterface $statusLine = null): ResponseHeaderInterface;
 
@@ -43,8 +41,6 @@ interface ResponseHeaderInterface
     /**
      * @param array|null $headerLines
      *
-     * @return ResponseHeaderInterface
-     * @deprecated since 0.11.0, use non-fluent setter instead.
      */
     public function setHeaderLines(?array $headerLines = null): ResponseHeaderInterface;
 }

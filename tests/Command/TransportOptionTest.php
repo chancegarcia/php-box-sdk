@@ -42,7 +42,12 @@ class TransportOptionTest extends TestCase
     public function testTransportOptionIsAvailable(): void
     {
         $application = new Application();
-        $application->add(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->add(new AuthRefreshCommand(
+            $this->clientFactory,
+            $this->configProvider,
+            $this->outputFormatter,
+            $this->loggerFactory
+        ));
 
         $command = $application->find('box:auth:refresh-token');
         $this->assertTrue($command->getDefinition()->hasOption('transport'));
@@ -61,7 +66,12 @@ class TransportOptionTest extends TestCase
             ->with(Connection::TRANSPORT_CURL);
 
         $application = new Application();
-        $application->add(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->add(new AuthRefreshCommand(
+            $this->clientFactory,
+            $this->configProvider,
+            $this->outputFormatter,
+            $this->loggerFactory
+        ));
 
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);
@@ -83,7 +93,12 @@ class TransportOptionTest extends TestCase
             ->with(Connection::TRANSPORT_GUZZLE);
 
         $application = new Application();
-        $application->add(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->add(new AuthRefreshCommand(
+            $this->clientFactory,
+            $this->configProvider,
+            $this->outputFormatter,
+            $this->loggerFactory
+        ));
 
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);
@@ -95,7 +110,12 @@ class TransportOptionTest extends TestCase
     public function testInvalidTransportFails(): void
     {
         $application = new Application();
-        $application->add(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->add(new AuthRefreshCommand(
+            $this->clientFactory,
+            $this->configProvider,
+            $this->outputFormatter,
+            $this->loggerFactory
+        ));
 
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);
@@ -118,7 +138,12 @@ class TransportOptionTest extends TestCase
             ->method('setTransportName');
 
         $application = new Application();
-        $application->add(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->add(new AuthRefreshCommand(
+            $this->clientFactory,
+            $this->configProvider,
+            $this->outputFormatter,
+            $this->loggerFactory
+        ));
 
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);

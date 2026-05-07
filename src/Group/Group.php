@@ -49,7 +49,9 @@ class Group extends Model implements GroupInterface
     {
         $selfId = $this->getId();
         if ($selfId === null) {
-            throw new BoxException("Please set the folder Id to retrieve items for this folder." . BoxException::MISSING_ID);
+            throw new BoxException(
+                "Please set the folder Id to retrieve items for this folder." . BoxException::MISSING_ID
+            );
         }
 
         $uri = self::URI . "/" . $selfId . "/memberships" . "?offset=" . $offset . "&limit=" . $limit;
@@ -115,7 +117,8 @@ class Group extends Model implements GroupInterface
     {
         if ($name !== null && strlen($name) > 255) {
             throw new GroupException(
-                "Box only supports group names of 255 characters or less. Names that will not be supported are the name “none” or a null name.",
+                "Box only supports group names of 255 characters or less. " .
+                "Names that will not be supported are the name “none” or a null name.",
                 GroupException::INVALID_NAME
             );
         }

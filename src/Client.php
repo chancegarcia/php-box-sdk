@@ -59,28 +59,28 @@ use JsonException;
  */
 class Client extends Model
 {
-    const AUTH_URI = "https://account.box.com/api/oauth2/authorize";
-    const TOKEN_URI = "https://www.box.com/api/oauth2/token";
-    const REVOKE_URI = "https://www.box.com/api/oauth2/revoke";
-    const SEARCH_URI = "https://api.box.com/2.0/search";
+    public const AUTH_URI = "https://account.box.com/api/oauth2/authorize";
+    public const TOKEN_URI = "https://www.box.com/api/oauth2/token";
+    public const REVOKE_URI = "https://www.box.com/api/oauth2/revoke";
+    public const SEARCH_URI = "https://api.box.com/2.0/search";
 
-    protected mixed $state = null;
+    protected ?string $state = null;
 
     /**
      * @var Connection|ConnectionInterface|null
      */
-    protected ?ConnectionInterface $connection = null;
+    protected null|Connection|ConnectionInterface $connection = null;
     /**
      * @var array of folder items indexed by the folder ID
      * @internal should just be an array of any folder known/retrieved by the client. does not need to be recursive
      *     since folders know their parents and items
      */
-    protected mixed $folders = null;
-    protected mixed $files = null;
+    protected ?array $folders = null;
+    protected ?array $files = null;
     /**
      * @var array of collaborations
      */
-    protected mixed $collaborations = null;
+    protected ?array $collaborations = null;
 
     /**
      * @var Folder|null
@@ -92,13 +92,13 @@ class Client extends Model
      */
     protected ?TokenInterface $token = null;
 
-    protected mixed $authorizationCode = null;
-    protected mixed $clientId = null;
-    protected mixed $clientSecret = null;
-    protected mixed $redirectUri = null;
+    protected ?string $authorizationCode = null;
+    protected ?string $clientId = null;
+    protected ?string $clientSecret = null;
+    protected ?string $redirectUri = null;
 
-    protected mixed $deviceId = null;
-    protected mixed $deviceName = null;
+    protected ?string $deviceId = null;
+    protected ?string $deviceName = null;
 
 
     /**
@@ -163,7 +163,7 @@ class Client extends Model
     {
         $folders = $this->getFolders($retrieve);
 
-        if (0 == $id) {
+        if (0 === $id) {
             return $folders;
         }
 
@@ -176,15 +176,20 @@ class Client extends Model
         }
 
 
-        $folder = $folders[ $id ];
+        $folder = $folders[ $id ] ?? null;
 
         return $folder;
     }
 
     public function addFolder(mixed $folder): void
     {
-        $folders = $this->getFolders();
-        $folders[] = $folder;
+        $folders = $this->getFolders(false) ?? [];
+        $id = $folder->getId();
+        if ($id) {
+            $folders[$id] = $folder;
+        } else {
+            $folders[] = $folder;
+        }
         $this->setFolders($folders);
     }
 
@@ -201,7 +206,7 @@ class Client extends Model
         }
 
         // not sure if I should add recursive parsing of folder/items. stubbing out for now.
-        return null;
+        return $this->folders ?? [];
     }
 
     /**
@@ -211,7 +216,6 @@ class Client extends Model
      * @param null $limit leave null to get all; if limit is null but offset is numeric, limit will default to 100
      * @param null $offset leave null to get all; if limit is null but offset is numeric, limit will default to 100
      *
-     * @return array returns an array of User objects that are in the group membership
      * @return array returns an array of User objects that are in the group membership
      * @throws \Box\Exception\BoxException
      */
@@ -337,11 +341,11 @@ class Client extends Model
     }
 
     /**
-     * @param Folder|\Box\Folder\FolderInterface $folder
+     * @param Folder|FolderInterface $folder
      * @param int $limit
      * @param int $offset
      *
-     * @return Folder|\Box\Folder\FolderInterface
+     * @return Folder|FolderInterface
      */
     public function getBoxFolderItems($folder, $limit = 100, $offset = 0)
     {
@@ -376,7 +380,7 @@ class Client extends Model
      * @return Folder|FolderInterface
      * @throws BoxException
      */
-    public function createNewBoxFolder($name, $parentFolderId = 0, array $options = [])
+    public function createNewBoxFolder($name, $parentFolderId = 0, ?array $options = [])
     {
         $uri = Folder::URI;
 
@@ -439,7 +443,7 @@ class Client extends Model
     }
 
     /**
-     * @param null|Folder|\Box\Folder\FolderInterface $folder
+     * @param null|Folder|FolderInterface $folder
      *
      * @return mixed raw json data as an array
      * @throws BoxException
@@ -463,8 +467,8 @@ class Client extends Model
     }
 
     /**
-     * @param null|Folder|\Box\Folder\FolderInterface $folder
-     * @param null|\Box\User\User|\Box\User\UserInterface|\Box\Group\GroupInterface $collaborator
+     * @param null|Folder|FolderInterface $folder
+     * @param null|User|UserInterface|GroupInterface $collaborator
      * @param string $role see {@link http://developers.box.com/docs/#collaborations box documentation for all possible
      *     roles} default is viewer
      *
@@ -517,11 +521,11 @@ class Client extends Model
     }
 
     /**
-     * @param null|Folder|\Box\Folder\FolderInterface $folder
+     * @param null|Folder|FolderInterface $folder
      * @param array|null shared link options with
      * default shared link set to collaborator access, no unshared time or permissions set to
      *
-     * @return Folder|\Box\Folder\FolderInterface
+     * @return Folder|FolderInterface
      * @throws BoxException
      */
     public function createSharedLinkForFolder($folder = null, $params = null)
@@ -566,8 +570,8 @@ class Client extends Model
      * @param string $name
      * @param bool $addToFolders
      *
-     * @return Folder|\Box\Folder\FolderInterface
-     * @throws Exception
+     * @return Folder|FolderInterface
+     * @throws \Exception
      * @throws BoxException
      * @internal param $destinationId
      */
@@ -843,10 +847,10 @@ class Client extends Model
     }
 
     /**
-     * @param mixed $clientId
+     * @param string|null $clientId
      * @return void
      */
-    public function setClientId($clientId = null): void
+    public function setClientId(?string $clientId = null): void
     {
         $this->clientId = $clientId;
         if ($this->connection instanceof ConnectionInterface) {
@@ -854,16 +858,17 @@ class Client extends Model
         }
     }
 
-    public function getClientId()
+    public function getClientId(): ?string
     {
         return $this->clientId;
     }
 
     /**
-     * @param mixed $clientSecret
+     * @param string|null $clientSecret
+     *
      * @return void
      */
-    public function setClientSecret($clientSecret = null): void
+    public function setClientSecret(?string $clientSecret = null): void
     {
         $this->clientSecret = $clientSecret;
         if ($this->connection instanceof ConnectionInterface) {
@@ -871,16 +876,17 @@ class Client extends Model
         }
     }
 
-    public function getClientSecret()
+    public function getClientSecret(): ?string
     {
         return $this->clientSecret;
     }
 
     /**
-     * @param mixed $redirectUri
+     * @param string|null $redirectUri
+     *
      * @return void
      */
-    public function setRedirectUri($redirectUri = null): void
+    public function setRedirectUri(?string $redirectUri = null): void
     {
         $this->redirectUri = $redirectUri;
         if ($this->connection instanceof ConnectionInterface) {
@@ -888,31 +894,31 @@ class Client extends Model
         }
     }
 
-    public function getRedirectUri()
+    public function getRedirectUri(): ?string
     {
         return $this->redirectUri;
     }
 
 
     /**
-     * @param mixed $authorizationCode
+     * @param string|null $authorizationCode
      * @return void
      */
-    public function setAuthorizationCode($authorizationCode = null): void
+    public function setAuthorizationCode(?string $authorizationCode = null): void
     {
         $this->authorizationCode = $authorizationCode;
     }
 
-    public function getAuthorizationCode()
+    public function getAuthorizationCode(): ?string
     {
         return $this->authorizationCode;
     }
 
     /**
-     * @param mixed $token
+     * @param string|TokenInterface|null $token
      * @return void
      */
-    public function setToken($token = null): void
+    public function setToken(mixed $token = null): void
     {
         $this->token = $token;
     }
@@ -964,16 +970,16 @@ class Client extends Model
     }
 
     /**
-     * @param mixed $tokenClass
+     * @param string|null $tokenClass
      * @return void
      */
-    public function setTokenClass($tokenClass = null): void
+    public function setTokenClass(?string $tokenClass = null): void
     {
         $this->validateClass($tokenClass, TokenInterface::class);
         $this->tokenClass = $tokenClass;
     }
 
-    public function getTokenClass()
+    public function getTokenClass(): ?string
     {
         return $this->tokenClass;
     }
@@ -982,7 +988,7 @@ class Client extends Model
      * @param mixed $connectionClass
      * @return void
      */
-    public function setConnectionClass($connectionClass = null): void
+    public function setConnectionClass(mixed $connectionClass = null): void
     {
         $this->validateClass($connectionClass, ConnectionInterface::class);
         $this->connectionClass = $connectionClass;
@@ -998,7 +1004,7 @@ class Client extends Model
      * @return void
      * @throws BoxException
      */
-    public function setConnection($connection = null): void
+    public function setConnection(mixed $connection = null): void
     {
         if (!$connection instanceof ConnectionInterface) {
             throw new BoxException("Invalid Class", BoxException::INVALID_CLASS);
@@ -1031,7 +1037,7 @@ class Client extends Model
      * @param mixed $fileClass
      * @return void
      */
-    public function setFileClass($fileClass = null): void
+    public function setFileClass(mixed $fileClass = null): void
     {
         $this->validateClass($fileClass, FileInterface::class);
         $this->fileClass = $fileClass;
@@ -1053,7 +1059,7 @@ class Client extends Model
      * @param mixed $files
      * @return void
      */
-    public function setFiles($files = null): void
+    public function setFiles(mixed $files = null): void
     {
         $this->files = $files;
     }
@@ -1067,7 +1073,7 @@ class Client extends Model
      * @param mixed $folderClass
      * @return void
      */
-    public function setFolderClass($folderClass = null): void
+    public function setFolderClass(mixed $folderClass = null): void
     {
         $this->validateClass($folderClass, FolderInterface::class);
         $this->folderClass = $folderClass;
@@ -1082,7 +1088,7 @@ class Client extends Model
      * @param mixed $folders
      * @return void
      */
-    public function setFolders($folders = null): void
+    public function setFolders(mixed $folders = null): void
     {
         $this->folders = $folders;
     }
@@ -1091,7 +1097,7 @@ class Client extends Model
      * @param mixed $collaborationClass
      * @return void
      */
-    public function setCollaborationClass($collaborationClass = null): void
+    public function setCollaborationClass(mixed $collaborationClass = null): void
     {
         $this->validateClass($collaborationClass, CollaborationInterface::class);
         $this->collaborationClass = $collaborationClass;
@@ -1106,7 +1112,7 @@ class Client extends Model
      * @param mixed $userClass
      * @return void
      */
-    public function setUserClass($userClass = null): void
+    public function setUserClass(mixed $userClass = null): void
     {
         $this->validateClass($userClass, UserInterface::class);
         $this->userClass = $userClass;
@@ -1121,7 +1127,7 @@ class Client extends Model
      * @param mixed $groupClass
      * @return void
      */
-    public function setGroupClass($groupClass = null): void
+    public function setGroupClass(mixed $groupClass = null): void
     {
         $this->validateClass($groupClass, GroupInterface::class);
         $this->groupClass = $groupClass;
@@ -1135,13 +1141,12 @@ class Client extends Model
     /**
      * @param array $collaborations
      *
-     * @return \Box\Model\Client\Client $this
      */
     /**
      * @param mixed $collaborations
      * @return void
      */
-    public function setCollaborations($collaborations = null): void
+    public function setCollaborations(mixed $collaborations = null): void
     {
         $this->collaborations = $collaborations;
     }
@@ -1158,7 +1163,7 @@ class Client extends Model
      * @param mixed $deviceId
      * @return void
      */
-    public function setDeviceId($deviceId = null): void
+    public function setDeviceId(mixed $deviceId = null): void
     {
         $this->deviceId = $deviceId;
     }
@@ -1172,7 +1177,7 @@ class Client extends Model
      * @param mixed $deviceName
      * @return void
      */
-    public function setDeviceName($deviceName = null): void
+    public function setDeviceName(mixed $deviceName = null): void
     {
         $this->deviceName = $deviceName;
     }
@@ -1186,7 +1191,7 @@ class Client extends Model
      * @param mixed $state
      * @return void
      */
-    public function setState($state = null): void
+    public function setState(mixed $state = null): void
     {
         $this->state = $state;
     }
@@ -1197,7 +1202,7 @@ class Client extends Model
     }
 
     /**
-     * @param Folder|\Box\Folder\FolderInterface $root
+     * @param Folder|FolderInterface $root
      *
      * @return \Box\Model\Client\Client
      */
@@ -1205,13 +1210,13 @@ class Client extends Model
      * @param mixed $root
      * @return void
      */
-    public function setRoot($root = null): void
+    public function setRoot(mixed $root = null): void
     {
         $this->root = $root;
     }
 
     /**
-     * @return Folder|\Box\Folder\FolderInterface
+     * @return Folder|FolderInterface
      */
     public function getRoot()
     {

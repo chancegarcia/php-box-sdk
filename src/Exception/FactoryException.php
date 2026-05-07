@@ -38,6 +38,6 @@ namespace Box\Exception;
 
 class FactoryException extends BoxException
 {
-    const CLASS_DOES_NOT_EXIST = 1;
-    const CAN_NOT_INSTANTIATE_WITH_OPTIONS = 2;
+    public const CLASS_DOES_NOT_EXIST = 1;
+    public const CAN_NOT_INSTANTIATE_WITH_OPTIONS = 2;
 }

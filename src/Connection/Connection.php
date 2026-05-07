@@ -107,7 +107,8 @@ class Connection extends Model implements ConnectionInterface
         }
     }
 
-    // relooking over auth flow, we have to assume app is already authorized externally. rewrite to use tokens for connection
+    // relooking over auth flow, we have to assume app is already authorized externally.
+    // rewrite to use tokens for connection
     // may need to store the tokens
     public function connect(): mixed
     {
@@ -175,7 +176,8 @@ class Connection extends Model implements ConnectionInterface
         $opts = $this->getCurlOpts();
         if (0 != count($opts)) {
             foreach ($opts as $opt => $optValue) {
-                // CURLOPT_HTTPHEADER, CURLOPT_QUOTE, CURLOPT_HTTP200ALIASES and CURLOPT_POSTQUOTE require array or object arguments
+                // CURLOPT_HTTPHEADER, CURLOPT_QUOTE, CURLOPT_HTTP200ALIASES and CURLOPT_POSTQUOTE
+                // require array or object arguments
 
                 switch ($opt) {
                     case "CURLOPT_HTTPHEADER":
@@ -361,16 +363,20 @@ class Connection extends Model implements ConnectionInterface
 
         if ($file instanceof FileStream) {
             // For CurlTransport, we might need a temporary file if it only supports CURLFile with paths
-            // But CurlTransport's request() method just passes $options['multipart'] to curl_setopt(..., CURLOPT_POSTFIELDS, $fields)
-            // If we use Guzzle's approach of passing the resource, curl might not handle it correctly in an array for multipart.
-            // Actually, curl_setopt with an array for CURLOPT_POSTFIELDS expects CURLFile or string (starting with @ is deprecated).
+            // But CurlTransport's request() method just passes $options['multipart']
+            // to curl_setopt(..., CURLOPT_POSTFIELDS, $fields)
+            // If we use Guzzle's approach of passing the resource, curl might not handle it correctly
+            // in an array for multipart.
+            // Actually, curl_setopt with an array for CURLOPT_POSTFIELDS expects CURLFile or string
+            // (starting with @ is deprecated).
 
             // To be safe and compatible with CurlTransport's current implementation:
             $tmpFile = tempnam(sys_get_temp_dir(), 'box_upload_');
             $tmpResource = fopen($tmpFile, 'wb');
             stream_copy_to_stream($resource, $tmpResource);
             fclose($tmpResource);
-            rewind($resource); // keep original resource state if possible, though it's probably better to just use the path now
+            rewind($resource);
+            // keep original resource state if possible, though it's probably better to just use the path now
 
             $curlFile = $this->createCurlFile($tmpFile, $mimeType, $filename);
 

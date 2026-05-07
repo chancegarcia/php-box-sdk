@@ -22,6 +22,7 @@ namespace Box\Http\Response\Header;
 
 use Box\Exception\BoxException;
 use Box\Http\Response\ResponseParser;
+use Box\Http\Response\Header\StatusLineInterface;
 
 class ResponseHeader implements ResponseHeaderInterface
 {
@@ -44,19 +45,17 @@ class ResponseHeader implements ResponseHeaderInterface
      * @param string $sHeader
      * @throws BoxException
      */
-    public function __construct($sHeader = '', $statusLineClass = "\\Box\\Http\\Response\\Header\\StatusLine")
+    public function __construct($sHeader = '', $statusLineClass = StatusLineInterface::class)
     {
         $aHeader = ResponseParser::parseHeader($sHeader);
         $sStatusLine = array_shift($aHeader);
-        if (!is_subclass_of($statusLineClass, "\\Box\\Http\\Response\\Header\\StatusLineInterface")) {
-            throw new BoxException("status line class must be an instance of \\Box\\Http\\Response\\Header\\StatusLineInterface. ("
+        if (!is_subclass_of($statusLineClass, StatusLineInterface::class)) {
+            $msg = "status line class must be an instance of " . StatusLineInterface::class . " ("
                 . $statusLineClass
-                . ") given.", BoxException::INVALID_CLASS_TYPE);
+                . ") given.";
+            throw new BoxException($msg, BoxException::INVALID_CLASS_TYPE);
         }
 
-        /**
-         * @var StatusLineInterface $oStatusLine
-         */
         $oStatusLine = new $statusLineClass($sStatusLine);
 
         $this->setStatusLine($oStatusLine);
@@ -111,7 +110,7 @@ class ResponseHeader implements ResponseHeaderInterface
                 $finalHeaders[] = $headerLineValue;
             } else {
                 // rest of the lines are headers
-                list($key, $value) = array_map("trim", explode(":", $headerLineValue));
+                [$key, $value] = array_map("trim", explode(":", $headerLineValue));
                 if (true === $replace || !array_key_exists($key, $finalHeaders)) {
                     $finalHeaders[$key] = $value;
                 } else {

@@ -1,12 +1,12 @@
 <?php
 
 /**
- * @package     Box
- * @subpackage  Box_Client
- * @author      Chance Garcia
- * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
+ * @package Box
+ * @subpackage Box_Client
+ * @author Chance Garcia
+ * @copyright (C)Copyright 2013 Chance Garcia, chancegarcia . com
  *
- *    The MIT License (MIT)
+ * The MIT License (MIT)
  *
  * Copyright (c) 2013-2016 Chance Garcia
  *
@@ -18,20 +18,21 @@
  * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * copies or substantial portions of the Software . 
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT . IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * SOFTWARE . 
  *
  */
 
 namespace Box\Model\Client;
 
-@trigger_error('Box\Model\Client is deprecated. Use Box\Client instead.', E_USER_DEPRECATED);
+$msg = 'Box\Model\Client is deprecated . Use Box\Client instead . ';
+@trigger_error($msg, E_USER_DEPRECATED);
 
 class_alias(\Box\Client::class, __NAMESPACE__ . '\Client');

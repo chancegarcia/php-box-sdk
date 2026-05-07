@@ -55,7 +55,12 @@ class FileUploadCommandTest extends TestCase
         $this->configProvider->method('getAccessToken')->willReturn(null);
 
         $application = new Application();
-        $application->add(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->add(new FileUploadCommand(
+            $this->clientFactory,
+            $this->configProvider,
+            $this->outputFormatter,
+            $this->loggerFactory
+        ));
 
         $command = $application->find('box:file:upload');
         $commandTester = new CommandTester($command);
@@ -76,7 +81,12 @@ class FileUploadCommandTest extends TestCase
         $this->configProvider->method('getAccessToken')->willReturn('');
 
         $application = new Application();
-        $application->add(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->add(new FileUploadCommand(
+            $this->clientFactory,
+            $this->configProvider,
+            $this->outputFormatter,
+            $this->loggerFactory
+        ));
 
         $command = $application->find('box:file:upload');
         $commandTester = new CommandTester($command);
@@ -96,7 +106,12 @@ class FileUploadCommandTest extends TestCase
         $this->configProvider->method('getAccessToken')->willReturn('   ');
 
         $application = new Application();
-        $application->add(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->add(new FileUploadCommand(
+            $this->clientFactory,
+            $this->configProvider,
+            $this->outputFormatter,
+            $this->loggerFactory
+        ));
 
         $command = $application->find('box:file:upload');
         $commandTester = new CommandTester($command);
@@ -125,7 +140,12 @@ class FileUploadCommandTest extends TestCase
             ->willReturn($response);
 
         $application = new Application();
-        $application->add(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->add(new FileUploadCommand(
+            $this->clientFactory,
+            $this->configProvider,
+            $this->outputFormatter,
+            $this->loggerFactory
+        ));
 
         $command = $application->find('box:file:upload');
         $commandTester = new CommandTester($command);

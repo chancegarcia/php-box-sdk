@@ -37,8 +37,17 @@ class FileUploadCommand extends AbstractBoxCommand
             ->setName(self::$defaultName)
             ->setDescription('Uploads a local file to Box')
             ->setHelp('This command uploads a file from your local system to Box.')
-            ->addArgument('file-path', InputArgument::OPTIONAL, 'The local path to the file (falls back to BOX_UPLOAD_FILE_PATH env)')
-            ->addOption('folder-id', null, InputOption::VALUE_REQUIRED, 'Target folder ID (falls back to BOX_UPLOAD_FOLDER_ID env or 0)');
+            ->addArgument(
+                'file-path',
+                InputArgument::OPTIONAL,
+                'The local path to the file (falls back to BOX_UPLOAD_FILE_PATH env)'
+            )
+            ->addOption(
+                'folder-id',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Target folder ID (falls back to BOX_UPLOAD_FOLDER_ID env or 0)'
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

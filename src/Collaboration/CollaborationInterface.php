@@ -36,7 +36,7 @@ use Box\Model\ModelInterface;
 
 interface CollaborationInterface extends ModelInterface
 {
-    const URI = "https://api.box.com/2.0/collaborations";
+    public const URI = "https://api.box.com/2.0/collaborations";
 
     public function getId(): mixed;
 }

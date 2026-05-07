@@ -36,8 +36,8 @@ use Box\Model\ModelInterface;
 
 interface FolderInterface extends ModelInterface
 {
-    const URI = 'https://api.box.com/2.0/folders';
-    const SHARED_ITEM_URI = "https://api.box.com/2.0/shared_items";
+    public const URI = 'https://api.box.com/2.0/folders';
+    public const SHARED_ITEM_URI = "https://api.box.com/2.0/shared_items";
 
     public function getId(): mixed;
 

@@ -2,6 +2,8 @@
 
 namespace Box\Model\File;
 
-@trigger_error('Box\Model\File\FileInterface is deprecated. Use Box\File\FileInterface instead.', E_USER_DEPRECATED);
+$msg = 'Box\Model\File\FileInterface is deprecated . Use Box\File\Fil' . 
+ 'eInterface instead . ';
+@trigger_error($msg, E_USER_DEPRECATED);
 
 class_alias('\Box\File\FileInterface', __NAMESPACE__ . '\FileInterface');

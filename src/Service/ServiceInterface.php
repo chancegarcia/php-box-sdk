@@ -63,8 +63,8 @@ use stdClass;
  */
 interface ServiceInterface extends BaseModelInterface
 {
-    const TOKEN_URI = "https://www.box.com/api/oauth2/token";
-    const REVOKE_URI = "https://www.box.com/api/oauth2/revoke";
+    public const TOKEN_URI = "https://www.box.com/api/oauth2/token";
+    public const REVOKE_URI = "https://www.box.com/api/oauth2/revoke";
 
     /**
      * @return Connection|ConnectionInterface

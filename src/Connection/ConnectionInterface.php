@@ -102,7 +102,8 @@ interface ConnectionInterface extends ModelInterface
 
     /**
      * @param string $uri
-     * @param array|string $params array will be deprecated in the future; json encoded string will become the only valid value
+     * @param array|string $params array will be deprecated in the future;
+     *                             json encoded string will become the only valid value
      *
      * @return BoxResponseInterface
      */
@@ -128,7 +129,11 @@ interface ConnectionInterface extends ModelInterface
      * @param string|int $parentId
      * @return array|BoxResponseInterface
      */
-    public function postFile(string $uri, string|FileStream $file, string|int $parentId = 0): array|BoxResponseInterface;
+    public function postFile(
+        string $uri,
+        string|FileStream $file,
+        string|int $parentId = 0
+    ): array|BoxResponseInterface;
 
     public function setAccessToken(?string $accessToken = null): void;
 
