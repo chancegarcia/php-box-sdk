@@ -6,7 +6,7 @@ This document lists classes, properties, and setters where the correct type coul
 
 | Class | Property | Current Type | Recommended Type | Reasoning | Maintainer Decision | Status |
 |---|---|---|---|---|---|---|
-| `Box\File\File` | `pathCollection` | `mixed` | `Box\DTO\Collection\PathCollection\|array\|null` | Represents a collection of parent folders. | for v1, we want a specific DTO; for v0.11, accept both DTO or array with @todo | Implemented (Transition) |
+| `Box\File\File` | `pathCollection` | `mixed` | `Box\Dto\Collection\PathCollection\|array\|null` | Represents a collection of parent folders. | for v1, we want a specific DTO; for v0.11, accept both DTO or array with @todo | Implemented (Transition) |
 | `Box\File\File` | `createdBy` | `mixed` | `Box\User\User\|array\|null` | Usually a mini-user object. | v1 will be object only; v0.11 accept both class and array | Implemented (Transition) |
 | `Box\File\File` | `modifiedBy` | `mixed` | `Box\User\User\|array\|null` | Usually a mini-user object. | v1 will be object only; v0.11 accept both class and array | Implemented (Transition) |
 | `Box\File\File` | `ownedBy` | `mixed` | `Box\User\User\|array\|null` | Usually a mini-user object. | v1 will be object only; v0.11 accept both class and array | Implemented (Transition) |

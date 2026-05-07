@@ -150,6 +150,7 @@ The following design decisions have been resolved as follows:
 2.  **SharedLink**: **Model as DTO/value object**. Shared links are usually nested under files/folders and do not need a dedicated service initially.
 3.  **Collection DTOs**: **Use specific response DTOs wrapping Doctrine Collections**. Avoid one generic public collection DTO. Include pagination metadata per response type.
 4.  **Metadata**: **Typed DTO envelope with flexible custom values**. Model Box-defined metadata structures while allowing dynamic template values as `array<string, mixed>`.
+    - *Note: Namespace skeleton and implementation checklist established.*
 5.  **Factory Interfaces**: **Remove per-resource factory interfaces**. They add little user value; hydrator/mapper is the correct construction boundary.
 6.  **Raw API Payloads**: **Optional debug capture only**. Disabled by default; prefer a separate debug payload store (e.g., WeakMap-backed) over storing raw arrays on every resource. Raw payloads must not be logged, serialized, or treated as the primary SDK API.
 7.  **Doctrine Collections**: **Use selectively**. Useful for list response entries; not required for all arrays, metadata values, or small value-object lists.

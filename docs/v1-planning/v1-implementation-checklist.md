@@ -1,0 +1,244 @@
+# V1.0 Implementation Checklist
+
+This document tracks the implementation progress of the V1.0 architecture refactor.
+
+This checklist is the operational progress tracker. Architectural decisions belong in `v1-architecture-rules.md`; audit details belong in `v1-interface-and-model-audit.md`; API coverage details belong in `v1-api-coverage-audit.md`.
+
+## Status Markers
+
+- Not started
+- In progress
+- Completed
+- Blocked
+- Deferred
+
+## 1. Planning and Documentation Checkpoint
+
+- [x] Status: Completed
+- Goal: Establish source of truth for V1.0 architecture and migration strategy.
+- Scope: Create and align architecture rules, interface audits, and API coverage audits.
+- Dependencies: None.
+- Validation: All planning docs present and consistent in `docs/v1-planning/`.
+- Documentation updates: `ai-assistant-planning-context.md`, `v1-architecture-rules.md`, `v1-interface-and-model-audit.md`, `v1-api-coverage-audit.md`.
+- Test updates: N/A.
+- Completion notes: Planning docs are finalized and represent the starting state for the refactor.
+
+## 2. Foundation Namespace Skeleton
+
+- [x] Status: Completed
+- Goal: Create the directory structure for V1.0 namespaces.
+- Scope: Create `Resource`, `Dto`, `Enum`, `Contract`, `Http`, `Mapper`, `Service` under `src/`. Establish `src/Dto` as the casing standard.
+- Dependencies: 1.
+- Validation: Directories exist; `composer dump-autoload` passes.
+- Documentation updates: This checklist.
+- Test updates: N/A.
+- Completion notes: Skeleton directories created. `src/DTO` was removed and all references normalized to `src/Dto` / `Box\Dto`. Added `.gitkeep` to empty `Resource` and `Enum` directories.
+
+## 3. Hydrator/Mapper Plain-Object Readiness
+
+- [ ] Status: Not started
+- Goal: Ensure the Hydrator can populate concrete resource objects without requiring legacy model traits or interfaces.
+- Scope: Update `Mapper\Hydrator` to handle hydration of passive objects.
+- Dependencies: 2.
+- Validation: Unit tests for Hydrator with non-model-based objects.
+- Documentation updates: `v1-architecture-rules.md` (Hydration section).
+- Test updates: `HydratorTest`.
+- Completion notes: 
+
+## 4. Core Enum Foundation
+
+- [ ] Status: Not started
+- Goal: Implement first set of PHP 8.4 enums for common Box API values.
+- Scope: `BoxItemType`, `CollaborationRole`, `UserStatus`.
+- Dependencies: 2.
+- Validation: `composer analyse`.
+- Documentation updates: None.
+- Test updates: Add tests for Enum-to-string conversion if needed.
+- Completion notes: 
+
+## 5. User Resource Migration
+
+- [ ] Status: Not started
+- Goal: Migrate Users to V1.0 architecture as a pilot resource.
+- Scope: Move `Box\User\User` to `Box\Resource\User`, remove `UserInterface`, update `UserService`.
+- Dependencies: 3, 4.
+- Validation: `composer test`, `composer analyse`.
+- Documentation updates: Migration notes for Users.
+- Test updates: `UserTest`, `UserServiceTest`.
+- Completion notes: 
+
+## 6. Group and GroupMembership Migration
+
+- [ ] Status: Not started
+- Goal: Migrate Groups and fold in GroupMemberships.
+- Scope: Create `Box\Resource\Group` and `Box\Resource\GroupMembership`. Update `GroupService`.
+- Dependencies: 5.
+- Validation: `composer test`.
+- Documentation updates: Migration notes for Groups.
+- Test updates: `GroupTest`, `GroupServiceTest`.
+- Completion notes: 
+
+## 7. Shared DTO Foundation
+
+- [ ] Status: Not started
+- Goal: Create foundation DTOs used across resources.
+- Scope: `SharedLink`, `Permissions`, `PathCollection`.
+- Dependencies: 3.
+- Validation: `composer analyse`.
+- Documentation updates: N/A.
+- Test updates: DTO unit tests.
+- Completion notes: 
+
+## 8. File and FileVersion migration
+
+- [ ] Status: Not started
+- Goal: Migrate Files and fold in Versions.
+- Scope: `Box\Resource\File`, `Box\Resource\FileVersion`. Update `FileService`.
+- Dependencies: 7.
+- Validation: `composer test`.
+- Documentation updates: Migration notes for Files.
+- Test updates: `FileTest`, `FileServiceTest`.
+- Completion notes: 
+
+## 9. Folder and FolderItems migration
+
+- [ ] Status: Not started
+- Goal: Migrate Folders and List Items response.
+- Scope: `Box\Resource\Folder`, `Box\Dto\Response\FolderItemsResponse`. Update `FolderService`.
+- Dependencies: 8.
+- Validation: `composer test`.
+- Documentation updates: Migration notes for Folders.
+- Test updates: `FolderTest`, `FolderServiceTest`.
+- Completion notes: 
+
+## 10. Collaboration migration
+
+- [ ] Status: Not started
+- Goal: Migrate Collaborations.
+- Scope: `Box\Resource\Collaboration`. Update `CollaborationService`.
+- Dependencies: 8, 9.
+- Validation: `composer test`.
+- Documentation updates: Migration notes for Collaborations.
+- Test updates: `CollaborationTest`, `CollaborationServiceTest`.
+- Completion notes: 
+
+## 11. Event migration
+
+- [ ] Status: Not started
+- Goal: Migrate Events.
+- Scope: `Box\Resource\Event`. Update `EventService`.
+- Dependencies: 10.
+- Validation: `composer test`.
+- Documentation updates: Migration notes for Events.
+- Test updates: `EventTest`, `EventServiceTest`.
+- Completion notes: 
+
+## 12. Client facade refactor
+
+- [ ] Status: Not started
+- Goal: Refactor `Client` to a lightweight facade.
+- Scope: Update `Box\Client` to use new services and return concrete resources.
+- Dependencies: 11.
+- Validation: `composer test`.
+- Documentation updates: README, Migration Guide.
+- Test updates: `ClientTest`.
+- Completion notes: 
+
+## 13. Service interface and factory cleanup
+
+- [ ] Status: Not started
+- Goal: Clean up service interfaces and remove redundant factories.
+- Scope: Refactor `src/Service` and `src/Factory`.
+- Dependencies: 12.
+- Validation: `composer analyse`.
+- Documentation updates: N/A.
+- Test updates: N/A.
+- Completion notes: 
+
+## 14. Model abstraction removal
+
+- [ ] Status: Not started
+- Goal: Remove legacy model traits and base classes.
+- Scope: Delete `ModelTrait`, `BoxModelTrait`, `BaseModelTrait`, `BaseModel`, `Model`, `BoxModel`.
+- Dependencies: 13.
+- Validation: `composer test`.
+- Documentation updates: N/A.
+- Test updates: Remove legacy model tests.
+- Completion notes: 
+
+## 15. Box\Model namespace removal
+
+- [ ] Status: Not started
+- Goal: Complete removal of `src/Model` directory.
+- Scope: Delete `src/Model` and all remaining files.
+- Dependencies: 14.
+- Validation: `composer dump-autoload`.
+- Documentation updates: N/A.
+- Test updates: N/A.
+- Completion notes: 
+
+## 16. Deferred missing resource phase: Comments and Tasks
+
+- [ ] Status: Not started
+- Goal: Implement missing Comments and Tasks resources.
+- Scope: `Box\Resource\Comment`, `Box\Resource\Task`.
+- Dependencies: 15.
+- Validation: `composer test`.
+- Documentation updates: API coverage update.
+- Test updates: New tests for Comments/Tasks.
+- Completion notes: 
+
+## 17. Deferred missing resource phase: Metadata service
+
+- [ ] Status: Not started
+- Goal: Implement full Metadata service.
+- Scope: `MetadataService`, Template management.
+- Dependencies: 15.
+- Validation: `composer test`.
+- Documentation updates: API coverage update.
+- Test updates: New tests for Metadata.
+- Completion notes: 
+
+## 18. Deferred missing resource phase: Collections, Webhooks, File Requests, Sign Requests
+
+- [ ] Status: Not started
+- Goal: Implement remaining high-priority API resources.
+- Scope: Sign Requests, Webhooks, etc.
+- Dependencies: 15.
+- Validation: `composer test`.
+- Documentation updates: API coverage update.
+- Test updates: New tests.
+- Completion notes: 
+
+## 19. Deferred enterprise/governance phase
+
+- [ ] Status: Not started
+- Goal: Implement Enterprise features (Shield, Governance).
+- Scope: Retention Policies, Legal Holds, etc.
+- Dependencies: 18.
+- Validation: `composer test`.
+- Documentation updates: API coverage update.
+- Test updates: New tests.
+- Completion notes: 
+
+## 20. V1 upgrade documentation
+
+- [ ] Status: Not started
+- Goal: Finalize migration guide for end users.
+- Scope: Complete `docs/v1-migration.md`.
+- Dependencies: 19.
+- Validation: Manual review.
+- Documentation updates: `docs/v1-migration.md`.
+- Test updates: N/A.
+- Completion notes: 
+
+## 21. Final quality and release review
+
+- [ ] Status: Not started
+- Goal: Final verification of V1.0 release readiness.
+- Scope: `composer review`, full test suite, doc audit.
+- Dependencies: 20.
+- Validation: `composer review` passes.
+- Documentation updates: CHANGELOG.md.
+- Test updates: N/A.
+- Completion notes: 

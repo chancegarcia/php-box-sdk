@@ -36,7 +36,7 @@
 
 namespace Box\Service\File;
 
-use Box\DTO\File\Request\CreateSharedLinkRequest;
+use Box\Dto\File\Request\CreateSharedLinkRequest;
 use Box\File\FileInterface;
 use Box\Item\SharedLink\SharedLinkInterface;
 use Box\Service\ServiceInterface;

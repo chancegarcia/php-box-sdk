@@ -136,29 +136,10 @@ V1.0 typing decisions:
 - Nested resources should be object-only.
 - Remove transition-layer array support for nested model/resource fields.
 - Use PHP 8.4 enums for fixed value sets, such as roles, statuses, types, item statuses, and similar API-defined finite values.
-- Use Doctrine Collections for resource sets and remove custom collection classes where practical.
-
-## Collection Policy
-
-Doctrine Collections may be used for SDK list response entry sets, such as folder items, group memberships, collaborations, events, file versions, comments, tasks, and similar paginated API responses.
-
-Doctrine Collections do not require Doctrine ORM or database mapping. `ArrayCollection`, `Collection::filter()`, and `Criteria::matching()` can operate in memory on plain PHP objects.
-
-However, this is not a substitute for Box API search/filter endpoints. Collection filtering only applies to entries already fetched from Box.
-
-V1.0 should prefer specific response DTOs that wrap a Doctrine Collection plus pagination metadata, rather than exposing one generic collection response for all endpoints.
-
-Examples:
-
-- `FolderItemsResponse`
-- `GroupMembershipListResponse`
-- `FileVersionListResponse`
-- `CollaborationListResponse`
-- `EventListResponse`
-
-Small value objects, simple enum lists, shared link permissions, and dynamic metadata values should not be forced into Doctrine Collections unless there is a clear benefit.
-
-Custom SDK collection classes should generally be removed unless they provide specific behavior that Doctrine Collections and response DTOs cannot provide cleanly.
+- Use Doctrine Collections selectively for list response entry sets where a standard in-memory collection API adds value. Do not force every array-shaped field into a Doctrine Collection.
+- V1.0 should prefer specific response DTOs that wrap a Doctrine Collection plus pagination metadata, rather than exposing one generic collection response for all endpoints.
+- Avoid forcing small value objects, simple enum lists, shared link permissions, and dynamic metadata values into Doctrine Collections unless there is a clear benefit.
+- Custom SDK collection classes should generally be removed unless they provide specific behavior that Doctrine Collections and response DTOs cannot provide cleanly.
 
 ## Hydration and Mapping Rules
 

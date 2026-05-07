@@ -1,6 +1,6 @@
 <?php
 
-namespace Box\DTO\File\Request;
+namespace Box\Dto\File\Request;
 
 use DateTimeInterface;
 
