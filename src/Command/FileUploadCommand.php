@@ -4,6 +4,8 @@ namespace Box\Command;
 
 use Box\Contract\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
+use Box\Exception\BoxResponseException;
+use Box\File\File;
 use Box\Logger\LoggerFactory;
 use Box\Connection\Token\Token;
 use Box\Service\ConsoleOutputFormatter;
@@ -81,7 +83,7 @@ class FileUploadCommand extends AbstractBoxCommand
             $connection = $client->getConnection();
             $client->setConnectionAuthHeader($connection);
 
-            $response = $connection->postFile(\Box\File\File::UPLOAD_URI, $filePath, (int)$folderId);
+            $response = $connection->postFile(File::UPLOAD_URI, $filePath, (int)$folderId);
             $result = $client->parseResponse($response);
 
             if ($input->getOption('json')) {
@@ -109,7 +111,7 @@ class FileUploadCommand extends AbstractBoxCommand
             return Command::SUCCESS;
         } catch (Exception $e) {
             $message = 'Failed to upload file: ' . $e->getMessage();
-            if ($e instanceof \Box\Exception\BoxResponseException) {
+            if ($e instanceof BoxResponseException) {
                 if ($e->getBoxCode()) {
                     $message .= " (Box Code: " . $e->getBoxCode() . ")";
                 }

@@ -4,6 +4,7 @@ namespace Box\Command;
 
 use Box\Contract\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
+use Box\Exception\BoxResponseException;
 use Box\Logger\LoggerFactory;
 use Box\Service\ConsoleOutputFormatter;
 use Symfony\Component\Console\Command\Command;
@@ -82,7 +83,7 @@ class AuthExchangeCommand extends AbstractBoxCommand
             return Command::SUCCESS;
         } catch (Exception $e) {
             $message = 'Failed to exchange code: ' . $e->getMessage();
-            if ($e instanceof \Box\Exception\BoxResponseException) {
+            if ($e instanceof BoxResponseException) {
                 if ($e->getBoxCode()) {
                     $message .= " (Box Code: " . $e->getBoxCode() . ")";
                 }

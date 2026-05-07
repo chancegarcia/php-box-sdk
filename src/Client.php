@@ -43,11 +43,13 @@ use Box\File\File;
 use Box\File\FileInterface;
 use Box\Folder\Folder;
 use Box\Folder\FolderInterface;
+use Box\Group\Group;
 use Box\Group\GroupInterface;
 use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Model\Model;
 use Box\Model\ModelInterface;
+use Box\User\User;
 use Box\User\UserInterface;
 use JsonException;
 
@@ -102,13 +104,13 @@ class Client extends Model
     /**
      * allow for class injection by using an interface for these classes
      */
-    protected string $folderClass = \Box\Folder\Folder::class;
-    protected string $fileClass = \Box\File\File::class;
-    protected string $connectionClass = \Box\Connection\Connection::class;
-    protected string $tokenClass = \Box\Connection\Token\Token::class;
-    protected string $collaborationClass = \Box\Collaboration\Collaboration::class;
-    protected string $userClass = \Box\User\User::class;
-    protected string $groupClass = \Box\Group\Group::class;
+    protected string $folderClass = Folder::class;
+    protected string $fileClass = File::class;
+    protected string $connectionClass = Connection::class;
+    protected string $tokenClass = Token::class;
+    protected string $collaborationClass = Collaboration::class;
+    protected string $userClass = User::class;
+    protected string $groupClass = Group::class;
 
 
     /**
@@ -124,9 +126,9 @@ class Client extends Model
     /**
      * @param mixed $options
      *
-     * @return \Box\User\User|\Box\User\UserInterface
+     * @return User|UserInterface
      */
-    public function getNewUser(mixed $options = null): \Box\User\User|\Box\User\UserInterface
+    public function getNewUser(mixed $options = null): User|UserInterface
     {
         return $this->getNewClass('User', $options);
     }
@@ -134,9 +136,9 @@ class Client extends Model
     /**
      * @param mixed $options
      *
-     * @return \Box\Group\Group|\Box\Group\GroupInterface
+     * @return Group|GroupInterface
      */
-    public function getNewGroup(mixed $options = null): \Box\Group\Group|\Box\Group\GroupInterface
+    public function getNewGroup(mixed $options = null): Group|GroupInterface
     {
         return $this->getNewClass('Group', $options);
     }
@@ -144,9 +146,9 @@ class Client extends Model
     /**
      * @param mixed $options
      *
-     * @return \Box\Collaboration\Collaboration|\Box\Collaboration\CollaborationInterface
+     * @return Collaboration|CollaborationInterface
      */
-    public function getNewCollaboration(mixed $options = null): \Box\Collaboration\Collaboration|\Box\Collaboration\CollaborationInterface
+    public function getNewCollaboration(mixed $options = null): Collaboration|CollaborationInterface
     {
         return $this->getNewClass('Collaboration', $options);
     }
@@ -335,11 +337,11 @@ class Client extends Model
     }
 
     /**
-     * @param \Box\Folder\Folder|\Box\Folder\FolderInterface $folder
+     * @param Folder|\Box\Folder\FolderInterface $folder
      * @param int $limit
      * @param int $offset
      *
-     * @return \Box\Folder\Folder|\Box\Folder\FolderInterface
+     * @return Folder|\Box\Folder\FolderInterface
      */
     public function getBoxFolderItems($folder, $limit = 100, $offset = 0)
     {
@@ -437,7 +439,7 @@ class Client extends Model
     }
 
     /**
-     * @param null|\Box\Folder\Folder|\Box\Folder\FolderInterface $folder
+     * @param null|Folder|\Box\Folder\FolderInterface $folder
      *
      * @return mixed raw json data as an array
      * @throws BoxException
@@ -461,7 +463,7 @@ class Client extends Model
     }
 
     /**
-     * @param null|\Box\Folder\Folder|\Box\Folder\FolderInterface $folder
+     * @param null|Folder|\Box\Folder\FolderInterface $folder
      * @param null|\Box\User\User|\Box\User\UserInterface|\Box\Group\GroupInterface $collaborator
      * @param string $role see {@link http://developers.box.com/docs/#collaborations box documentation for all possible
      *     roles} default is viewer
@@ -515,11 +517,11 @@ class Client extends Model
     }
 
     /**
-     * @param null|\Box\Folder\Folder|\Box\Folder\FolderInterface $folder
+     * @param null|Folder|\Box\Folder\FolderInterface $folder
      * @param array|null shared link options with
      * default shared link set to collaborator access, no unshared time or permissions set to
      *
-     * @return \Box\Folder\Folder|\Box\Folder\FolderInterface
+     * @return Folder|\Box\Folder\FolderInterface
      * @throws BoxException
      */
     public function createSharedLinkForFolder($folder = null, $params = null)
@@ -564,8 +566,8 @@ class Client extends Model
      * @param string $name
      * @param bool $addToFolders
      *
-     * @return \Box\Folder\Folder|\Box\Folder\FolderInterface
-     * @throws Exception*@throws BoxException
+     * @return Folder|\Box\Folder\FolderInterface
+     * @throws Exception
      * @throws BoxException
      * @internal param $destinationId
      */
@@ -1195,7 +1197,7 @@ class Client extends Model
     }
 
     /**
-     * @param \Box\Folder\Folder|\Box\Folder\FolderInterface $root
+     * @param Folder|\Box\Folder\FolderInterface $root
      *
      * @return \Box\Model\Client\Client
      */
@@ -1209,7 +1211,7 @@ class Client extends Model
     }
 
     /**
-     * @return \Box\Folder\Folder|\Box\Folder\FolderInterface
+     * @return Folder|\Box\Folder\FolderInterface
      */
     public function getRoot()
     {

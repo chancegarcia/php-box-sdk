@@ -50,7 +50,7 @@ class ConnectionFactory extends AbstractFactory
      */
     public static function getConnection($options = null)
     {
-        return parent::get('Box\Connection\Connection', $options);
+        return parent::get(Connection::class, $options);
     }
 
     /**
@@ -62,7 +62,7 @@ class ConnectionFactory extends AbstractFactory
      *                   'additionalHeaders' => array
      *
      * @return ConnectionInterface
-     * @throws \Box\Exception\BoxException
+     * @throws BoxException
      */
     public static function getAuthorizedConnection($options = null)
     {
@@ -71,7 +71,7 @@ class ConnectionFactory extends AbstractFactory
         }
 
         if (!$options['token'] instanceof TokenInterface) {
-            throw new BoxException('instance of Box\Connection\Token\TokenInterface expected');
+            throw new BoxException('instance of ' . TokenInterface::class . ' expected');
         }
 
         /**

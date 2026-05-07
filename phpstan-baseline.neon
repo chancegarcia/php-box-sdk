@@ -162,11 +162,6 @@ parameters:
 			count: 1
 			path: src/Service/Event/UserEventService.php
 
-		-
-			message: '#^Instantiated class Box\\Model\\Mapper\\Hydrator not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Service/File/FileService.php
 
 		-
 			message: '#^Method Box\\Service\\Service\:\:setAdditionalConnectionHeaders\(\) should return Box\\Service\\ServiceInterface but return statement is missing\.$#'

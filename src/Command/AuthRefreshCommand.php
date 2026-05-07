@@ -4,6 +4,7 @@ namespace Box\Command;
 
 use Box\Contract\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
+use Box\Exception\BoxResponseException;
 use Box\Logger\LoggerFactory;
 use Box\Connection\Token\Token;
 use Box\Service\ConsoleOutputFormatter;
@@ -83,7 +84,7 @@ class AuthRefreshCommand extends AbstractBoxCommand
             return Command::SUCCESS;
         } catch (Exception $e) {
             $message = 'Failed to refresh token: ' . $e->getMessage();
-            if ($e instanceof \Box\Exception\BoxResponseException) {
+            if ($e instanceof BoxResponseException) {
                 if ($e->getBoxCode()) {
                     $message .= " (Box Code: " . $e->getBoxCode() . ")";
                 }
