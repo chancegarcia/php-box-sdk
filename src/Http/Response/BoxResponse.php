@@ -78,6 +78,11 @@ class BoxResponse extends Response implements BoxResponseInterface
         return parent::getProtocolVersion();
     }
 
+    public function setProtocolVersion(string $version): static
+    {
+        return parent::setProtocolVersion($version);
+    }
+
     public function withProtocolVersion(string $version): static
     {
         $new = clone $this;

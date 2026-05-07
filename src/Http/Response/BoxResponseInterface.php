@@ -66,9 +66,10 @@ interface BoxResponseInterface extends PsrResponseInterface
      * Sets the HTTP protocol version (1.0 or 1.1).
      *
      * @param string $version The HTTP protocol version
+     * @return static
      *
      */
-    public function setProtocolVersion(string $version): void;
+    public function setProtocolVersion(string $version): static;
 
     // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
     /**
