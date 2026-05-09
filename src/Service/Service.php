@@ -308,7 +308,7 @@ class Service extends BaseModel implements ServiceInterface
     /**
      * {@inheritdoc}
      *
-     * @throws \Box\Exception\BoxException
+     * @throws BoxException
      */
     public function error($data, $message = null)
     {
@@ -508,7 +508,7 @@ class Service extends BaseModel implements ServiceInterface
      * this will attempt to retrieve from box and refresh the token if necessary then update the token storage
      *
      * {@inheritdoc}
-     * @throws \Box\Exception\BoxException|\Box\Exception\TokenStorageException for TokenStorageException, we will set
+     * @throws BoxException|TokenStorageException for TokenStorageException, we will set
      *     previous token information here if it isn't set already from the TokenStorageException. then rethrow; Token
      *     storage is expected to set all other context values for information.
      */
@@ -614,7 +614,7 @@ class Service extends BaseModel implements ServiceInterface
 
     /**
      * {@inheritdoc}
-     * @throws \Box\Exception\BoxException
+     * @throws BoxException
      */
     public function getConnectionHeaders()
     {
@@ -658,7 +658,8 @@ class Service extends BaseModel implements ServiceInterface
      * this does not update the token storage with the refreshed token; that action is handled by user or a wrapped
      * method
      * {@inheritdoc}
-     * @throws \Box\Exception\BoxException
+     *
+     * @throws BoxException
      */
     public function refreshToken()
     {

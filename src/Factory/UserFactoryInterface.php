@@ -2,9 +2,9 @@
 
 namespace Box\Factory;
 
-use Box\User\UserInterface;
+use Box\Resource\User;
 
 interface UserFactoryInterface
 {
-    public function createUser(?array $options = null): UserInterface;
+    public function createUser(?array $options = null): User;
 }

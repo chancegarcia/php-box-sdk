@@ -57,7 +57,7 @@ use Box\Group\GroupInterface;
 use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Model\Model;
-use Box\User\UserInterface;
+use Box\Resource\User;
 use Box\Collaboration\Collaboration;
 use Box\Connection\Token\Token;
 
@@ -151,15 +151,12 @@ class Client extends Model
     /**
      * @param mixed $options
      *
-     * @return UserInterface
+     * @return User
      */
-    public function getNewUser(mixed $options = null): UserInterface
+    public function getNewUser(mixed $options = null): User
     {
-        $instance = $this->userFactory->createUser($options);
-        if ($this->logger && method_exists($instance, 'setLogger')) {
-            $instance->setLogger($this->logger);
-        }
-
+        $instance = new User();
+        // Options handling might be needed if legacy code passed them here
         return $instance;
     }
 
@@ -515,7 +512,7 @@ class Client extends Model
 
     /**
      * @param null|Folder|FolderInterface $folder
-     * @param null|User|UserInterface|GroupInterface $collaborator
+     * @param null|User|GroupInterface $collaborator
      * @param string $role see {@link http://developers.box.com/docs/#collaborations box documentation for all possible
      *     roles} default is viewer
      *
@@ -530,9 +527,9 @@ class Client extends Model
             $this->error($err);
         }
 
-        if (!$collaborator instanceof UserInterface && !$collaborator instanceof GroupInterface) {
+        if (!$collaborator instanceof User && !$collaborator instanceof GroupInterface) {
             $err['error'] = 'sdk_unexpected_type';
-            $err['error_description'] = "expecting UserInterface class. given (" . var_export($collaborator, true) . ")";
+            $err['error_description'] = "expecting User class. given (" . var_export($collaborator, true) . ")";
             $this->error($err);
         }
 

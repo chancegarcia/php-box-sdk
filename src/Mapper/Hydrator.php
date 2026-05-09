@@ -102,6 +102,14 @@ class Hydrator
                     return $value;
                 }
             }
+
+            if (is_scalar($value) && enum_exists($className)) {
+                try {
+                    return $className::from($value);
+                } catch (Exception) {
+                    return $value;
+                }
+            }
         }
 
         if ($type instanceof ReflectionUnionType) {

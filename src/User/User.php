@@ -33,10 +33,12 @@
 namespace Box\User;
 
 use Box\Model\Model;
-use Box\User\UserInterface;
 use DateTimeInterface;
 
-class User extends Model implements UserInterface
+/**
+ * @deprecated Use Box\Resource\User instead. This class will be removed in v1.0.
+ */
+class User extends Model
 {
     protected mixed $type = "user";
     protected mixed $id = null;

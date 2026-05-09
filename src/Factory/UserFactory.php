@@ -2,13 +2,12 @@
 
 namespace Box\Factory;
 
-use Box\User\User;
-use Box\User\UserInterface;
+use Box\Resource\User;
 
 class UserFactory implements UserFactoryInterface
 {
-    public function createUser(?array $options = null): UserInterface
+    public function createUser(?array $options = null): User
     {
-        return new User($options);
+        return new User();
     }
 }

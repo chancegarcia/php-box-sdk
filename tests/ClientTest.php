@@ -9,13 +9,12 @@ use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
 use Box\Folder\FolderInterface;
 use Box\File\FileInterface;
-use Box\User\UserInterface;
+use Box\Resource\User;
 use Box\Group\GroupInterface;
 use Box\Exception\BoxException;
 use Box\Connection\Token\Token;
 use Box\Folder\Folder;
 use Box\Collaboration\Collaboration;
-use Box\User\User;
 use Box\Factory\FolderFactoryInterface;
 use JsonException;
 use PHPUnit\Framework\TestCase;
@@ -38,7 +37,7 @@ class ClientTest extends TestCase
 
         $this->assertInstanceOf(FolderInterface::class, $client->getNewFolder());
         $this->assertInstanceOf(FileInterface::class, $client->getNewFile());
-        $this->assertInstanceOf(UserInterface::class, $client->getNewUser());
+        $this->assertInstanceOf(User::class, $client->getNewUser());
         $this->assertInstanceOf(GroupInterface::class, $client->getNewGroup());
         $this->assertInstanceOf(CollaborationInterface::class, $client->getNewCollaboration());
         $this->assertInstanceOf(TokenInterface::class, $client->getToken());
