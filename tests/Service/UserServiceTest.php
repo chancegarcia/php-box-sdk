@@ -26,6 +26,9 @@ class UserServiceTest extends TestCase
         $response = $this->createMock(BoxResponseInterface::class);
         $response->method('getContent')->willReturn(json_encode($userData));
         $response->method('isSuccessful')->willReturn(true);
+        $response->method('json')->willReturnCallback(function ($assoc) use ($userData) {
+            return $assoc ? $userData : (object)$userData;
+        });
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
@@ -57,6 +60,9 @@ class UserServiceTest extends TestCase
         $response = $this->createMock(BoxResponseInterface::class);
         $response->method('getContent')->willReturn(json_encode($userData));
         $response->method('isSuccessful')->willReturn(true);
+        $response->method('json')->willReturnCallback(function ($assoc) use ($userData) {
+            return $assoc ? $userData : (object)$userData;
+        });
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
@@ -93,6 +99,9 @@ class UserServiceTest extends TestCase
         $response = $this->createMock(BoxResponseInterface::class);
         $response->method('getContent')->willReturn(json_encode($userData));
         $response->method('isSuccessful')->willReturn(true);
+        $response->method('json')->willReturnCallback(function ($assoc) use ($userData) {
+            return $assoc ? $userData : (object)$userData;
+        });
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->method('query')->willReturn($response);

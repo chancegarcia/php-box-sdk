@@ -38,7 +38,7 @@ This initiative covers:
 | 1 | [Response Wrapper Foundation](#foundation-refinement-slice-1---response-wrapper-foundation) | Completed |
 | 2 | [Transport Response Normalization](#foundation-refinement-slice-2---transport-response-normalization) | Completed |
 | 3 | [Connection Error Boundaries](#foundation-refinement-slice-3---connection-error-boundaries) | Completed |
-| 4 | [Service Response Handling Compatibility](#foundation-refinement-slice-4---service-response-handling-compatibility) | Not Started |
+| 4 | [Service Response Handling Compatibility](#foundation-refinement-slice-4---service-response-handling-compatibility) | Completed |
 | 5 | [Auth Foundation Hardening](#foundation-refinement-slice-5---auth-foundation-hardening) | Not Started |
 | 6 | [CLI Compatibility Pass](#foundation-refinement-slice-6---cli-compatibility-pass) | Not Started |
 | 7 | [Documentation and Migration Drift Pass](#foundation-refinement-slice-7---documentation-and-migration-drift-pass) | Not Started |
@@ -331,11 +331,14 @@ Test Expectations:
 Validation:
 - `composer test`
 - `composer analyse`
-```
 
----
-
-## Foundation Refinement Slice 5 — Auth Foundation Hardening
+**Completion Note**:
+- Modernized `Service::handleBoxResponse` and `Service::handleResponseContent` in the base service class.
+- Replaced manual `json_decode` and `Retry-After` parsing with `BoxResponseInterface::json()` and `BoxResponseInterface::getRetryAfter()`.
+- Preserved existing return types and backward compatibility for all services.
+- Added `ServiceResponseHandlingTest` and updated `RetryAfterTest` and `UserServiceTest` to verify the refined handling.
+- Integrated legacy manual decoding fallback for cases where `BoxResponseInterface` is not available, ensuring maximum stability.
+- Full validation (`composer review`) passed.
 
 **Purpose**: Improve auth/token behavior on top of the stable response/transport/connection foundation.
 

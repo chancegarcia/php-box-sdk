@@ -104,6 +104,8 @@ Testing guidelines:
 - Run the most relevant checks after changes. For broad changes, run `composer review`.
 
 Static analysis and style:
+- Prefer `SomeClass::class` over hard-coded fully qualified class-name strings when referencing PHP classes or interfaces in code, including exception messages and logs.
+- Do not apply this rule to arbitrary user-facing text, protocol strings, API type values, or external identifiers that are not PHP symbols.
 - Keep PHPStan compatibility in mind, even though the current configured level is low.
 - Do not add unnecessary baseline entries.
 - Prefer code that would pass stricter static analysis over minimal level-0 compliance.

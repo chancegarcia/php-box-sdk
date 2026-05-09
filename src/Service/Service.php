@@ -811,7 +811,7 @@ class Service extends BaseModel implements ServiceInterface
     public function handleBoxResponse(?BoxResponseInterface $response = null, $returnType = 'decoded')
     {
         if (!$response instanceof BoxResponseInterface) {
-            throw new BadMethodCallException("expecting instance of Box\\Http\\BoxResponseInterface. received: " . gettype($response));
+            throw new BadMethodCallException("expecting instance of " . BoxResponseInterface::class . ". received: " . gettype($response));
         }
 
         // here is where we decide to throw exceptions based on response
@@ -819,27 +819,16 @@ class Service extends BaseModel implements ServiceInterface
             $e = new BoxResponseException("Box Response was unsuccessful. ", $response->getStatusCode(), null, $response);
 
             // Handle Retry-After header
-            if ($response->getStatusCode() === 429 && $response->hasHeader('Retry-After')) {
-                $retryAfter = $response->getHeaderLine('Retry-After');
-                $delay = 0;
-                if (is_numeric($retryAfter)) {
-                    $delay = (int)$retryAfter;
-                } else {
-                    $retryTime = strtotime($retryAfter);
-                    if ($retryTime !== false) {
-                        $delay = max(0, $retryTime - time());
-                    }
-                }
-                $e->addContext($retryAfter, 'retry_after_header');
+            $delay = $response->getRetryAfter();
+            if (null !== $delay) {
+                $e->addContext($response->getHeaderLine('Retry-After'), 'retry_after_header');
                 $e->addContext($delay, 'retry_after_seconds');
             }
 
             throw $e;
         }
 
-        $json = $response->getContent();
-
-        $data = $this->handleResponseContent($returnType, $json);
+        $data = $this->handleResponseContent($returnType, $response);
 
         return $data;
     }
@@ -941,30 +930,38 @@ class Service extends BaseModel implements ServiceInterface
 
     /**
      * @param $returnType
-     * @param $json
+     * @param BoxResponseInterface|string $response
      * @return mixed
      * @throws BoxException
      */
-    public function handleResponseContent($returnType, $json)
+    public function handleResponseContent($returnType, $response)
     {
         $this->validateReturnType($returnType);
 
+        if ($response instanceof BoxResponseInterface) {
+            $json = $response->getContent();
+            $this->lastResultDecoded = $response->json(false);
+            $this->lastResultFlat = $response->json(true);
+        } else {
+            $json = $response;
+            $this->lastResultDecoded = json_decode($json);
+            $this->lastResultFlat = json_decode($json, true);
+        }
+
         $this->lastResultOriginal = $json;
-        $this->lastResultDecoded = json_decode($json);
-        $this->lastResultFlat = json_decode($json, true);
 
         $data = $this->getLastResult($returnType);
         $errorData = [];
 
-        if (null === $this->lastResultFlat) {
+        if (null === $this->lastResultFlat && '' !== (string)$json) {
             $errorData['error'] = "sdk_json_decode";
             $errorData['error_description'] = "unable to decode or recursion level too deep";
             $this->error($errorData);
         } else {
-            if (array_key_exists('error', $this->lastResultFlat)) {
+            if (is_array($this->lastResultFlat) && array_key_exists('error', $this->lastResultFlat)) {
                 $this->error($this->lastResultFlat);
             } else {
-                if (array_key_exists('type', $this->lastResultFlat) && 'error' == $this->lastResultFlat['type']) {
+                if (is_array($this->lastResultFlat) && array_key_exists('type', $this->lastResultFlat) && 'error' == $this->lastResultFlat['type']) {
                     $errorData['error'] = "sdk_unknown";
                     $ditto = $errorData;
                     $errorData['error_description'] = $ditto;
