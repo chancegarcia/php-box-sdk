@@ -24,6 +24,14 @@
     <!-- Use PSR-12 as the base standard -->
     <rule ref="PSR12"/>
 
+    <!-- Soft limit of 120 characters, hard limit of 0 (no absolute max) -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="120"/>
+            <property name="absoluteLineLimit" value="0"/>
+        </properties>
+    </rule>
+
     <!-- Enforce short array syntax -->
     <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
 
