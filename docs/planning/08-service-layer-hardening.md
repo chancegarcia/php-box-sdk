@@ -42,7 +42,7 @@ This initiative covers:
 | 0 | [Tracker](#service-layer-hardening-slice-0---tracker) | Completed |
 | 1 | [Service Inventory and Legacy Architecture Removal Audit](#service-layer-hardening-slice-1---service-inventory-and-legacy-architecture-removal-audit) | Completed |
 | 2 | [Base Service Contract Stabilization](#service-layer-hardening-slice-2---base-service-contract-stabilization) | Completed |
-| 3 | [Hydration and Mapper Boundary](#service-layer-hardening-slice-3---hydration-and-mapper-boundary) | |
+| 3 | [Hydration and Mapper Boundary](#service-layer-hardening-slice-3---hydration-and-mapper-boundary) | Completed |
 | 4 | [Representative Read Service Migration](#service-layer-hardening-slice-4---representative-read-service-migration) | |
 | 5 | [Representative Write/Update Service Migration](#service-layer-hardening-slice-5---representative-writeupdate-service-migration) | |
 | 6 | [File/Upload Service Compatibility Pass](#service-layer-hardening-slice-6---fileupload-service-compatibility-pass) | |
@@ -232,6 +232,14 @@ Validation:
 - Hydration is centralized in the service layer where practical.
 - Duplicated mapping logic (e.g., manual array-to-object copies) is reduced.
 - Type hints for returned resources are consistent.
+
+**Completion Note**:
+Slice 3 completed. Hydration boundary pattern established.
+- Protected `hydrate` helper added to base `Service` class.
+- `UserService` refactored to use the new `hydrate` helper.
+- Standardized use of `Box\Mapper\Hydrator` via service-layer helpers.
+- Legacy mapping (e.g., in `UserEventService`) and recursive hydration deferred to later slices or v1 removal.
+- All existing tests pass.
 
 **Junie Prompt**:
 ```markdown
@@ -565,7 +573,8 @@ Validation:
 - Slice 0: Completed ✓
 - Slice 1: Completed ✓
 - Slice 2: Completed ✓
-- Slices 3-11: Pending
+- Slice 3: Completed ✓
+- Slices 4-11: Pending
 
 ## Deferred Follow-up
 - Broad removal of legacy pre-v1 / v0.x architecture: This remains a v1 release requirement. If the remaining scope exceeds the current Service Layer Hardening tracker, it will be moved to a dedicated tracker, but it MUST be completed before v1 release.

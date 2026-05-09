@@ -48,6 +48,7 @@ use Box\Connection\Token\Token, Box\Connection\Token\TokenInterface;
 use Box\Model\ModelInterface;
 use Box\Storage\Token\BaseTokenStorageInterface;
 use Box\Trait\BoxLoggerTrait;
+use Box\Mapper\Hydrator;
 use OutOfBoundsException;
 use RuntimeException;
 use InvalidArgumentException;
@@ -1063,5 +1064,17 @@ class Service extends BaseModel implements ServiceInterface
         }
 
         return $data;
+    }
+
+    /**
+     * Hydrate a decoded payload into a class.
+     *
+     * @param string $targetClass
+     * @param array|stdClass $data
+     * @return object
+     */
+    protected function hydrate(string $targetClass, array|stdClass $data): object
+    {
+        return (new Hydrator())->hydrate($targetClass, $data);
     }
 }
