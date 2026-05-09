@@ -98,7 +98,11 @@ class UserTest extends TestCase
         $data = [
             'id' => '12345',
             'status' => 'active',
-            'name' => 'John Doe'
+            'name' => 'John Doe',
+            'created_at' => '2024-05-01T10:00:00Z',
+            'modified_at' => '2024-05-02T11:00:00Z',
+            'can_see_managed_users' => true,
+            'is_sync_enabled' => false
         ];
 
         $user = new User();
@@ -107,5 +111,26 @@ class UserTest extends TestCase
         $this->assertSame('12345', $user->getId());
         $this->assertSame('John Doe', $user->getName());
         $this->assertSame(UserStatus::Active, $user->getStatus());
+        $this->assertInstanceOf(DateTimeImmutable::class, $user->getCreatedAt());
+        $this->assertSame('2024-05-01T10:00:00+00:00', $user->getCreatedAt()->format('c'));
+        $this->assertInstanceOf(DateTimeImmutable::class, $user->getModifiedAt());
+        $this->assertSame('2024-05-02T11:00:00+00:00', $user->getModifiedAt()->format('c'));
+        $this->assertTrue($user->getCanSeeManagedUsers());
+        $this->assertFalse($user->getIsSyncEnabled());
+    }
+
+    public function testUserResourceTypeDefault(): void
+    {
+        $user = new User();
+        $this->assertSame('user', $user->getType());
+    }
+
+    public function testUserResourceIsNullSafe(): void
+    {
+        $user = new User();
+        $user->setName(null);
+        $this->assertNull($user->getName());
+        $user->setStatus(null);
+        $this->assertNull($user->getStatus());
     }
 }

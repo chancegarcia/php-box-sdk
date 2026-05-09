@@ -101,14 +101,14 @@ The User migration served as the pilot for the V1 architecture. This audit evalu
 | User Status Enum | Enum | ✓ | `UserStatus` class | None | Parity |
 | Scalar to Enum Hydration | Hydrator | ✓ | `UserTest::testUserHydrationFromScalarStatus` | None | Parity |
 | Legacy Model Independence | Resource/Unit | ✓ | `Box\Resource\User` source | None | Parity |
-| `UserService::getCurrentUser` | Service | ! | `UserService.php` exists | Missing `UserServiceTest` | Parity |
-| `UserService::getUser` | Service | ! | `UserService.php` exists | Missing `UserServiceTest` | Parity |
+| `UserService::getCurrentUser` | Service | ✓ | `UserServiceTest` | None | Parity |
+| `UserService::getUser` | Service | ✓ | `UserServiceTest` | None | Parity |
 | Enterprise User Endpoints | Service | ✓ | Audit Doc | Explicitly Deferred | Deferred |
 | `UserInterface` removal check | Migration | ✓ | No references in `src/` | None | Parity |
 
 ### User migration follow-up test tasks
 
-- **Add `UserServiceTest`**: Implement behavior tests for `getCurrentUser()` and `getUser()` using mocked connections to verify endpoint paths and V1 resource hydration.
+- **Add `UserServiceTest`**: ✓ Completed. Implemented behavior tests for `getCurrentUser()` and `getUser()` using mocked connections.
 - **Hydrator Nested Resource Test**: Verify that the Hydrator correctly handles nested resources if added to the User resource in the future (currently User fields are primarily scalars/enums).
 - **Static Analysis check**: Ensure PHPStan baseline does not contain new User-related exclusions that mask missing type safety.
 
