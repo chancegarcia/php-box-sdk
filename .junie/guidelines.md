@@ -102,8 +102,9 @@ Testing guidelines:
 - Tests should be deterministic and not depend on network, local user files, or real credentials.
 - Since PHPUnit is configured to fail on deprecations, notices, and warnings, avoid test code that triggers them unless the test intentionally asserts deprecation behavior and handles it safely.
 - Run the most relevant checks after changes. For broad changes, run `composer review`.
-- After completing any task or slice, write the final task summary to `var/tmp/last-task-summary.md`.
-    - Overwrite the file each task; do not append indefinitely.
+- After completing any task or slice, write the final task summary by replacing the full contents of `var/tmp/last-task-summary.md`.
+    - Always overwrite the file on every task; do not use create-only behavior. Replace its entire contents.
+    - If `var/tmp/` does not exist, create the directory if appropriate, but do not remove `var/tmp/.gitkeep`.
     - The persisted task summary should match the final response summary as closely as practical.
     - If the persisted summary includes additional detail, it must not contradict the final response.
     - Prefer making `var/tmp/last-task-summary.md` the canonical detailed review summary.
@@ -114,7 +115,7 @@ Testing guidelines:
         - Verification
         - Notes
         - Follow-ups
-    - Keep the file free of secrets, credentials, tokens, private account IDs, local sensitive paths, and downstream/private implementation details. Redact any sensitive output.
+    - Keep the file redacted and free of secrets, credentials, tokens, private account IDs, local sensitive paths, and downstream/private implementation details. Redact any sensitive output.
     - Do not treat `var/tmp/last-task-summary.md` as a source artifact to commit.
     - Do not remove `var/tmp/.gitkeep`.
 

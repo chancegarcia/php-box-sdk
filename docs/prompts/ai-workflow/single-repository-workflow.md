@@ -30,9 +30,10 @@ This workflow is designed for AI-assisted, slice-based software development with
 
 ## Persistent Task Summary Workflow
 
-After completing a task or slice, the AI assistant writes a final summary to `var/tmp/last-task-summary.md`.
+After completing a task or slice, the AI assistant writes a final summary by replacing the full contents of `var/tmp/last-task-summary.md`.
 
-- **Frequency**: Overwrite the file after every task.
+- **Frequency**: Overwrite the file after every task. Do not use create-only behavior; an existing file must be overwritten.
+- **Directory Management**: If `var/tmp/` does not exist, create it if appropriate, but do not remove `var/tmp/.gitkeep`.
 - **Canonical Source**: The persisted task summary should be the canonical detailed review summary for a task.
 - **Consistency**: The persisted task summary should match the final response summary as closely as practical. If the persisted summary includes additional detail, it must not contradict the final response.
 - **Final Response**: The final response may be concise, but it should mention that the detailed summary was written to the file.
