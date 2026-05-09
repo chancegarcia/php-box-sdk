@@ -47,6 +47,7 @@ Box\Connection\ConnectionInterface;
 use Box\Connection\Token\Token, Box\Connection\Token\TokenInterface;
 use Box\Model\ModelInterface;
 use Box\Storage\Token\BaseTokenStorageInterface;
+use Box\Trait\BoxLoggerTrait;
 use OutOfBoundsException;
 use RuntimeException;
 use InvalidArgumentException;
@@ -56,6 +57,8 @@ use Psr\Log\LoggerInterface;
 
 class Service extends BaseModel implements ServiceInterface
 {
+    use BoxLoggerTrait;
+
     /**
      * basic connection used in initial authorization to execute token refresh for authorized connection
      * @var Connection|ConnectionInterface
@@ -310,15 +313,13 @@ class Service extends BaseModel implements ServiceInterface
      *
      * @throws BoxException
      */
-    public function error($data, $message = null)
+    public function error($data, $message = null, ?BoxResponseInterface $boxResponse = null): void
     {
-        $error = $data['error'];
-        unset($data['error']);
+        $error = $data['error'] ?? 'unknown_error';
         if (null === $message || !is_string($message)) {
             $message = $error;
         }
-        $errorDescription = $data['error_description'];
-        unset($data['error_description']);
+        $errorDescription = $data['error_description'] ?? $message;
 
         $exception = new BoxException($message);
         $exception->setError($error);
@@ -330,20 +331,28 @@ class Service extends BaseModel implements ServiceInterface
         }
 
         foreach ($data as $k => $v) {
-            $exception->addContext($v, $k);
+            if ($k !== 'error' && $k !== 'error_description') {
+                $exception->addContext($v, $k);
+            }
         }
 
         if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->error(
-                $message,
-                [
-                    __METHOD__ . ":" . __LINE__,
-                    $data,
-                    $error,
-                    $errorDescription,
-                    $exception->getTraceAsString(),
-                ]
-            );
+            $context = [
+                __METHOD__ . ":" . __LINE__,
+                $data,
+                $error,
+                $errorDescription,
+                $exception->getTraceAsString(),
+            ];
+
+            if ($boxResponse instanceof BoxResponseInterface) {
+                $context['http_status'] = $boxResponse->getStatusCode();
+                $context['response_body'] = $boxResponse->getContent();
+            }
+
+            $redactedContext = $this->getRedactor()->redactArray($context);
+
+            $this->getLogger()->error($message, $redactedContext);
         }
 
         throw $exception;
@@ -682,8 +691,9 @@ class Service extends BaseModel implements ServiceInterface
 
         $connection = $this->getConnection();
         if ($this->getLogger() instanceof LoggerInterface) {
+            $redactedParams = $this->getRedactor()->redactArray($params);
             $this->getLogger()->debug(
-                'refresh token params: ' . var_export($params, true),
+                'refresh token params: ' . var_export($redactedParams, true),
                 [
                     __METHOD__ . ":" . __LINE__,
                 ]
@@ -692,31 +702,38 @@ class Service extends BaseModel implements ServiceInterface
 
         $response = $connection->post(self::TOKEN_URI, $params);
         $json = $response->getContent();
-        if ($this->getLogger() instanceof LoggerInterface) {
+        if (is_object($json) && method_exists($json, '__toString')) {
+            $json = (string)$json;
+        }
+        if ($this->getLogger() instanceof LoggerInterface && is_string($json)) {
+            $redactedJson = $this->getRedactor()->redactString($json);
             $this->getLogger()->debug(
-                'raw refresh return: ' . var_export($json, true),
+                'raw refresh return: ' . var_export($redactedJson, true),
                 [
                     __METHOD__ . ":" . __LINE__,
                 ]
             );
         }
 
-        // need to handle stdclass vs forced array?
-        $this->lastResultOriginal = $json;
-        $this->lastResultDecoded = json_decode($json);
-        $this->lastResultFlat = json_decode($json, true);
+        if (!$response->isSuccessful()) {
+            throw new BoxResponseException('Token refresh failed', $response->getStatusCode(), null, $response);
+        }
+
+        try {
+            $this->lastResultOriginal = $json;
+            $this->lastResultDecoded = $response->json();
+            $this->lastResultFlat = $response->json(true);
+        } catch (\JsonException $e) {
+            $errorCheck['error'] = "sdk_json_decode";
+            $errorCheck['error_description'] = "unable to decode: " . $e->getMessage();
+            $this->error($errorCheck, null, $response);
+        }
 
         $data = $this->getLastResult($this->getDefaultReturnType());
         $errorCheck = $this->getLastResult('flat');
 
-        if (null === $errorCheck) {
-            $errorCheck['error'] = "sdk_json_decode";
-            $errorCheck['error_description'] = "unable to decode or recursion level too deep";
-            $this->error($errorCheck);
-        } else {
-            if (array_key_exists('error', $errorCheck)) {
-                $this->error($errorCheck);
-            }
+        if (is_array($errorCheck) && array_key_exists('error', $errorCheck)) {
+            $this->error($errorCheck, null, $response);
         }
 
         $this->setTokenData($token, $data);
@@ -732,8 +749,9 @@ class Service extends BaseModel implements ServiceInterface
     public function setTokenData(TokenInterface $token, $data)
     {
         if ($this->getLogger() instanceof LoggerInterface) {
+            $redactedData = $this->getRedactor()->redactArray((array)$data);
             $this->getLogger()->debug(
-                'token data: ' . var_export($data, true),
+                'token data: ' . var_export($redactedData, true),
                 [
                     __METHOD__ . ":" . __LINE__,
                 ]
@@ -774,17 +792,41 @@ class Service extends BaseModel implements ServiceInterface
 
         $connection = $this->getConnection();
 
+        if ($this->getLogger() instanceof LoggerInterface) {
+            $redactedParams = $this->getRedactor()->redactArray($params);
+            $this->getLogger()->debug(
+                'destroy token params: ' . var_export($redactedParams, true),
+                [
+                    __METHOD__ . ":" . __LINE__,
+                ]
+            );
+        }
+
         $response = $connection->post(self::REVOKE_URI, $params);
+
+        if (!$response->isSuccessful()) {
+            throw new BoxResponseException('Token destruction failed', $response->getStatusCode(), null, $response);
+        }
+
         $json = $response->getContent();
         // @todo add error handling for null data
         $this->lastResultOriginal = $json;
-        $this->lastResultDecoded = json_decode($json);
-        $this->lastResultFlat = json_decode($json, true);
+
+        try {
+            $this->lastResultDecoded = $response->json();
+            $this->lastResultFlat = $response->json(true);
+        } catch (\JsonException $e) {
+            // Revoke often returns empty body on success, so we might need to handle that
+            $this->lastResultDecoded = new stdClass();
+            $this->lastResultFlat = [];
+        }
 
         $data = $this->getLastResult($returnType);
 
         // remove token from storage
-        $this->getTokenStorage()->removeToken($token, $this->getTokenStorageContext());
+        if ($this->getTokenStorage() instanceof BaseTokenStorageInterface) {
+            $this->getTokenStorage()->removeToken($token, $this->getTokenStorageContext());
+        }
 
         return $data;
     }

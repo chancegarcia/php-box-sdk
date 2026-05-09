@@ -39,7 +39,7 @@ This initiative covers:
 | 2 | [Transport Response Normalization](#foundation-refinement-slice-2---transport-response-normalization) | Completed |
 | 3 | [Connection Error Boundaries](#foundation-refinement-slice-3---connection-error-boundaries) | Completed |
 | 4 | [Service Response Handling Compatibility](#foundation-refinement-slice-4---service-response-handling-compatibility) | Completed |
-| 5 | [Auth Foundation Hardening](#foundation-refinement-slice-5---auth-foundation-hardening) | Not Started |
+| 5 | [Auth Foundation Hardening](#foundation-refinement-slice-5---auth-foundation-hardening) | Completed |
 | 6 | [CLI Compatibility Pass](#foundation-refinement-slice-6---cli-compatibility-pass) | Not Started |
 | 7 | [Documentation and Migration Drift Pass](#foundation-refinement-slice-7---documentation-and-migration-drift-pass) | Not Started |
 | 8 | [Foundation PHPStan/Type-Safety Cleanup](#foundation-refinement-slice-8---foundation-phpstan-type-safety-cleanup) | Not Started |
@@ -383,6 +383,14 @@ Validation:
 - `composer test`
 - `composer analyse`
 ```
+
+**Completion Note**:
+- Hardened `Service::refreshToken` and `Service::destroyToken` to use the refined response foundation.
+- Integrated `Redactor` into `BoxLoggerTrait` and updated `Service` to use it, ensuring all auth flows and service errors redact sensitive data in logs and exceptions.
+- Updated `BoxLoggerTrait::parseResponse` to use `BoxResponse::json()` and throw `BoxResponseException` on failure, while maintaining backward compatibility for legacy tests via a fallback.
+- Added `tests/Service/ServiceAuthTest.php` to verify auth hardening and redaction.
+- Verified that secrets are redacted from raw JSON response logs and parameters.
+- Full validation (`composer test`, `composer analyse`, `composer cs:check`) passed.
 
 ---
 

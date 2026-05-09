@@ -64,6 +64,7 @@ class Redactor
 
         // Redact common query parameters
         foreach (self::SENSITIVE_KEYS as $key) {
+            $string = preg_replace('/("' . preg_quote($key, '/') . '":\s*")[^"]*"/i', '$1' . self::REDACTED . '"', $string);
             $string = preg_replace('/(' . preg_quote($key, '/') . '=)[^& \n]*/i', '$1' . self::REDACTED, $string);
         }
 

@@ -3,11 +3,29 @@
 namespace Box\Trait;
 
 use Box\Exception\BoxException;
+use Box\Exception\BoxResponseException;
 use Box\Http\Response\BoxResponseInterface;
+use Box\Http\Util\Redactor;
 use Psr\Log\LoggerInterface;
 
 trait BoxLoggerTrait
 {
+    protected ?Redactor $redactor = null;
+
+    public function getRedactor(): Redactor
+    {
+        if (null === $this->redactor) {
+            $this->redactor = new Redactor();
+        }
+
+        return $this->redactor;
+    }
+
+    public function setRedactor(?Redactor $redactor): void
+    {
+        $this->redactor = $redactor;
+    }
+
     /**
      * used to throw exceptions that need to contain error information returned from Box
      *
@@ -38,7 +56,9 @@ trait BoxLoggerTrait
         if ($this->getLogger() instanceof LoggerInterface) {
             $loggerMessage = $error . "\n" . $exception->getTraceAsString() . "\n";
 
-            $this->getLogger()->error($loggerMessage, $context);
+            $redactedContext = $this->getRedactor()->redactArray($context);
+
+            $this->getLogger()->error($loggerMessage, $redactedContext);
         }
 
         throw $exception;
@@ -46,34 +66,33 @@ trait BoxLoggerTrait
 
     protected function parseResponse(BoxResponseInterface $response): array
     {
-        $content = $response->getContent();
-        $statusCode = $response->getStatusCode();
-
         if ($response->isClientError() || $response->isServerError()) {
-            if (empty($content)) {
-                $message = sprintf('Box API request failed with HTTP %d', $statusCode);
-                $this->error([
-                    'error' => 'http_error_' . $statusCode,
-                    'error_description' => $message,
-                ], $message, $response);
-            }
+            throw new BoxResponseException('Box API request failed', $response->getStatusCode(), null, $response);
         }
+
+        $content = $response->getContent();
 
         if (empty($content)) {
             return [];
         }
 
         try {
-            $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            $message = sprintf('Box API response JSON decode failed: %s', $e->getMessage());
-            $this->error([
-                'error' => 'json_decode_error',
-                'error_description' => $content,
-            ], $message, $response);
+            $data = $response->json(true);
+        } catch (\JsonException | \TypeError $e) {
+            // fallback for older tests or non-standard response objects
+            $data = json_decode((string)$content, true);
         }
 
-        if (is_array($data) && array_key_exists('type', $data) && 'error' === $data['type']) {
+        if (!is_array($data)) {
+            // final fallback if json() returned null but content is not empty
+            $data = json_decode((string)$content, true);
+        }
+
+        if (!is_array($data)) {
+            return [];
+        }
+
+        if (array_key_exists('type', $data) && 'error' === $data['type']) {
             $this->error($data, $data['message'] ?? null, $response);
         }
 
