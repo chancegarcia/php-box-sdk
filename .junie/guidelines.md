@@ -104,7 +104,16 @@ Testing guidelines:
 - Run the most relevant checks after changes. For broad changes, run `composer review`.
 - After completing any task or slice, write the final task summary to `var/tmp/last-task-summary.md`.
     - Overwrite the file each task; do not append indefinitely.
-    - Include the same sections normally reported: Summary, Changes, Verification, Notes, Follow-ups (where applicable).
+    - The persisted task summary should match the final response summary as closely as practical.
+    - If the persisted summary includes additional detail, it must not contradict the final response.
+    - Prefer making `var/tmp/last-task-summary.md` the canonical detailed review summary.
+    - The final response may be concise, but it should mention that the detailed summary was written to the file.
+    - The persisted summary must include, where applicable:
+        - Summary
+        - Changes
+        - Verification
+        - Notes
+        - Follow-ups
     - Keep the file free of secrets, credentials, tokens, private account IDs, local sensitive paths, and downstream/private implementation details. Redact any sensitive output.
     - Do not treat `var/tmp/last-task-summary.md` as a source artifact to commit.
     - Do not remove `var/tmp/.gitkeep`.

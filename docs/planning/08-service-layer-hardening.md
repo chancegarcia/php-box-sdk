@@ -40,7 +40,7 @@ This initiative covers:
 | Slice | Name | Status |
 |---|---|---|
 | 0 | [Tracker](#service-layer-hardening-slice-0---tracker) | Completed |
-| 1 | [Service Inventory and Legacy Architecture Removal Audit](#service-layer-hardening-slice-1---service-inventory-and-legacy-architecture-removal-audit) | |
+| 1 | [Service Inventory and Legacy Architecture Removal Audit](#service-layer-hardening-slice-1---service-inventory-and-legacy-architecture-removal-audit) | Completed |
 | 2 | [Base Service Contract Stabilization](#service-layer-hardening-slice-2---base-service-contract-stabilization) | |
 | 3 | [Hydration and Mapper Boundary](#service-layer-hardening-slice-3---hydration-and-mapper-boundary) | |
 | 4 | [Representative Read Service Migration](#service-layer-hardening-slice-4---representative-read-service-migration) | |
@@ -60,7 +60,7 @@ This initiative covers:
 - Slice 2 is a prerequisite for Slices 3-7.
 - Slices 4 and 5 serve as templates for other service migrations.
 - Slice 8 and 9 depend on the implementation slices.
-- Slice 10 is the final step.
+- Slice 11 is the final step.
 
 ---
 
@@ -108,6 +108,13 @@ This initiative covers:
 - Legacy APIs, compatibility aliases, and patterns targeted for v1 removal are cataloged.
 - High-risk or inconsistent services are flagged.
 - A candidate service for Slice 4 (Read) and Slice 5 (Write) is confirmed.
+
+**Completion Note**:
+Audit completed. Findings documented in `docs/audits/08-service-layer-hardening-audit.md`.
+- Key services identified: `UserService` (Read candidate), `FileService` (Write candidate), `UserEventService` (Legacy overhaul candidate).
+- Legacy removal candidates cataloged, including `BaseModel`, `ModelTrait`, and stateful service methods like `getLastResult`.
+- Test gaps identified for `FileService` and `UserEventService`.
+- Cutover sequence refined.
 
 **Validation Expectations**:
 - Audit report is clear and actionable.
@@ -454,7 +461,7 @@ Validation:
 
 **Junie Prompt**:
 ```markdown
-Implement Service Layer Hardening Slice 8 — Service Documentation and Migration Drift Pass.
+Implement Service Layer Hardening Slice 9 — Service Documentation and Migration Drift Pass.
 
 Goal: Update documentation to reflect hardened service layer patterns.
 
@@ -491,7 +498,7 @@ Validation:
 
 **Junie Prompt**:
 ```markdown
-Implement Service Layer Hardening Slice 9 — Service Type-Safety Cleanup.
+Implement Service Layer Hardening Slice 10 — Service Type-Safety Cleanup.
 
 Goal: Resolve type-safety and analysis issues in touched service areas.
 
@@ -528,7 +535,7 @@ Validation:
 
 **Junie Prompt**:
 ```markdown
-Implement Service Layer Hardening Slice 10 — Final Integration Review.
+Implement Service Layer Hardening Slice 11 — Final Integration Review.
 
 Goal: Final validation and closure of the Service Layer Hardening initiative.
 
@@ -547,9 +554,11 @@ Validation:
 
 ## Status Table Progress
 - Slice 0: Completed ✓
-- Slices 1-11: Pending
+- Slice 1: Completed ✓
+- Slices 2-11: Pending
 
 ## Deferred Follow-up
-- Broad rewrite of legacy models (deferred to future step).
+- Broad removal of legacy pre-v1 / v0.x architecture: This remains a v1 release requirement. If the remaining scope exceeds the current Service Layer Hardening tracker, it will be moved to a dedicated tracker, but it MUST be completed before v1 release.
+- v1 is the clean target architecture. Removals specifically target pre-v1 / v0.x legacy APIs and patterns. Newly established v1 APIs (e.g., those following the hardened patterns) are not being removed.
 - Full auto-pagination implementation (deferred).
 - Advanced multipart features (deferred).

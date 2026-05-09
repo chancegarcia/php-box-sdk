@@ -33,13 +33,16 @@ This workflow is designed for AI-assisted, slice-based software development with
 After completing a task or slice, the AI assistant writes a final summary to `var/tmp/last-task-summary.md`.
 
 - **Frequency**: Overwrite the file after every task.
+- **Canonical Source**: The persisted task summary should be the canonical detailed review summary for a task.
+- **Consistency**: The persisted task summary should match the final response summary as closely as practical. If the persisted summary includes additional detail, it must not contradict the final response.
+- **Final Response**: The final response may be concise, but it should mention that the detailed summary was written to the file.
 - **Structure**:
     - **Summary**: High-level overview of the result.
     - **Changes**: Bulleted list of modified files and logic.
     - **Verification**: Evidence of testing and validation.
     - **Notes**: Important details for the reviewer.
     - **Follow-ups**: Identified risks or deferred tasks.
-- **Privacy**: Redact all secrets and private paths.
+- **Privacy**: Redact all secrets, credentials, tokens, private account IDs, and sensitive local paths.
 - **Usage**: The summary is used to provide feedback in the review chat and is not committed to the repository.
 
 ## Slice Workflow
