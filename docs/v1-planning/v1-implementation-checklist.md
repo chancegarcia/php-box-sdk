@@ -31,13 +31,13 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 ## 1. Planning and Documentation Checkpoint
 
 - [x] Status: Completed
-- Goal: Establish source of truth for V1.0 architecture and migration strategy.
-- Scope: Create and align architecture rules, interface audits, and API coverage audits.
+- Goal: Establish source of truth for V1.0 architecture, migration strategy, and test coverage.
+- Scope: Create and align architecture rules, interface audits, API coverage audits, and test coverage plan.
 - Dependencies: None.
 - Validation: All planning docs present and consistent in `docs/v1-planning/`.
-- Documentation updates: `ai-assistant-planning-context.md`, `v1-architecture-rules.md`, `v1-interface-and-model-audit.md`, `v1-api-coverage-audit.md`.
+- Documentation updates: `ai-assistant-planning-context.md`, `v1-architecture-rules.md`, `v1-interface-and-model-audit.md`, `v1-api-coverage-audit.md`, `v1-test-coverage-plan.md`.
 - Test updates: N/A.
-- Completion notes: Planning docs are finalized and represent the starting state for the refactor.
+- Completion notes: Planning docs are finalized and represent the starting state for the refactor. Added `v1-test-coverage-plan.md` to define expected parity and API coverage tests.
 
 ## 2. Foundation Namespace Skeleton
 
@@ -74,14 +74,14 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 
 ## 5. User Resource Migration
 
-- [ ] Status: Not started
+- [x] Status: Completed
 - Goal: Migrate Users to V1.0 architecture as a pilot resource.
 - Scope: Move `Box\User\User` to `Box\Resource\User`, remove `UserInterface`, update `UserService`.
 - Dependencies: 3, 4.
 - Validation: `composer test`, `composer analyse`.
 - Documentation updates: Migration notes for Users.
-- Test updates: `UserTest`, `UserServiceTest`.
-- Completion notes: 
+- Test updates: `UserTest`.
+- Completion notes: Implemented `Box\Resource\User` as a passive resource. Created `Box\Service\UserService`. Updated `Hydrator` to support Enum hydration. Removed `UserInterface` and updated all internal references. Deprecated legacy `Box\User\User` model.
 
 ## 6. Group and GroupMembership Migration
 
