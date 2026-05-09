@@ -43,6 +43,7 @@ class BoxException extends \Exception
     public const INVALID_INPUT = "Invalid Input";
     public const MISSING_ID = "Missing Id";
     public const BOX_API_ERROR = "Box API Error";
+    public const INVALID_JSON = "Invalid JSON";
 
     protected mixed $error = null;
     protected mixed $errorDescription = null;

@@ -35,7 +35,7 @@ This initiative covers:
 | Slice | Name | Status |
 |---|---|---|
 | 0 | [Tracker](#foundation-refinement-slice-0---tracker) | Completed |
-| 1 | [Response Wrapper Foundation](#foundation-refinement-slice-1---response-wrapper-foundation) | Not Started |
+| 1 | [Response Wrapper Foundation](#foundation-refinement-slice-1---response-wrapper-foundation) | Completed |
 | 2 | [Transport Response Normalization](#foundation-refinement-slice-2---transport-response-normalization) | Not Started |
 | 3 | [Connection Error Boundaries](#foundation-refinement-slice-3---connection-error-boundaries) | Not Started |
 | 4 | [Service Response Handling Compatibility](#foundation-refinement-slice-4---service-response-handling-compatibility) | Not Started |
@@ -116,6 +116,14 @@ This initiative covers:
 - `composer test`
 - `composer analyse`
 - `composer cs:check`
+
+**Completion Note**:
+- Refactored `BoxResponse` to wrap `Psr\Http\Message\ResponseInterface` and removed Symfony inheritance.
+- Implemented `BoxResponseInterface` with `json()`, `getRetryAfter()`, and PSR-7 methods.
+- Preserved legacy constructor and Symfony-like status methods for backward compatibility.
+- Updated `BoxException` with `INVALID_JSON` constant.
+- Improved `ResponseParser` robustness (handling missing status lines, trimming).
+- Full validation (`composer review`) passed.
 
 **Final Summary Requirements**:
 - Confirmation that `BoxResponse` no longer inherits from Symfony.

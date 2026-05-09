@@ -49,7 +49,15 @@ class ResponseParser
             throw new \InvalidArgumentException("string value expected for parsing. given: " . gettype($sStatusLine));
         }
 
-        list($httpVersion, $statusCode, $reasonPhrase) = explode(" ", $sStatusLine);
+        if ('' === $sStatusLine) {
+            return $associative ? [] : ['', 0, ''];
+        }
+
+        $parts = explode(" ", $sStatusLine, 3);
+        $httpVersion = $parts[0] ?? '';
+        $statusCode = $parts[1] ?? 0;
+        $reasonPhrase = $parts[2] ?? '';
+
         $code = filter_var($statusCode, FILTER_VALIDATE_INT);
 
         if (true === $associative) {
@@ -74,7 +82,7 @@ class ResponseParser
      * @param bool $replace
      * @return array
      */
-    public static function parseHeader(string $sHeaders = '', bool $replace = true): array
+    public static function parseHeader(string $sHeaders = '', bool $replace = false): array
     {
         if (!is_string($sHeaders)) {
             throw new \InvalidArgumentException("string value expected for parsing. given: " . gettype($sHeaders));
@@ -82,22 +90,43 @@ class ResponseParser
 
         $finalHeaders = [];
         $aHeaders = preg_split('/\r\n|\r|\n/', $sHeaders);
-        foreach ($aHeaders as $headerLineKey => $headerLineValue) {
+        $headerLineKey = 0;
+        foreach ($aHeaders as $headerLineValue) {
+            $headerLineValue = trim($headerLineValue);
+            if ('' === $headerLineValue) {
+                continue;
+            }
             // based on protocols found on https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html
             // first line is Status Line
             if (0 === $headerLineKey) {
-                $finalHeaders[] = $headerLineValue;
-            } else {
-                // rest of the lines are headers
-                $aLine = explode(":", $headerLineValue, 2);
-                if (2 === count($aLine)) {
-                    list($key, $value) = array_map("trim", $aLine);
-                    if (true === $replace || !array_key_exists($key, $finalHeaders)) {
-                        $finalHeaders[$key] = $value;
-                    } else {
-                        $finalHeaders[$key] = array_merge((array)$finalHeaders[$key], (array)$value);
-                    }
+                if (!str_starts_with($headerLineValue, 'HTTP/')) {
+                    // Not a status line, maybe just headers?
+                    $headerLineKey++; // skip index 0
+                } else {
+                    $finalHeaders[] = $headerLineValue;
+                    $headerLineKey++;
+                    continue;
                 }
+            }
+
+            // rest of the lines are headers
+            $aLine = explode(":", $headerLineValue, 2);
+            if (2 === count($aLine)) {
+                list($key, $value) = array_map("trim", $aLine);
+                if (true === $replace || !array_key_exists($key, $finalHeaders)) {
+                    $finalHeaders[$key] = $value;
+                } else {
+                    $currentValue = $finalHeaders[$key];
+                    $finalHeaders[$key] = array_merge((array)$currentValue, (array)$value);
+                }
+            }
+            $headerLineKey++;
+        }
+
+        if (0 === count($finalHeaders) || (isset($finalHeaders[0]) && count($finalHeaders) === 1 && str_starts_with($finalHeaders[0], 'HTTP/'))) {
+             // ensure at least an empty status line if none found but we want a valid array structure for ResponseHeader
+            if (!isset($finalHeaders[0])) {
+                array_unshift($finalHeaders, '');
             }
         }
 

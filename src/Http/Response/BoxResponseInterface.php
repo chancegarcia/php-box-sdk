@@ -31,9 +31,25 @@ interface BoxResponseInterface extends PsrResponseInterface
     public function getResponseHeader(): ResponseHeaderInterface;
 
     /**
+     * @return PsrResponseInterface|null
+     */
+    public function getPsrResponse(): ?PsrResponseInterface;
+
+    /**
      * @return mixed
      */
     public function getContent(): mixed;
+
+    /**
+     * @param bool $assoc
+     * @return mixed
+     */
+    public function json(bool $assoc = true): mixed;
+
+    /**
+     * @return int|null
+     */
+    public function getRetryAfter(): ?int;
 
     /**
      * @param string $name
