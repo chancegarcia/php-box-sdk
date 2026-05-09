@@ -43,6 +43,10 @@ Developers can use the CLI to:
 ### Discovery
 Run the following to list all available Box-specific commands:
 ```bash
+composer box:list
+```
+Or via the binary directly:
+```bash
 bin/box-sdk list box
 ```
 

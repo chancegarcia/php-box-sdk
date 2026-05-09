@@ -20,7 +20,7 @@ Key themes of this release:
 3. **Refactor Namespaces**: Update imports to the new flattened structure (e.g., `Box\Client` instead of `Box\Model\Client\Client`).
 4. **Update Collections**: Migrate from `Box\Collection\ArrayCollection` to `Doctrine\Common\Collections\ArrayCollection`.
 5. **Update Model Usage**: Identify and split any chained setter calls on models as they now return `void`.
-6. **Run Tests**: Execute your test suite (`vendor/bin/phpunit`) to catch any missed namespace or behavioral changes.
+6. **Run Tests**: Execute your test suite (`composer test`) to catch any missed namespace or behavioral changes.
 7. **Integrate Logging (Optional)**: Configure a PSR-3 logger if you need detailed API logs.
 
 ## Composer Upgrade

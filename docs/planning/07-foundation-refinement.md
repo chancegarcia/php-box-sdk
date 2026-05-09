@@ -41,7 +41,7 @@ This initiative covers:
 | 4 | [Service Response Handling Compatibility](#foundation-refinement-slice-4---service-response-handling-compatibility) | Completed |
 | 5 | [Auth Foundation Hardening](#foundation-refinement-slice-5---auth-foundation-hardening) | Completed |
 | 6 | [CLI Compatibility Pass](#foundation-refinement-slice-6---cli-compatibility-pass) | Completed |
-| 7 | [Documentation and Migration Drift Pass](#foundation-refinement-slice-7---documentation-and-migration-drift-pass) | Not Started |
+| 7 | [Documentation and Migration Drift Pass](#foundation-refinement-slice-7---documentation-and-migration-drift-pass) | Completed |
 | 8 | [Foundation PHPStan/Type-Safety Cleanup](#foundation-refinement-slice-8---foundation-phpstan-type-safety-cleanup) | Not Started |
 | 9 | [Final Integration Review](#foundation-refinement-slice-9---final-integration-review) | Not Started |
 
@@ -464,6 +464,19 @@ Acceptance Criteria:
 - Documentation matches implementation.
 - No credential leaks in examples.
 ```
+
+---
+
+**Completion Note**:
+- Inspected `README.md`, `upgrading-0.10-to-0.11.md`, `upgrading-0.11-to-1.0.md`, `programmatic-usage.md`, and `cli-test-harness.md`.
+- Updated `README.md` with "v1 Foundation Refinement" highlights (PSR-7, exceptions, redaction) and linked to the new v1 migration guide.
+- Created `upgrading-0.11-to-1.0.md` to house Foundation Refinement migration notes, keeping `upgrading-0.10-to-0.11.md` focused on historical changes.
+- Refined `programmatic-usage.md` to reflect the hierarchical exception model and new response helper usage.
+- Updated `cli-test-harness.md` to promote Composer scripts for command discovery.
+- Updated `CHANGELOG.md` following the `changelog-prompt.md` guidelines, summarizing Slices 1-7.
+- Verified that all examples use placeholder credentials and follow the non-fluent setter rule.
+- Validated all changed Markdown files for formatting and link consistency.
+- Full validation (`composer lint`, `composer cs:check`) passed.
 
 ---
 

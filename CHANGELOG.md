@@ -1,5 +1,58 @@
 # Changelog
 
+## Unreleased
+
+### Summary
+- Refactored the SDK response foundation to use a thin PSR-7-backed `BoxResponse`, improving compliance and providing helpful response utilities.
+- Hardened connection error handling with a refined exception taxonomy, ensuring more granular and descriptive errors (e.g., `ApiException`, `TransportException`).
+- Implemented automatic redaction of sensitive data (access tokens, refresh tokens, client secrets) in logs, exceptions, and CLI output.
+- Stabilized service-level response handling while maintaining full backward compatibility for return types.
+- Updated comprehensive public and migration documentation to reflect the new Foundation Refinement architecture.
+
+### Developer Details
+- **Response Handling**:
+    - Replaced Symfony-inherited `BoxResponse` with a PSR-7-backed implementation wrapping `Psr\Http\Message\ResponseInterface`.
+    - Introduced `BoxResponseInterface` with helpers like `json()` for safe decoding and `getRetryAfter()` for rate-limit handling.
+    - Normalized all transports (Guzzle, Curl) to consistently return `BoxResponseInterface`.
+- **Exception Taxonomy**:
+    - Implemented a hierarchical exception model: `BoxException` -> `BoxResponseException` -> `ApiException`.
+    - Added specialized `ApiException` subclasses for common HTTP status codes (401, 403, 404, 409, 429).
+    - Introduced `TransportException` for network-level failures.
+    - Ensured `ApiException` preserves the original response object for programmatic inspection.
+- **Security and Redaction**:
+    - Added a `Redactor` utility to mask sensitive tokens and secrets.
+    - Integrated redaction into `BoxException` messages and `BoxLoggerTrait` for safe logging.
+    - Enabled automatic masking of tokens in CLI command output via `ConsoleOutputFormatter`.
+- **Service Layer**:
+    - Modernized `Service::handleBoxResponse` to use refined response methods.
+    - Maintained stable public service contracts and resource hydration.
+- **Documentation**:
+    - Updated `README.md`, `upgrading-0.10-to-0.11.md`, and `programmatic-usage.md` with new architectural details and examples.
+    - Standardized on Composer scripts (e.g., `composer review`) as the primary validation commands in all documentation.
+
+### Migration Notes
+- **Response Wrapper**: `BoxResponse` no longer inherits from Symfony's `Response`. If your code relied on Symfony-specific response methods, update it to use the new `BoxResponseInterface` or access the underlying PSR-7 response via `getPsrResponse()`. See [Upgrading from v0.11 to v1.0](docs/migration/upgrading-0.11-to-1.0.md) for a detailed guide.
+- **Exception Handling**: While `BoxException` remains the base, it is recommended to catch more specific exceptions like `ApiException` to access the response context.
+    - *Before*:
+      ~~~~php
+      try {
+          $client->getFile($id);
+      } catch (\Box\Exception\BoxException $e) {
+          // generic handling
+      }
+      ~~~~
+    - *After*:
+      ~~~~php
+      try {
+          $client->getFile($id);
+      } catch (\Box\Exception\ApiException $e) {
+          $errorData = $e->getResponse()->json();
+          $boxCode = $errorData['code'] ?? 'unknown';
+      } catch (\Box\Exception\TransportException $e) {
+          // network error
+      }
+      ~~~~
+
 ## v0.11.3
 
 ### Summary

@@ -68,10 +68,18 @@ $response = $client->uploadFileToBox($stream, '0'); // '0' is the root folder ID
 $rootFolder = $client->getFolder();
 ```
 
+## v1 Foundation Refinement
+- **PSR-7-Backed Responses**: `BoxResponse` now wraps a PSR-7 `ResponseInterface`, providing better compliance and helper methods like `json()`.
+- **Hardened Error Boundaries**: Improved exception taxonomy with `ApiException` and `TransportException`. Exceptions now automatically redact sensitive data (tokens).
+- **Transport Normalization**: Consistent response behavior across Guzzle and Curl transports.
+- **CLI Redaction**: Command output now masks tokens and secrets by default.
+- **Migration**: See the [v1 Upgrade Guide](docs/migration/upgrading-0.11-to-1.0.md) for details.
+
 ## v0.11.0 Transition & Compatibility
 - **Typed Models & DTOs**: v0.11 introduces recursive hydration into typed objects. Some nested fields now accept both objects and legacy arrays as a transition layer.
 - **Flattened Namespaces**: Primary classes are now found in shorter namespaces (e.g., `Box\Client`).
 - **Non-Fluent Setters**: Setters now return `void`. Chained setter calls are no longer supported.
+- **Migration**: See the [v0.11 Upgrade Guide](docs/migration/upgrading-0.10-to-0.11.md) for details.
 
 ## Advanced Documentation
 

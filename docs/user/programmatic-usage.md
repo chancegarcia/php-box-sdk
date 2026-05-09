@@ -68,14 +68,23 @@ if ($token->isExpired()) {
 }
 ```
 
+For more details on these changes, see the [v1 Upgrade Guide](../migration/upgrading-0.11-to-1.0.md).
+
 ## 5. Response and Error Model
 
-The SDK uses `Box\Http\Response\BoxResponseInterface` for all API responses and throws `Box\Exception\BoxException` (or `Box\Exception\BoxResponseException`) when things go wrong.
+The SDK uses `Box\Http\BoxResponseInterface` for all API responses and throws `Box\Exception\BoxException` (or more specific subclasses) when things go wrong.
+
+### Exception Taxonomy
+The SDK uses a refined exception hierarchy for better error handling:
+- `BoxException`: Base exception for all SDK errors.
+- `TransportException`: Thrown when a network or connection error occurs (e.g., timeout, DNS failure).
+- `BoxResponseException`: Base for exceptions that include a `BoxResponseInterface`.
+- `ApiException`: Thrown when the Box API returns an error (4xx or 5xx status codes). Subclasses like `UnauthorizedException` (401) or `NotFoundException` (404) are available for common errors.
 
 ### Robust Error Handling
-A `BoxResponseException` may contain a `BoxResponseInterface` if the error originated from the Box API. This allows you to inspect the JSON payload for specific Box error codes.
+An `ApiException` contains a `BoxResponseInterface` (via `$e->getResponse()`). This allows you to inspect the JSON payload for specific Box error codes and response headers.
 
-**Key Security Feature:** The SDK automatically sanitizes sensitive data (access tokens, refresh tokens, client secrets) from exception messages and context information.
+**Key Security Feature:** The SDK automatically sanitizes sensitive data (access tokens, refresh tokens, client secrets) from exception messages and context information using its internal `Redactor`.
 
 ### Auth Aliases and Exchange
 In v0.11, `exchangeAuthorizationCodeForToken()` is preferred for the OAuth2 code exchange step for better clarity.
@@ -87,24 +96,26 @@ $token = $client->exchangeAuthorizationCodeForToken();
 ```
 
 ### Advanced Context and Retry-After
-When Box returns a `429 Too Many Requests` status, the SDK parses the `Retry-After` header and includes it in the exception context.
+When Box returns a `429 Too Many Requests` status, the SDK parses the `Retry-After` header. You can access the parsed value directly from the response.
 
 ```php
 try {
     $response = $client->uploadFileToBox($path, $folderId);
-} catch (Box\Exception\BoxResponseException $e) {
+} catch (Box\Exception\ApiException $e) {
     // Check if it's a rate limit error
     if ($e->getCode() === 429) {
-        $retryAfter = $e->getContext('retry_after_header'); // Original header value
-        $delaySeconds = $e->getContext('retry_after_seconds'); // Parsed numeric seconds
+        $response = $e->getResponse();
+        $delaySeconds = $response->getRetryAfter(); 
         
-        sleep($delaySeconds);
-        // ... retry request
+        if ($delaySeconds) {
+            sleep($delaySeconds);
+            // ... retry request
+        }
     }
 
-    // Inspect Box-specific error code
-    $boxCode = $e->getBoxCode(); // e.g., 'item_name_in_use'
-    $description = $e->getErrorDescription(); // Sanitized descriptive message
+    // Inspect Box-specific error details via json() helper
+    $errorData = $e->getResponse()->json();
+    $boxCode = $errorData['code'] ?? 'unknown';
 }
 ```
 
