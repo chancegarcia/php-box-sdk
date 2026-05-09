@@ -35,7 +35,9 @@ After completing a task or slice, the AI assistant writes a final summary by rep
 - **Frequency**: Overwrite the file after every task. Do not use create-only behavior; an existing file must be overwritten.
 - **Directory Management**: If `var/tmp/` does not exist, create it if appropriate, but do not remove `var/tmp/.gitkeep`.
 - **Canonical Source**: The persisted task summary should be the canonical detailed review summary for a task.
-- **Consistency**: The persisted task summary should match the final response summary as closely as practical. If the persisted summary includes additional detail, it must not contradict the final response.
+- **Consistency**: The persisted task summary should match the final response summary as closely as practical.
+    - **Encoding**: Persisted summaries must be plain UTF-8 Markdown text. They must not contain null bytes, control characters, corrupted class names, or binary content. If a generated summary contains corrupted text, rewrite it before reporting completion.
+    - **Detail**: If the persisted summary includes additional detail, it must not contradict the final response.
 - **Final Response**: The final response may be concise, but it should mention that the detailed summary was written to the file.
 - **Structure**:
     - **Summary**: High-level overview of the result.

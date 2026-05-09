@@ -106,6 +106,8 @@ Testing guidelines:
     - Always overwrite the file on every task; do not use create-only behavior. Replace its entire contents.
     - If `var/tmp/` does not exist, create the directory if appropriate, but do not remove `var/tmp/.gitkeep`.
     - The persisted task summary should match the final response summary as closely as practical.
+    - Persisted summaries must be plain UTF-8 Markdown text without null bytes, control characters, corrupted class names, or binary content.
+    - If a generated summary contains corrupted text, rewrite it before reporting completion.
     - If the persisted summary includes additional detail, it must not contradict the final response.
     - Prefer making `var/tmp/last-task-summary.md` the canonical detailed review summary.
     - The final response may be concise, but it should mention that the detailed summary was written to the file.

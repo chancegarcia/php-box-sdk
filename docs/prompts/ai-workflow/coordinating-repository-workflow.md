@@ -52,7 +52,9 @@ The coordinator maintains a tracker for each major initiative:
 2. **Scoping**: The prompt includes ONLY the context necessary for that repo.
 3. **Sanitization**: The human reviewer ensures no private customer data or internal project names are leaked.
 4. **Execution**: The prompt is run in the target implementation repository.
-5. **Local Reporting**: The implementation AI writes a final summary by replacing the full contents of its local `var/tmp/last-task-summary.md`. This persisted summary should be the canonical detailed review summary and must match the final response as closely as practical. Overwrite the file on every task; do not use create-only behavior.
+5. **Local Reporting**: The implementation AI writes a final summary by replacing the full contents of its local `var/tmp/last-task-summary.md`. This persisted summary should be the canonical detailed review summary and must match the final response as closely as practical.
+    - **Overwriting**: Overwrite the file on every task; do not use create-only behavior.
+    - **Encoding**: Persisted summaries must be plain UTF-8 Markdown text without null bytes, control characters, or corrupted content. Rewrite if corruption is detected.
 6. **Feedback Loop**: The summary is returned to the Coordinating Repo.
 7. **Status Update**: The Coordinator AI updates the cross-repo tracker based on the results.
 8. **Commit and Sequence**: The implementation repo is committed/pushed before the next dependent repo begins its work.
