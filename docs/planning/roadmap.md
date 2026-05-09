@@ -60,9 +60,12 @@ The CLI exists mainly as a quick, practical test tool for verifying SDK behavior
 - Validate upload success/failure states thoroughly.
 
 ### 4. CLI as a Verification Tool
-- Keep the CLI lightweight and focused on SDK verification.
-- Use CLI commands to validate SDK functionality quickly during development.
-- Avoid over-investing in CLI complexity; focus on the SDK as the primary product.
+- **Harness Retention**: The CLI test harness is retained in the core repository as a practical verification tool.
+- **V1.0 Goals**: Preserve existing command utility; keep commands aligned with v1 architecture.
+- **JWT/S2S Testing**: If practical, support CLI-based JWT/S2S testing in v1.0.0.
+- **Boundary**: Keep commands thin; reusable logic belongs in SDK services, not commands.
+- **Redaction**: Ensure CLI output uses SDK redaction rules.
+- **V1.1 Expansion**: Add more useful commands in v1.1.0 only if they improve practical SDK verification (driven by usefulness, not endpoint parity).
 
 ### 5. Testing and Quality
 - Expand PHPUnit coverage across commands, services, and client behavior.

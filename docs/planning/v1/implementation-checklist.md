@@ -111,6 +111,8 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
     - [x] Exception taxonomy: Base `BoxException` hierarchy (Client, Transport, Api, etc.); redaction of secrets in string output.
     - [x] Logging and Redaction Policy: PSR-3 integration; automatic token/secret redaction in logs and exceptions.
     - [x] Retry and Rate-Limit: Disabled by default; honors `Retry-After`; safe retries only by default.
+    - [ ] CLI Validation: Validate existing commands after v1 service/transport/auth refactors; ensure CLI output uses redaction rules; verify CLI docs for changed behavior.
+    - [ ] JWT/S2S CLI Testing: Support CLI-based JWT/S2S testing if practical (linked to JWT auth implementation).
 - Dependencies: 5.
 - Validation: `composer test`.
 - Documentation updates: Update `v1-architecture-rules.md`.

@@ -386,7 +386,34 @@ The final migration guide MUST cover:
 - **Data Types**: Strict enforcement of IDs (string), dates (`DateTimeImmutable`), and enums.
 - **Arrays**: Removal of the 0.11 transition layer's broad associative array support in favor of typed objects.
 
-## 20. Decision Records
+## 20. CLI Test Harness Strategy
+
+### Role and Retention
+- **Decision**: Retain the existing CLI test harness in the core SDK repository.
+- **Decision**: Retain all current CLI harness commands unless a command is explicitly replaced or proven obsolete.
+- **Rationale**: The CLI provides practical manual verification for SDK behavior without requiring a downstream app.
+
+### Boundary and Design
+- **Thin Commands**: Keep CLI commands thin. Reusable behavior belongs in SDK services/classes, not command bodies.
+- **SDK Exercise**: The CLI should exercise SDK behavior rather than owning SDK logic.
+- **Core-Only**: CLI is for core SDK verification. Framework-specific integrations (Symfony/Doctrine) are deferred.
+
+### Scope by Version
+- **v1.0.0**:
+    - Preserve existing utility.
+    - Align with v1 architecture.
+    - Sanity check for: OAuth/auth flows, token refresh, transport/request behavior, uploads, core service calls, error handling, and logging/redaction.
+    - **JWT/S2S**: Support CLI-based JWT/S2S testing if practical.
+- **v1.1.0**:
+    - Add commands only if they improve practical verification (e.g., high-risk workflows).
+    - No expansion merely for endpoint parity.
+
+### Security and Redaction
+- CLI output MUST preserve SDK redaction rules.
+- Must not leak: access tokens, refresh tokens, client secrets, auth codes, JWT private keys, or sensitive body content.
+- CLI tests should include redaction coverage where practical.
+
+## 21. Decision Records
 
 1. **Facade over God-Object**: Client is a lightweight entry point.
 2. **Strict Typing**: All signatures must be typed.

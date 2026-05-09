@@ -2,6 +2,8 @@
 
 This document outlines the planning for a future Symfony bundle and Doctrine ORM integration for the Box SDK. These features are deferred to post-v1.0.0 and are not part of the core SDK scope.
 
+**Note on CLI Tools**: The core SDK retains a lightweight CLI test harness for practical SDK verification (see `docs/user/cli-test-harness.md`). The future Symfony bundle may provide additional framework-aware console commands, but the essential verification harness remains in the core SDK repository to ensure it is always available for standalone SDK testing.
+
 ## Overview
 
 The core SDK provides a framework-neutral token storage contract. A dedicated Symfony bundle will provide seamless integration with the Symfony framework and Doctrine ORM, allowing for automated configuration, service wiring, and persistent token storage using database entities.

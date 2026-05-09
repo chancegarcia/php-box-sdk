@@ -79,7 +79,7 @@ For in-depth architectural guidance, library integration patterns, and advanced 
 
 ## CLI Test Harness
 
-The SDK includes a Symfony Console-based CLI tool for manual testing and exploring the API.
+The SDK includes a Symfony Console-based CLI tool for manual testing and practical SDK verification. This harness is retained in the core repository to provide a reliable way to sanity-check SDK behavior (auth flows, uploads, etc.) without a downstream application. It remains lightweight and strictly separated from future framework integrations.
 
 For detailed setup instructions, available commands, and logging options, see the [CLI Test Harness Guide](docs/user/cli-test-harness.md).
 

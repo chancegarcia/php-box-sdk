@@ -2,13 +2,30 @@
 
 This guide provides detailed information on using the Symfony Console-based CLI tool included with the SDK. This tool is designed for manual testing, exploring the Box API, and verifying your configuration.
 
-## 1. Purpose and Scope
+## 1. Purpose and Role
 
-The CLI harness serves as a reference implementation of the SDK's services. It allows developers to:
+The CLI harness is a practical SDK verification tool designed for manual testing, exploring the Box API, and verifying your configuration. It serves as a reference implementation of the SDK's services.
+
+### Core Role
+- **Verification Harness**: Practical manual verification for SDK behavior without requiring a downstream application.
+- **Sanity Confirmation**: Quickly confirm auth flows, transport behavior, and service calls during development.
+- **Reference Implementation**: Demonstrates how to use SDK services in a real PHP application.
+
+### Design Boundary
+- **Lightweight**: Commands are kept thin.
+- **Logic Separation**: Reusable behavior belongs in SDK services/classes, not command bodies. The CLI exercises SDK behavior rather than owning SDK logic.
+- **Core-Only**: The CLI is a test harness for the core SDK. It does not provide framework-specific integrations (like Symfony bundle features or Doctrine ORM support), which are deferred to future integration packages.
+
+### Scope and Retention
+- The CLI is retained in the core SDK repository as a primary verification tool.
+- All current CLI commands are retained unless explicitly replaced or proven obsolete.
+- It is NOT intended to become a full-featured "Box CLI" product or a framework integration.
+
+Developers can use the CLI to:
 - Interactively explore API endpoints.
-- Test OAuth2 flows without writing application code.
+- Test OAuth2 and JWT/S2S (v1.0+) flows without writing application code.
 - Verify environment configuration and network connectivity.
-- Inspect raw and masked API responses.
+- Inspect raw and redacted API responses.
 
 ## 2. Setup
 

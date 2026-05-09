@@ -30,6 +30,7 @@ The v1.0 release focuses on architectural hardening and PSR compliance.
 
 **Current Foundation Status:**
 - **Step 7 / Foundation Refinement**: In Progress.
+- **CLI Test Harness Scope**: Clarified and documented as a retained practical verification tool.
 - **User Migration Alignment**: Verified and documented in the [Interface and Model Audit](planning/v1/interface-and-model-audit.md).
 
 ### [Future Integrations](planning/future/)

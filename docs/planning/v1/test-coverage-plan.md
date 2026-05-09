@@ -226,6 +226,11 @@ Include:
     - Exception Taxonomy: Verify hierarchy (`BoxException` -> `ApiException` -> `NotFoundException`, etc.); verify secret redaction in `__toString()`.
     - Logging: Verify PSR-3 integration; verify automatic token/secret redaction in logs using a `TestLogger`.
     - Retry: Verify disabled by default; verify `Retry-After` honoring; verify safe methods only by default; verify `RetryExhaustedException`.
+    - CLI Test Harness:
+        - Verify existing commands remain covered where tests already exist.
+        - Redaction: Verify CLI output masking/redaction for sensitive fields (tokens, secrets).
+        - Auth: Verify CLI auth command flows (OAuth2, and JWT/S2S if implemented).
+        - Isolation: Verify CLI tests use mocked/fake SDK dependencies; no real network calls.
 - **Done criteria**: Foundation services implemented and verified; secret leaks prevented.
 
 ### 2. Shared DTO foundation

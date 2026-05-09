@@ -26,8 +26,12 @@ This document details the planned tasks for the `v0.11` transition release and t
 - [x] Completed: Improve Hydrator tests to cover nested object mapping more thoroughly. *Rationale: Ensure the new recursive hydration works as expected. Implementation: Added `HydratorComplexTest` covering nested collections and deep object trees.*
 
 ### CLI
-- [x] Completed: Keep CLI as a verification/test harness. *Rationale: Focus on SDK quality over CLI features.*
-- [x] Completed: Improve CLI error reporting for failed API calls. *Rationale: Make it easier to use the CLI for manual verification. Implementation: CLI commands now output detailed error messages from `BoxResponseException`.*
+- **Must**: Preserve existing CLI command utility and align with v1 architecture.
+- **Must**: Validate existing commands after v1 service/transport/auth refactors.
+- **Must**: Ensure CLI output uses redaction rules; verify with redaction tests.
+- **Should**: Support CLI-based JWT/S2S testing if practical.
+- **Should**: Update CLI documentation for any changed command behavior.
+- **Could**: Add more useful commands in v1.1.0 to improve practical SDK verification (useful workflows, not parity).
 
 ### Tests & Documentation
 - [x] Completed: Expand PHPUnit coverage for existing file, folder, and auth services. *Rationale: Regressions must be prevented during the transition. Implementation: Significant test coverage added for models and commands.*
