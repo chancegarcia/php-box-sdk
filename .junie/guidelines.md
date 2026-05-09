@@ -102,6 +102,12 @@ Testing guidelines:
 - Tests should be deterministic and not depend on network, local user files, or real credentials.
 - Since PHPUnit is configured to fail on deprecations, notices, and warnings, avoid test code that triggers them unless the test intentionally asserts deprecation behavior and handles it safely.
 - Run the most relevant checks after changes. For broad changes, run `composer review`.
+- After completing any task or slice, write the final task summary to `var/tmp/last-task-summary.md`.
+    - Overwrite the file each task; do not append indefinitely.
+    - Include the same sections normally reported: Summary, Changes, Verification, Notes, Follow-ups (where applicable).
+    - Keep the file free of secrets, credentials, tokens, private account IDs, local sensitive paths, and downstream/private implementation details. Redact any sensitive output.
+    - Do not treat `var/tmp/last-task-summary.md` as a source artifact to commit.
+    - Do not remove `var/tmp/.gitkeep`.
 
 Static analysis and style:
 - Prefer `SomeClass::class` over hard-coded fully qualified class-name strings when referencing PHP classes or interfaces in code, including exception messages and logs.
@@ -125,9 +131,20 @@ Security and credentials:
 - Avoid committing files from `var/`, temporary upload fixtures, logs, or local scratch files.
 - Be careful with OAuth examples: always use placeholders and explain secure storage where relevant.
 
-Deprecation policy:
+Deprecation and v1 Removal Policy:
 - New code should prefer the v0.11/v1.0-style APIs.
-- Do not remove legacy compatibility unless explicitly requested.
+- v0.11 transition work: preserve backward compatibility where practical.
+- v1 cutover work: intentionally remove legacy pre-v1 / v0.x architecture and APIs, with tests and migration docs. v1 is the clean target architecture; this does not mean removing newly established v1 APIs. The goal is to completely remove the old legacy API architectural layer as part of the v1 major-version cutover.
+- Legacy pre-v1 architecture/API for removal includes:
+    - legacy `Box\Model\...`-based architecture,
+    - legacy model traits (e.g., trait-based mapping/hydration),
+    - old `mapBoxToClass`-centered flows,
+    - legacy service base patterns conflicting with the hardened foundation,
+    - old custom collection layers where replaced,
+    - compatibility aliases that are no longer part of v1,
+    - fluent setter expectations in v1-facing models/DTOs,
+    - legacy interfaces superseded by flattened resources,
+    - duplicated or ad hoc hydration/mapping behavior.
 - If behavior is deprecated:
     - Keep the replacement obvious.
     - Add or preserve a deprecation message.
