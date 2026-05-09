@@ -93,5 +93,5 @@ interface SharedLinkInterface extends ModelInterface
      *
      * @return SharedLinkInterface
      */
-    public function setPermissions(PermissionsInterface $permissions = null);
+    public function setPermissions(?PermissionsInterface $permissions = null);
 }

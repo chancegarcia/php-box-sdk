@@ -56,11 +56,11 @@ interface TokenStorageInterface extends BaseTokenStorageInterface
 
     public function getOptions();
 
-    public function setOptions(array $options = null);
+    public function setOptions(?array $options = null);
 
     public function getPdo();
 
-    public function setPdo(PDO $pdo = null);
+    public function setPdo(?PDO $pdo = null);
 
     public function getTokenTableName();
 
@@ -80,7 +80,7 @@ interface TokenStorageInterface extends BaseTokenStorageInterface
      *
      * @return TokenStorageInterface
      */
-    public function setAdditionalTokenTableData(array $additionalTokenTableData = null);
+    public function setAdditionalTokenTableData(?array $additionalTokenTableData = null);
 
     /**
      * @return boolean

@@ -152,7 +152,7 @@ class UserEventService extends Service implements UserEventServiceInterface
         $this->streamPosition = $streamPosition;
     }
 
-    public function getEvents($type = 'decoded', EventCollectionInterface $eventCollection = null)
+    public function getEvents($type = 'decoded', ?EventCollectionInterface $eventCollection = null)
     {
         $uri = $this->getEventsUri();
 

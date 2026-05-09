@@ -183,7 +183,7 @@ class TokenStorage implements TokenStorageInterface
      *
      * @return TokenStorage
      */
-    public function setOptions(array $options = null)
+    public function setOptions(?array $options = null)
     {
         $this->options = $options;
     }
@@ -251,7 +251,7 @@ class TokenStorage implements TokenStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function setAdditionalTokenTableData(array $additionalTokenTableData = null)
+    public function setAdditionalTokenTableData(?array $additionalTokenTableData = null)
     {
         $this->additionalTokenTableData = $additionalTokenTableData;
     }

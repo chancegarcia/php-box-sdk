@@ -49,7 +49,7 @@ interface FileServiceInterface extends ServiceInterface
      *
      * @return FileInterface
      */
-    public function createSharedLink(FileInterface $file = null, SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink = null);
+    public function createSharedLink(?FileInterface $file = null, SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink = null);
 
     /**
      * @return FileInterface

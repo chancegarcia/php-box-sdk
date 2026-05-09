@@ -71,7 +71,7 @@ class TokenStorageException extends \Exception
      *
      * @return TokenStorageException
      */
-    public function setToken(TokenInterface $token = null)
+    public function setToken(?TokenInterface $token = null)
     {
         $this->token = $token;
     }
@@ -89,7 +89,7 @@ class TokenStorageException extends \Exception
      *
      * @return TokenStorageException
      */
-    public function setPreviousToken(TokenInterface $previousToken = null)
+    public function setPreviousToken(?TokenInterface $previousToken = null)
     {
         $this->previousToken = $previousToken;
     }

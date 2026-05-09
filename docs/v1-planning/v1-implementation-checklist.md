@@ -83,7 +83,18 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 - Test updates: `UserTest`.
 - Completion notes: Implemented `Box\Resource\User` as a passive resource. Created `Box\Service\UserService`. Updated `Hydrator` to support Enum hydration. Removed `UserInterface` and updated all internal references. Deprecated legacy `Box\User\User` model.
 
-## 6. V1.0 Foundation Refinement (Strategy Alignment)
+## 6. PHP 8.4 Modernization: Implicit Nullable Parameters
+
+- [x] Status: Completed
+- Goal: Fix PHP 8.4 implicit nullable parameter deprecations.
+- Scope: Update signatures to use explicit nullability (`?Type $p = null`).
+- Dependencies: 1.
+- Validation: `composer review` shows no implicit-nullability deprecations.
+- Documentation updates: None.
+- Test updates: N/A.
+- Completion notes: Fixed 13 occurrences across 9 files including `TokenStorageInterface`, `SharedLinkInterface`, `FileServiceInterface`, `UserEventServiceInterface`, and `TokenStorageException`. Verified with `composer review`.
+
+## 7. V1.0 Foundation Refinement (Strategy Alignment)
 
 - [ ] Status: Not started
 - Goal: Implement core foundation services according to hardened v1 strategy.

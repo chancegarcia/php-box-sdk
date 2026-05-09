@@ -91,6 +91,6 @@ interface UserEventServiceInterface extends ServiceInterface
      */
     public function setStreamPosition($streamPosition = null);
 
-    public function getEvents($type = 'decoded', EventCollectionInterface $eventCollection = null);
+    public function getEvents($type = 'decoded', ?EventCollectionInterface $eventCollection = null);
     public function getEventsUri();
 }

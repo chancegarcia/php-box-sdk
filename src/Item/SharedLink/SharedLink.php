@@ -113,7 +113,7 @@ class SharedLink extends Model implements SharedLinkInterface
      * @param PermissionsInterface|null $permissions
      * @return void
      */
-    public function setPermissions(PermissionsInterface $permissions = null): void
+    public function setPermissions(?PermissionsInterface $permissions = null): void
     {
         $this->permissions = $permissions;
     }
