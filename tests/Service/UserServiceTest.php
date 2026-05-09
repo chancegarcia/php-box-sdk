@@ -74,4 +74,34 @@ class UserServiceTest extends TestCase
         $this->assertSame($userId, $user->getId());
         $this->assertSame('Jane Doe', $user->getName());
     }
+
+    public function testServiceDoesNotDependOnLegacyUserModel(): void
+    {
+        $this->assertFalse(class_exists('Box\Model\User\User'), 'Legacy User model should not exist.');
+        $this->assertFalse(interface_exists('Box\User\UserInterface'), 'Legacy User interface should not exist.');
+    }
+
+    public function testGetUserAcceptsStringId(): void
+    {
+        $userId = 'string-id-123';
+        $userData = [
+            'type' => 'user',
+            'id' => $userId,
+            'name' => 'String ID User'
+        ];
+
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('getContent')->willReturn(json_encode($userData));
+        $response->method('isSuccessful')->willReturn(true);
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->method('query')->willReturn($response);
+
+        $service = new UserService();
+        $service->setAuthorizedConnection($connection);
+        $service->setToken($this->createMock(TokenInterface::class));
+
+        $user = $service->getUser($userId);
+        $this->assertSame($userId, $user->getId());
+    }
 }

@@ -119,6 +119,23 @@ class UserTest extends TestCase
         $this->assertFalse($user->getIsSyncEnabled());
     }
 
+    public function testUserSnakeCaseHydration(): void
+    {
+        $hydrator = new Hydrator();
+        $data = [
+            'max_upload_size' => 2000,
+            'is_exempt_from_device_limits' => true,
+            'avatar_url' => 'https://example.com/a.png'
+        ];
+
+        $user = new User();
+        $hydrator->hydrate($user, $data);
+
+        $this->assertSame(2000, $user->getMaxUploadSize());
+        $this->assertTrue($user->getIsExemptFromDeviceLimits());
+        $this->assertSame('https://example.com/a.png', $user->getAvatarUrl());
+    }
+
     public function testUserResourceTypeDefault(): void
     {
         $user = new User();

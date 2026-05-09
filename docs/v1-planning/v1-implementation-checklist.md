@@ -35,9 +35,9 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 - Scope: Create and align architecture rules, interface audits, API coverage audits, and test coverage plan.
 - Dependencies: None.
 - Validation: All planning docs present and consistent in `docs/v1-planning/`.
-- Documentation updates: `ai-assistant-planning-context.md`, `v1-architecture-rules.md`, `v1-interface-and-model-audit.md`, `v1-api-coverage-audit.md`, `v1-test-coverage-plan.md`.
+- Documentation updates: `ai-assistant-planning-context.md`, `v1-architecture-rules.md`, `v1-interface-and-model-audit.md`, `v1-api-coverage-audit.md`, `v1-test-coverage-plan.md` (Precision refinement).
 - Test updates: N/A.
-- Completion notes: Planning docs are finalized and represent the starting state for the refactor. Added `v1-test-coverage-plan.md` to define expected parity and API coverage tests.
+- Completion notes: Planning docs are finalized and represent the starting state for the refactor. Added `v1-test-coverage-plan.md` to define expected parity and API coverage tests. Validation policies and phase-by-phase test matrices are defined in the plan.
 
 ## 2. Foundation Namespace Skeleton
 
@@ -252,9 +252,9 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 
 - [ ] Status: Not started
 - Goal: Final verification of V1.0 release readiness.
-- Scope: `composer review`, full test suite, doc audit.
+- Scope: `composer review`, full test suite, doc audit, and package/repository rename.
 - Dependencies: 20.
 - Validation: `composer review` passes.
-- Documentation updates: CHANGELOG.md.
+- Documentation updates: CHANGELOG.md, `v1-package-rename-plan.md`.
 - Test updates: N/A.
 - Completion notes: 
