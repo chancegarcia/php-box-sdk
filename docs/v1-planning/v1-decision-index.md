@@ -18,7 +18,7 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 | Retry disabled by default | **Decided** | `v1-architecture-rules.md` | None |
 | Retry scope (Transport layer) | **Decided** | `v1-strategy-and-contracts.md` | None |
 | Exception taxonomy | **Decided** | `v1-strategy-and-contracts.md` | Hierarchy details |
-| SDK Response Wrapper | **Decided** | `v1-strategy-and-contracts.md` | None |
+| SDK Response Wrapper | **Decided** | `v1-strategy-and-contracts.md` | Implementation: Replace with thin PSR-7 wrapper |
 | Response Strategy Alignment | **Decided** | `v1-strategy-and-contracts.md` | None |
 | JWT/S2S Auth Timing | **Decided** | `v1-strategy-and-contracts.md` | Feasibility checkpoint after foundation |
 | Sign Requests / Webhooks | **Decided** | `v1-strategy-and-contracts.md` | v1.1.0 priority |
@@ -59,7 +59,8 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 - **Decision**: Services must not return response objects; they return Resources or DTOs.
 - **Naming**: Keep `BoxResponseInterface` / `BoxResponse` naming for the public SDK response wrapper.
 - **Method Design**: Keep the SDK response wrapper minimal and PSR-oriented.
-- **Legacy Compatibility**: `BoxResponse` will be refactored to wrap PSR-7 and inherit less from Symfony if possible, preserving only essential methods for the v1 transition.
+- **Legacy Compatibility**: `BoxResponse` will be **replaced** by a new implementation that wraps PSR-7 and removes Symfony inheritance. Legacy methods like `isOk`, `isForbidden`, etc., will be removed in favor of `getStatusCode()` or simplified helpers like `isSuccessful()`.
+- **Open Question**: Should `json()` be a first-class method on the wrapper? (Recommended: Yes, for ergonomic direct transport usage).
 
 ### Upload Progress Abstraction
 - **Decision**: **Deferred**.

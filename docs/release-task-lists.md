@@ -52,7 +52,7 @@ This document details the planned tasks for the `v0.11` transition release and t
 ### API Coverage
 - **Must**: Implement missing high-priority endpoints. *Rationale: Complete the SDK's utility.*
 - **Must**: Achieve full PSR-12 compliance across the codebase. *Rationale: Modernize code quality and maintainability.*
-- **Must**: Implement core foundation services according to hardened v1 strategy (Transport refactor with `send()` and `request()` support, thin Response wrapper, Auth boundaries, JWT/S2S target with feasibility checkpoint, Logging/Redaction, Retry defaults).
+- **Must**: Implement core foundation services according to hardened v1 strategy (Transport refactor with `send()` and `request()` support, thin Response wrapper replacement, Auth boundaries, JWT/S2S target with feasibility checkpoint, Logging/Redaction, Retry defaults).
 - **Should**: Align HTTP layer with PSR-3, PSR-7, PSR-17, and PSR-18. *Rationale: Better interoperability with the PHP ecosystem.*
     - File Versions
     - Collections

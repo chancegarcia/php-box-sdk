@@ -196,6 +196,22 @@ Include:
 - **Validation commands**: Standard V1 validation commands.
 - **Done criteria**: All Group/Membership logic moved to V1, legacy models deprecated, parity coverage for in-scope legacy behavior.
 
+### 2. SDK Response Wrapper Replacement
+- **Goal**: Replace the legacy hybrid `BoxResponse` with a thin PSR-7-backed wrapper.
+- **Primary units under test**: `Box\Http\Response\BoxResponse`, `Box\Http\Response\BoxResponseInterface`.
+- **Current coverage status**: Not started (planned).
+- **Required test cases**:
+    - PSR-7 Proxy: Verify all `ResponseInterface` methods delegate to the underlying PSR-7 response.
+    - Immutability: Verify that the wrapper remains immutable (returning new instances for PSR-7 mutation methods if exposed, or asserting that it is a read-only wrapper).
+    - Success Helpers: `isSuccessful()` returns true for 2xx.
+    - Metadata Helpers: `getRetryAfter()` correctly parses `Retry-After` (both int and date formats).
+    - Ergonomics: `json()` helper returns decoded array and handles invalid JSON.
+    - Ergonomics: `getContent()` returns string body.
+    - Exception Integration: Verify `BoxResponseException` can use the wrapper for context.
+    - Isolation: Verify NO inheritance from Symfony `HttpFoundation\Response`.
+    - Migration: Verify `Connection` and `GuzzleTransport` work with the new wrapper.
+- **Done criteria**: Symfony dependency removed from `BoxResponse`, all tests green, `GuzzleTransport` no longer manually reconstructs header strings.
+
 ### 2. Shared DTO foundation
 - **Goal**: Establish common DTOs used by multiple resources.
 - **Primary units under test**: `SharedLink`, `Permissions`, `PathCollection`.

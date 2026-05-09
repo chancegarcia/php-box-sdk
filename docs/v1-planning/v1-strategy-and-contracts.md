@@ -224,18 +224,19 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
     - Provide SDK-specific helpers for Box-specific metadata (e.g., `getRetryAfter()`).
     - Standardize common checks like `isSuccessful()`.
 - **Naming**: `BoxResponseInterface` / `BoxResponse` in the `Box\Http` namespace.
+- **Implementation**: The current implementation (which inherits from Symfony) will be **replaced** by a new, thin wrapper that strictly delegates to an internal PSR-7 response. Legacy Symfony inheritance and manual header parsing will be removed.
 - **Required Methods**:
-    - `getPsrResponse()`
-    - `getStatusCode()`
-    - `isSuccessful()`
-    - `getHeaders()`
-    - `getHeader(string $name)`
-    - `getHeaderLine(string $name)`
-    - `hasHeader(string $name)`
-    - `getBody()`
-    - `getContent()`
-    - `getRetryAfter()`
-- **Legacy Response**: `BoxResponse` and `BoxResponseInterface` will be simplified to wrap PSR-7 and preserved as the primary response wrapper for v1.
+    - `getPsrResponse()`: Returns the underlying PSR-7 response.
+    - `getStatusCode()`: Delegates to PSR-7.
+    - `isSuccessful()`: Boolean check (200-299).
+    - `getHeaders()`: Delegates to PSR-7.
+    - `getHeader(string $name)`: Delegates to PSR-7.
+    - `getHeaderLine(string $name)`: Delegates to PSR-7.
+    - `hasHeader(string $name)`: Delegates to PSR-7.
+    - `getBody()`: Returns PSR-7 `StreamInterface`.
+    - `getContent()`: Returns string body (convenience for `(string) $getBody()`).
+    - `getRetryAfter()`: Returns `int|null` (parsed from `Retry-After` header).
+    - `json()`: Optional helper to return decoded JSON body.
 - **Service Return Types**: Services MUST return Resources or DTOs, never raw response objects or wrappers.
 - **Exception Context**: Exceptions store the PSR-7 response and may use the wrapper for parsing, but must redact sensitive data in string output.
 

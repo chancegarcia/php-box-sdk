@@ -86,7 +86,7 @@ Collection filtering is in-memory only and should not be presented as a replacem
 - **Public API**: Direct transport usage is a supported advanced public API / escape hatch for uncovered endpoints.
 - **Interface**: `TransportInterface` defines the core execution contract.
 - **Methods**: Supports both `send(RequestInterface $request)` (PSR-oriented) and `request(string $method, string $pathOrUri, array $options = [])` (ergonomic).
-- **Response Wrapper**: `BoxResponseInterface` / `BoxResponse` in the `Box\Http` namespace. It provides access to the raw PSR-7 response via `getPsrResponse()`, and includes helpers for `Retry-After`, success checks, status codes, and headers.
+- **Response Wrapper**: `BoxResponseInterface` / `BoxResponse` in the `Box\Http` namespace. It provides access to the raw PSR-7 response via `getPsrResponse()`, and includes helpers for `Retry-After`, success checks, status codes, and headers. The v1 implementation is a thin PSR-7-backed wrapper, not a Symfony-inherited object.
 - **Service Return Types**: Services MUST return Resources or DTOs, not the response wrapper.
 - **Default Client**: Guzzle 7 is the default PSR-18 implementation.
 

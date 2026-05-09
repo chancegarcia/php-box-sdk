@@ -100,7 +100,7 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 - Goal: Implement core foundation services according to hardened v1 strategy.
 - Scope:
     - Transport refactor: Public `TransportInterface` with `send()` and `request()` support; PSR-18 integration.
-    - Response Wrapper Simplification: Refactor `BoxResponse` into a thin PSR-7 wrapper named `BoxResponse` / `BoxResponseInterface` in `Box\Http`; implement required SDK helpers (`getRetryAfter`, `isSuccessful`, etc.).
+    - Response Wrapper Replacement: REPLACE the current `BoxResponse` (Symfony-inherited) with a new thin PSR-7 wrapper named `BoxResponse` / `BoxResponseInterface` in `Box\Http`; implement required SDK helpers (`getRetryAfter`, `isSuccessful`, `json`, etc.); remove legacy Symfony methods.
     - Auth provider boundary: `AuthProviderInterface` and `TokenStorageInterface`.
     - JWT/S2S Auth: Implementation targeted for v1.0.0; include feasibility checkpoint task.
     - Exception taxonomy: Implement base `BoxException` hierarchy.
