@@ -159,6 +159,18 @@ Code review priorities:
 - Adequate tests and documentation
 - Avoiding unnecessary architectural churn
 
+## File Moves, Renames, and Git History
+
+When moving or renaming files, especially during documentation reorganizations, preserve file history and ensure review clarity:
+- Prefer `git mv old/path new/path` when moving tracked files.
+- If files were already moved manually:
+    - Stage the new file path with `git add`.
+    - Stage the old removed path with `git rm old/path`.
+- Verify rename detection with `git status` or `git diff --cached --summary`.
+- Avoid leaving moved files as unrelated add/delete pairs when the intent is a rename.
+- Check for stale links/references after moving documentation files.
+- Avoid staging unrelated generated/cache/temp/vendor files.
+
 ## Code Style and Validation
 
 Use Composer scripts as the source of truth for project validation.
