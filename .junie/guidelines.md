@@ -173,24 +173,40 @@ When moving or renaming files, especially during documentation reorganizations, 
 
 ## Code Style and Validation
 
-Use Composer scripts as the source of truth for project validation.
+Use Composer scripts as the source of truth for project validation and style checks. Do not use direct `vendor/bin/phpunit`, `vendor/bin/phpstan`, `vendor/bin/phpcs`, or `vendor/bin/phpcbf` as substitutes for Composer scripts unless explicitly requested or investigating a tooling issue.
 
 Required validation commands:
 
-- `composer dump-autoload`
 - `composer test`
 - `composer analyse`
 - `composer cs:check`
+- `composer lint`
+- `composer review`
+- `composer dump-autoload`
 
 Required automatic code style fix command:
 
 - `composer cs:fix`
 
-Do not use ad hoc PHPCS commands such as `vendor/bin/phpcs --standard=PSR12 ...` as a replacement for `composer cs:check`. The Composer script uses the project’s configured ruleset and should be treated as canonical.
+If code style output says that PHPCBF can fix violations automatically, run `composer cs:fix`, then rerun `composer cs:check`.
 
-If code style output says that PHPCBF can fix violations automatically, run `composer cs:fix`, then run `composer cs:check` again.
+Final summaries should report Composer commands and results. Direct `vendor/bin/phpcs` or `vendor/bin/phpcbf` usage is allowed only when explicitly requested by the user or when investigating a tool issue. Final reported validation must still include `composer cs:check`.
 
-Direct `vendor/bin/phpcs` or `vendor/bin/phpcbf` usage is allowed only when explicitly requested by the user or when investigating a tool issue. Final reported validation must still include `composer cs:check`.
+## Slice Workflow
+
+For multi-slice initiatives such as Foundation Refinement:
+
+- Treat tracker-embedded prompts as drafts unless the user explicitly says otherwise.
+- Refine each slice prompt immediately before execution.
+- Execute one slice at a time.
+- After a slice completes, provide the implementation output for review.
+- Identify follow-ups before starting the next slice.
+- If there are no follow-ups, commit the completed slice before starting the next slice.
+- Do not proceed to the next slice automatically.
+- Keep each slice focused and avoid pulling in unrelated future-slice scope.
+- If a slice exposes a larger architectural issue, document it as follow-up unless it blocks the current slice.
+
+## General Guidance
 
 When uncertain:
 - Ask for clarification before making large public API or architectural changes.
