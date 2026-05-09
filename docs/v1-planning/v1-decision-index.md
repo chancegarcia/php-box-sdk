@@ -20,6 +20,12 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 | Exception taxonomy | **Decided** | `v1-architecture-rules.md` | None |
 | `json()` Helper Decision | **Decided** | `v1-strategy-and-contracts.md` | None |
 | Auth Provider / Token Storage Boundary | **Decided** | `v1-strategy-and-contracts.md` | None |
+| Token Storage Core Scope | **Decided** | `v1-strategy-and-contracts.md` | None |
+| Token Storage Context Strategy | **Decided** | `v1-strategy-and-contracts.md` | None |
+| PDO Schema Management | **Decided** | `v1-strategy-and-contracts.md` | None |
+| Encryption at Rest | **Decided** | `v1-strategy-and-contracts.md` | None |
+| Multi-Token Support | **Decided** | `v1-strategy-and-contracts.md` | None |
+| Doctrine ORM Storage Deferral | **Decided** | `future-symfony-bundle.md` | None |
 | Migration Documentation Requirements | **Decided** | `v1-strategy-and-contracts.md` | None |
 | Documentation Gap Inventory | **Active** | `v1-documentation-gap-inventory.md` | Tracks ongoing P2/P3 items |
 | SDK Response Wrapper | **Decided** | `v1-strategy-and-contracts.md` | Implementation: Replace with thin PSR-7 wrapper |
@@ -97,6 +103,31 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 ### Endpoint Priority (Sign Requests and Webhooks)
 - **Decision**: Sign Requests and Webhooks are v1.1.0 items.
 - **Fallback**: Direct transport may be used as the temporary escape hatch for these endpoints in v1.0.0.
+
+### Token Storage Context
+
+- **Decision**: v1 token storage uses a small `TokenStorageContext` DTO/value object or equivalent explicit context object.
+- **Rationale**: Context must be consistent across storage implementations and framework-neutral.
+- **v1.0 Scope**: Context identifies logical token owner/scope, such as default, CLI profile, user, enterprise, tenant, or integration.
+
+### PDO Schema Management
+
+- **Decision**: v1 core SDK documents required PDO token storage schema and may provide schema helper SQL, but does not own framework migrations.
+- **Rationale**: PDO storage remains framework-neutral and predictable.
+
+### Encryption at Rest
+
+- **Decision**: v1 core SDK does not implement encryption at rest directly for PDO token storage.
+- **Decision**: v1 docs must clearly state that access tokens, refresh tokens, client secrets, JWT private keys, and related auth material are secrets and should be protected by the consuming application.
+- **Rationale**: Encryption and key management are application/infrastructure-specific.
+
+### Multi-Token Support
+
+- **Decision**: v1 core SDK token storage supports multiple storage contexts, with one active token record per context.
+- **Decision**: Broad multi-token-per-context support is deferred.
+- **Rationale**: Multi-context storage supports real-world SDK usage without forcing application-specific token selection policy into the core SDK. Multiple active tokens per context create token selection, refresh, revocation, schema, and security complexity better suited to future Symfony/Doctrine integration work.
+- **v1.0 Scope**: In-memory and PDO storage support context-aware persistence with one active token per context.
+- **Deferred Scope**: Token history, multiple active grants per context, token labels/profiles, active/default selection, and Doctrine-backed multi-token models.
 
 ## 3. Open Questions for Human Review
 

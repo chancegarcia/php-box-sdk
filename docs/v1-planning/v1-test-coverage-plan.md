@@ -218,6 +218,11 @@ Include:
 - **Goal**: Implement foundation services according to hardened v1 strategy.
 - **Required test cases**:
     - Auth Provider: Verify OAuth2/JWT flow; verify token refresh triggers; verify `TokenStorage` interaction (passive storage).
+    - Token Storage Context: Verify `TokenStorageContext` DTO/value object behavior and canonical key generation.
+    - Token Storage (In-Memory/PDO): Verify save/load/update/remove for single and multiple contexts; verify context isolation (different keys/users); verify no cross-context leakage.
+    - Token Storage Persistence: Verify one active token per context enforcement; verify overwrite behavior for same context.
+    - PDO Storage Specifics: Verify transaction behavior; verify unique context constraint in schema; verify helper SQL produces expected schema.
+    - Token Storage Security: Verify REDACTION of token values in storage-related exceptions, logs, and `__toString()`; verify extension point for custom encrypted storage (contract tests).
     - Exception Taxonomy: Verify hierarchy (`BoxException` -> `ApiException` -> `NotFoundException`, etc.); verify secret redaction in `__toString()`.
     - Logging: Verify PSR-3 integration; verify automatic token/secret redaction in logs using a `TestLogger`.
     - Retry: Verify disabled by default; verify `Retry-After` honoring; verify safe methods only by default; verify `RetryExhaustedException`.

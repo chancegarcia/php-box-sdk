@@ -102,7 +102,11 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
     - Transport refactor: Public `TransportInterface` with `send()` and `request()` support; PSR-18 integration; support for options (headers, query, json, body, auth, retry).
     - Response Wrapper Replacement: REPLACE the current `BoxResponse` (Symfony-inherited) with a new thin PSR-7 wrapper named `BoxResponse` / `BoxResponseInterface` in `Box\Http`; implement required SDK helpers (`getPsrResponse`, `getStatusCode`, `isSuccessful`, `getHeaders`, `getHeader`, `getHeaderLine`, `hasHeader`, `getBody`, `getContent`, `getRetryAfter`, `json`, etc.); remove legacy Symfony methods.
     - `json()` Helper: Implement in `BoxResponse` with proper error handling (throws on invalid JSON).
-    - Auth provider boundary: `AuthProviderInterface` and `TokenStorageInterface` with clear responsibility separation (Storage is passive).
+    - Auth provider boundary: `AuthProviderInterface` and `TokenStorageInterface` with clear responsibility separation (Storage is passive); define `TokenStorageContext` DTO/value object strategy.
+    - Token Storage implementations: Implement or harden `InMemoryTokenStorage` and `PdoTokenStorage` with multiple context support and one active token per context enforcement.
+    - Token Storage Security: Ensure NO encryption at rest in core; document security guidance; provide extension points for encrypted storage.
+    - PDO Schema: Document required PDO schema and provide optional helper SQL; no framework migration ownership in core.
+    - Multi-Token Support: Defer token history and multi-token-per-context features to future integration work.
     - JWT/S2S Auth: Targeted v1.0.0; include feasibility checkpoint after foundation.
     - Exception taxonomy: Base `BoxException` hierarchy (Client, Transport, Api, etc.); redaction of secrets in string output.
     - Logging and Redaction Policy: PSR-3 integration; automatic token/secret redaction in logs and exceptions.

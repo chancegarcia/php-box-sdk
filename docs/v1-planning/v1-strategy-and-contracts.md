@@ -94,6 +94,10 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
 ### Token Storage / Auth Provider
 - **Responsibility**: Managing credentials and token persistence.
 - **Boundary**: SDK provides standard implementations (In-memory, PDO); users can provide their own.
+- **Token Storage Context**: Identifies the logical scope for a token (e.g., user, enterprise).
+- **Multi-context storage**: Ability to store tokens for multiple different logical contexts.
+- **Multi-token-per-context storage**: (Deferred) Storing multiple active tokens for the exact same context.
+- **One active token per context**: The core SDK rule for v1.0.0 persistence.
 
 ## 4. Core Contract Definitions
 
@@ -328,11 +332,27 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
     - **Passive** persistence and retrieval of `Token` DTOs.
     - Must NOT contain logic for token refresh or exchange.
     - Must NOT make network calls.
+    - **Scope**: v1 core SDK provides In-Memory and PDO implementations. Doctrine ORM is deferred.
+- **Context Strategy**: v1 token storage MUST use a small `TokenStorageContext` DTO/value object or equivalent explicit context object to distinguish tokens for different users, accounts, or enterprises. This object should provide a canonical string representation for storage indexing.
+    - **Context Examples**: `default`, `cli:local`, `user:123`, `enterprise:456`, `tenant:abc`, `integration:production`.
+- **One Active Token per Context**: v1 core SDK enforces a "one active token per context" rule. Each unique context maps to exactly one set of active credentials. Multi-token-per-context support (labels, history, profile selection) is deferred.
+- **PDO Storage**: Framework-neutral persistent storage requiring a PDO instance.
+    - **Schema**: Required schema MUST be documented and may provide helper SQL for common databases.
+    - **Migrations**: The core SDK does NOT own framework-specific migrations (e.g., Doctrine, Laravel).
+    - **Schema Fields**: Context key, access token, refresh token, token type, expiration, auth type (optional), created/updated timestamps.
+    - **Constraints**: Should use a unique constraint on the context key to enforce one active token per context.
+- **In-Memory Storage**: Process-lifetime storage suitable for tests and CLI. Must support multiple contexts via internal mapping.
+- **Security and Encryption**:
+    - **Redaction**: Token values MUST be redacted from all log output and exception messages.
+    - **Encryption at Rest**: v1 core SDK does NOT implement encryption at rest for PDO storage. Encryption is the responsibility of the application or infrastructure.
+    - **Extension Points**: The SDK should provide guidance or interfaces to allow users to implement their own encrypted storage adapters.
 - **Workflow**:
     1. `AuthProvider` checks if cached token is expired.
     2. If expired, `AuthProvider` performs refresh and calls `TokenStorage->save()`.
     3. If no token exists, `AuthProvider` triggers the initial flow or throws an exception.
-- **Tests**: Providers must be tested for refresh triggers. Storage must be tested for persistence reliability.
+- **Refresh Safety**: `TokenStorage` should support atomic updates where practical (e.g., transactions in PDO). If storage fails after a successful refresh, the `AuthProvider` must handle the failure and ensure sensitive values are redacted from any generated exceptions.
+- **Tests**: Providers must be tested for refresh triggers. Storage must be tested for persistence reliability, context isolation, and redaction of secrets.
+- **Deferred Auth**: Multi-token selection, token history, and Doctrine-backed multi-token models are not v1.0 core responsibilities.
 
 ## 17. Documentation Strategy
 
@@ -378,3 +398,14 @@ The final migration guide MUST cover:
 - **JWT Timing**: Targeted v1.0.0; feasibility checkpoint after foundation.
 - **Auto-pagination**: Complexity vs value for v1.0.
 - **Upload Progress**: PSR-18 doesn't natively handle progress hooks well; deferred to v1.1.0 or earlier only if concrete Guzzle-specific requirements arise.
+
+## 22. Open Questions for Token Storage
+
+- What exact fields should `TokenStorageContext` contain? (Non-blocking for v1.0)
+- Should the context object expose a canonical string key? (Likely yes)
+- Should PDO storage enforce one active token per context with a unique constraint? (Yes, documented)
+- Should unsupported multi-token-per-context attempts overwrite, reject, or require explicit update semantics? (Overwrite by default in core v1.0)
+- Should auth type be part of the context key or a separate metadata field? (Metadata)
+- Should JWT/S2S and OAuth2 tokens share the same storage contract and context model? (Yes)
+- Should future Symfony bundle storage support token history by default or as an opt-in feature?
+- What package/repository should eventually host the Symfony bundle?
