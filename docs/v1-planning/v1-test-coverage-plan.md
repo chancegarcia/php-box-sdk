@@ -196,21 +196,32 @@ Include:
 - **Validation commands**: Standard V1 validation commands.
 - **Done criteria**: All Group/Membership logic moved to V1, legacy models deprecated, parity coverage for in-scope legacy behavior.
 
-### 2. SDK Response Wrapper Replacement
-- **Goal**: Replace the legacy hybrid `BoxResponse` with a thin PSR-7-backed wrapper.
-- **Primary units under test**: `Box\Http\Response\BoxResponse`, `Box\Http\Response\BoxResponseInterface`.
+### 2. SDK Response Wrapper Replacement and Direct Transport
+- **Goal**: Replace the legacy hybrid `BoxResponse` with a thin PSR-7-backed wrapper and implement direct transport.
+- **Primary units under test**: `Box\Http\Response\BoxResponse`, `Box\Http\Response\BoxResponseInterface`, `Box\Http\Transport\TransportInterface`.
 - **Current coverage status**: Not started (planned).
 - **Required test cases**:
     - PSR-7 Proxy: Verify all `ResponseInterface` methods delegate to the underlying PSR-7 response.
-    - Immutability: Verify that the wrapper remains immutable (returning new instances for PSR-7 mutation methods if exposed, or asserting that it is a read-only wrapper).
+    - Immutability: Verify that the wrapper remains immutable.
     - Success Helpers: `isSuccessful()` returns true for 2xx.
     - Metadata Helpers: `getRetryAfter()` correctly parses `Retry-After` (both int and date formats).
-    - Ergonomics: `json()` helper returns decoded array and handles invalid JSON.
+    - Ergonomics: `json(bool $assoc = true)` helper returns decoded data and throws `JsonDecodeException` on invalid JSON.
     - Ergonomics: `getContent()` returns string body.
-    - Exception Integration: Verify `BoxResponseException` can use the wrapper for context.
+    - Direct Transport: Verify `send(RequestInterface $request)` returns the wrapper.
+    - Direct Transport: Verify `request(string $method, string $path, array $options)` correctly maps options (headers, query, json, body) and returns the wrapper.
+    - Exception Integration: Verify `ApiException` (and subclasses) can use the wrapper for context.
     - Isolation: Verify NO inheritance from Symfony `HttpFoundation\Response`.
     - Migration: Verify `Connection` and `GuzzleTransport` work with the new wrapper.
 - **Done criteria**: Symfony dependency removed from `BoxResponse`, all tests green, `GuzzleTransport` no longer manually reconstructs header strings.
+
+### 2. Foundation Services (Auth, Exceptions, Logging, Retry)
+- **Goal**: Implement foundation services according to hardened v1 strategy.
+- **Required test cases**:
+    - Auth Provider: Verify OAuth2/JWT flow; verify token refresh triggers; verify `TokenStorage` interaction (passive storage).
+    - Exception Taxonomy: Verify hierarchy (`BoxException` -> `ApiException` -> `NotFoundException`, etc.); verify secret redaction in `__toString()`.
+    - Logging: Verify PSR-3 integration; verify automatic token/secret redaction in logs using a `TestLogger`.
+    - Retry: Verify disabled by default; verify `Retry-After` honoring; verify safe methods only by default; verify `RetryExhaustedException`.
+- **Done criteria**: Foundation services implemented and verified; secret leaks prevented.
 
 ### 2. Shared DTO foundation
 - **Goal**: Establish common DTOs used by multiple resources.

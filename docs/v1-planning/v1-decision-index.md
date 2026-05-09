@@ -17,7 +17,11 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 | PSR-3 Logging with Redaction | **Decided** | `v1-strategy-and-contracts.md` | Implementation details |
 | Retry disabled by default | **Decided** | `v1-architecture-rules.md` | None |
 | Retry scope (Transport layer) | **Decided** | `v1-strategy-and-contracts.md` | None |
-| Exception taxonomy | **Decided** | `v1-strategy-and-contracts.md` | Hierarchy details |
+| Exception taxonomy | **Decided** | `v1-architecture-rules.md` | None |
+| `json()` Helper Decision | **Decided** | `v1-strategy-and-contracts.md` | None |
+| Auth Provider / Token Storage Boundary | **Decided** | `v1-strategy-and-contracts.md` | None |
+| Migration Documentation Requirements | **Decided** | `v1-strategy-and-contracts.md` | None |
+| Documentation Gap Inventory | **Active** | `v1-documentation-gap-inventory.md` | Tracks ongoing P2/P3 items |
 | SDK Response Wrapper | **Decided** | `v1-strategy-and-contracts.md` | Implementation: Replace with thin PSR-7 wrapper |
 | Response Strategy Alignment | **Decided** | `v1-strategy-and-contracts.md` | None |
 | JWT/S2S Auth Timing | **Decided** | `v1-strategy-and-contracts.md` | Feasibility checkpoint after foundation |
@@ -60,7 +64,7 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 - **Naming**: Keep `BoxResponseInterface` / `BoxResponse` naming for the public SDK response wrapper.
 - **Method Design**: Keep the SDK response wrapper minimal and PSR-oriented.
 - **Legacy Compatibility**: `BoxResponse` will be **replaced** by a new implementation that wraps PSR-7 and removes Symfony inheritance. Legacy methods like `isOk`, `isForbidden`, etc., will be removed in favor of `getStatusCode()` or simplified helpers like `isSuccessful()`.
-- **Open Question**: Should `json()` be a first-class method on the wrapper? (Recommended: Yes, for ergonomic direct transport usage).
+- **Decision**: `json(bool $assoc = true)` is a first-class helper method on the wrapper for ergonomic direct transport usage. It MUST throw a `JsonDecodeException` on invalid JSON.
 
 ### Upload Progress Abstraction
 - **Decision**: **Deferred**.
@@ -71,6 +75,19 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 ### Exception Metadata and Redaction
 - **Decision**: Exceptions may contain raw PSR-7 messages for debugging.
 - **Redaction**: Access tokens, refresh tokens, client secrets, and authorization codes MUST be redacted from exception messages and log output. Raw objects remain available for advanced debugging but users should be warned about sensitivity.
+
+### Auth Provider and Token Storage Boundary
+- **Decision**: `AuthProvider` manages lifecycle (refresh, exchange, injection); `TokenStorage` is a **passive** data store only.
+- **Requirement**: `TokenStorage` MUST NOT make network calls or contain refresh logic.
+
+### Error Taxonomy
+- **Decision**: Comprehensive hierarchy based on `BoxException` defined in `v1-architecture-rules.md`.
+- **API Errors**: Specialized exceptions for 401, 403, 404, 409, 429.
+- **Internal Errors**: Specialized exceptions for JSON decode, Hydration, Token Storage, and Retry Exhaustion.
+- **Redaction**: All exceptions MUST redact secrets from string/log output.
+
+### Migration Documentation Requirements
+- **Decision**: The migration guide must explicitly cover the shift to facade/services, passive resources, direct transport, the new response wrapper, and the exception hierarchy.
 
 ### JWT/S2S Auth Sequencing
 - **Decision**: JWT/S2S is a targeted v1.0.0 requirement.

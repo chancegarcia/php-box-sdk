@@ -109,12 +109,30 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
 - Services handle response status codes and call Hydrator to produce Resources.
 
 ### Direct Transport API (Advanced)
-- Users can access `$client->transport()` to send raw requests.
-- Returns `BoxResponseInterface` (wrapper around PSR-7).
-- Supports both PSR-oriented and ergonomic methods:
-    - `send(RequestInterface $request)` (Pure PSR-7)
-    - `request(string $method, string $pathOrUri, array $options = [])` (SDK convenience)
-- Direct transport acts as an escape hatch for uncovered endpoints (e.g., Sign Requests, Webhooks in v1.0.0).
+- **Purpose**: Provides an escape hatch for users needing to call endpoints not yet covered by high-level services, or requiring low-level HTTP control.
+- **Audience**: Power users and contributors working on new API features.
+- **Relation to Services**: Services use the same internal transport mechanism but encapsulate it. Direct transport bypasses service-level hydration and validation.
+- **Usage Patterns**:
+    - `send(RequestInterface $request)`: Accepts a pre-constructed PSR-7 `RequestInterface`.
+    - `request(string $method, string $pathOrUri, array $options = [])`: Ergonomic wrapper for quick calls.
+- **Expected Options for `request()`**:
+    - `headers`: `array<string, string|string[]>`
+    - `query`: `array<string, mixed>` (Appended to URI)
+    - `json`: `mixed` (Encoded as JSON body)
+    - `body`: `string|resource|StreamInterface` (Raw body)
+    - `multipart`: `array` (For file uploads, if supported)
+    - `auth`: `bool` (Whether to inject auth headers; default `true`)
+    - `retry`: `bool|array` (Override default retry behavior for this request)
+- **Warnings**: Using direct transport requires manual response handling and bypasses SDK-managed resource integrity. Users are responsible for parsing results and handling non-200 responses if they disable exceptions.
+- **When to Use**:
+    - New/beta Box API endpoints not yet in the SDK.
+    - Custom request headers or non-standard query parameters.
+    - Debugging raw API interactions.
+- **When NOT to Use**:
+    - When a high-level Service exists for the resource.
+    - Standard CRUD operations.
+- **Test Expectations**: Direct transport must be tested for header injection, option mapping, and error propagation.
+- **Migration**: Replacing v0.10's raw `Request` objects and manual `Guzzle` calls with the standardized `$client->transport()` interface.
 
 ### Type Standards
 - **IDs**: Always `string`.
@@ -225,6 +243,10 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
     - Standardize common checks like `isSuccessful()`.
 - **Naming**: `BoxResponseInterface` / `BoxResponse` in the `Box\Http` namespace.
 - **Implementation**: The current implementation (which inherits from Symfony) will be **replaced** by a new, thin wrapper that strictly delegates to an internal PSR-7 response. Legacy Symfony inheritance and manual header parsing will be removed.
+- **Avoid**:
+    - Full PSR-7 mutation API (Responses are immutable in the SDK).
+    - Symfony inheritance or dependencies.
+    - Legacy response-header parsing unless internally justified for v1 compatibility.
 - **Required Methods**:
     - `getPsrResponse()`: Returns the underlying PSR-7 response.
     - `getStatusCode()`: Delegates to PSR-7.
@@ -236,9 +258,15 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
     - `getBody()`: Returns PSR-7 `StreamInterface`.
     - `getContent()`: Returns string body (convenience for `(string) $getBody()`).
     - `getRetryAfter()`: Returns `int|null` (parsed from `Retry-After` header).
-    - `json()`: Optional helper to return decoded JSON body.
+    - `json(bool $assoc = true): mixed`: Helper to return decoded JSON body.
+- **`json()` Helper Decision**:
+    - **Purpose**: Ergonomics for direct transport users working with raw/custom endpoints.
+    - **Hydration**: Does NOT replace service-level DTO/resource hydration.
+    - **Signature**: `json(bool $assoc = true): mixed`.
+    - **Error Behavior**: Invalid JSON MUST throw an `ApiException` (or specific `JsonDecodeException`) with the raw response context. Empty bodies return `null`.
 - **Service Return Types**: Services MUST return Resources or DTOs, never raw response objects or wrappers.
 - **Exception Context**: Exceptions store the PSR-7 response and may use the wrapper for parsing, but must redact sensitive data in string output.
+- **Test Expectations**: Tests must cover successful JSON decoding, invalid JSON exceptions, empty body handling, and preservation of raw body access.
 
 ### Usage Layers
 1. **Client/Facade**: `$client->files()->get($id)`.
@@ -286,9 +314,25 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
 
 ## 16. Security and Secret Handling Strategy
 
+### Redaction and Secrets
 - **No Secrets in Logs**: Enforcement via automated tests.
-- **Token Storage**: Encourages secure storage (encrypted DB, secure environment vars).
+- **Token Storage**: Encourages secure storage (encrypted DB, secure environment vars). Token storage implementations MUST NOT log the tokens themselves.
 - **TLS**: Hard requirement for all API communication.
+
+### Auth Provider and Token Storage Boundary
+- **AuthProvider Responsibility**:
+    - Managing the authentication lifecycle (OAuth2, JWT).
+    - Handling token exchange (code -> token) and refresh.
+    - Injecting auth headers into requests (delegated to Transport).
+- **TokenStorage Responsibility**:
+    - **Passive** persistence and retrieval of `Token` DTOs.
+    - Must NOT contain logic for token refresh or exchange.
+    - Must NOT make network calls.
+- **Workflow**:
+    1. `AuthProvider` checks if cached token is expired.
+    2. If expired, `AuthProvider` performs refresh and calls `TokenStorage->save()`.
+    3. If no token exists, `AuthProvider` triggers the initial flow or throws an exception.
+- **Tests**: Providers must be tested for refresh triggers. Storage must be tested for persistence reliability.
 
 ## 17. Documentation Strategy
 
@@ -308,6 +352,19 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
 - **v1.0**: Breaking change release.
 - **v1.x**: SemVer compliance; no breaking changes.
 - **Legacy Aliases**: Removed in v1.0.
+
+### Migration Guide Requirements
+The final migration guide MUST cover:
+- **Client**: Transitioning from god-object `BoxClient` to the lightweight facade/service pattern.
+- **Models**: Shift from `Model` terminology to `Resource` and `DTO`.
+- **Transport**: Usage of the direct transport escape hatch.
+- **Responses**: Changes from Symfony-based `BoxResponse` to the thin PSR-7 wrapper.
+- **Exceptions**: The new hierarchy and how to access response metadata.
+- **Auth**: Moving to `AuthProvider` and `TokenStorage` interfaces.
+- **Retry/Logging**: New default behaviors and configuration options.
+- **Namespaces**: Removal of all `Box\Model` and legacy transition aliases.
+- **Data Types**: Strict enforcement of IDs (string), dates (`DateTimeImmutable`), and enums.
+- **Arrays**: Removal of the 0.11 transition layer's broad associative array support in favor of typed objects.
 
 ## 20. Decision Records
 

@@ -99,17 +99,18 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 - [ ] Status: Not started
 - Goal: Implement core foundation services according to hardened v1 strategy.
 - Scope:
-    - Transport refactor: Public `TransportInterface` with `send()` and `request()` support; PSR-18 integration.
-    - Response Wrapper Replacement: REPLACE the current `BoxResponse` (Symfony-inherited) with a new thin PSR-7 wrapper named `BoxResponse` / `BoxResponseInterface` in `Box\Http`; implement required SDK helpers (`getRetryAfter`, `isSuccessful`, `json`, etc.); remove legacy Symfony methods.
-    - Auth provider boundary: `AuthProviderInterface` and `TokenStorageInterface`.
-    - JWT/S2S Auth: Implementation targeted for v1.0.0; include feasibility checkpoint task.
-    - Exception taxonomy: Implement base `BoxException` hierarchy.
-    - Logging and Redaction: PSR-3 integration with secret filtering.
-    - Retry Policy: Implementation with disabled-by-default behavior.
+    - Transport refactor: Public `TransportInterface` with `send()` and `request()` support; PSR-18 integration; support for options (headers, query, json, body, auth, retry).
+    - Response Wrapper Replacement: REPLACE the current `BoxResponse` (Symfony-inherited) with a new thin PSR-7 wrapper named `BoxResponse` / `BoxResponseInterface` in `Box\Http`; implement required SDK helpers (`getPsrResponse`, `getStatusCode`, `isSuccessful`, `getHeaders`, `getHeader`, `getHeaderLine`, `hasHeader`, `getBody`, `getContent`, `getRetryAfter`, `json`, etc.); remove legacy Symfony methods.
+    - `json()` Helper: Implement in `BoxResponse` with proper error handling (throws on invalid JSON).
+    - Auth provider boundary: `AuthProviderInterface` and `TokenStorageInterface` with clear responsibility separation (Storage is passive).
+    - JWT/S2S Auth: Targeted v1.0.0; include feasibility checkpoint after foundation.
+    - Exception taxonomy: Base `BoxException` hierarchy (Client, Transport, Api, etc.); redaction of secrets in string output.
+    - Logging and Redaction Policy: PSR-3 integration; automatic token/secret redaction in logs and exceptions.
+    - Retry and Rate-Limit: Disabled by default; honors `Retry-After`; safe retries only by default.
 - Dependencies: 5.
 - Validation: `composer test`.
 - Documentation updates: Update `v1-architecture-rules.md`.
-- Test updates: New foundation tests (Redaction, Retry, Transport).
+- Test updates: New foundation tests (Redaction, Retry, Transport, Response Wrapper, JSON helper, Auth workflow).
 
 ## 7. Group and Group Membership Migration
 

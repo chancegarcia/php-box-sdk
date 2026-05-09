@@ -54,9 +54,47 @@ These rules define the required structure for the Box PHP SDK V1.0 refactor.
 - **Strict Typing**: Mandatory for parameters, return values, and properties.
 - **Metadata**: Use typed DTO envelopes for Box-defined metadata structure while allowing custom template values as `array<string, mixed>`.
 - **Hydration**: Centralized in `Box\Mapper` or `Box\Http\Hydrator`, not in the models themselves. Resource construction should be handled by hydrator/mapper boundaries.
-- **Retry**: Applied at the Transport layer. Must be disabled by default. Safe retries (idempotent methods) preferred.
-- **Logging**: PSR-3 compliant. Must redact sensitive data (tokens, secrets).
-- **Exceptions**: Taxonomy-based (NotFound, Conflict, etc.). May contain raw PSR-7 messages if explicitly enabled; redaction required for string/log output.
+
+### Retry and Rate-Limit Behavior
+- **Default**: Disabled.
+- **Scope**: Applied at the Transport layer (middleware/decorator).
+- **Applicability**: Applies to both Service and Direct Transport calls.
+- **Safe Retries**: Only retry GET, HEAD, and idempotent operations (with `Idempotency-Key`) by default.
+- **Opt-in**: Non-idempotent retries require explicit opt-in via request options.
+- **Retry-After**: Transport MUST honor Box API's `Retry-After` header.
+- **Exhaustion**: Throws `RetryExhaustedException` when max attempts are reached.
+- **Metadata**: Exceptions and response wrappers MUST expose retry count and last response.
+
+### Logging and Redaction Policy
+- **Logger**: PSR-3 `Psr\Log\LoggerInterface` (Default: `NullLogger`).
+- **Events**:
+    - Request/Response execution (redacted).
+    - Auth token refresh.
+    - Retry attempts.
+    - Hydration/Mapping failures (DEBUG).
+- **Redaction Policy**:
+    - **Tokens**: `access_token`, `refresh_token`, `Authorization` header, and any secret strings MUST be replaced with `[REDACTED]`.
+    - **Bodies**: Request/Response bodies should be truncated or redacted if they exceed size limits or contain sensitive file content.
+    - **Exceptions**: Exception messages and stack traces MUST NOT leak secrets.
+- **Tests**: Logging must be verified with a test logger to ensure redaction rules are active.
+
+### Error Taxonomy
+- **Base**: `BoxException`.
+- **Validation**: `ClientException` (Pre-request validation, invalid config).
+- **Transport**: `TransportException` (Network errors, timeouts).
+- **API (4xx/5xx)**: `ApiException`.
+    - `AuthenticationException` (401 - Token expired or invalid).
+    - `AuthorizationException` (403 - Insufficient permissions).
+    - `NotFoundException` (404).
+    - `ConflictException` (409).
+    - `RateLimitException` (429 - Should be handled by retry if enabled).
+- **Specialized**:
+    - `JsonDecodeException` (Invalid response body).
+    - `HydrationException` (Mapping failure).
+    - `TokenStorageException` (Persistence failure).
+    - `RetryExhaustedException` (Max attempts reached).
+- **Context**: All API exceptions MUST provide access to the raw PSR-7 Request and Response (redacted).
+- **Direct Transport**: Direct transport throws these exceptions by default, maintaining consistency with Services.
 
 ## 7. Collections
 
