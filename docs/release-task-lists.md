@@ -52,15 +52,14 @@ This document details the planned tasks for the `v0.11` transition release and t
 ### API Coverage
 - **Must**: Implement missing high-priority endpoints. *Rationale: Complete the SDK's utility.*
 - **Must**: Achieve full PSR-12 compliance across the codebase. *Rationale: Modernize code quality and maintainability.*
-- **Should**: Align HTTP layer with PSR-7, PSR-17, and PSR-18. *Rationale: Better interoperability with the PHP ecosystem.*
+- **Must**: Implement core foundation services according to hardened v1 strategy (Transport refactor with `send()` and `request()` support, thin Response wrapper, Auth boundaries, JWT/S2S target with feasibility checkpoint, Logging/Redaction, Retry defaults).
+- **Should**: Align HTTP layer with PSR-3, PSR-7, PSR-17, and PSR-18. *Rationale: Better interoperability with the PHP ecosystem.*
     - File Versions
     - Collections
     - Comments
     - Tasks
     - Metadata
 - **Should**: Implement secondary endpoints.
-    - Webhooks
-    - Sign Requests
     - File Requests
 - **Could**: Implement governance/security endpoints.
     - Retention Policies
@@ -68,7 +67,7 @@ This document details the planned tasks for the `v0.11` transition release and t
     - Classifications
 
 ### Auth & Features
-- **Should**: Add JWT authentication support. *Rationale: Support server-to-server integrations.*
+- **Must**: Add JWT authentication support (targeted for v1.0.0 foundation). *Rationale: Support server-to-server integrations.*
 - **Should**: Add chunked upload support. *Rationale: Handle very large files reliably.*
 - **Should**: Add token storage support or a clear extension point. *Rationale: Simplify token management for users.*
 

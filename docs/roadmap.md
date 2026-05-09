@@ -24,16 +24,20 @@ The CLI exists mainly as a quick, practical test tool for verifying SDK behavior
 
 ### v1.0 (Design Perfection)
 - **Goal**: Full implementation of the future architecture with no legacy baggage.
-- **Key Focus**: See [v1.0 Planning](v1-planning.md) for detailed technical goals.
+- **Key Focus**: See [v1.0 Planning](v1-planning.md) and [v1.0 Strategy](v1-planning/v1-strategy-and-contracts.md) for detailed technical goals.
 - **Planned Changes**:
     - **Client as Facade**: `Client` will become a lightweight facade over focused services (e.g., `FileService`, `UserService`).
+    - **Service-First Architecture**: High-level operations move to focused services.
+    - **Direct Transport API**: Supported advanced extension point for raw PSR-7 requests; supports both PSR-oriented `send()` and ergonomic `request()` methods.
     - **No Legacy Baggage**: Remove all legacy aliases and deprecated namespaces.
     - **Strict Typing**: Enforce object-only types for nested model fields; standardize IDs as `string` and dates as `DateTimeImmutable`.
+    - **Modern Auth Boundary**: Decouple `Connection` into `Transport` and `AuthProvider`.
     - **Clean Connection**: Decouple `Connection` from `Model` inheritance; make it a raw request/response layer.
     - **Service Consistency**: Services will return mapped model objects or typed DTOs consistently.
     - **Modern DI**: Replace class-string setters with constructor injection or factories.
-    - **Expanded Coverage**: Implement high-priority endpoints like Collections, Metadata, and File Versions.
-    - **PSR Compliance**: Achieve full PSR-12 compliance and align with PSR-7, PSR-17, and PSR-18 for HTTP interoperability.
+    - **Expanded Coverage**: Implement high-priority endpoints like Metadata; Sign Requests and Webhooks deferred to v1.1.0 (with v1.0.0 direct transport fallback).
+    - **PSR Compliance**: Achieve full PSR-12 compliance and align with PSR-3, PSR-7, PSR-17, and PSR-18.
+    - **Resilience**: Optional, disabled-by-default retry behavior with `Retry-After` support.
 - **Release Tasks**: See [v1.0 Release Task List](release-task-lists.md#v10-release-task-list).
 
 ## Current Focus Areas

@@ -54,6 +54,9 @@ These rules define the required structure for the Box PHP SDK V1.0 refactor.
 - **Strict Typing**: Mandatory for parameters, return values, and properties.
 - **Metadata**: Use typed DTO envelopes for Box-defined metadata structure while allowing custom template values as `array<string, mixed>`.
 - **Hydration**: Centralized in `Box\Mapper` or `Box\Http\Hydrator`, not in the models themselves. Resource construction should be handled by hydrator/mapper boundaries.
+- **Retry**: Applied at the Transport layer. Must be disabled by default. Safe retries (idempotent methods) preferred.
+- **Logging**: PSR-3 compliant. Must redact sensitive data (tokens, secrets).
+- **Exceptions**: Taxonomy-based (NotFound, Conflict, etc.). May contain raw PSR-7 messages if explicitly enabled; redaction required for string/log output.
 
 ## 7. Collections
 
@@ -77,7 +80,17 @@ Do not force small value-object arrays, enum lists, permission flags, or dynamic
 
 Collection filtering is in-memory only and should not be presented as a replacement for Box API search or server-side filtering.
 
-##. 8 Raw API Payload Debugging
+## 8. HTTP Transport and Connection
+
+- **Role**: Transport executes raw PSR-7 requests and returns SDK response wrappers.
+- **Public API**: Direct transport usage is a supported advanced public API / escape hatch for uncovered endpoints.
+- **Interface**: `TransportInterface` defines the core execution contract.
+- **Methods**: Supports both `send(RequestInterface $request)` (PSR-oriented) and `request(string $method, string $pathOrUri, array $options = [])` (ergonomic).
+- **Response Wrapper**: `BoxResponseInterface` / `BoxResponse` in the `Box\Http` namespace. It provides access to the raw PSR-7 response via `getPsrResponse()`, and includes helpers for `Retry-After`, success checks, status codes, and headers.
+- **Service Return Types**: Services MUST return Resources or DTOs, not the response wrapper.
+- **Default Client**: Guzzle 7 is the default PSR-18 implementation.
+
+## 9. Raw API Payload Debugging
 
 Resources should not store raw Box API payloads by default.
 

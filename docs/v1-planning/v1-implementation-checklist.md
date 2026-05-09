@@ -35,9 +35,9 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 - Scope: Create and align architecture rules, interface audits, API coverage audits, and test coverage plan.
 - Dependencies: None.
 - Validation: All planning docs present and consistent in `docs/v1-planning/`.
-- Documentation updates: `ai-assistant-planning-context.md`, `v1-architecture-rules.md`, `v1-interface-and-model-audit.md`, `v1-api-coverage-audit.md`, `v1-test-coverage-plan.md` (Precision refinement).
+- Documentation updates: `ai-assistant-planning-context.md`, `v1-architecture-rules.md`, `v1-interface-and-model-audit.md`, `v1-api-coverage-audit.md`, `v1-test-coverage-plan.md`, `v1-strategy-and-contracts.md` (Hardened strategy), `v1-decision-index.md`.
 - Test updates: N/A.
-- Completion notes: Planning docs are finalized and represent the starting state for the refactor. Added `v1-test-coverage-plan.md` to define expected parity and API coverage tests. Validation policies and phase-by-phase test matrices are defined in the plan.
+- Completion notes: Planning docs are finalized and represent the starting state for the refactor. Added `v1-test-coverage-plan.md` to define expected parity and API coverage tests. Hardened v1.0 strategy and contracts in `v1-strategy-and-contracts.md` covering glossary, boundaries, retry, logging, and direct transport. Reconciled all planning docs with the hardened strategy and created `v1-decision-index.md`.
 
 ## 2. Foundation Namespace Skeleton
 
@@ -83,7 +83,24 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 - Test updates: `UserTest`.
 - Completion notes: Implemented `Box\Resource\User` as a passive resource. Created `Box\Service\UserService`. Updated `Hydrator` to support Enum hydration. Removed `UserInterface` and updated all internal references. Deprecated legacy `Box\User\User` model.
 
-## 6. Group and GroupMembership Migration
+## 6. V1.0 Foundation Refinement (Strategy Alignment)
+
+- [ ] Status: Not started
+- Goal: Implement core foundation services according to hardened v1 strategy.
+- Scope:
+    - Transport refactor: Public `TransportInterface` with `send()` and `request()` support; PSR-18 integration.
+    - Response Wrapper Simplification: Refactor `BoxResponse` into a thin PSR-7 wrapper named `BoxResponse` / `BoxResponseInterface` in `Box\Http`; implement required SDK helpers (`getRetryAfter`, `isSuccessful`, etc.).
+    - Auth provider boundary: `AuthProviderInterface` and `TokenStorageInterface`.
+    - JWT/S2S Auth: Implementation targeted for v1.0.0; include feasibility checkpoint task.
+    - Exception taxonomy: Implement base `BoxException` hierarchy.
+    - Logging and Redaction: PSR-3 integration with secret filtering.
+    - Retry Policy: Implementation with disabled-by-default behavior.
+- Dependencies: 5.
+- Validation: `composer test`.
+- Documentation updates: Update `v1-architecture-rules.md`.
+- Test updates: New foundation tests (Redaction, Retry, Transport).
+
+## 7. Group and Group Membership Migration
 
 - [ ] Status: Not started
 - Goal: Migrate Groups and fold in GroupMemberships.
@@ -215,11 +232,11 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 - Test updates: New tests for Metadata.
 - Completion notes: 
 
-## 18. Deferred missing resource phase: Collections, Webhooks, File Requests, Sign Requests
+## 18. Deferred missing resource phase: Collections, File Requests
 
 - [ ] Status: Not started
 - Goal: Implement remaining high-priority API resources.
-- Scope: Sign Requests, Webhooks, etc.
+- Scope: File Requests, etc. (Sign Requests and Webhooks deferred to v1.1.0; use direct transport fallback).
 - Dependencies: 15.
 - Validation: `composer test`.
 - Documentation updates: API coverage update.

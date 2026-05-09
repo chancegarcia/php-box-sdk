@@ -42,8 +42,19 @@ These identify endpoints or behaviors that are known but intentionally out of sc
 - **Documentation checks**: Ensure migration guides and audits are updated.
 - **Composer script validation**: Always validate using `composer test`, `composer analyse`, and `composer cs:check`.
 - **V1 ID Typing**: V1 resource IDs should be typed as strings. Legacy `string|int` compatibility should be called out only where it is intentionally retained during transition.
+- **Redaction**: Tests must verify that sensitive data (tokens, secrets) are never exposed in logs, exception messages, or public metadata.
+- **Retry Defaults**: Tests must verify that retry is disabled by default.
 
 ## Standard Test Categories
+
+### Transport and Connection Tests
+Include:
+- `TransportInterface` implementation with PSR-18 client.
+- Auth header injection.
+- Retry policy execution (and disabled-by-default behavior).
+- `BoxResponseInterface` thin wrapper behavior (PSR-7 proxy, `getRetryAfter` parsing, `isSuccessful`, etc.).
+- Direct transport public API usage supporting both `send()` and `request()` patterns.
+- Direct transport returns the thin SDK wrapper.
 
 ### Resource/unit tests
 Include:
@@ -116,6 +127,13 @@ Include:
 - Deprecated class behavior if temporarily retained.
 - Documented breaking changes.
 - Stale reference detection where practical.
+
+### Security and Redaction Tests
+Include:
+- Token redaction in `BoxException` messages and context.
+- Secret redaction in PSR-3 logs.
+- CLI output masking.
+- Verification that raw PSR-7 messages are only exposed via opt-in/debug modes.
 
 ### Documentation checks
 Include:
@@ -354,19 +372,20 @@ Include:
 - **Validation commands**: Standard V1 validation commands.
 - **Done criteria**: Metadata service available.
 
-### 13. Deferred missing resource phase: Collections, Webhooks, File Requests, Sign Requests
+### 13. Deferred missing resource phase: Collections, File Requests
 - **Goal**: Implement remaining high-priority API resources.
-- **Primary units under test**: `Box\Resource\SignRequest`, `Box\Resource\Webhook`, etc.
+- **Primary units under test**: `Box\Resource\FileRequest`, etc. (Sign Requests and Webhooks deferred to v1.1.0).
 - **Current coverage status**: Not started.
 - **Resource/unit tests needed**: Passive accessors for each.
 - **Migration parity service tests needed**: N/A.
 - **Box API coverage service tests needed**: in-scope operations for each resource as defined by the API coverage audit.
-- **Hydrator/mapper tests needed**: Nested DTOs for Sign Request signers.
-- **DTO/enum tests needed**: Sign status enums, request DTOs, and list responses with pagination.
+- **Direct Transport Fallback**: Verify direct transport can be used for Sign Requests and Webhooks.
+- **Hydrator/mapper tests needed**: Standard hydration.
+- **DTO/enum tests needed**: Request DTOs and list responses with pagination.
 - **Migration/compatibility tests needed**: N/A.
-- **Negative/error tests needed**: Webhook URL invalid.
+- **Negative/error tests needed**: Invalid request parameters.
 - **Documentation checks**: Update API coverage audit and migration guide.
-- **Deferred API coverage**: Any endpoints not implemented in this phase must be listed in the API coverage audit as deferred.
+- **Deferred API coverage**: Sign Requests, Webhooks, and any endpoints not implemented.
 - **Validation commands**: Standard V1 validation commands.
 - **Done criteria**: Resources available in V1.
 

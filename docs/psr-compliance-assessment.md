@@ -36,13 +36,13 @@ The codebase is currently in a transition phase (v0.11) towards a modernized v1.
 | PSR | Standard | Status | Evidence / Notes | Recommendation for v1.0 |
 |-----|----------|--------|------------------|-------------------------|
 | PSR-1 | Basic Coding Standard | Partially Compliant | Follows naming conventions mostly; some files may have side effects. | **Must** |
-| PSR-3 | Logger Interface | Already Compliant | Uses `Psr\Log\LoggerInterface` via Monolog and `LoggerAwareTrait`. | **Must** (Maintain) |
+| PSR-3 | Logger Interface | Already Compliant | Uses `Psr\Log\LoggerInterface` via Monolog and `LoggerAwareTrait`. | **Must** (Maintain with redaction) |
 | PSR-4 | Autoloading Standard | Already Compliant | Configured in `composer.json` (`Box\` -> `src/`). | **Must** (Maintain) |
-| PSR-7 | HTTP Message Interface | Partially Compliant | `BoxResponseInterface` extends `PsrResponseInterface`. Requests are not PSR-7. | **Should** |
+| PSR-7 | HTTP Message Interface | Already Compliant | `BoxResponseInterface` extends `PsrResponseInterface`. Requests move to PSR-7 in v1. Internal transport uses PSR-7. | **Must** |
 | PSR-11 | Container Interface | Not Applicable | No DI container usage currently; v1.0 may benefit from it. | **Deferred** |
 | PSR-12 | Extended Coding Style | Partially Compliant | Base standard adopted; many style violations exist. | **Must** |
-| PSR-17 | HTTP Factories | Not Applicable | Not currently used; useful if PSR-7/18 are fully adopted. | **Should** |
-| PSR-18 | HTTP Client | Partially Applicable | `TransportInterface` is custom but similar. `GuzzleTransport` wraps a PSR-18 client. | **Should** |
+| PSR-17 | HTTP Factories | Not Applicable | Not currently used; v1 uses for PSR-7 messages. | **Must** |
+| PSR-18 | HTTP Client | Already Compliant | `TransportInterface` aligns with PSR-18; supports `send(RequestInterface $request)`. | **Must** |
 | PSR-20 | Clock | Not Applicable | No explicit clock abstraction; v1.0 uses `DateTimeImmutable`. | **Could** |
 
 ## Detailed Findings by PSR
@@ -51,7 +51,7 @@ The codebase is currently in a transition phase (v0.11) towards a modernized v1.
 The codebase has legacy style patterns (e.g., closing braces on same line as next control structure, inconsistent spacing in arrays). While functional, it deviates from modern PHP standards.
 
 ### PSR-7, 17, 18 (HTTP Interoperability)
-The SDK currently couples its `Connection` and `Transport` layers. While `BoxResponse` implements `PsrResponseInterface`, it also carries legacy methods. Moving to full PSR-18 for the transport layer would allow users to inject any compliant client (Guzzle, Symfony, etc.) without wrappers.
+The SDK is moving to full PSR-18 for the transport layer, allowing users to inject any compliant client. `BoxResponse` is being refactored to be a thin PSR-7 wrapper, and PSR-17 factories are used for request/stream creation. Upload progress is deferred to v1.1.0 as it's not standardized in PSR-18.
 
 ### PSR-3 (Logging)
 Well-integrated. The `LoggerFactory` and `LoggerAwareTrait` provide a solid foundation for logging throughout the SDK and CLI.
