@@ -317,11 +317,13 @@ interface ServiceInterface extends BaseModelInterface
      * @return mixed
      * @throws OutOfBoundsException
      * @throws InvalidArgumentException
+     * @deprecated v0.11.0 service state is being removed in v1.0.0
      */
     public function getLastResult($type = 'decoded');
 
     /**
      * @return string
+     * @deprecated v0.11.0 service state is being removed in v1.0.0
      */
     public function getDefaultReturnType();
 
@@ -331,6 +333,7 @@ interface ServiceInterface extends BaseModelInterface
      * @return ServiceInterface
      * @throws OutOfBoundsException
      * @throws InvalidArgumentException
+     * @deprecated v0.11.0 service state is being removed in v1.0.0
      */
     public function setDefaultReturnType($defaultReturnType = 'decoded');
 

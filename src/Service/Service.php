@@ -90,10 +90,33 @@ class Service extends BaseModel implements ServiceInterface
     protected $deviceId = null;
     protected $deviceName = null;
 
+    /**
+     * @var string
+     * @deprecated v0.11.0 use 'decoded' only where necessary, 'flat' and 'original' will be removed in v1.0.0
+     */
     protected $lastResultOriginal;
+
+    /**
+     * @var mixed
+     * @deprecated v0.11.0 use 'decoded' only where necessary, 'flat' and 'original' will be removed in v1.0.0
+     */
     protected $lastResultDecoded;
+
+    /**
+     * @var array|null
+     * @deprecated v0.11.0 use 'decoded' only where necessary, 'flat' and 'original' will be removed in v1.0.0
+     */
     protected $lastResultFlat;
+
+    /**
+     * @var string
+     * @deprecated v0.11.0 service state is being removed in v1.0.0
+     */
     protected $defaultReturnType = 'decoded';
+
+    /**
+     * @var array
+     */
     private $allowedReturnTypes = [
         'decoded',
         'original',
@@ -102,6 +125,7 @@ class Service extends BaseModel implements ServiceInterface
 
     /**
      * {@inheritdoc}
+     * @deprecated v0.11.0 service state is being removed in v1.0.0
      */
     public function getDefaultReturnType()
     {
@@ -110,6 +134,7 @@ class Service extends BaseModel implements ServiceInterface
 
     /**
      * {@inheritdoc}
+     * @deprecated v0.11.0 service state is being removed in v1.0.0
      */
     public function setDefaultReturnType($defaultReturnType = 'decoded')
     {
@@ -120,6 +145,7 @@ class Service extends BaseModel implements ServiceInterface
 
     /**
      * {@inheritdoc}
+     * @deprecated v0.11.0 service state is being removed in v1.0.0
      */
     public function getLastResult($type = 'decoded')
     {
@@ -850,7 +876,10 @@ class Service extends BaseModel implements ServiceInterface
 
 
     /**
-     * {@inheritdoc}
+     * @param ?BoxResponseInterface $response
+     * @param string $returnType
+     * @return mixed
+     * @throws BoxResponseException
      */
     public function handleBoxResponse(?BoxResponseInterface $response = null, $returnType = 'decoded')
     {
@@ -860,21 +889,30 @@ class Service extends BaseModel implements ServiceInterface
 
         // here is where we decide to throw exceptions based on response
         if (!$response->isSuccessful()) {
-            $e = new BoxResponseException("Box Response was unsuccessful. ", $response->getStatusCode(), null, $response);
-
-            // Handle Retry-After header
-            $delay = $response->getRetryAfter();
-            if (null !== $delay) {
-                $e->addContext($response->getHeaderLine('Retry-After'), 'retry_after_header');
-                $e->addContext($delay, 'retry_after_seconds');
-            }
-
-            throw $e;
+            throw $this->processResponseError($response);
         }
 
         $data = $this->handleResponseContent($returnType, $response);
 
         return $data;
+    }
+
+    /**
+     * @param BoxResponseInterface $response
+     * @return BoxResponseException
+     */
+    protected function processResponseError(BoxResponseInterface $response): BoxResponseException
+    {
+        $e = new BoxResponseException("Box Response was unsuccessful. ", $response->getStatusCode(), null, $response);
+
+        // Handle Retry-After header
+        $delay = $response->getRetryAfter();
+        if (null !== $delay) {
+            $e->addContext($response->getHeaderLine('Retry-After'), 'retry_after_header');
+            $e->addContext($delay, 'retry_after_seconds');
+        }
+
+        return $e;
     }
 
     /**
@@ -977,8 +1015,9 @@ class Service extends BaseModel implements ServiceInterface
      * @param BoxResponseInterface|string $response
      * @return mixed
      * @throws BoxException
+     * @deprecated v0.11.0 use handleBoxResponse or process modern responses directly
      */
-    public function handleResponseContent($returnType, $response): mixed
+    protected function handleResponseContent($returnType, $response): mixed
     {
         $this->validateReturnType($returnType);
 
@@ -995,28 +1034,31 @@ class Service extends BaseModel implements ServiceInterface
         $this->lastResultOriginal = $json;
 
         $data = $this->getLastResult($returnType);
-        $errorData = [];
 
         if (null === $this->lastResultFlat && '' !== (string)$json) {
-            $errorData['error'] = "sdk_json_decode";
-            $errorData['error_description'] = "unable to decode or recursion level too deep";
-            $this->error($errorData);
-        } else {
-            if (is_array($this->lastResultFlat) && array_key_exists('error', $this->lastResultFlat)) {
+            $this->error([
+                'error' => "sdk_json_decode",
+                'error_description' => "unable to decode or recursion level too deep",
+            ]);
+        }
+
+        if (is_array($this->lastResultFlat)) {
+            if (array_key_exists('error', $this->lastResultFlat)) {
                 $this->error($this->lastResultFlat);
-            } else {
-                if (is_array($this->lastResultFlat) && array_key_exists('type', $this->lastResultFlat) && 'error' == $this->lastResultFlat['type']) {
-                    $errorData['error'] = "sdk_unknown";
-                    $ditto = $errorData;
-                    $errorData['error_description'] = $ditto;
-                    $errorData['result_data'] = $this->lastResultOriginal;
+            }
 
-                    if (array_key_exists('code', $this->lastResultFlat)) {
-                        $errorData['code'] = $this->lastResultFlat['code'];
-                    }
+            if (array_key_exists('type', $this->lastResultFlat) && 'error' === $this->lastResultFlat['type']) {
+                $errorData = [
+                    'error' => "sdk_unknown",
+                    'error_description' => "sdk_unknown",
+                    'result_data' => $this->lastResultOriginal,
+                ];
 
-                    $this->error($errorData);
+                if (array_key_exists('code', $this->lastResultFlat)) {
+                    $errorData['code'] = $this->lastResultFlat['code'];
                 }
+
+                $this->error($errorData);
             }
         }
 

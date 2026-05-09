@@ -41,7 +41,7 @@ This initiative covers:
 |---|---|---|
 | 0 | [Tracker](#service-layer-hardening-slice-0---tracker) | Completed |
 | 1 | [Service Inventory and Legacy Architecture Removal Audit](#service-layer-hardening-slice-1---service-inventory-and-legacy-architecture-removal-audit) | Completed |
-| 2 | [Base Service Contract Stabilization](#service-layer-hardening-slice-2---base-service-contract-stabilization) | |
+| 2 | [Base Service Contract Stabilization](#service-layer-hardening-slice-2---base-service-contract-stabilization) | Completed |
 | 3 | [Hydration and Mapper Boundary](#service-layer-hardening-slice-3---hydration-and-mapper-boundary) | |
 | 4 | [Representative Read Service Migration](#service-layer-hardening-slice-4---representative-read-service-migration) | |
 | 5 | [Representative Write/Update Service Migration](#service-layer-hardening-slice-5---representative-writeupdate-service-migration) | |
@@ -167,6 +167,15 @@ Validation:
 - `Base Service` leverages the refined exception taxonomy.
 - `handleBoxResponse` and `handleResponseContent` are clean and predictable.
 - Existing service return types remain compatible.
+
+**Completion Note**:
+Slice 2 completed. Base service behavior stabilized on Foundation Refinement.
+- `handleBoxResponse` and `handleResponseContent` updated to use `BoxResponseInterface`.
+- `processResponseError` helper added for consistent exception creation.
+- Stateful properties (`lastResult*`) and methods (`getLastResult`, `getDefaultReturnType`) marked as deprecated.
+- Visibility of `handleResponseContent` reduced to `protected`.
+- Full compatibility maintained for existing return modes ('decoded', 'flat', 'original').
+- Existing tests pass.
 
 **Test Expectations**:
 - Unit tests for base service response/error handling.
@@ -555,7 +564,8 @@ Validation:
 ## Status Table Progress
 - Slice 0: Completed ✓
 - Slice 1: Completed ✓
-- Slices 2-11: Pending
+- Slice 2: Completed ✓
+- Slices 3-11: Pending
 
 ## Deferred Follow-up
 - Broad removal of legacy pre-v1 / v0.x architecture: This remains a v1 release requirement. If the remaining scope exceeds the current Service Layer Hardening tracker, it will be moved to a dedicated tracker, but it MUST be completed before v1 release.
