@@ -97,4 +97,4 @@ You can inject a custom JSON formatter by setting `BOX_JSON_FORMATTER` in your `
 **See also:**
 - [README.md](../README.md)
 - [Programmatic Usage Guide](programmatic-usage.md)
-- [Project Roadmap](roadmap.md)
+- [Project Roadmap](../planning/roadmap.md)

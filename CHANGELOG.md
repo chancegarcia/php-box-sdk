@@ -13,7 +13,7 @@
 - **Documentation and release visibility**:
     - Added README badges for CI status, latest stable version, PHP requirement, license, and total downloads to improve quick release and compatibility checks for consumers.
 - **Maintainer workflow**:
-    - Updated `docs/changelog-prompt.md` to keep the project-context section in the expected location and wording, helping keep changelog generation aligned with SDK/library release-note standards.
+    - Updated `docs/prompts/changelog-prompt.md` to keep the project-context section in the expected location and wording, helping keep changelog generation aligned with SDK/library release-note standards.
 
 ## v0.11.2
 
@@ -58,7 +58,7 @@
 - **Advanced Model Mapping**: Introduced a recursive `Hydrator` service for complex API response mapping.
 - **Namespace Simplification**: Flattened structure for easier imports (e.g., `Box\Client` instead of `Box\Model\Client\Client`).
 - **Standardized Collections**: Migrated to Doctrine Collections for improved consistency and power.
-- **Comprehensive Documentation Pass**: Consolidated all audit and planning material into long-lived documentation. Introduced [v1.0 Planning](docs/v1-planning.md) to track technical goals and architectural decisions for the next major release.
+- **Comprehensive Documentation Pass**: Consolidated all audit and planning material into long-lived documentation. Introduced [v1.0 Planning](docs/planning/v1/overview.md) to track technical goals and architectural decisions for the next major release.
 - **Improved Tooling**: New CLI test harness for managing OAuth2 and API interactions without writing code.
 
 ### Developer Details
@@ -101,4 +101,4 @@
       ~~~~
 - **Update Collections**: If you used `Box\Collection\ArrayCollection`, migrate to `Doctrine\Common\Collections\ArrayCollection`.
 - **Configuration**: Use the new `.env.dist` template for environment-based configuration.
-- **Comprehensive Guide**: See [Upgrading from 0.10.x to 0.11.0](docs/upgrading-0.10-to-0.11.md) for a detailed checklist.
+- **Comprehensive Guide**: See [Upgrading from 0.10.x to 0.11.0](docs/migration/upgrading-0.10-to-0.11.md) for a detailed checklist.

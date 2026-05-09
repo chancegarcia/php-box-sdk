@@ -31,8 +31,8 @@ This document details the planned tasks for the `v0.11` transition release and t
 
 ### Tests & Documentation
 - [x] Completed: Expand PHPUnit coverage for existing file, folder, and auth services. *Rationale: Regressions must be prevented during the transition. Implementation: Significant test coverage added for models and commands.*
-- [x] Completed: Update `docs/programmatic-usage.md` to reflect v0.11 changes. *Rationale: Keep documentation in sync with code.*
-- [x] Completed: Add examples for using `FileStream` in documentation. *Rationale: Help users adopt the new streaming capability. Implementation: Examples added to `docs/programmatic-usage.md`.*
+- [x] Completed: Update `docs/user/programmatic-usage.md` to reflect v0.11 changes. *Rationale: Keep documentation in sync with code.*
+- [x] Completed: Add examples for using `FileStream` in documentation. *Rationale: Help users adopt the new streaming capability. Implementation: Examples added to `docs/user/programmatic-usage.md`.*
 
 ---
 

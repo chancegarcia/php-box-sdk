@@ -187,5 +187,5 @@ Models use `Box\Model\BaseModelTrait` and `Box\Model\ModelTrait` for shared logi
 **See also:**
 - [README.md](../README.md)
 - [CLI Test Harness Guide](cli-test-harness.md)
-- [Project Roadmap](roadmap.md)
-- [v1.0 Planning](v1-planning.md)
+- [Project Roadmap](../planning/roadmap.md)
+- [v1.0 Planning](../planning/v1/overview.md)

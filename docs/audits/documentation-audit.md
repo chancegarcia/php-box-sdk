@@ -4,13 +4,13 @@ This audit reviews the SDK documentation examples for accuracy, usability, and A
 
 ## Files Reviewed
 - `README.md`
-- `docs/programmatic-usage.md`
-- `docs/upgrading-0.10-to-0.11.md`
+- `docs/user/programmatic-usage.md`
+- `docs/migration/upgrading-0.10-to-0.11.md`
 
 ## Audit Results
 
 ### 1. Token Expiration Example
-- **Location:** `docs/programmatic-usage.md` (Section 4)
+- **Location:** `docs/user/programmatic-usage.md` (Section 4)
 - **Status:** **FIXED**
 - **Details:** The example previously used `$token->isExpired()`, which was not implemented in the SDK. This method has now been added to `Token` and `TokenInterface`.
 - **Works after change:** Yes.
@@ -28,7 +28,7 @@ This audit reviews the SDK documentation examples for accuracy, usability, and A
 - **Works after change:** Yes.
 
 ### 4. Setter Chaining
-- **Location:** `docs/upgrading-0.10-to-0.11.md`
+- **Location:** `docs/migration/upgrading-0.10-to-0.11.md`
 - **Status:** **CORRECT**
 - **Details:** Correctly identifies that setters now return `void` and shows the non-fluent usage.
 - **Works after change:** Yes.
@@ -48,5 +48,5 @@ This audit reviews the SDK documentation examples for accuracy, usability, and A
 - `Token::getExpiresAt()`: Return an absolute `DateTimeImmutable` for when the token expires.
 
 ## Follow-up Items
-- [x] Audit `docs/cli-test-harness.md` for any CLI-specific command examples that might have changed. (Completed: No changes needed to examples.)
+- [x] Audit `docs/user/cli-test-harness.md` for any CLI-specific command examples that might have changed. (Completed: No changes needed to examples.)
 - [ ] Verify if `Box\Mapper\Hydrator` should explicitly handle a `received_at` field if it's passed in from a persistent storage (currently it should work via `setReceivedAt` setter).

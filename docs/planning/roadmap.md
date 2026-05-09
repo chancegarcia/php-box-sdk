@@ -24,7 +24,7 @@ The CLI exists mainly as a quick, practical test tool for verifying SDK behavior
 
 ### v1.0 (Design Perfection)
 - **Goal**: Full implementation of the future architecture with no legacy baggage.
-- **Key Focus**: See [v1.0 Planning](v1-planning.md) and [v1.0 Strategy](v1-planning/v1-strategy-and-contracts.md) for detailed technical goals.
+- **Key Focus**: See [v1.0 Planning](v1/overview.md) and [v1.0 Strategy](v1/strategy-and-contracts.md) for detailed technical goals.
 - **Planned Changes**:
     - **Client as Facade**: `Client` will become a lightweight facade over focused services (e.g., `FileService`, `UserService`).
     - **Service-First Architecture**: High-level operations move to focused services.
@@ -81,9 +81,8 @@ The CLI exists mainly as a quick, practical test tool for verifying SDK behavior
 - Keep README and docs aligned with actual behavior
 
 ### 8. Configuration Format Future Planning
-- Track possible YAML/XML configuration integration here: [yaml-xml.md](yaml-xml.md)
-- Treat YAML/XML support as a future consideration, not a current requirement
-- If adopted later, it may be implemented in a separate Symfony bundle project instead of being supported directly in this repository
+- Defer YAML/XML configuration support to future framework integrations (e.g., [Future Symfony Bundle](future/future-symfony-bundle.md)).
+- Core SDK should remain framework-neutral and expose PHP-native configuration APIs.
 
 ## Short-Term Goals
 
@@ -108,7 +107,7 @@ The CLI exists mainly as a quick, practical test tool for verifying SDK behavior
 - Keep the codebase modular, testable, and easy to evolve
 - Support a broader set of Box workflows without sacrificing simplicity
 - Establish strong documentation and maintainability standards
-- Revisit YAML/XML support only if it becomes clearly valuable for a future Symfony bundle
+- Revisit YAML/XML support only if it becomes clearly valuable for a future framework integration layer.
 
 ## Success Criteria
 
@@ -124,19 +123,19 @@ The CLI exists mainly as a quick, practical test tool for verifying SDK behavior
 - Which Box features should be prioritized next?
 - Which SDK capabilities matter most for the next phase?
 - What is the right balance between SDK depth and CLI convenience?
-- Should YAML/XML configuration support live here, or in a future Symfony bundle?
+- YAML/XML configuration support is deferred and belongs in a future framework integration layer rather than the core SDK.
 
 ## Maintenance Notes
 
 - Keep roadmap aligned with the current TODO list
 - Update priorities as features are completed
 - Revisit goals after major releases or structural changes
-- Reassess the YAML/XML integration path if the future Symfony bundle becomes the preferred home for it
+- YAML/XML integration belongs in a future framework integration layer.
 
 ---
 
 **See also:**
 - [README.md](../README.md)
-- [Programmatic Usage Guide](programmatic-usage.md)
-- [CLI Test Harness Guide](cli-test-harness.md)
-- [PSR Compliance Assessment](psr-compliance-assessment.md)
+- [Programmatic Usage Guide](../user/programmatic-usage.md)
+- [CLI Test Harness Guide](../user/cli-test-harness.md)
+- [PSR Compliance Assessment](../audits/psr-compliance-assessment.md)

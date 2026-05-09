@@ -55,7 +55,7 @@ Priority endpoints for v1.0:
 
 ---
 **Historical Context:**
-- [Model Signature Audit](model-signature-audit.md)
-- [Model Typing Decisions](model-typing-decisions.md)
-- [Model Namespace Migration Decisions](model-namespace-migration-decisions.md)
-- [PSR Compliance Assessment](psr-compliance-assessment.md)
+- [Model Signature Audit](../../audits/model-signature-audit.md)
+- [Model Typing Decisions](../../audits/model-typing-decisions.md)
+- [Model Namespace Migration Decisions](../../migration/model-namespace-migration-decisions.md)
+- [PSR Compliance Assessment](../../audits/psr-compliance-assessment.md)

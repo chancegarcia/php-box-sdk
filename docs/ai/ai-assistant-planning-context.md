@@ -261,14 +261,14 @@ When auditing or planning V1.0 coverage, pay special attention to:
 
 The initial Junie task should create or update:
 
-- `docs/v1-planning/v1-interface-and-model-audit.md`
-- `docs/v1-planning/v1-architecture-rules.md`
+- `docs/planning/v1/interface-and-model-audit.md`
+- `docs/planning/v1/architecture-rules.md`
 
 If API coverage findings are large, create:
 
-- `docs/v1-planning/v1-api-coverage-audit.md`
+- `docs/planning/v1/api-coverage-audit.md`
 
-## Suggested `docs/v1-planning/v1-interface-and-model-audit.md` Contents
+## Suggested `docs/planning/v1/interface-and-model-audit.md` Contents
 
 This document should include:
 
@@ -287,7 +287,7 @@ This document should include:
 - Whether each abstraction is a god abstraction.
 - Proposed migration order.
 
-## Suggested `docs/v1-planning/v1-architecture-rules.md` Contents
+## Suggested `docs/planning/v1/architecture-rules.md` Contents
 
 This document should include rules for:
 
@@ -307,7 +307,7 @@ This document should include rules for:
 - Client facade policy.
 - Box API reference alignment.
 
-## Suggested `docs/v1-planning/v1-api-coverage-audit.md` Contents
+## Suggested `docs/planning/v1/api-coverage-audit.md` Contents
 
 If created, this document should include:
 
@@ -353,9 +353,9 @@ It should not modify PHP source files, tests, Composer configuration, or perform
 
 Expected outputs:
 
-1. `docs/v1-planning/v1-interface-and-model-audit.md`
-2. `docs/v1-planning/v1-architecture-rules.md`
-3. Optional `docs/v1-planning/v1-api-coverage-audit.md`
+1. `docs/planning/v1/interface-and-model-audit.md`
+2. `docs/planning/v1/architecture-rules.md`
+3. Optional `docs/planning/v1/api-coverage-audit.md`
 4. Proposed safest resource-by-resource migration order.
 5. Classification of uncertain decisions.
 
@@ -436,9 +436,9 @@ Do not implement missing Box API resources yet.
 Please:
 
 1. Audit all interfaces, traits, abstract classes, and classes under src/Model.
-2. Create docs/v1-planning/v1-interface-and-model-audit.md.
-3. Create or update docs/v1-planning/v1-architecture-rules.md.
-4. Create docs/v1-planning/v1-api-coverage-audit.md if the Box API coverage findings are large enough to deserve a separate document.
+2. Create docs/planning/v1/interface-and-model-audit.md.
+3. Create or update docs/planning/v1/architecture-rules.md.
+4. Create docs/planning/v1/api-coverage-audit.md if the Box API coverage findings are large enough to deserve a separate document.
 5. Identify interfaces that only mirror a single concrete model/resource.
 6. Identify model classes or interfaces that contain endpoint constants, URL-building behavior, service behavior, connection behavior, hydration behavior, or generic god-abstraction behavior.
 7. Classify each interface as:

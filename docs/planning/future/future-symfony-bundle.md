@@ -52,13 +52,33 @@ The core SDK provides a framework-neutral token storage contract. A dedicated Sy
 - **Namespace**: `Box\Bridge\Symfony` or a separate repository `chancegarcia/box-api-v2-symfony-bundle`.
 - **Interoperability**: The bundle must implement core SDK interfaces (`TokenStorageInterface`, `AuthProviderInterface`) to ensure compatibility.
 
-## 4. Roadmap and Status
+## 4. Future Configuration Format Support
+
+YAML/XML configuration support is deferred from the core SDK.
+
+A future Symfony bundle or framework integration package may provide YAML, XML, or PHP configuration using Symfony’s configuration conventions.
+
+The core SDK should remain framework-neutral and expose PHP-native configuration objects, factories, and dependency injection entry points rather than parsing YAML/XML directly.
+
+### Configuration Concepts to Preserve
+
+When implementing YAML/XML support in a framework integration layer:
+- **Loader Layer**: Introduce a `ConfigLoaderInterface` with format-specific implementations (e.g., `YamlConfigLoader`, `XmlConfigLoader`).
+- **Schema Validation**: Regardless of input format, configurations must be normalized (e.g., via a `ConfigNormalizer`) to ensure they match internal SDK schemas.
+- **CLI Integration**: Framework-aware CLI commands can use these loaders to detect configuration file extensions and load them accordingly.
+- **Type Coercion**: Ensure that numeric and boolean values are correctly cast from strings, especially when reading from XML.
+- **Feature Coverage**: Configuration should cover:
+    - Log handlers (type, path, level, rotation settings).
+    - Top-level overrides (log directory, file names).
+    - Service configuration and transport settings.
+
+## 5. Roadmap and Status
 
 - **Status**: **Deferred**
 - **Priority**: Low for v1.0.0 core; High for post-v1.0.0 ecosystem growth.
 - **Target Version**: v1.x or separate package release.
 
-## 5. Open Questions for Bundle
+## 6. Open Questions for Bundle
 
 - Should the bundle live in the same mono-repo or a separate repository?
 - Should we provide a default UI/Controller for the OAuth2 callback?

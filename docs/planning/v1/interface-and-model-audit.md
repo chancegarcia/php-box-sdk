@@ -102,7 +102,7 @@ Audit of every interface under `src`.
 
 ## 6. API Reference Alignment
 
-See `docs/v1-planning/v1-api-coverage-audit.md` for detailed alignment.
+See `api-coverage-audit.md` for detailed alignment.
 
 ## 7. Proposed Migration Plan
 

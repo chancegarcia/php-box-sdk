@@ -34,7 +34,7 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 - Goal: Establish source of truth for V1.0 architecture, migration strategy, and test coverage.
 - Scope: Create and align architecture rules, interface audits, API coverage audits, and test coverage plan.
 - Dependencies: None.
-- Validation: All planning docs present and consistent in `docs/v1-planning/`.
+- Validation: All planning docs present and consistent in current directory.
 - Documentation updates: `ai-assistant-planning-context.md`, `v1-architecture-rules.md`, `v1-interface-and-model-audit.md`, `v1-api-coverage-audit.md`, `v1-test-coverage-plan.md`, `v1-strategy-and-contracts.md` (Hardened strategy), `v1-decision-index.md`.
 - Test updates: N/A.
 - Completion notes: Planning docs are finalized and represent the starting state for the refactor. Added `v1-test-coverage-plan.md` to define expected parity and API coverage tests. Hardened v1.0 strategy and contracts in `v1-strategy-and-contracts.md` covering glossary, boundaries, retry, logging, and direct transport. Reconciled all planning docs with the hardened strategy and created `v1-decision-index.md`.

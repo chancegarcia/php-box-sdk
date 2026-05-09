@@ -1,6 +1,6 @@
 # PSR Compliance Assessment
 
-**Status**: Historical / Context Only (Assessed 2026-04-30). See [v1.0 Planning](v1-planning.md) for current implementation goals.
+**Status**: Historical / Context Only (Assessed 2026-04-30). See [v1.0 Planning](../planning/v1/overview.md) for current implementation goals.
 
 - **Date of Assessment**: 2026-04-30
 - **Project**: Box PHP SDK (chancegarcia/box-api-v2-sdk)

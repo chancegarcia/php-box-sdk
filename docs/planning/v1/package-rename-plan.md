@@ -19,7 +19,7 @@
 - [ ] Confirm Packagist maintainer access for abandoning the old package.
 - [ ] Confirm `v0.11` is documented as the final transition release for the old package in `CHANGELOG.md` and `README.md`.
 - [ ] Confirm v1 public API and migration docs are stable enough for final-release branding.
-- [ ] Confirm the v1 release checklist (in `docs/v1-planning/v1-implementation-checklist.md`) includes the package/repo rename step.
+- [ ] Confirm the v1 release checklist (in `implementation-checklist.md`) includes the package/repo rename step.
 - [ ] Confirm no PHP namespace changes are included in the package/repo rename.
 - [ ] Confirm no private/downstream names, credentials, account identifiers, or private implementation details are present in public docs.
 - [ ] Confirm public-facing documentation updates are held until the new package/repo path is usable.
@@ -61,8 +61,8 @@ Documentation updates must happen **last**, as part of the rename process, once 
 - [ ] Update `README.md` repository and Packagist links.
 - [ ] Add a prominent migration note to `README.md` regarding the rename.
 - [ ] Update `docs/` installation examples and programmatic usage guides.
-- [ ] Update `docs/v1-planning/v1-implementation-checklist.md` status.
-- [ ] Update `docs/roadmap.md` references to the package name.
+- [ ] Update `implementation-checklist.md` status.
+- [ ] Update `../roadmap.md` references to the package name.
 - [ ] Update `CONTRIBUTING.md` if it contains repository links.
 - [ ] Update `CHANGELOG.md` for the `v1.0.0` entry to highlight the rename.
 

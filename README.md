@@ -75,22 +75,23 @@ $rootFolder = $client->getFolder();
 
 ## Advanced Documentation
 
-For in-depth architectural guidance, library integration patterns, and advanced usage, see the [Programmatic Usage Guide](docs/programmatic-usage.md).
+For in-depth architectural guidance, library integration patterns, and advanced usage, see the [Programmatic Usage Guide](docs/user/programmatic-usage.md).
 
 ## CLI Test Harness
 
 The SDK includes a Symfony Console-based CLI tool for manual testing and exploring the API.
 
-For detailed setup instructions, available commands, and logging options, see the [CLI Test Harness Guide](docs/cli-test-harness.md).
+For detailed setup instructions, available commands, and logging options, see the [CLI Test Harness Guide](docs/user/cli-test-harness.md).
 
 ---
 
 **See also:**
 - [Changelog](CHANGELOG.md)
-- [Upgrading from 0.10.x to 0.11.0](docs/upgrading-0.10-to-0.11.md)
-- [Programmatic Usage Guide](docs/programmatic-usage.md)
-- [CLI Test Harness Guide](docs/cli-test-harness.md)
-- [Project Roadmap](docs/roadmap.md)
+- [Documentation Index](docs/README.md)
+- [Upgrading from 0.10.x to 0.11.0](docs/migration/upgrading-0.10-to-0.11.md)
+- [Programmatic Usage Guide](docs/user/programmatic-usage.md)
+- [CLI Test Harness Guide](docs/user/cli-test-harness.md)
+- [Project Roadmap](docs/planning/roadmap.md)
 
 ## Development and Quality Checks
 

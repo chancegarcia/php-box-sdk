@@ -19,7 +19,7 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
 | HTTP Client Strategy | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Guzzle/PSR-18 path |
 | Public Direct Transport | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Direct Transport Strategy |
 | Lifecycle Management | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Resource Lifecycle Strategy |
-| Testing | **Decided** | `v1-test-coverage-plan.md` | None | Follow updated Test Strategy |
+| Testing | **Decided** | `test-coverage-plan.md` | None | Follow updated Test Strategy |
 | Pagination | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Pagination Strategy |
 | Hydration/Serialization | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Serialization Strategy |
 | Configuration | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Configuration Strategy |
