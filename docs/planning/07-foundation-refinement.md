@@ -42,7 +42,7 @@ This initiative covers:
 | 5 | [Auth Foundation Hardening](#foundation-refinement-slice-5---auth-foundation-hardening) | Completed |
 | 6 | [CLI Compatibility Pass](#foundation-refinement-slice-6---cli-compatibility-pass) | Completed |
 | 7 | [Documentation and Migration Drift Pass](#foundation-refinement-slice-7---documentation-and-migration-drift-pass) | Completed |
-| 8 | [Foundation PHPStan/Type-Safety Cleanup](#foundation-refinement-slice-8---foundation-phpstan-type-safety-cleanup) | Not Started |
+| 8 | [Foundation PHPStan/Type-Safety Cleanup](#foundation-refinement-slice-8---foundation-phpstan-type-safety-cleanup) | Completed |
 | 9 | [Final Integration Review](#foundation-refinement-slice-9---final-integration-review) | Not Started |
 
 ---
@@ -484,26 +484,23 @@ Acceptance Criteria:
 
 **Purpose**: Address static-analysis/type-safety issues in touched foundation areas.
 
-**Scope**: Files touched in Slices 1-5.
+**Goal**: Address static-analysis and type-safety issues in the refined foundation areas.
 
-**Acceptance Criteria**:
-- PHPStan passes for touched areas without new baseline entries.
-- Type hints are strict and accurate.
-
-**Junie Prompt**:
-```markdown
-Implement Foundation Refinement Slice 8 — Foundation PHPStan/Type-Safety Cleanup.
-
-Goal: Address static-analysis and type-safety issues in the refined foundation areas.
-
-Scope:
-- All files modified during Slices 1-5.
+**Scope**:
+- Files modified during Slices 1-5.
 - Corresponding tests.
 
-Acceptance Criteria:
+**Acceptance Criteria**:
 - `composer analyse` passes for touched files.
 - No unrelated rewrites.
-```
+
+**Completion Note**:
+- Tightened type hints and return types in `BoxResponse`, `BoxResponseInterface`, `BoxResponseException`, `Connection`, and `Service`.
+- Reviewed and avoided fluent setter expansion in `BoxResponseException::setResponse`, keeping it `void`.
+- Significantly improved `Redactor` type safety and added comprehensive unit tests for it.
+- Improved `Service::refreshToken` and `Service::handleResponseContent` with stricter typing and return hints.
+- Validated touched files with `composer analyse`, `composer test`, and `composer cs:check`.
+- Deferred broad PHPStan cleanup of legacy models and traits as per non-goals.
 
 ---
 

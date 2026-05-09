@@ -87,7 +87,7 @@ class BoxResponse implements BoxResponseInterface
         return $this->responseHeader;
     }
 
-    public function getContent(): mixed
+    public function getContent(): string
     {
         return (string) $this->psrResponse->getBody();
     }
@@ -167,6 +167,11 @@ class BoxResponse implements BoxResponseInterface
         return $this->psrResponse->getHeaderLine($name);
     }
 
+    /**
+     * @param string $name
+     * @param string|string[] $value
+     * @return static
+     */
     public function withHeader(string $name, $value): static
     {
         $new = clone $this;
@@ -175,6 +180,11 @@ class BoxResponse implements BoxResponseInterface
         return $new;
     }
 
+    /**
+     * @param string $name
+     * @param string|string[] $value
+     * @return static
+     */
     public function withAddedHeader(string $name, $value): static
     {
         $new = clone $this;

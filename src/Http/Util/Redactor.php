@@ -12,7 +12,8 @@ class Redactor
         'client_secret',
         'code',
         'auth_code',
-        'client_id', // sometimes sensitive depending on context, but usually okay. Let's include it for safety if requested.
+        'client_id',
+        'session',
     ];
 
     /**
@@ -57,15 +58,19 @@ class Redactor
     /**
      * Redact sensitive information from a string (e.g., URL with query params or message).
      */
-    public function redactString(string $string): string
+    public function redactString(?string $string): string
     {
+        if (null === $string) {
+            return '';
+        }
+
         // Redact Bearer tokens in strings
-        $string = preg_replace('/(Bearer\s+)[a-zA-Z0-9\._\-]+/i', '$1' . self::REDACTED, $string);
+        $string = (string) preg_replace('/(Bearer\s+)[a-zA-Z0-9\._\-]+/i', '$1' . self::REDACTED, $string);
 
         // Redact common query parameters
         foreach (self::SENSITIVE_KEYS as $key) {
-            $string = preg_replace('/("' . preg_quote($key, '/') . '":\s*")[^"]*"/i', '$1' . self::REDACTED . '"', $string);
-            $string = preg_replace('/(' . preg_quote($key, '/') . '=)[^& \n]*/i', '$1' . self::REDACTED, $string);
+            $string = (string) preg_replace('/("' . preg_quote($key, '/') . '":\s*")[^"]*"/i', '$1' . self::REDACTED . '"', $string);
+            $string = (string) preg_replace('/(' . preg_quote($key, '/') . '[=:])\s*[^;& \n]*/i', '$1' . self::REDACTED, $string);
         }
 
         return $string;

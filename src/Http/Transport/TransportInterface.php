@@ -9,7 +9,7 @@ interface TransportInterface
     /**
      * @param string $method
      * @param string $uri
-     * @param array $options
+     * @param array<string, mixed> $options
      * @return BoxResponseInterface
      */
     public function request(string $method, string $uri, array $options = []): BoxResponseInterface;

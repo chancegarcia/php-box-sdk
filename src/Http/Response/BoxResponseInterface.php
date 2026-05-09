@@ -36,9 +36,9 @@ interface BoxResponseInterface extends PsrResponseInterface
     public function getPsrResponse(): ?PsrResponseInterface;
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getContent(): mixed;
+    public function getContent(): string;
 
     /**
      * @param bool $assoc

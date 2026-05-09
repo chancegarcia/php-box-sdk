@@ -96,11 +96,6 @@ parameters:
 			count: 1
 			path: src/Event/Collection/Entry/Source/EntrySource.php
 
-		-
-			message: '#^Method Box\\Exception\\BoxResponseException\:\:setResponse\(\) should return Box\\Exception\\BoxResponseException but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/Exception/BoxResponseException.php
 
 		-
 			message: '#^Method Box\\Exception\\TokenStorageException\:\:setCallingClass\(\) should return Box\\Exception\\TokenStorageException but return statement is missing\.$#'

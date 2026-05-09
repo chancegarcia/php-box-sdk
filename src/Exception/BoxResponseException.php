@@ -43,22 +43,19 @@ class BoxResponseException extends BoxException
      * https://developers.box.com/oauth/
      */
 
-    protected $response;
+    protected ?BoxResponseInterface $response = null;
 
     /**
      * @param string $message
-     * @param int $code
+     * @param int|string $code
      * @param Exception|null $previous
-     * @param BoxResponseInterface $response
-     *
-     * @return BoxResponseException
+     * @param BoxResponseInterface|null $response
      */
     public function __construct(string $message = "", mixed $code = 0, ?Exception $previous = null, ?BoxResponseInterface $response = null)
     {
         parent::__construct($message, $code, $previous);
 
         if ($response instanceof BoxResponseInterface) {
-            // check for error, error_description in WWW-Authenticate header
             $this->response = $response;
 
             $wwwAuthenticationHeaderLine = $response->getHeaderLine('WWW-Authenticate');
@@ -95,16 +92,16 @@ class BoxResponseException extends BoxException
     /**
      * @return null|BoxResponseInterface
      */
-    public function getResponse()
+    public function getResponse(): ?BoxResponseInterface
     {
         return $this->response;
     }
 
     /**
-     * @param BoxResponseInterface $response
-     * @return BoxResponseException
+     * @param BoxResponseInterface|null $response
+     * @return void
      */
-    public function setResponse(?BoxResponseInterface $response = null)
+    public function setResponse(?BoxResponseInterface $response = null): void
     {
         $this->response = $response;
     }

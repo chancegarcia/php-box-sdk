@@ -670,10 +670,11 @@ class Service extends BaseModel implements ServiceInterface
      *
      * @throws BoxException
      */
-    public function refreshToken()
+    public function refreshToken(): TokenInterface
     {
         $token = $this->getToken();
 
+        $params = [];
         $params['refresh_token'] = $token->getRefreshToken();
         $params['client_id'] = $this->getClientId();
         $params['client_secret'] = $this->getClientSecret();
@@ -702,10 +703,8 @@ class Service extends BaseModel implements ServiceInterface
 
         $response = $connection->post(self::TOKEN_URI, $params);
         $json = $response->getContent();
-        if (is_object($json) && method_exists($json, '__toString')) {
-            $json = (string)$json;
-        }
-        if ($this->getLogger() instanceof LoggerInterface && is_string($json)) {
+
+        if ($this->getLogger() instanceof LoggerInterface) {
             $redactedJson = $this->getRedactor()->redactString($json);
             $this->getLogger()->debug(
                 'raw refresh return: ' . var_export($redactedJson, true),
@@ -721,9 +720,10 @@ class Service extends BaseModel implements ServiceInterface
 
         try {
             $this->lastResultOriginal = $json;
-            $this->lastResultDecoded = $response->json();
+            $this->lastResultDecoded = $response->json(false);
             $this->lastResultFlat = $response->json(true);
-        } catch (\JsonException $e) {
+        } catch (BoxException $e) {
+            $errorCheck = [];
             $errorCheck['error'] = "sdk_json_decode";
             $errorCheck['error_description'] = "unable to decode: " . $e->getMessage();
             $this->error($errorCheck, null, $response);
@@ -744,9 +744,11 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param TokenInterface $token
+     * @param mixed $data
+     * @return TokenInterface
      */
-    public function setTokenData(TokenInterface $token, $data)
+    public function setTokenData(TokenInterface $token, $data): TokenInterface
     {
         if ($this->getLogger() instanceof LoggerInterface) {
             $redactedData = $this->getRedactor()->redactArray((array)$data);
@@ -971,12 +973,12 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     * @param $returnType
+     * @param string $returnType
      * @param BoxResponseInterface|string $response
      * @return mixed
      * @throws BoxException
      */
-    public function handleResponseContent($returnType, $response)
+    public function handleResponseContent($returnType, $response): mixed
     {
         $this->validateReturnType($returnType);
 
@@ -986,8 +988,8 @@ class Service extends BaseModel implements ServiceInterface
             $this->lastResultFlat = $response->json(true);
         } else {
             $json = $response;
-            $this->lastResultDecoded = json_decode($json);
-            $this->lastResultFlat = json_decode($json, true);
+            $this->lastResultDecoded = json_decode((string)$json);
+            $this->lastResultFlat = json_decode((string)$json, true);
         }
 
         $this->lastResultOriginal = $json;

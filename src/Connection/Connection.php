@@ -347,9 +347,13 @@ class Connection extends Model implements ConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $uri
+     * @param string|FileStream $file
+     * @param string|int $parentId
+     * @return BoxResponseInterface
+     * @throws \Box\Exception\BoxException
      */
-    public function postFile(string $uri, string|FileStream $file, string|int $parentId = 0): array|BoxResponseInterface
+    public function postFile(string $uri, string|FileStream $file, string|int $parentId = 0): BoxResponseInterface
     {
         // @todo allow Content-MD5 header to be set
 
@@ -416,6 +420,9 @@ class Connection extends Model implements ConnectionInterface
             // To be safe and compatible with CurlTransport's current implementation:
             $tmpFile = tempnam(sys_get_temp_dir(), 'box_upload_');
             $tmpResource = fopen($tmpFile, 'wb');
+            if (!$tmpResource) {
+                throw new BoxException("Failed to create temporary file for upload", BoxException::INVALID_INPUT);
+            }
             stream_copy_to_stream($resource, $tmpResource);
             fclose($tmpResource);
             rewind($resource);
