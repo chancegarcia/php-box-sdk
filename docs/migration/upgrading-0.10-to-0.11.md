@@ -129,7 +129,7 @@ A new CLI tool is available at `bin/box-sdk`. It helps with:
 ## Testing After Upgrade
 After upgrading, run PHPUnit to ensure everything is working as expected:
 ~~~~bash
-vendor/bin/phpunit
+composer test
 ~~~~
 
 ## Troubleshooting
