@@ -37,6 +37,13 @@ namespace Box\Connection;
 use Box\Exception\BoxException;
 use Box\Factory\AuthenticationResponseFactory;
 use Box\Factory\AuthenticationResponseFactoryInterface;
+use Box\Exception\ApiException;
+use Box\Exception\ConflictException;
+use Box\Exception\ForbiddenException;
+use Box\Exception\NotFoundException;
+use Box\Exception\RateLimitException;
+use Box\Exception\TransportException;
+use Box\Exception\UnauthorizedException;
 use Box\Http\FileStream;
 use Box\Http\Response\BoxResponse;
 use Box\Http\Response\BoxResponseInterface;
@@ -159,6 +166,13 @@ class Connection extends Model implements ConnectionInterface
             ]);
         }
         $sResponse = curl_exec($ch);
+
+        if (false === $sResponse) {
+            $error = curl_error($ch);
+            $errno = curl_errno($ch);
+            throw new TransportException($error, $errno);
+        }
+
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug('curl_exec response: ' . $sResponse, [
                 __METHOD__ . ":" . __LINE__,
@@ -234,7 +248,31 @@ class Connection extends Model implements ConnectionInterface
             $options['verify'] = !$this->getDisableSslVerification();
         }
 
-        return $transport->request($method, $uri, $options);
+        $response = $transport->request($method, $uri, $options);
+
+        if (true === ($options['throw_on_error'] ?? false) && !$response->isSuccessful()) {
+            throw $this->createApiException($response);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Create an appropriate ApiException based on the response status code.
+     */
+    protected function createApiException(BoxResponseInterface $response): ApiException
+    {
+        $statusCode = $response->getStatusCode();
+        $message = sprintf('Box API error [%d]', $statusCode);
+
+        return match ($statusCode) {
+            401 => new UnauthorizedException($message, $statusCode, null, $response),
+            403 => new ForbiddenException($message, $statusCode, null, $response),
+            404 => new NotFoundException($message, $statusCode, null, $response),
+            409 => new ConflictException($message, $statusCode, null, $response),
+            429 => new RateLimitException($message, $statusCode, null, $response),
+            default => new ApiException($message, $statusCode, null, $response),
+        };
     }
 
     public function delete(string $uri): BoxResponseInterface

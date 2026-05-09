@@ -4,8 +4,10 @@ namespace Box\Http\Transport;
 
 use Box\Http\Response\BoxResponse;
 use Box\Http\Response\BoxResponseInterface;
+use Box\Exception\TransportException;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface as GuzzleClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 
 class GuzzleTransport implements TransportInterface
@@ -19,7 +21,15 @@ class GuzzleTransport implements TransportInterface
 
     public function request(string $method, string $uri, array $options = []): BoxResponseInterface
     {
-        $response = $this->client->request($method, $uri, $options);
+        if (!isset($options['http_errors'])) {
+            $options['http_errors'] = false;
+        }
+
+        try {
+            $response = $this->client->request($method, $uri, $options);
+        } catch (GuzzleException $e) {
+            throw new TransportException($e->getMessage(), $e->getCode(), $e);
+        }
 
         return $this->convertResponse($response);
     }

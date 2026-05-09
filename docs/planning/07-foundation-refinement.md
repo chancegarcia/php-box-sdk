@@ -37,7 +37,7 @@ This initiative covers:
 | 0 | [Tracker](#foundation-refinement-slice-0---tracker) | Completed |
 | 1 | [Response Wrapper Foundation](#foundation-refinement-slice-1---response-wrapper-foundation) | Completed |
 | 2 | [Transport Response Normalization](#foundation-refinement-slice-2---transport-response-normalization) | Completed |
-| 3 | [Connection Error Boundaries](#foundation-refinement-slice-3---connection-error-boundaries) | Not Started |
+| 3 | [Connection Error Boundaries](#foundation-refinement-slice-3---connection-error-boundaries) | Completed |
 | 4 | [Service Response Handling Compatibility](#foundation-refinement-slice-4---service-response-handling-compatibility) | Not Started |
 | 5 | [Auth Foundation Hardening](#foundation-refinement-slice-5---auth-foundation-hardening) | Not Started |
 | 6 | [CLI Compatibility Pass](#foundation-refinement-slice-6---cli-compatibility-pass) | Not Started |
@@ -279,6 +279,16 @@ Test Expectations:
 Validation:
 - `composer test`
 - `composer analyse`
+
+**Completion Note**:
+- Implemented exception hierarchy: `BoxException` -> `BoxResponseException` -> `ApiException` (with 401, 403, 404, 409, 429 subclasses).
+- Added `TransportException` for network/execution failures.
+- Updated `GuzzleTransport` and `Connection` (Curl) to wrap transport failures in `TransportException`.
+- Implemented optional `throw_on_error` behavior in `Connection::request()` to throw `ApiException` while preserving BC by default.
+- Implemented `Redactor` utility and integrated it into `BoxException` to mask sensitive data (tokens, secrets) in messages and context.
+- Ensured `ApiException` preserves `BoxResponseInterface` access for troubleshooting.
+- Added comprehensive unit tests for error boundaries and redaction.
+- Full validation (`composer review`) passed.
 ```
 
 ---

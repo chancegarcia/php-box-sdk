@@ -33,6 +33,7 @@
 namespace Box\Exception;
 
 use Box\Http\Response\BoxResponseInterface;
+use Box\Http\Util\Redactor;
 use stdClass;
 
 class BoxException extends \Exception
@@ -51,6 +52,8 @@ class BoxException extends \Exception
     protected mixed $boxCode = null;
     protected mixed $status = null;
 
+    protected static ?Redactor $redactor = null;
+
     /**
      * @param string $message
      * @param mixed|null $code
@@ -58,12 +61,27 @@ class BoxException extends \Exception
      */
     public function __construct(string $message = "", mixed $code = 0, ?\Throwable $previous = null)
     {
+        $message = $this->redact($message);
         if (is_int($code)) {
             parent::__construct($message, $code, $previous);
         } else {
             parent::__construct($message, 0, $previous);
             $this->boxCode = $code;
         }
+    }
+
+    protected function getRedactor(): Redactor
+    {
+        if (null === self::$redactor) {
+            self::$redactor = new Redactor();
+        }
+
+        return self::$redactor;
+    }
+
+    protected function redact(string $string): string
+    {
+        return $this->getRedactor()->redactString($string);
     }
 
     /**
@@ -100,6 +118,10 @@ class BoxException extends \Exception
     public function addContext(mixed $contextInformation = null, ?string $key = null): void
     {
         $contextInformation = $this->sanitize($contextInformation);
+        if (is_array($contextInformation)) {
+            $contextInformation = $this->getRedactor()->redactArray($contextInformation);
+        }
+
         if (is_string($key)) {
             $finalKey = $key;
             // if we have duplicate key for some reason, make it unique
