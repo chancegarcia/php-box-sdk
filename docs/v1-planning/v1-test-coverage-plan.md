@@ -42,7 +42,7 @@ These identify endpoints or behaviors that are known but intentionally out of sc
 - **Documentation checks**: Ensure migration guides and audits are updated.
 - **Composer script validation**: Always validate using `composer test`, `composer analyse`, and `composer cs:check`.
 - **V1 ID Typing**: V1 resource IDs should be typed as strings. Legacy `string|int` compatibility should be called out only where it is intentionally retained during transition.
-- **Redaction**: Tests must verify that sensitive data (tokens, secrets) are never exposed in logs, exception messages, or public metadata.
+- **Redaction**: Tests must verify that sensitive data (tokens, secrets) are never exposed in logs, exception messages, or public metadata. This includes verifying that a `TestLogger` (or similar) captured only redacted strings for sensitive headers and body fields.
 - **Retry Defaults**: Tests must verify that retry is disabled by default.
 
 ## Standard Test Categories

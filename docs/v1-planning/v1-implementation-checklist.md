@@ -96,7 +96,7 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 
 ## 7. V1.0 Foundation Refinement (Strategy Alignment)
 
-- [ ] Status: Not started
+- [ ] Status: In progress
 - Goal: Implement core foundation services according to hardened v1 strategy.
 - Scope:
     - Transport refactor: Public `TransportInterface` with `send()` and `request()` support; PSR-18 integration; support for options (headers, query, json, body, auth, retry).
@@ -115,6 +115,7 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 - Validation: `composer test`.
 - Documentation updates: Update `v1-architecture-rules.md`.
 - Test updates: New foundation tests (Redaction, Retry, Transport, Response Wrapper, JSON helper, Auth workflow).
+- Completion notes: Step 7 is the primary implementation target for foundation hardening following the final v1 documentation validation pass.
 
 ## 7. Group and Group Membership Migration
 

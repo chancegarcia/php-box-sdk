@@ -5,29 +5,29 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
 
 | Area | Status | Existing Source | Gap | Recommended Action |
 |---|---|---|---|---|
-| Glossary | Missing | N/A | No centralized terminology | Create v1 Glossary |
-| Object Boundaries | Partial | `v1-architecture-rules.md` | Needs more detail on transport vs service | Explicitly define responsibilities |
-| Service/Resource/Workflow Contracts | Partial | `v1-architecture-rules.md` | Specific return types and DTO roles | Define standard contract patterns |
-| Value Objects/Enums | Partial | `v1-api-coverage-audit.md` | Missing explicit policy on primitives vs objects | Establish VO/Enum Policy |
-| Auth Workflows | Missing | N/A | OAuth2 flow details and JWT/S2S planning | Document Auth Strategy |
-| JWT/Server-to-Server Auth | Missing | N/A | Needs sequencing and feasibility notes | Add to Auth Strategy |
-| Error Handling | Missing | N/A | No taxonomy or exception hierarchy | Define Error Strategy |
-| Logging | Missing | N/A | PSR-3 usage and redaction rules | Define Logging Strategy |
-| Observability | Missing | N/A | SDK vs downstream boundaries | Define Observability Strategy |
-| Retry/Rate-Limit | Missing | N/A | Configuration and default behavior | Define Retry Strategy |
-| Request/Response Abstraction | Partial | `v1-architecture-rules.md` | PSR compliance details | Define Request/Response Strategy |
-| HTTP Client Strategy | Partial | `v1-architecture-rules.md` | Guzzle default justification | Document Guzzle/PSR-18 path |
-| Public Direct Transport | Missing | N/A | Extension point for advanced users | Define Direct Transport Strategy |
-| Lifecycle Management | Partial | `v1-api-coverage-audit.md` | Standard CRUD+ pattern | Define Resource Lifecycle Strategy |
-| Testing | Partial | `v1-test-coverage-plan.md` | Needs transport/auth test specifics | Update Test Strategy section |
-| Pagination | Partial | `v1-api-coverage-audit.md` | Offset/Marker/Auto-pagination details | Define Pagination Strategy |
-| Hydration/Serialization | Partial | `v1-architecture-rules.md` | snake_case/camelCase and strictness | Define Serialization Strategy |
-| Configuration | Missing | N/A | Immutable vs Mutable config | Define Configuration Strategy |
-| Security | Missing | N/A | Secret handling and redaction rules | Define Security Strategy |
-| Migration | Partial | `v1-interface-and-model-audit.md` | User-facing migration examples | Expand Migration Strategy |
-| Endpoint Coverage | Partial | `v1-api-coverage-audit.md` | Priorities and ownership | Formalize Coverage Matrix |
-| Public API Stability | Missing | N/A | Policy for v1.x post-release | Define Stability Policy |
-| Documentation Drift | Missing | N/A | Strategy to prevent stale docs | Define Drift Check Policy |
+| Glossary | **Decided** | `v1-strategy-and-contracts.md` | None | Maintain as source of truth |
+| Object Boundaries | **Decided** | `v1-strategy-and-contracts.md` | None | Follow defined responsibilities |
+| Service/Resource/Workflow Contracts | **Decided** | `v1-strategy-and-contracts.md` | None | Follow defined contract patterns |
+| Value Objects/Enums | **Decided** | `v1-strategy-and-contracts.md` | None | Follow VO/Enum Policy |
+| Auth Workflows | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Auth Strategy |
+| JWT/Server-to-Server Auth | **Decided** | `v1-strategy-and-contracts.md` | Feasibility checkpoint after foundation | Proceed with foundation first |
+| Error Handling | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Error Strategy |
+| Logging | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Logging Strategy |
+| Observability | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Observability Strategy |
+| Retry/Rate-Limit | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Retry Strategy |
+| Request/Response Abstraction | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Request/Response Strategy |
+| HTTP Client Strategy | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Guzzle/PSR-18 path |
+| Public Direct Transport | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Direct Transport Strategy |
+| Lifecycle Management | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Resource Lifecycle Strategy |
+| Testing | **Decided** | `v1-test-coverage-plan.md` | None | Follow updated Test Strategy |
+| Pagination | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Pagination Strategy |
+| Hydration/Serialization | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Serialization Strategy |
+| Configuration | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Configuration Strategy |
+| Security | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Security Strategy |
+| Migration | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Migration Strategy |
+| Endpoint Coverage | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Formalized Coverage Matrix |
+| Public API Stability | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Stability Policy |
+| Documentation Drift | **Decided** | `v1-strategy-and-contracts.md` | None | Follow Drift Check Policy |
 
 ## 2. v1 Glossary
 
