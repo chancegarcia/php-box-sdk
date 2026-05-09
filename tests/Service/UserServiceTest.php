@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Box\Tests\Service;
 
 use Box\Connection\ConnectionInterface;
+use Box\Exception\BoxResponseException;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Resource\User;
 use Box\Service\UserService;
@@ -112,5 +113,36 @@ class UserServiceTest extends TestCase
 
         $user = $service->getUser($userId);
         $this->assertSame($userId, $user->getId());
+    }
+
+    public function testGetUserHandlesErrorResponse(): void
+    {
+        $userId = 'error-user';
+        $errorData = [
+            'type' => 'error',
+            'status' => 404,
+            'code' => 'not_found',
+            'message' => 'User not found'
+        ];
+
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('isSuccessful')->willReturn(false);
+        $response->method('getStatusCode')->willReturn(404);
+        $response->method('getContent')->willReturn(json_encode($errorData));
+        $response->method('json')->willReturnCallback(function ($assoc) use ($errorData) {
+            return $assoc ? $errorData : (object)$errorData;
+        });
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->method('query')->willReturn($response);
+
+        $service = new UserService();
+        $service->setAuthorizedConnection($connection);
+        $service->setToken($this->createMock(TokenInterface::class));
+
+        $this->expectException(BoxResponseException::class);
+        $this->expectExceptionCode(404);
+
+        $service->getUser($userId);
     }
 }

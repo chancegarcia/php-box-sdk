@@ -1077,4 +1077,20 @@ class Service extends BaseModel implements ServiceInterface
     {
         return (new Hydrator())->hydrate($targetClass, $data);
     }
+
+    /**
+     * Helper to get and hydrate a resource from Box.
+     *
+     * @template T of object
+     * @param string $uri
+     * @param class-string<T> $resourceClass
+     * @return T
+     * @throws BoxException
+     */
+    protected function getResourceFromBox(string $uri, string $resourceClass): object
+    {
+        $data = $this->getFromBox($uri, 'decoded');
+
+        return $this->hydrate($resourceClass, $data);
+    }
 }

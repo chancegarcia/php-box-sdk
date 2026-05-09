@@ -18,9 +18,7 @@ class UserService extends Service
      */
     public function getCurrentUser(): User
     {
-        $userData = $this->getFromBox(self::CURRENT_USER_ENDPOINT, 'decoded');
-
-        return $this->hydrate(User::class, $userData);
+        return $this->getResourceFromBox(self::CURRENT_USER_ENDPOINT, User::class);
     }
 
     /**
@@ -32,8 +30,7 @@ class UserService extends Service
     public function getUser(string $userId): User
     {
         $uri = self::ENDPOINT . '/' . $userId;
-        $userData = $this->getFromBox($uri, 'decoded');
 
-        return $this->hydrate(User::class, $userData);
+        return $this->getResourceFromBox($uri, User::class);
     }
 }

@@ -43,7 +43,7 @@ This initiative covers:
 | 1 | [Service Inventory and Legacy Architecture Removal Audit](#service-layer-hardening-slice-1---service-inventory-and-legacy-architecture-removal-audit) | Completed |
 | 2 | [Base Service Contract Stabilization](#service-layer-hardening-slice-2---base-service-contract-stabilization) | Completed |
 | 3 | [Hydration and Mapper Boundary](#service-layer-hardening-slice-3---hydration-and-mapper-boundary) | Completed |
-| 4 | [Representative Read Service Migration](#service-layer-hardening-slice-4---representative-read-service-migration) | |
+| 4 | [Representative Read Service Migration](#service-layer-hardening-slice-4---representative-read-service-migration) | Completed |
 | 5 | [Representative Write/Update Service Migration](#service-layer-hardening-slice-5---representative-writeupdate-service-migration) | |
 | 6 | [File/Upload Service Compatibility Pass](#service-layer-hardening-slice-6---fileupload-service-compatibility-pass) | |
 | 7 | [Service Error and Retry Semantics](#service-layer-hardening-slice-7---service-error-and-retry-semantics) | |
