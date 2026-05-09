@@ -26,21 +26,6 @@ class GuzzleTransport implements TransportInterface
 
     protected function convertResponse(PsrResponseInterface $psrResponse): BoxResponseInterface
     {
-        $statusLine = sprintf(
-            "HTTP/%s %s %s",
-            $psrResponse->getProtocolVersion(),
-            $psrResponse->getStatusCode(),
-            $psrResponse->getReasonPhrase()
-        );
-
-        $headerString = $statusLine . "\r\n";
-        foreach ($psrResponse->getHeaders() as $name => $values) {
-            foreach ($values as $value) {
-                $headerString .= "$name: $value\r\n";
-            }
-        }
-        $headerString .= "\r\n";
-
-        return new BoxResponse((string)$psrResponse->getBody(), $headerString, $psrResponse);
+        return new BoxResponse(psrResponse: $psrResponse);
     }
 }

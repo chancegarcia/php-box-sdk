@@ -27,13 +27,8 @@ use Box\Http\Response\Header\StatusLineInterface;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
- * @todo v1: Deprecate BoxResponse and move toward PSR-7 ResponseInterface directly
- * @todo v1: Replace getContent() with getBody()
- * @todo v1: Replace getResponseHeader() with PSR-7 header methods
- * @todo v1: Remove inheritance from Symfony HttpFoundation Response if no longer needed
  */
 class BoxResponse implements BoxResponseInterface
 {

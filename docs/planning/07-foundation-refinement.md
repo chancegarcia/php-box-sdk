@@ -36,7 +36,7 @@ This initiative covers:
 |---|---|---|
 | 0 | [Tracker](#foundation-refinement-slice-0---tracker) | Completed |
 | 1 | [Response Wrapper Foundation](#foundation-refinement-slice-1---response-wrapper-foundation) | Completed |
-| 2 | [Transport Response Normalization](#foundation-refinement-slice-2---transport-response-normalization) | Not Started |
+| 2 | [Transport Response Normalization](#foundation-refinement-slice-2---transport-response-normalization) | Completed |
 | 3 | [Connection Error Boundaries](#foundation-refinement-slice-3---connection-error-boundaries) | Not Started |
 | 4 | [Service Response Handling Compatibility](#foundation-refinement-slice-4---service-response-handling-compatibility) | Not Started |
 | 5 | [Auth Foundation Hardening](#foundation-refinement-slice-5---auth-foundation-hardening) | Not Started |
@@ -201,11 +201,20 @@ Final Summary:
 - `composer test`
 - `composer analyse`
 
+**Completion Note**:
+- Ensured all transports consistently return `BoxResponseInterface`.
+- Optimized `GuzzleTransport` by using the new `psrResponse` named parameter in `BoxResponse` constructor.
+- Refined `CurlTransport` to support `query` options, multi-value headers, and custom options via `initAdditionalCurlOpts`.
+- Verified that `Connection::getCurlData` returns the refined `BoxResponse`.
+- Reviewed and removed unnecessary `curl_close()` calls for PHP 8.5 compatibility.
+- Added unit tests for `GuzzleTransport` and `CurlTransport`.
+- Full validation (`composer review`) passed.
+- Removed stale `@todo` comments in `BoxResponse`.
+- Deferred full exception taxonomy to Slice 3.
+
 **Junie Prompt**:
 ```markdown
 Implement Foundation Refinement Slice 2 — Transport Response Normalization.
-
-Goal: Ensure all transports consistently return the SDK response abstraction (`BoxResponseInterface`).
 
 Scope:
 - Update `src/Connection/TransportInterface.php` to type-hint `BoxResponseInterface` as return type for `send()` and `request()`.

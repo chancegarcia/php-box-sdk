@@ -139,7 +139,6 @@ class ConnectionTest extends TestCase
         // Use a real file path and real CURLFile (implicitly via postFile calling createCurlFile)
         $result = $connection->postFile('http://example.com', __FILE__, 0);
         $this->assertSame($response, $result);
-        @curl_close($ch);
     }
     public function testPostFileWithParentId()
     {
