@@ -448,8 +448,16 @@ Validation:
 - composer review
 ```
 
-## Validation Requirements
-- `composer test`: No regressions in service behavior.
-- `composer analyse`: Level 0 pass (at minimum) for all v1 code.
-- `composer review`: Full project check.
-- **Reflection Check**: Verify `Box\Resource\User` does not inherit from `BaseModel`.
+## Release Readiness Follow-ups
+
+### API Fixture Realism and Contract Alignment
+
+Before final v1 release, a later pass should:
+
+- Review high-value service/resource tests against official Box API examples.
+- Replace overly artificial mocked payloads where accuracy matters.
+- Centralize reusable Box API-shaped fixtures.
+- Keep tests isolated with no real network calls.
+- Avoid real credentials, account IDs, private paths, and private data.
+- Focus first on services affected by v1 cutover work.
+- Defer broad fixture cleanup until after legacy architecture removal unless a fixture is needed for the current slice.
