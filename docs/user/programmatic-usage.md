@@ -72,14 +72,32 @@ For more details on these changes, see the [v1 Upgrade Guide](../migration/upgra
 
 ## 5. Response and Error Model
 
-The SDK uses `Box\Http\BoxResponseInterface` for all API responses and throws `Box\Exception\BoxException` (or more specific subclasses) when things go wrong.
+The SDK uses `Box\Http\BoxResponseInterface` for all API responses and throws `Box\Exception\ApiException` (or more specific subclasses) when things go wrong.
 
 ### Exception Taxonomy
 The SDK uses a refined exception hierarchy for better error handling:
-- `BoxException`: Base exception for all SDK errors.
+- `ApiException`: Thrown when the Box API returns an error (4xx or 5xx status codes).
 - `TransportException`: Thrown when a network or connection error occurs (e.g., timeout, DNS failure).
 - `BoxResponseException`: Base for exceptions that include a `BoxResponseInterface`.
-- `ApiException`: Thrown when the Box API returns an error (4xx or 5xx status codes). Subclasses like `UnauthorizedException` (401) or `NotFoundException` (404) are available for common errors.
+- `BoxException`: Base exception for all SDK errors.
+
+### Service Layer Patterns
+Services in v1.0 follow a "send-and-hydrate" pattern, ensuring that you receive typed resources instead of raw arrays.
+
+- **Read Operations**: Use `getResourceFromBox()` to fetch and hydrate a resource.
+- **Write Operations**: Use `sendUpdateAndHydrate()` to send a payload and hydrate the resulting resource.
+
+Example with `UserService`:
+```php
+use Box\Service\UserService;
+
+$userService = new UserService();
+$userService->setToken($token);
+
+// Returns a Box\Resource\User object
+$user = $userService->getCurrentUser();
+echo $user->getName();
+```
 
 ### Robust Error Handling
 An `ApiException` contains a `BoxResponseInterface` (via `$e->getResponse()`). This allows you to inspect the JSON payload for specific Box error codes and response headers.
@@ -152,13 +170,12 @@ $stream = FileStream::fromPath('/tmp/raw_data', 'final_name.dat', 'application/o
 $client->uploadFileToBox($stream, 'folder_id');
 ```
 
-## 7. Model Validation and Box IDs
-
-The SDK models use a shared trait-based validation system. In v0.11.x, Box IDs are consistently handled as `string|int` to ensure compatibility with both numeric and string-based IDs used by Box.
+### Model Validation and Hydration
+The SDK models are hydrated via a centralized `Hydrator`. In v1.0, services handle this boundary internally.
 
 ### Data Types
-- **IDs:** Use `string` or `int`. The SDK will normalize these when communicating with the API.
-- **Models:** Models are populated via arrays but can be validated for required fields.
+- **IDs:** Box IDs are handled as `string|int`. The SDK will normalize these when communicating with the API.
+- **Resources:** Models (Resources) are typed objects representing Box entities. They are no longer expected to handle their own hydration logic.
 
 ## 8. Logging and Observability
 
@@ -191,7 +208,7 @@ Box IDs are handled as `string|int` throughout the v0.11.x branch. This ensures 
 The `Box\Http\FileStream` abstraction allows the SDK to handle file content from various sources (strings, resources, local paths) uniformly. This is particularly useful for serverless environments or memory-constrained integrations where writing to disk is undesirable.
 
 ### Model Validation
-Models use `Box\Model\BaseModelTrait` and `Box\Model\ModelTrait` for shared logic. Validation in v0.11.x avoids side effects during class verification, ensuring that simply instantiating or checking a model doesn't trigger unexpected state changes.
+Resources in v1.0 are focused on data representation. Validation and hydration logic have been moved to the service and mapper layers to ensure a cleaner separation of concerns.
 
 ---
 

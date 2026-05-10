@@ -48,7 +48,7 @@ This initiative covers:
 | 6 | [File/Upload Service Compatibility Pass](#service-layer-hardening-slice-6---fileupload-service-compatibility-pass) | Completed ✓ |
 | 7 | [Service Error and Retry Semantics](#service-layer-hardening-slice-7---service-error-and-retry-semantics) | Completed ✓ |
 | 8 | [Legacy Architecture Removal and Cutover Planning](#service-layer-hardening-slice-8---legacy-architecture-removal-and-cutover-planning) | Completed ✓ |
-| 9 | [Service Documentation and Migration Drift Pass](#service-layer-hardening-slice-9---service-documentation-and-migration-drift-pass) | |
+| 9 | [Service Documentation and Migration Drift Pass](#service-layer-hardening-slice-9---service-documentation-and-migration-drift-pass) | Completed ✓ |
 | 10 | [Service Type-Safety Cleanup](#service-layer-hardening-slice-10---service-type-safety-cleanup) | |
 | 11 | [Final Integration Review](#service-layer-hardening-slice-11---final-integration-review) | |
 
@@ -592,7 +592,8 @@ Validation:
 - Slice 6: Completed ✓
 - Slice 7: Completed ✓
 - Slice 8: Completed ✓
-- Slices 9-11: Pending
+- Slice 9: Completed ✓
+- Slices 10-11: Pending
 
 ## Deferred Follow-up
 - Broad removal of legacy pre-v1 / v0.x architecture: This remains a v1 release requirement. If the remaining scope exceeds the current Service Layer Hardening tracker, it will be moved to a dedicated tracker, but it MUST be completed before v1 release.

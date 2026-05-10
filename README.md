@@ -68,7 +68,8 @@ $response = $client->uploadFileToBox($stream, '0'); // '0' is the root folder ID
 $rootFolder = $client->getFolder();
 ```
 
-## v1 Foundation Refinement
+## v1 Foundation and Service Hardening
+- **Hardened Service Layer**: Services now use refined response and hydration patterns. `UserService` and `FileService` provide templates for typed resource interaction.
 - **PSR-7-Backed Responses**: `BoxResponse` now wraps a PSR-7 `ResponseInterface`, providing better compliance and helper methods like `json()`.
 - **Hardened Error Boundaries**: Improved exception taxonomy with `ApiException` and `TransportException`. Exceptions now automatically redact sensitive data (tokens).
 - **Transport Normalization**: Consistent response behavior across Guzzle and Curl transports.

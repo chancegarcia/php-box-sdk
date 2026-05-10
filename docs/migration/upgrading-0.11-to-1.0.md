@@ -38,7 +38,15 @@ Response behavior is now consistent across Guzzle and Curl transports. Both retu
 ### Service Response Handling
 Service methods (e.g., `$client->getFile($id)`) maintain their existing return types but now use the refined response helpers internally.
 
-- **Impact**: None.
+### Service Layer Hardening
+The service layer has been hardened to provide more consistent hydration, better error handling, and clearer boundaries between raw API data and typed resources.
+
+- **Impact**: Low to Moderate (if you relied on stateful service properties).
+- **Migration**:
+    - **Prefer Hardened Helpers**: Use `$service->getResourceFromBox()` or `$service->sendUpdateAndHydrate()` in custom service extensions.
+    - **Avoid Stateful Debugging**: Stop using `$service->getLastResult()`. Instead, catch `ApiException` and use `$e->getResponse()` to inspect the failed response.
+    - **New Hydration Pattern**: Services now return typed Resources (e.g., `Box\Resource\User`) hydrated via a centralized `hydrate()` helper.
+    - **Deprecations**: Stateful properties like `lastResult`, `lastResultDecoded`, and `lastResultFlat` are deprecated and will be removed in v1.0.
 
 ## Usage Comparison
 

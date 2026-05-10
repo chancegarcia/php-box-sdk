@@ -3,31 +3,33 @@
 ## Unreleased
 
 ### Summary
+- Hardened the service layer architecture to provide more consistent hydration, better error handling, and clearer boundaries between raw API data and typed resources.
+- Introduced standardized service patterns for read and write operations, leveraging centralized hydration helpers.
 - Refactored the SDK response foundation to use a thin PSR-7-backed `BoxResponse`, improving compliance and providing helpful response utilities.
 - Hardened connection error handling with a refined exception taxonomy, ensuring more granular and descriptive errors (e.g., `ApiException`, `TransportException`).
 - Implemented automatic redaction of sensitive data (access tokens, refresh tokens, client secrets) in logs, exceptions, and CLI output.
-- Stabilized service-level response handling while maintaining full backward compatibility for return types.
-- Updated comprehensive public and migration documentation to reflect the new Foundation Refinement architecture.
+- Updated comprehensive public and migration documentation to reflect the hardened service layer and refined foundation.
 
 ### Developer Details
-- **Response Handling**:
+- **Service Layer Hardening**:
+    - Introduced `Service::getResourceFromBox()` to fetch and hydrate typed resources.
+    - Introduced `Service::sendUpdateAndHydrate()` to centralize payload submission and response hydration.
+    - Added `Service::hydrate()` helper to standardize resource creation via the `Hydrator`.
+    - Migrated `UserService` and `FileService::createSharedLink()` to representative hardened patterns.
+    - Deprecated stateful service properties (`lastResult`, `lastResultDecoded`, `lastResultFlat`) and methods (`getLastResult`, `getDefaultReturnType`).
+- **Response and Error Handling**:
     - Replaced Symfony-inherited `BoxResponse` with a PSR-7-backed implementation wrapping `Psr\Http\Message\ResponseInterface`.
     - Introduced `BoxResponseInterface` with helpers like `json()` for safe decoding and `getRetryAfter()` for rate-limit handling.
     - Normalized all transports (Guzzle, Curl) to consistently return `BoxResponseInterface`.
-- **Exception Taxonomy**:
     - Implemented a hierarchical exception model: `BoxException` -> `BoxResponseException` -> `ApiException`.
     - Added specialized `ApiException` subclasses for common HTTP status codes (401, 403, 404, 409, 429).
-    - Introduced `TransportException` for network-level failures.
     - Ensured `ApiException` preserves the original response object for programmatic inspection.
 - **Security and Redaction**:
     - Added a `Redactor` utility to mask sensitive tokens and secrets.
     - Integrated redaction into `BoxException` messages and `BoxLoggerTrait` for safe logging.
     - Enabled automatic masking of tokens in CLI command output via `ConsoleOutputFormatter`.
-- **Service Layer**:
-    - Modernized `Service::handleBoxResponse` to use refined response methods.
-    - Maintained stable public service contracts and resource hydration.
 - **Documentation**:
-    - Updated `README.md`, `upgrading-0.10-to-0.11.md`, and `programmatic-usage.md` with new architectural details and examples.
+    - Updated `README.md`, `upgrading-0.11-to-1.0.md`, and `programmatic-usage.md` with new architectural details and examples.
     - Standardized on Composer scripts (e.g., `composer review`) as the primary validation commands in all documentation.
 
 ### Migration Notes
