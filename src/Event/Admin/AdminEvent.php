@@ -65,8 +65,8 @@ class AdminEvent extends Event implements AdminEventInterface
     /**
      * remove any attempt to map to the private property
      *
-     * {@inheritdoc}
      * @param array|stdClass $aData
+     * @deprecated Use Hydrator::hydrate() instead.
      */
     public function mapBoxToClass(array|stdClass $aData): void
     {
