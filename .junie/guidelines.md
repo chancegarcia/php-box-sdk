@@ -122,6 +122,8 @@ Testing guidelines:
     - Do not remove `var/tmp/.gitkeep`.
 
 Static analysis and style:
+- Avoid nested ternary operators. Use explicit branching or a named helper method when conditional logic becomes nested. Simple one-level ternaries are acceptable when they remain readable.
+- Do not add custom PHPCS/PHPStan enforcement for nested ternaries unless explicitly requested; enforce this preference through review and project guidelines for now.
 - Prefer `SomeClass::class` over hard-coded fully qualified class-name strings when referencing PHP classes or interfaces in code, including exception messages and logs.
 - Do not apply this rule to arbitrary user-facing text, protocol strings, API type values, or external identifiers that are not PHP symbols.
 - Keep PHPStan compatibility in mind, even though the current configured level is low.

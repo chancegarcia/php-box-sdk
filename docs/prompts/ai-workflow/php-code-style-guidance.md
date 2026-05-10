@@ -46,8 +46,10 @@ This document outlines the preferred PHP code style and validation expectations 
 
 ## Readability and Logic
 
-- **Yoda Conditions**: Use Yoda conditions (`if (null === $value)`) where they help prevent accidental assignments, but only if they do not significantly reduce readability.
-- **Early Returns**: Prefer early returns to reduce nesting depth.
+- Avoid nested ternary operators. Use explicit branching or a named helper method when conditional logic becomes nested. Simple one-level ternaries are acceptable when they remain readable.
+- Do not add custom PHPCS/PHPStan enforcement for nested ternaries unless explicitly requested; enforce this preference through review and project guidelines for now.
+- Yoda Conditions: Use Yoda conditions (`if (null === $value)`) where they help prevent accidental assignments, but only if they do not significantly reduce readability.
+- Early Returns: Prefer early returns to reduce nesting depth.
 
 ## Logging and Debugging
 
