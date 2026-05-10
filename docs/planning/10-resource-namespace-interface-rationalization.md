@@ -54,8 +54,8 @@ This work assumes the completion of Step 9 (Legacy Architecture Removal), ensuri
 | 10.3 | [Folder Resource Namespace and Interface Rationalization](#slice-103--folder-resource-namespace-and-interface-rationalization) | ✓ |
 | 10.4 | [Group and Collaboration Resource Rationalization](#slice-104--group-and-collaboration-resource-rationalization) | ✓ |
 | 10.5 | [Shared Item and Event Resource Rationalization](#slice-105--shared-item-and-event-resource-rationalization) | ✓ |
-| 10.6 | [Migration Docs and Baseline Cleanup](#slice-106--migration-docs-and-baseline-cleanup) | In Progress |
-| 10.7 | [Final Integration Review](#slice-107--final-integration-review) | Not Started |
+| 10.6 | [Migration Docs and Baseline Cleanup](#slice-106--migration-docs-and-baseline-cleanup) | ✓ |
+| 10.7 | [Final Integration Review](#slice-107--final-integration-review) | ✓ |
 
 ---
 

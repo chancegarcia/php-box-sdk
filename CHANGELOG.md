@@ -3,6 +3,52 @@
 ## Unreleased
 
 ### Summary
+- Finalized Step 10 by migrating all primary resources to the `Box\Resource` namespace and removing redundant mirror interfaces.
+- Standardized endpoint constant ownership by moving API URI constants from removed resource interfaces to their respective concrete services.
+- Improved internal type safety for events by updating the `EventResponse` DTO to use the final `Box\Resource\Event` type.
+- Cleaned up documentation, migration guides, and project trackers to reflect the completed v1 resource namespace policy.
+- Validated the full SDK surface for Step 10 readiness using `composer review`.
+
+### Developer Details
+- **Resource Namespace Rationalization**:
+    - Migrated `File`, `Folder`, `Group`, `Collaboration`, `Event`, `AdminEvent`, `UserEvent`, and `SharedLink` to the `Box\Resource` namespace.
+    - Removed one-class mirror interfaces: `FileInterface`, `FolderInterface`, `GroupInterface`, `CollaborationInterface`, `SharedLinkInterface`, `PermissionsInterface`, `EventInterface`, `AdminEventInterface`, `UserEventInterface`, and `EventCollectionInterface`.
+    - Updated all type hints in services, factories, and the `Client` to use concrete resource classes.
+- **Endpoint Constant Ownership**:
+    - Moved `URI` and `UPLOAD_URI` from `FileInterface` to `FileService` as `ENDPOINT` and `UPLOAD_ENDPOINT`.
+    - Moved `URI` and `SHARED_ITEM_URI` from `FolderInterface` to `FolderService` as `ENDPOINT` and `SHARED_ITEM_ENDPOINT`.
+    - Moved `URI` and `MEMBERSHIP_URI` from `GroupInterface` to `GroupService` as `ENDPOINT` and `MEMBERSHIP_ENDPOINT`.
+    - Moved `URI` from `CollaborationInterface` to `CollaborationService` as `ENDPOINT`.
+    - Moved `URI` from `UserEventInterface` to `UserEventService` as `ENDPOINT`.
+- **Event DTO Refinement**:
+    - Updated `Box\Dto\Event\EventResponse` to import and use `Box\Resource\Event` instead of the removed `Box\Event\Event` namespace.
+- **Project Hygiene**:
+    - Verified that no stale references to removed namespaces or accidental double/nested primary resource names (e.g., `Box\Resource\File\File`) exist in the source or tests.
+    - Updated `docs/planning/10-resource-namespace-interface-rationalization.md` and `docs/audits/10-resource-namespace-interface-audit.md` to mark all Step 10 slices as completed.
+
+### Breaking Changes
+- **Namespace Moves**: All resources previously in `Box\File`, `Box\Folder`, `Box\Group`, `Box\Collaboration`, `Box\Event`, and `Box\Item\SharedLink` have moved to `Box\Resource`.
+- **Interface Removal**: Mirror interfaces for resources have been removed. Type hints must be updated to concrete resource classes.
+- **Endpoint Constant Relocation**: URI constants are no longer available on resource interfaces. Access them via the corresponding Service classes.
+
+### Migration Notes
+- **Update Resource Imports**: Update all imports and type hints for Box resources to use the new `Box\Resource` namespace.
+- **Replace Interface Hints**:
+    - *Before*:
+      ~~~~php
+      public function upload(FileInterface $file);
+      ~~~~
+    - *After*:
+      ~~~~php
+      public function upload(Box\Resource\File $file);
+      ~~~~
+- **Update Constant References**:
+    - *Before*: `FileInterface::URI`
+    - *After*: `FileService::ENDPOINT`
+
+## v0.11.4
+
+### Summary
 - Completed the v1 legacy architecture removal by deleting the `Box\Model` base architecture and all associated legacy shims.
 - Modernized the `UserEventService` to return a typed `EventResponse` DTO, improving type safety and immutability for event data.
 - Standardized the service layer as stateless by removing legacy result-tracking properties and methods.
