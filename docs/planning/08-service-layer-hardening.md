@@ -46,7 +46,7 @@ This initiative covers:
 | 4 | [Representative Read Service Migration](#service-layer-hardening-slice-4---representative-read-service-migration) | Completed |
 | 5 | [Representative Write/Update Service Migration](#service-layer-hardening-slice-5---representative-writeupdate-service-migration) | Completed |
 | 6 | [File/Upload Service Compatibility Pass](#service-layer-hardening-slice-6---fileupload-service-compatibility-pass) | Completed ✓ |
-| 7 | [Service Error and Retry Semantics](#service-layer-hardening-slice-7---service-error-and-retry-semantics) | |
+| 7 | [Service Error and Retry Semantics](#service-layer-hardening-slice-7---service-error-and-retry-semantics) | Completed ✓ |
 | 8 | [Legacy Architecture Removal and Cutover](#service-layer-hardening-slice-8---legacy-architecture-removal-and-cutover) | |
 | 9 | [Service Documentation and Migration Drift Pass](#service-layer-hardening-slice-9---service-documentation-and-migration-drift-pass) | |
 | 10 | [Service Type-Safety Cleanup](#service-layer-hardening-slice-10---service-type-safety-cleanup) | |
@@ -402,6 +402,16 @@ Slice 6 completed. File/upload compatibility verified.
 - Exceptions from services always contain response context where available.
 - Services do not swallow 401/429/5xx errors silently.
 - Retry-after data is accessible to consumers when a `RateLimitException` is thrown.
+
+**Completion Note**:
+Slice 7 completed. Service error and retry semantics verified and hardened via tests.
+- Verified `BoxResponseException` propagation and context preservation (status code, retry-after).
+- Verified 401 refresh/retry logic in `getFromBox` and `sendUpdateToBox`.
+- Verified `TransportException` propagation.
+- Verified refresh failure context preservation.
+- Added comprehensive unit tests in `tests/Service/ServiceErrorTest.php`.
+- No source changes required; confirmed existing `Service` implementation meets v1 hardening goals.
+- Validation: `composer test`, `composer analyse`, `composer cs:check`.
 
 **Junie Prompt**:
 ```markdown
