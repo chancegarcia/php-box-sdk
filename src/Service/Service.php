@@ -772,14 +772,14 @@ class Service extends BaseModel implements ServiceInterface
      * @param string $type
      * @return void
      */
-    public function validateReturnType($type = null)
+    protected function validateReturnType($type = null)
     {
         if (!is_string($type)) {
             throw new InvalidArgumentException('string type expected');
         }
 
         if (!in_array($type, $this->allowedReturnTypes)) {
-            $validTypes = explode(",", $this->allowedReturnTypes);
+            $validTypes = implode(", ", $this->allowedReturnTypes);
             throw new OutOfBoundsException($type . " is not a valid result type. valid types: " . $validTypes);
         }
     }

@@ -224,22 +224,23 @@ Validation:
 
 ## Slice 9.3: Service Stateful API Removal
 
-**Purpose**: Remove stateful properties and methods from the base service.
+**Status**: Completed
 
-**Goal**: Remove `getLastResult`, `lastResult`, and related methods/properties that encourage stateful usage.
-
-**Scope**:
-- `src/Service/Service.php`
-- `src/Service/ServiceInterface.php`
-- Updates to `Client` and CLI commands using these APIs.
+**Notes**:
+- Verified that `getLastResult()`, `getDefaultReturnType()`, `setDefaultReturnType()`, and associated properties were already removed in prior steps.
+- Removed `validateReturnType()` from `ServiceInterface` to encapsulate internal validation logic.
+- Hardened `Service::validateReturnType()` by changing visibility to `protected` and fixing a bug where it attempted to `explode()` an array (now uses `implode()` for error messaging).
+- Updated migration documentation to explicitly confirm these removals and provide guidance on using `ApiException` for response inspection.
+- All service tests pass, confirming that methods rely on explicit return values.
 
 **Acceptance Criteria**:
-- Stateful APIs are removed.
-- All core consumers (Client, CLI) use return values instead.
+- Stateful APIs are removed. ✓
+- All core consumers (Client, CLI) use return values instead. ✓
 
 **Validation**:
-- `composer test`
-- `composer review`
+- `composer review` ✓
+- `composer test` ✓
+- `composer analyse` ✓
 
 **Draft Prompt (Refinement Required)**:
 ```markdown

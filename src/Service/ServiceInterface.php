@@ -299,6 +299,4 @@ interface ServiceInterface extends BaseModelInterface
      * @return void
      */
     public function setTokenStorageContext($tokenStorageContext = null);
-
-    public function validateReturnType($type = null);
 }
