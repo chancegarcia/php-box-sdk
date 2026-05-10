@@ -2,9 +2,9 @@
 
 namespace Box\Factory;
 
-use Box\File\FileInterface;
+use Box\Resource\File;
 
 interface FileFactoryInterface
 {
-    public function createFile(?array $options = null): FileInterface;
+    public function createFile(?array $options = null): File;
 }

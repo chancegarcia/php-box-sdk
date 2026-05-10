@@ -3,7 +3,7 @@
 namespace Box\Tests\Model;
 
 use Box\Mapper\Hydrator;
-use Box\File\File;
+use Box\Resource\File;
 use Box\Folder\Folder;
 use Box\Resource\User;
 use PHPUnit\Framework\TestCase;

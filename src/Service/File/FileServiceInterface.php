@@ -6,7 +6,6 @@
  * Date: 10/9/15
  * Time: 5:32 PM
  * @package     Box
- * @subpackage  Box_Model
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -37,22 +36,22 @@
 namespace Box\Service\File;
 
 use Box\Dto\File\Request\CreateSharedLinkRequest;
-use Box\File\FileInterface;
+use Box\Resource\File;
 use Box\Item\SharedLink\SharedLinkInterface;
 use Box\Service\ServiceInterface;
 
 interface FileServiceInterface extends ServiceInterface
 {
     /**
-     * @param FileInterface|null $file
+     * @param File $file
      * @param SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink shared link object used to set box permissions
      *
-     * @return FileInterface
+     * @return File
      */
-    public function createSharedLink(?FileInterface $file = null, SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink = null): FileInterface;
+    public function createSharedLink(File $file, SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink = null): File;
 
     /**
-     * @return FileInterface
+     * @return File
      */
-    public function createNewFile(): FileInterface;
+    public function createNewFile(): File;
 }

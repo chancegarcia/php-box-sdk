@@ -48,7 +48,7 @@ This work assumes the completion of Step 9 (Legacy Architecture Removal), ensuri
 | :--- | :--- | :--- |
 | 10.0 | [Tracker and Resource Surface Audit](#slice-100--tracker-and-resource-surface-audit) | ✓ |
 | 10.1 | [Resource Namespace Policy and Alias Plan](#slice-101--resource-namespace-policy-and-alias-plan) | ✓ |
-| 10.2 | [File Resource Namespace and Interface Rationalization](#slice-102--file-resource-namespace-and-interface-rationalization) | Not Started |
+| 10.2 | [File Resource Namespace and Interface Rationalization](#slice-102--file-resource-namespace-and-interface-rationalization) | ✓ |
 | 10.3 | [Folder Resource Namespace and Interface Rationalization](#slice-103--folder-resource-namespace-and-interface-rationalization) | Not Started |
 | 10.4 | [Group and Collaboration Resource Rationalization](#slice-104--group-and-collaboration-resource-rationalization) | Not Started |
 | 10.5 | [Shared Item and Event Resource Rationalization](#slice-105--shared-item-and-event-resource-rationalization) | Not Started |

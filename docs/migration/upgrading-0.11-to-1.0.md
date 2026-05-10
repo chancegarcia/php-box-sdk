@@ -66,6 +66,17 @@ The legacy `BaseModelTrait` and `ModelTrait` have been removed. Mapping infrastr
     - **Token `toArray()`**: The `Token` class now implements `toArray()` for easier serialization of credentials.
     - **ModelMapper Cleanup**: `ModelMapper` no longer provides `mapBoxToClass`, `isInt`, or `removeEmpty`. Use `Hydrator` for mapping and PHP native functions or specialized helpers for other tasks.
 
+### Resource Namespace and Interface Rationalization
+Resource classes have been moved to the final `Box\Resource` namespace, and redundant mirror interfaces (e.g., `FileInterface`) have been removed.
+
+- **Impact**: Moderate (Breaking change).
+- **Migration**:
+    - **Namespace Update**: `Box\File\File` has been moved to `Box\Resource\File`.
+    - **Interface Removal**: `Box\File\FileInterface` has been removed. Type hints should use the concrete `Box\Resource\File` class.
+    - **Endpoint Constants**: `FileInterface::URI` and `FileInterface::UPLOAD_URI` have been moved to `FileService` as `ENDPOINT` and `UPLOAD_ENDPOINT`.
+    - **Service/Factory Returns**: `FileService`, `FileFactory`, and `Client` methods now return `Box\Resource\File` instead of `FileInterface`.
+    - **FileService Signature**: `FileService::createSharedLink()` now requires a non-null `File` object. The previous nullable behavior was removed to ensure API safety.
+
 ### Event Service Overhaul
 The `UserEventService` has been modernized to return a typed `EventResponse` DTO instead of raw associative arrays or relying on `getLastResult()`. Response mapping is now handled by `EventResponseMapper`. `EventResponse` returns a defensive copy of its entries to maintain immutability. `next_stream_position` is now represented as a `string` to safely handle large cursor values.
 

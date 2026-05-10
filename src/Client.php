@@ -50,7 +50,7 @@ use Box\Factory\TokenFactory;
 use Box\Factory\TokenFactoryInterface;
 use Box\Factory\UserFactory;
 use Box\Factory\UserFactoryInterface;
-use Box\File\FileInterface;
+use Box\Resource\File;
 use Box\Folder\Folder;
 use Box\Folder\FolderInterface;
 use Box\Group\GroupInterface;
@@ -63,6 +63,7 @@ use Box\Connection\Token\Token;
 use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxLoggerTrait;
+use Box\Service\File\FileService;
 
 /**
  * Class Client
@@ -196,9 +197,9 @@ class Client implements LoggerAwareInterface
     /**
      * @param mixed $options
      *
-     * @return FileInterface
+     * @return File
      */
-    public function getNewFile(mixed $options = null): FileInterface
+    public function getNewFile(mixed $options = null): File
     {
         $instance = $this->fileFactory->createFile($options);
         if ($this->logger && method_exists($instance, 'setLogger')) {
@@ -730,7 +731,7 @@ class Client implements LoggerAwareInterface
             throw new BoxException('BOX_ACCESS_TOKEN is required for upload.', BoxException::INVALID_INPUT);
         }
 
-        $uri = FileInterface::UPLOAD_URI;
+        $uri = FileService::UPLOAD_ENDPOINT;
 
         $connection = $this->getConnection();
         $this->setConnectionAuthHeader($connection);

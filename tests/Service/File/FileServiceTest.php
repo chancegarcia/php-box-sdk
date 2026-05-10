@@ -7,8 +7,7 @@ namespace Box\Tests\Service\File;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
 use Box\Dto\File\Request\CreateSharedLinkRequest;
-use Box\File\File;
-use Box\File\FileInterface;
+use Box\Resource\File;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Service\File\FileService;
 use PHPUnit\Framework\TestCase;
@@ -56,7 +55,7 @@ class FileServiceTest extends TestCase
         $connection->expects($this->once())
             ->method('put')
             ->with(
-                FileInterface::URI . '/' . $fileId,
+                FileService::ENDPOINT . '/' . $fileId,
                 json_encode(['shared_link' => ['access' => 'open']])
             )
             ->willReturn($this->createMockResponse($responseData));
@@ -64,7 +63,7 @@ class FileServiceTest extends TestCase
         $service = $this->createService($connection);
         $result = $service->createSharedLink($file, $request);
 
-        $this->assertInstanceOf(FileInterface::class, $result);
+        $this->assertInstanceOf(File::class, $result);
         $this->assertSame($fileId, $result->getId());
         $sharedLink = $result->getSharedLink();
         // Depending on hydration, this might be an array or object.
@@ -92,7 +91,7 @@ class FileServiceTest extends TestCase
         $connection->expects($this->once())
             ->method('put')
             ->with(
-                FileInterface::URI . '/' . $fileId,
+                FileService::ENDPOINT . '/' . $fileId,
                 json_encode(['shared_link' => ['access' => 'collaborators']])
             )
             ->willReturn($this->createMockResponse($responseData));
@@ -100,7 +99,7 @@ class FileServiceTest extends TestCase
         $service = $this->createService($connection);
         $result = $service->createSharedLink($file, $requestArray);
 
-        $this->assertInstanceOf(FileInterface::class, $result);
+        $this->assertInstanceOf(File::class, $result);
         $this->assertSame($fileId, $result->getId());
     }
 
@@ -139,10 +138,10 @@ class FileServiceTest extends TestCase
         $service = $this->createService($connection);
         $result = $service->createSharedLink($file, $legacySharedLink);
 
-        $this->assertInstanceOf(FileInterface::class, $result);
+        $this->assertInstanceOf(File::class, $result);
     }
 
-    public function testCreateSharedLinkWithNull(): void
+    public function testCreateSharedLinkWithNullSharedLink(): void
     {
         $fileId = '998877';
         $file = new File();
@@ -158,7 +157,7 @@ class FileServiceTest extends TestCase
         $connection->expects($this->once())
             ->method('put')
             ->with(
-                FileInterface::URI . '/' . $fileId,
+                FileService::ENDPOINT . '/' . $fileId,
                 json_encode(['shared_link' => []])
             )
             ->willReturn($this->createMockResponse($responseData));
@@ -166,7 +165,7 @@ class FileServiceTest extends TestCase
         $service = $this->createService($connection);
         $result = $service->createSharedLink($file, null);
 
-        $this->assertInstanceOf(FileInterface::class, $result);
+        $this->assertInstanceOf(File::class, $result);
         $this->assertSame($fileId, $result->getId());
     }
 }

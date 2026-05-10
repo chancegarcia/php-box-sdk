@@ -7,7 +7,6 @@
  * Time: 5:32 PM
  *
  * @package     Box
- * @subpackage  Box_Model
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -38,24 +37,26 @@
 namespace Box\Service\File;
 
 use Box\Dto\File\Request\CreateSharedLinkRequest;
-use Box\File\File;
-use Box\File\FileInterface;
+use Box\Resource\File;
 use Box\Item\SharedLink\SharedLinkInterface;
 use Box\Service\Service;
 
 class FileService extends Service implements FileServiceInterface
 {
+    public const ENDPOINT = "https://api.box.com/2.0/files";
+    public const UPLOAD_ENDPOINT = "https://upload.box.com/api/2.0/files/content";
+
     protected $sharedLink;
     protected $access;
 
     /**
      * {@inheritdoc}
-     * @param FileInterface|null $file
+     * @param File $file
      * @param SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink
      */
-    public function createSharedLink(?FileInterface $file = null, SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink = null): FileInterface
+    public function createSharedLink(File $file, SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink = null): File
     {
-        $uri = $file::URI . "/" . $file->getId();
+        $uri = self::ENDPOINT . "/" . $file->getId();
 
         if (is_array($sharedLink)) {
             // Normalize array to DTO
@@ -88,17 +89,14 @@ class FileService extends Service implements FileServiceInterface
             return $sharedLink->toArray();
         }
 
-
         return [];
     }
 
     /**
-     * @return FileInterface
+     * @return File
      */
-    public function createNewFile(): FileInterface
+    public function createNewFile(): File
     {
-        $file = new File();
-
-        return $file;
+        return new File();
     }
 }

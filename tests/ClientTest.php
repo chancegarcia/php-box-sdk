@@ -8,7 +8,7 @@ use Box\Collaboration\CollaborationInterface;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
 use Box\Folder\FolderInterface;
-use Box\File\FileInterface;
+use Box\Resource\File;
 use Box\Resource\User;
 use Box\Group\GroupInterface;
 use Box\Exception\BoxException;
@@ -36,7 +36,7 @@ class ClientTest extends TestCase
         $client = new Client();
 
         $this->assertInstanceOf(FolderInterface::class, $client->getNewFolder());
-        $this->assertInstanceOf(FileInterface::class, $client->getNewFile());
+        $this->assertInstanceOf(File::class, $client->getNewFile());
         $this->assertInstanceOf(User::class, $client->getNewUser());
         $this->assertInstanceOf(GroupInterface::class, $client->getNewGroup());
         $this->assertInstanceOf(CollaborationInterface::class, $client->getNewCollaboration());

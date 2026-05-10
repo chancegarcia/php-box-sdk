@@ -30,16 +30,14 @@
  *
  */
 
-namespace Box\File;
+namespace Box\Resource;
 
 use Box\Mapper\Hydrator;
-use Box\File\FileInterface;
 use DateTimeInterface;
-use Box\Resource\User;
 use Box\Folder\Folder;
 use Box\Item\SharedLink\SharedLink;
 
-class File implements FileInterface
+class File
 {
     public function __construct(?array $options = null)
     {
