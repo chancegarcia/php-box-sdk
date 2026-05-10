@@ -59,7 +59,7 @@ The legacy `BaseModelTrait` and `ModelTrait` have been removed. Mapping infrastr
     - **Prefer `Hydrator::hydrate()`**: Use `(new Hydrator())->hydrate($model, $data)` instead of `$model->mapBoxToClass($data)`. The `mapBoxToClass` and `toArray` methods on legacy `Model` have been removed along with the `Box\Model` base architecture.
     - **Removed `Box\Model` Architecture**: `BaseModel`, `Model`, `BoxModel`, and their respective interfaces have been removed. Infrastructure and resource models no longer inherit from these legacy bases.
     - **Infrastructure Migration**: `Service` and `Connection` hierarchies have been decoupled from legacy model bases. Both now implement `LoggerAwareInterface` directly to preserve logging capabilities.
-    - **Resource Migration**: All resource models (User, File, Folder, etc.) are now standalone classes and no longer extend legacy `Model`. They now include constructors that accept options for automatic hydration via `Hydrator`.
+    - **Resource Migration**: All resource models (User, File, Folder, etc.) are now standalone classes and no longer extend legacy `Model`. They now include constructors that accept options for automatic hydration via `Hydrator`. Some resources (notably `Folder`) may still contain legacy methods like `classArray()` or internal URI generation as transitional bridges.
     - **Compatibility Alias Removal**: True compatibility aliases and shims have been removed. For example, `Box\User\User` has been removed in favor of `Box\Resource\User`. The `Box\Model` namespace has been fully cleared of legacy shims.
     - **Service Response Parsing**: `Client::parseResponse()` now requires a valid `array` return. `BoxResponse::json()` has been hardened to return empty arrays/objects on invalid content to satisfy type hints.
     - **Factory Migration**: `AbstractFactory::get()` now returns `object` instead of `ModelInterface` and no longer enforces inheritance from legacy model interfaces.
@@ -67,14 +67,18 @@ The legacy `BaseModelTrait` and `ModelTrait` have been removed. Mapping infrastr
     - **ModelMapper Cleanup**: `ModelMapper` no longer provides `mapBoxToClass`, `isInt`, or `removeEmpty`. Use `Hydrator` for mapping and PHP native functions or specialized helpers for other tasks.
 
 ### Resource Namespace and Interface Rationalization
-Resource classes have been moved to the final `Box\Resource` namespace, and redundant mirror interfaces (e.g., `FileInterface`) have been removed.
+Resource classes have been moved to the final `Box\Resource` namespace, and redundant mirror interfaces (e.g., `FileInterface`, `FolderInterface`) have been removed.
 
 - **Impact**: Moderate (Breaking change).
 - **Migration**:
-    - **Namespace Update**: `Box\File\File` has been moved to `Box\Resource\File`.
-    - **Interface Removal**: `Box\File\FileInterface` has been removed. Type hints should use the concrete `Box\Resource\File` class.
-    - **Endpoint Constants**: `FileInterface::URI` and `FileInterface::UPLOAD_URI` have been moved to `FileService` as `ENDPOINT` and `UPLOAD_ENDPOINT`.
-    - **Service/Factory Returns**: `FileService`, `FileFactory`, and `Client` methods now return `Box\Resource\File` instead of `FileInterface`.
+    - **Namespace Updates**:
+        - `Box\File\File` has been moved to `Box\Resource\File`.
+        - `Box\Folder\Folder` has been moved to `Box\Resource\Folder`.
+    - **Interface Removal**: `Box\File\FileInterface` and `Box\Folder\FolderInterface` have been removed. Type hints should use the concrete resource classes.
+    - **Endpoint Constants**:
+        - `FileInterface::URI` and `FileInterface::UPLOAD_URI` have been moved to `FileService` as `ENDPOINT` and `UPLOAD_ENDPOINT`.
+        - `FolderInterface::URI` and `FolderInterface::SHARED_ITEM_URI` have been moved to `FolderService` as `ENDPOINT` and `SHARED_ITEM_ENDPOINT`.
+    - **Service/Factory Returns**: `FileService`, `FolderService`, `FileFactory`, `FolderFactory`, and `Client` methods now return concrete resource classes (e.g., `Box\Resource\Folder`) instead of interfaces.
     - **FileService Signature**: `FileService::createSharedLink()` now requires a non-null `File` object. The previous nullable behavior was removed to ensure API safety.
 
 ### Event Service Overhaul

@@ -49,7 +49,7 @@ This work assumes the completion of Step 9 (Legacy Architecture Removal), ensuri
 | 10.0 | [Tracker and Resource Surface Audit](#slice-100--tracker-and-resource-surface-audit) | ✓ |
 | 10.1 | [Resource Namespace Policy and Alias Plan](#slice-101--resource-namespace-policy-and-alias-plan) | ✓ |
 | 10.2 | [File Resource Namespace and Interface Rationalization](#slice-102--file-resource-namespace-and-interface-rationalization) | ✓ |
-| 10.3 | [Folder Resource Namespace and Interface Rationalization](#slice-103--folder-resource-namespace-and-interface-rationalization) | Not Started |
+| 10.3 | [Folder Resource Namespace and Interface Rationalization](#slice-103--folder-resource-namespace-and-interface-rationalization) | ✓ |
 | 10.4 | [Group and Collaboration Resource Rationalization](#slice-104--group-and-collaboration-resource-rationalization) | Not Started |
 | 10.5 | [Shared Item and Event Resource Rationalization](#slice-105--shared-item-and-event-resource-rationalization) | Not Started |
 | 10.6 | [Migration Docs and Baseline Cleanup](#slice-106--migration-docs-and-baseline-cleanup) | Not Started |
@@ -119,6 +119,14 @@ This work assumes the completion of Step 9 (Legacy Architecture Removal), ensuri
 ## Slice 10.3 — Folder Resource Namespace and Interface Rationalization
 
 **Purpose**: Move Folder resource to `Box\Resource` and remove `FolderInterface`.
+
+**Status**: ✓
+
+**Notes**:
+- Folder namespace moved to `Box\Resource\Folder`.
+- `FolderInterface` removed.
+- Endpoint constants moved to `FolderService`.
+- **Deferred**: Remaining Folder resource cleanup (type hardening) and moving resource-level orchestration (`classArray`, `getBoxFolderItemsUri`) to services/mappers is deferred. These methods remain in `Box\Resource\Folder` as transitional bridges.
 
 **Scope**:
 - Move `Box\Folder\Folder` to `Box\Resource\Folder`.

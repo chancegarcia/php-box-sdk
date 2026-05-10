@@ -7,15 +7,15 @@ use Box\Http\Response\BoxResponseInterface;
 use Box\Collaboration\CollaborationInterface;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
-use Box\Folder\FolderInterface;
+use Box\Resource\Folder;
 use Box\Resource\File;
 use Box\Resource\User;
 use Box\Group\GroupInterface;
 use Box\Exception\BoxException;
 use Box\Connection\Token\Token;
-use Box\Folder\Folder;
 use Box\Collaboration\Collaboration;
 use Box\Factory\FolderFactoryInterface;
+use Box\Service\Folder\FolderService;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 
@@ -35,7 +35,7 @@ class ClientTest extends TestCase
     {
         $client = new Client();
 
-        $this->assertInstanceOf(FolderInterface::class, $client->getNewFolder());
+        $this->assertInstanceOf(Folder::class, $client->getNewFolder());
         $this->assertInstanceOf(File::class, $client->getNewFile());
         $this->assertInstanceOf(User::class, $client->getNewUser());
         $this->assertInstanceOf(GroupInterface::class, $client->getNewGroup());
@@ -47,7 +47,7 @@ class ClientTest extends TestCase
     public function testInjectedFactoriesAreUsed(): void
     {
         $folderFactory = $this->createMock(FolderFactoryInterface::class);
-        $folderMock = $this->createMock(FolderInterface::class);
+        $folderMock = $this->createMock(Folder::class);
         $folderFactory->expects($this->once())
             ->method('createFolder')
             ->willReturn($folderMock);
@@ -211,7 +211,7 @@ class ClientTest extends TestCase
         $this->client->setToken($token);
 
         $folder = $this->client->getFolderFromBox('123');
-        $this->assertInstanceOf(FolderInterface::class, $folder);
+        $this->assertInstanceOf(Folder::class, $folder);
         $this->assertEquals('123', $folder->getId());
         $this->assertEquals('Test Folder', $folder->getName());
     }
@@ -229,7 +229,7 @@ class ClientTest extends TestCase
         $connection->expects($this->once())
             ->method('post')
             ->with(
-                Folder::URI,
+                FolderService::ENDPOINT,
                 [
                     'name' => 'New Folder',
                     'parent' => ['id' => '123'],
@@ -262,7 +262,7 @@ class ClientTest extends TestCase
         $connection->expects($this->once())
             ->method('put')
             ->with(
-                Folder::URI . '/123',
+                FolderService::ENDPOINT . '/123',
                 $this->callback(fn($params) => $params['name'] === 'Updated Name'),
                 true
             )

@@ -4,7 +4,7 @@ namespace Box\Tests\Model;
 
 use Box\Mapper\Hydrator;
 use Box\Resource\File;
-use Box\Folder\Folder;
+use Box\Resource\Folder;
 use Box\Resource\User;
 use PHPUnit\Framework\TestCase;
 

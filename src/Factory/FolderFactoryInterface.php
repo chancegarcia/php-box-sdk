@@ -2,9 +2,9 @@
 
 namespace Box\Factory;
 
-use Box\Folder\FolderInterface;
+use Box\Resource\Folder;
 
 interface FolderFactoryInterface
 {
-    public function createFolder(?array $options = null): FolderInterface;
+    public function createFolder(?array $options = null): Folder;
 }

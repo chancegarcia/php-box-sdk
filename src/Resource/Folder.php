@@ -2,7 +2,7 @@
 
 /**
  * @package     Box
- * @subpackage  Box_Folder
+ * @subpackage  Box_Resource
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -30,18 +30,18 @@
  *
  */
 
-namespace Box\Folder;
+namespace Box\Resource;
 
 use Box\Exception\BoxException;
 use Countable;
 use Box\Mapper\Hydrator;
-use Box\Folder\FolderInterface;
 use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxLoggerTrait;
 use DateTimeInterface;
+use Box\Service\Folder\FolderService;
 
-class Folder implements FolderInterface, LoggerAwareInterface
+class Folder implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
     use BoxLoggerTrait;
@@ -76,6 +76,11 @@ class Folder implements FolderInterface, LoggerAwareInterface
     protected ?array $allowedInviteRoles = null;
     protected mixed $hasCollaborations = null;
 
+    /**
+     * @param string $syncState
+     * @return array
+     * @throws BoxException
+     */
     public function classArray(string $syncState = "synced"): array
     {
         $aFolder = [
@@ -125,13 +130,13 @@ class Folder implements FolderInterface, LoggerAwareInterface
             throw new BoxException("Offset must be a valid integer", BoxException::INVALID_INPUT);
         }
 
-        $uri = self::URI . "/" . $selfId . "/items" . "?limit=" . $limit . "&offset=" . $offset;
+        $uri = FolderService::ENDPOINT . "/" . $selfId . "/items" . "?limit=" . $limit . "&offset=" . $offset;
 
         return $uri;
     }
 
     /**
-     * @return int
+     * @return int|string
      */
     public function getParentId()
     {
@@ -141,7 +146,7 @@ class Folder implements FolderInterface, LoggerAwareInterface
 
         if (is_object($parent)) {
             /**
-             * @var Folder|FolderInterface $parent
+             * @var Folder $parent
              */
             $parentId = $parent->getId();
         }
@@ -163,7 +168,7 @@ class Folder implements FolderInterface, LoggerAwareInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return bool
      */
     public function isEmpty(): bool
     {

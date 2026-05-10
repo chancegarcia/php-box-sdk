@@ -7,7 +7,7 @@ use Box\Contract\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Service\BoxClientFactory;
 use Box\Connection\ConnectionInterface;
-use Box\Folder\FolderInterface;
+use Box\Resource\Folder;
 use Box\Collaboration\CollaborationInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -53,7 +53,7 @@ class LoggerPropagationTest extends TestCase
 
         $folder = $client->getNewFolder(['id' => '123']);
 
-        $this->assertInstanceOf(FolderInterface::class, $folder);
+        $this->assertInstanceOf(Folder::class, $folder);
         $this->assertSame($logger, $folder->getLogger());
     }
 

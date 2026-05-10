@@ -36,7 +36,7 @@
 
 namespace Box\Event\Collection\Entry\Source;
 
-use Box\Folder\Folder;
+use Box\Resource\Folder;
 use DateTimeInterface;
 
 class EntrySource implements SourceInterface

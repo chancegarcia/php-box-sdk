@@ -1,8 +1,8 @@
 <?php
 
-namespace Box\Tests\Model;
+namespace Box\Tests\Resource;
 
-use Box\Folder\Folder;
+use Box\Resource\Folder;
 use PHPUnit\Framework\TestCase;
 
 class FolderTest extends TestCase

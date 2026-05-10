@@ -51,13 +51,13 @@ use Box\Factory\TokenFactoryInterface;
 use Box\Factory\UserFactory;
 use Box\Factory\UserFactoryInterface;
 use Box\Resource\File;
-use Box\Folder\Folder;
-use Box\Folder\FolderInterface;
+use Box\Resource\Folder;
+use Box\Resource\User;
 use Box\Group\GroupInterface;
+use Box\Service\Folder\FolderService;
 use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Mapper\Hydrator;
-use Box\Resource\User;
 use Box\Collaboration\Collaboration;
 use Box\Connection\Token\Token;
 use Box\Logger\LoggerAwareInterface;
@@ -100,7 +100,7 @@ class Client implements LoggerAwareInterface
     /**
      * @var Folder|null
      */
-    protected ?FolderInterface $root = null;
+    protected ?Folder $root = null;
 
     protected ?TokenInterface $token = null;
 
@@ -145,9 +145,9 @@ class Client implements LoggerAwareInterface
     /**
      * @param mixed $options
      *
-     * @return FolderInterface
+     * @return Folder
      */
-    public function getNewFolder(mixed $options = null): FolderInterface
+    public function getNewFolder(mixed $options = null): Folder
     {
         $instance = $this->folderFactory->createFolder($options);
         if ($this->logger && method_exists($instance, 'setLogger')) {
@@ -213,9 +213,9 @@ class Client implements LoggerAwareInterface
      * @param string|int $id use 0 for returning all folders
      * @param bool $retrieve if no folder is found, attempt to retrieve from box
      *
-     * @return array|null|Folder returns null if no such folder exists and retrieve is false
+     * @return Folder|null returns null if no such folder exists and retrieve is false
      */
-    public function getFolder(string|int $id = 0, bool $retrieve = true): ?FolderInterface
+    public function getFolder(string|int $id = 0, bool $retrieve = true): ?Folder
     {
         $folders = $this->getFolders($retrieve);
 
@@ -344,7 +344,7 @@ class Client implements LoggerAwareInterface
             throw new BoxException('shared uri must be a string value', BoxException::INVALID_INPUT);
         }
 
-        $uri = Folder::SHARED_ITEM_URI;
+        $uri = FolderService::SHARED_ITEM_ENDPOINT;
         $sSharedLinkHeader = "BoxApi: shared_link=" . $sharedUri;
         $aSharedLinkHeader = [$sSharedLinkHeader];
 
@@ -373,12 +373,12 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param string|int $id
-     * @return FolderInterface|Folder
+     * @return Folder
      * @throws BoxException
      */
-    public function getFolderFromBox($id = 0): FolderInterface
+    public function getFolderFromBox($id = 0): Folder
     {
-        $uri = FolderInterface::URI . '/' . $id; // all class constant URIs do not end in a slash
+        $uri = FolderService::ENDPOINT . '/' . $id; // all class constant URIs do not end in a slash
 
         $connection = $this->getConnection();
         $this->setConnectionAuthHeader($connection);
@@ -394,11 +394,11 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @param Folder|FolderInterface $folder
+     * @param Folder $folder
      * @param int $limit
      * @param int $offset
      *
-     * @return Folder|FolderInterface
+     * @return Folder
      */
     public function getBoxFolderItems($folder, $limit = 100, $offset = 0)
     {
@@ -418,7 +418,7 @@ class Client implements LoggerAwareInterface
     public function getFolderItems($id = 0)
     {
         /**
-         * @var Folder|FolderInterface $folder
+         * @var Folder $folder
          */
         $folder = $this->getFolder($id);
 
@@ -430,12 +430,12 @@ class Client implements LoggerAwareInterface
      * @param string|int $parentFolderId
      * @param array $options
      *
-     * @return Folder|FolderInterface
+     * @return Folder
      * @throws BoxException
      */
     public function createNewBoxFolder($name, $parentFolderId = 0, ?array $options = [])
     {
-        $uri = FolderInterface::URI;
+        $uri = FolderService::ENDPOINT;
 
         $connection = $this->getConnection();
         $this->setConnectionAuthHeader($connection);
@@ -458,7 +458,7 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @param Folder|FolderInterface $folder
+     * @param Folder $folder
      * @param string|bool $ifMatchHeader etag string or true to use folder's current etag
      *
      * @throws BoxException
@@ -466,13 +466,13 @@ class Client implements LoggerAwareInterface
      */
     public function updateBoxFolder($folder, $ifMatchHeader = false)
     {
-        if (!$folder instanceof FolderInterface) {
+        if (!$folder instanceof Folder) {
             $err['error'] = 'sdk_unexpected_type';
-            $err['error_description'] = "expecting FolderInterface class. given (" . get_debug_type($folder) . ")";
+            $err['error_description'] = "expecting Folder class. given (" . get_debug_type($folder) . ")";
             $this->error($err);
         }
 
-        $uri = FolderInterface::URI . '/' . $folder->getId();
+        $uri = FolderService::ENDPOINT . '/' . $folder->getId();
 
         $params = [
             'name' => $folder->getName(),
@@ -522,20 +522,20 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @param null|Folder|FolderInterface $folder
+     * @param null|Folder $folder
      *
      * @return mixed raw json data as an array
      * @throws BoxException
      */
     public function getFolderCollaborations($folder = null)
     {
-        if (!$folder instanceof FolderInterface) {
+        if (!$folder instanceof Folder) {
             $err['error'] = 'sdk_unexpected_type';
-            $err['error_description'] = "expecting FolderInterface class. given (" . var_export($folder, true) . ")";
+            $err['error_description'] = "expecting Folder class. given (" . var_export($folder, true) . ")";
             $this->error($err);
         }
         $folderId = $folder->getId();
-        $uri = FolderInterface::URI . '/' . $folderId . '/collaborations';
+        $uri = FolderService::ENDPOINT . '/' . $folderId . '/collaborations';
 
         $connection = $this->getConnection();
         $this->setConnectionAuthHeader($connection);
@@ -546,7 +546,7 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @param null|Folder|FolderInterface $folder
+     * @param null|Folder $folder
      * @param null|User|GroupInterface $collaborator
      * @param string $role see {@link http://developers.box.com/docs/#collaborations box documentation for all possible
      *     roles} default is viewer
@@ -556,9 +556,9 @@ class Client implements LoggerAwareInterface
      */
     public function addCollaboration($folder = null, $collaborator = null, $role = 'viewer')
     {
-        if (!$folder instanceof FolderInterface) {
+        if (!$folder instanceof Folder) {
             $err['error'] = 'sdk_unexpected_type';
-            $err['error_description'] = "expecting FolderInterface class. given (" . var_export($folder, true) . ")";
+            $err['error_description'] = "expecting Folder class. given (" . var_export($folder, true) . ")";
             $this->error($err);
         }
 
@@ -600,22 +600,22 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @param null|Folder|FolderInterface $folder
+     * @param null|Folder $folder
      * @param array|null shared link options with
      * default shared link set to collaborator access, no unshared time or permissions set to
      *
-     * @return Folder|FolderInterface
+     * @return Folder
      * @throws BoxException
      */
     public function createSharedLinkForFolder($folder = null, $params = null)
     {
-        if (!$folder instanceof FolderInterface) {
+        if (!$folder instanceof Folder) {
             $err['error'] = 'sdk_unexpected_type';
-            $err['error_description'] = "expecting FolderInterface class. given (" . var_export($folder, true) . ")";
+            $err['error_description'] = "expecting Folder class. given (" . var_export($folder, true) . ")";
             $this->error($err);
         }
 
-        $uri = FolderInterface::URI;
+        $uri = FolderService::ENDPOINT;
 
         $folderId = $folder->getId();
 
@@ -649,21 +649,21 @@ class Client implements LoggerAwareInterface
      * @param string $name
      * @param bool $addToFolders
      *
-     * @return Folder|FolderInterface
+     * @return Folder
      * @throws \Exception
      * @throws BoxException
      * @internal param $destinationId
      */
     public function copyBoxFolder($originalFolder, $parent, $name = null, $addToFolders = true)
     {
-        if (!$originalFolder instanceof FolderInterface) {
+        if (!$originalFolder instanceof Folder) {
             $this->error([
-                'error' => 'Folder or FolderInterface expected',
+                'error' => 'Folder expected',
                 'error_description' => $originalFolder
             ]);
         }
 
-        $uri = FolderInterface::URI . '/' . $originalFolder->getId() . '/copy';
+        $uri = FolderService::ENDPOINT . '/' . $originalFolder->getId() . '/copy';
         $this->debug("copy uri: " . $uri, [__METHOD__, __LINE__]);
         $this->debug("initial parent: " . var_export($parent, true), [__METHOD__, __LINE__]);
 
@@ -673,9 +673,9 @@ class Client implements LoggerAwareInterface
             $parent = $folder;
         }
 
-        if (!$parent instanceof FolderInterface) {
+        if (!$parent instanceof Folder) {
             $this->error([
-                'error' => 'Folder or FolderInterface expected',
+                'error' => 'Folder expected',
                 'error_description' => $parent
             ]);
         }
@@ -1169,7 +1169,7 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @param Folder|FolderInterface $root
+     * @param Folder $root
      */
     /**
      * @param mixed $root
@@ -1181,7 +1181,7 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @return Folder|FolderInterface
+     * @return Folder
      */
     public function getRoot()
     {
