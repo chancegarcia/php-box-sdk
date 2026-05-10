@@ -29,7 +29,7 @@ The v1.0 release focuses on architectural hardening and PSR compliance.
 - [Documentation Gap Inventory](planning/v1/documentation-gap-inventory.md): Tracking documentation needs.
 
 **Current Foundation Status:**
-- **Step 7 / Foundation Refinement**: In Progress.
+- **Step 10 / Resource Namespace and Interface Rationalization**: In Progress.
 - **CLI Test Harness Scope**: Clarified and documented as a retained practical verification tool.
 - **User Migration Alignment**: Verified and documented in the [Interface and Model Audit](planning/v1/interface-and-model-audit.md).
 

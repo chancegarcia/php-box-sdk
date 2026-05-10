@@ -29,18 +29,18 @@ The following resources are identified for migration to `Box\Resource`.
 
 ## 2. Resource Interface Inventory
 
-| Interface | Implementations | Mirror? | v1 Action | Migration Impact | Notes |
+| Interface | Implementations | Mirror? | v1 Action (Status) | Migration Impact | Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `FileInterface` | `File` | Yes | Remove | High | Used in `FileService`, `FileFactory`. |
-| `FolderInterface` | `Folder` | Yes | Remove | High | Used in `FolderFactory`, `Client`. |
-| `CollaborationInterface` | `Collaboration` | Yes | Remove | Medium | Removed in Step 10.4. |
-| `GroupInterface` | `Group` | Yes | Remove | Medium | Removed in Step 10.4. |
-| `SharedLinkInterface` | `SharedLink` | Yes | Remove | Low | Migrated in Step 10.5. |
-| `PermissionsInterface` | `Permissions` | Yes | Remove | Low | Migrated in Step 10.5. |
-| `EventInterface` | `Event` | Yes | Remove | Low | Migrated in Step 10.5. |
-| `AdminEventInterface` | `AdminEvent` | Yes | Remove | Low | Migrated in Step 10.5. |
-| `UserEventInterface` | `UserEvent` | Yes | Remove | Low | Migrated in Step 10.5. |
-| `EventCollectionInterface` | `EventCollection` | Yes | Remove | Low | Migrated in Step 10.5. |
+| `FileInterface` | `File` | Yes | Removed (Step 10.2) | High | Used in `FileService`, `FileFactory`. |
+| `FolderInterface` | `Folder` | Yes | Removed (Step 10.3) | High | Used in `FolderFactory`, `Client`. |
+| `CollaborationInterface` | `Collaboration` | Yes | Removed (Step 10.4) | Medium | |
+| `GroupInterface` | `Group` | Yes | Removed (Step 10.4) | Medium | |
+| `SharedLinkInterface` | `SharedLink` | Yes | Removed (Step 10.5) | Low | |
+| `PermissionsInterface` | `Permissions` | Yes | Removed (Step 10.5) | Low | |
+| `EventInterface` | `Event` | Yes | Removed (Step 10.5) | Low | |
+| `AdminEventInterface` | `AdminEvent` | Yes | Removed (Step 10.5) | Low | |
+| `UserEventInterface` | `UserEvent` | Yes | Removed (Step 10.5) | Low | |
+| `EventCollectionInterface` | `EventCollection` | Yes | Removed (Step 10.5) | Low | |
 
 ## 2.1 Interface Policy
 
@@ -72,28 +72,29 @@ The following resources are identified for migration to `Box\Resource`.
 
 ## 4. Service/Factory Dependency Map
 
-- **`FileService`**: Depends on `FileInterface`, `File`, `SharedLinkInterface`, `CreateSharedLinkRequest`.
+- **`FileService`**: Depends on `Box\Resource\File`, `Box\Resource\SharedLink`, `CreateSharedLinkRequest`.
 - **`UserService`**: Correctly depends on `Box\Resource\User`.
-- **`UserEventService`**: Depends on `UserEventInterface`, `AdminEventInterface`.
-- **Factories**: `FileFactory`, `FolderFactory`, `CollaborationFactory`, `GroupFactory`, `UserFactory` all have `Interface` return types in their own interfaces.
+- **`UserEventService`**: Depends on `Box\Resource\UserEvent`, `Box\Resource\AdminEvent`.
+- **Factories**: `FileFactory`, `FolderFactory`, `CollaborationFactory`, `GroupFactory`, `UserFactory` all return concrete resource classes from `Box\Resource`.
 
 ## 5. Transitional Patterns and Notes
 
 ### 5.1 FileService Shared-Link Compatibility Bridge
 `FileService::normalizeSharedLinkPayload()` uses `method_exists($sharedLink, 'toArray')` as a fallback.
-- **Reason**: Supports legacy models that implement `SharedLinkInterface` but haven't been fully migrated to DTOs or the new `toArray()` implementation.
-- **V1 Replacement**: Once `SharedLinkInterface` is removed and all resources/DTOs consistently implement `toArray()` (or are passed as DTOs), this fallback should be removed.
-- **Removal Slice**: Step 10.5 (Shared Item and Event Rationalization) should evaluate if this can be safely removed.
+- **Reason**: Supports legacy models that may have implemented `SharedLinkInterface` but haven't been fully migrated to DTOs or the new `toArray()` implementation.
+- **V1 Replacement**: Once all resources/DTOs consistently implement `toArray()` (or are passed as DTOs), this fallback should be removed.
+- **Removal Slice**: Step 11 evaluation.
+- **Status**: Retained as bridge for now.
 
 ### 5.2 FileServiceTest Explanatory Comments
 `FileServiceTest` contains comments regarding PHPUnit mocking of `toArray()` and `SharedLinkInterface`.
-- **Cleanup**: These comments and complex mocks should be simplified once `SharedLinkInterface` is removed and the resource namespace move is complete.
-- **Action**: Part of Step 10.2 and 10.5 validation.
+- **Cleanup**: These were simplified during Step 10.2 and 10.5.
+- **Status**: Completed.
 
 ### 5.3 FileInterface Risk
-`FileInterface` carries endpoint constants and is a mirror interface.
-- **Status**: Targeted for removal in Step 10.2.
-- **Pre-requisite**: Move constants to `FileService` and update all type hints in `Client`, `FileService`, and `FileFactory`.
+`FileInterface` carried endpoint constants and was a mirror interface.
+- **Status**: Removed in Step 10.2.
+- **Outcome**: Constants moved to `FileService`. Type hints updated.
 
 ## 6. Deferred Architecture Smells (For Step 11)
 
@@ -139,5 +140,6 @@ Most resources currently accept `?array $options` in their constructor and call 
 5. **Step 10.5**: Migrate `SharedLink` and `Event`.
     - Move to `Box\Resource`.
     - Update `UserEventService`, `EventResponseMapper`.
-6. **Step 10.6**: Finalize docs and baseline cleanup.
-7. **Step 11**: Address deferred architecture smells (Resource purity and Service boundaries).
+6. **Step 10.6**: Finalize docs and baseline cleanup. (In Progress)
+7. **Step 10.7**: Final Integration Review.
+8. **Step 11**: Address deferred architecture smells (Resource purity and Service boundaries).

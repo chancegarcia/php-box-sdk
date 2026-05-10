@@ -41,32 +41,32 @@ Types were classified as:
 
 ## Findings by Class
 
-### Box\File\File
-- **Path**: `src/File/File.php`
+### Box\Resource\File
+- **Path**: `src/Resource/File.php`
 - **Issue**: Properties like `createdAt`, `modifiedAt`, `purgedAt`, `trashedAt`, `contentCreatedAt`, `contentModifiedAt` are typed as `mixed`.
 - **Transitional Type**: `\DateTimeInterface|string|null`
 - **v1 Type**: `\DateTimeImmutable|null`
 - **Box API URL**: [https://developer.box.com/reference/resources/file/](https://developer.box.com/reference/resources/file/)
 - **Confidence**: High
 
-### Box\Folder\Folder
-- **Path**: `src/Folder/Folder.php`
+### Box\Resource\Folder
+- **Path**: `src/Resource/Folder.php`
 - **Issue**: Methods like `getCreatedAt`, `getModifiedAt` have no type hints or return `mixed`.
 - **Transitional Type**: `\DateTimeInterface|string|null`
 - **v1 Type**: `\DateTimeImmutable|null`
 - **Box API URL**: [https://developer.box.com/reference/resources/folder/](https://developer.box.com/reference/resources/folder/)
 - **Confidence**: High
 
-### Box\User\User
-- **Path**: `src/User/User.php`
+### Box\Resource\User
+- **Path**: `src/Resource/User.php`
 - **Issue**: Extensive use of `mixed` for properties and missing types for methods (e.g., `getAddress`, `getJobTitle`, `getLanguage`).
 - **Transitional Type**: Specific scalars (`string`, `int`, `bool`) or `null`.
 - **v1 Type**: Native type hints.
 - **Box API URL**: [https://developer.box.com/reference/resources/user/](https://developer.box.com/reference/resources/user/)
 - **Confidence**: High
 
-### Box\Collaboration\Collaboration
-- **Path**: `src/Collaboration/Collaboration.php`
+### Box\Resource\Collaboration
+- **Path**: `src/Resource/Collaboration.php`
 - **Issue**: `expiresAt`, `acknowledgedAt`, `createdAt`, `modifiedAt` are `mixed`.
 - **Transitional Type**: `\DateTimeInterface|string|null`
 - **v1 Type**: `\DateTimeImmutable|null`
@@ -76,31 +76,31 @@ Types were classified as:
 ## Date/time field inventory
 | Class | File | Field/Method | Current Type | Suggested v0.11.0 | Suggested v1 | Normalization Today? | Documentation URL |
 |---|---|---|---|---|---|---|---|
-| File | src/File/File.php | createdAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/file/) |
-| File | src/File/File.php | modifiedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/file/) |
-| File | src/File/File.php | contentCreatedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/file/) |
-| File | src/File/File.php | contentModifiedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/file/) |
-| File | src/File/File.php | trashedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/file/) |
-| File | src/File/File.php | purgedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/file/) |
-| Folder | src/Folder/Folder.php | createdAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/folder/) |
-| Folder | src/Folder/Folder.php | modifiedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/folder/) |
-| User | src/User/User.php | createdAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/user/) |
-| User | src/User/User.php | modifiedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/user/) |
-| Collaboration | src/Collaboration/Collaboration.php | createdAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/collaboration/) |
-| Collaboration | src/Collaboration/Collaboration.php | modifiedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/collaboration/) |
-| Collaboration | src/Collaboration/Collaboration.php | expiresAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/collaboration/) |
-| Collaboration | src/Collaboration/Collaboration.php | acknowledgedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/collaboration/) |
-| SharedLink | src/Item/SharedLink/SharedLink.php | unsharedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/shared-link/) |
+| File | src/Resource/File.php | createdAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/file/) |
+| File | src/Resource/File.php | modifiedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/file/) |
+| File | src/Resource/File.php | contentCreatedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/file/) |
+| File | src/Resource/File.php | contentModifiedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/file/) |
+| File | src/Resource/File.php | trashedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/file/) |
+| File | src/Resource/File.php | purgedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/file/) |
+| Folder | src/Resource/Folder.php | createdAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/folder/) |
+| Folder | src/Resource/Folder.php | modifiedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/folder/) |
+| User | src/Resource/User.php | createdAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/user/) |
+| User | src/Resource/User.php | modifiedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/user/) |
+| Collaboration | src/Resource/Collaboration.php | createdAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/collaboration/) |
+| Collaboration | src/Resource/Collaboration.php | modifiedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/collaboration/) |
+| Collaboration | src/Resource/Collaboration.php | expiresAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/collaboration/) |
+| Collaboration | src/Resource/Collaboration.php | acknowledgedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/collaboration/) |
+| SharedLink | src/Resource/SharedLink.php | unsharedAt | mixed | `\DateTimeInterface\|string\|null` | `\DateTimeImmutable\|null` | No | [Link](https://developer.box.com/reference/resources/shared-link/) |
 
 ## Mixed/unknown type inventory
 | Class | File | Member/Method | Current Type | Suggested Type | Rationale | Confidence |
 |---|---|---|---|---|---|---|
-| File | src/File/File.php | id | mixed | `string\|int\|null` | Box IDs are identifiers. | High |
-| File | src/File/File.php | size | mixed | `int\|null` | File size is an integer. | High |
-| File | src/File/File.php | name | mixed | `string\|null` | File name is a string. | High |
-| User | src/User/User.php | login | mixed | `string\|null` | User login is usually an email. | High |
-| User | src/User/User.php | maxUploadSize | mixed | `float\|int\|null` | Large integers may be floats in PHP. | High |
-| Group | src/Group/Group.php | name | mixed | `string\|null` | Group name is a string. | High |
+| File | src/Resource/File.php | id | mixed | `string\|int\|null` | Box IDs are identifiers. | High |
+| File | src/Resource/File.php | size | mixed | `int\|null` | File size is an integer. | High |
+| File | src/Resource/File.php | name | mixed | `string\|null` | File name is a string. | High |
+| User | src/Resource/User.php | login | mixed | `string\|null` | User login is usually an email. | High |
+| User | src/Resource/User.php | maxUploadSize | mixed | `float\|int\|null` | Large integers may be floats in PHP. | High |
+| Group | src/Resource/Group.php | name | mixed | `string\|null` | Group name is a string. | High |
 
 ## Box API Compatibility Observations
 - **SharedLink**: Current implementation uses `unsharedAt` while documentation refers to it in some contexts as `unshared_at` (RFC3339).

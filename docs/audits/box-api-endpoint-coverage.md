@@ -9,12 +9,12 @@ Official Box API Reference: [https://developer.box.com/reference](https://develo
 | Category | Official Reference URL | SDK Support Status | Relevant SDK Class/Service | Notes |
 |---|---|---|---|---|
 | Authorization | [Link](https://developer.box.com/reference/resources/oauth2/) | Implemented | `Box\Client` | OAuth2 supported. |
-| Files | [Link](https://developer.box.com/reference/resources/file/) | Partially Implemented | `Box\Client`, `Box\File\File` | Basic operations supported; many advanced options missing. |
-| Folders | [Link](https://developer.box.com/reference/resources/folder/) | Partially Implemented | `Box\Client`, `Box\Folder\Folder` | Basic operations supported. |
-| Users | [Link](https://developer.box.com/reference/resources/user/) | Partially Implemented | `Box\Client`, `Box\User\User` | Basic user info supported. |
-| Groups | [Link](https://developer.box.com/reference/resources/group/) | Partially Implemented | `Box\Client`, `Box\Group\Group` | Memberships partially supported. |
-| Collaborations | [Link](https://developer.box.com/reference/resources/collaboration/) | Partially Implemented | `Box\Client`, `Box\Collaboration\Collaboration` | Basic collaboration management. |
-| Shared Links | [Link](https://developer.box.com/reference/resources/shared-link/) | Partially Implemented | `Box\Client`, `Box\Item\SharedLink\SharedLink` | Supported as part of file/folder. |
+| Files | [Link](https://developer.box.com/reference/resources/file/) | Partially Implemented | `Box\Client`, `Box\Resource\File` | Basic operations supported; many advanced options missing. |
+| Folders | [Link](https://developer.box.com/reference/resources/folder/) | Partially Implemented | `Box\Client`, `Box\Resource\Folder` | Basic operations supported. |
+| Users | [Link](https://developer.box.com/reference/resources/user/) | Partially Implemented | `Box\Client`, `Box\Resource\User` | Basic user info supported. |
+| Groups | [Link](https://developer.box.com/reference/resources/group/) | Partially Implemented | `Box\Client`, `Box\Resource\Group` | Memberships partially supported. |
+| Collaborations | [Link](https://developer.box.com/reference/resources/collaboration/) | Partially Implemented | `Box\Client`, `Box\Resource\Collaboration` | Basic collaboration management. |
+| Shared Links | [Link](https://developer.box.com/reference/resources/shared-link/) | Partially Implemented | `Box\Client`, `Box\Resource\SharedLink` | Supported as part of file/folder. |
 | Search | [Link](https://developer.box.com/reference/get-search/) | Partially Implemented | `Box\Client::search` | Basic search functionality. |
 | Events | [Link](https://developer.box.com/reference/resources/event/) | Partially Implemented | `Box\Service\Event\UserEventService` | User events supported. |
 | File Versions | [Link](https://developer.box.com/reference/resources/file-version/) | Missing | - | Need to implement in v1.0. |
