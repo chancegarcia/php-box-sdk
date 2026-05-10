@@ -69,9 +69,8 @@ class TokenStorageException extends \Exception
     /**
      * @param TokenInterface $token
      *
-     * @return TokenStorageException
      */
-    public function setToken(?TokenInterface $token = null)
+    public function setToken(?TokenInterface $token = null): void
     {
         $this->token = $token;
     }
@@ -87,9 +86,8 @@ class TokenStorageException extends \Exception
     /**
      * @param TokenInterface $previousToken
      *
-     * @return TokenStorageException
      */
-    public function setPreviousToken(?TokenInterface $previousToken = null)
+    public function setPreviousToken(?TokenInterface $previousToken = null): void
     {
         $this->previousToken = $previousToken;
     }
@@ -105,9 +103,8 @@ class TokenStorageException extends \Exception
     /**
      * @param BaseTokenStorageInterface $tokenStorage
      *
-     * @return TokenStorageException
      */
-    public function setTokenStorage($tokenStorage = null)
+    public function setTokenStorage($tokenStorage = null): void
     {
         $this->tokenStorage = $tokenStorage;
     }
@@ -123,9 +120,8 @@ class TokenStorageException extends \Exception
     /**
      * @param mixed $tokenStorageContext
      *
-     * @return TokenStorageException
      */
-    public function setTokenStorageContext($tokenStorageContext = null)
+    public function setTokenStorageContext($tokenStorageContext = null): void
     {
         $this->tokenStorageContext = $tokenStorageContext;
     }
@@ -141,9 +137,8 @@ class TokenStorageException extends \Exception
     /**
      * @param mixed $callingClass
      *
-     * @return TokenStorageException
      */
-    public function setCallingClass($callingClass = null)
+    public function setCallingClass($callingClass = null): void
     {
         $this->callingClass = $callingClass;
     }

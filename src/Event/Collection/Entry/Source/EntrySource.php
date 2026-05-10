@@ -69,7 +69,6 @@ class EntrySource implements SourceInterface
     /**
      * @param string|int|null $sequenceId
      *
-     * @return SourceInterface
      */
     public function setSequenceId(string|int|null $sequenceId = null): void
     {
@@ -170,7 +169,6 @@ class EntrySource implements SourceInterface
     /**
      * @param DateTimeInterface|string|null $modifiedAt
      *
-     * @return SourceInterface
      */
     public function setModifiedAt(DateTimeInterface|string|null $modifiedAt = null): void
     {
@@ -254,7 +252,6 @@ class EntrySource implements SourceInterface
     /**
      * @param string|null $ownedBy
      *
-     * @return SourceInterface
      */
     public function setOwnedBy(?string $ownedBy = null): void
     {
@@ -320,9 +317,8 @@ class EntrySource implements SourceInterface
     /**
      * @param mixed $synced
      *
-     * @return SourceInterface
      */
-    public function setSynced($synced = null)
+    public function setSynced($synced = null): void
     {
         $this->synced = $synced;
     }

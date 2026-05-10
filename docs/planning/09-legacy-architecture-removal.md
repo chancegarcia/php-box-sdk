@@ -114,7 +114,7 @@ Legacy removal is required before v1 release. Removals must be intentional, test
 | 9.5 | [Base Architecture & Box\Model Removal](#slice-95-base-architecture--boxmodel-removal) | ✓ | Completion: Removed legacy `BaseModel`, `Model`, `BoxModel` and interfaces. Migrated core infrastructure and resource models. Updated tests and migration docs. |
 | 9.6 | [Compatibility Alias Removal](#slice-96-compatibility-alias-removal) | ✓ | Completion: Removed `Box\User\User` alias; confirmed `src/Model` is clear. Updated references in `File` resource and tests. Updated migration docs and added removal verification tests. |
 | 9.7 | [Docs & Migration Drift Pass](#slice-97-docs--migration-drift-pass) | ✓ | Completion: Updated migration guide with before/after examples. Cleaned up stale references in README and user guides. Updated CHANGELOG following prompt. |
-| 9.8 | [Final Type-Safety & Baseline Cleanup](#slice-98-final-type-safety--baseline-cleanup) | |
+| 9.8 | [Final Type-Safety & Baseline Cleanup](#slice-98-final-type-safety--baseline-cleanup) | ✓ | Completion: Removed stale `excludePaths` from `phpstan.neon.dist`. Cleaned up 21 unmatched baseline entries. Fixed `EntrySource` and `TokenStorageException` to use `void` return types for setters, aligning with v1 guidelines. |
 | 9.9 | [Final Integration Review](#slice-99-final-integration-review) | |
 
 ---
