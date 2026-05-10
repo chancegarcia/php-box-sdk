@@ -32,14 +32,20 @@
 
 namespace Box\Group;
 
-use Box\Model\Model;
+use Box\Mapper\Hydrator;
 use Box\Exception\BoxException;
 use Box\Exception\GroupException;
 use Box\Group\GroupInterface;
 use DateTimeInterface;
 
-class Group extends Model implements GroupInterface
+class Group implements GroupInterface
 {
+    public function __construct(?array $options = null)
+    {
+        if (is_array($options)) {
+            (new Hydrator())->hydrate($this, $options);
+        }
+    }
     protected string $type = 'group';
     protected string|int|null $id = null;
     protected ?string $name = null;

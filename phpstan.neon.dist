@@ -11,7 +11,6 @@ parameters:
         - vendor
         - var
         - src/Event/Collection/Entry/Source/EntrySource.php
-        - src/Model/BoxModel.php
     ignoreErrors:
         -
             message: '#implicitly nullable via default value null#'

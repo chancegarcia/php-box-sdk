@@ -111,7 +111,7 @@ Legacy removal is required before v1 release. Removals must be intentional, test
 | 9.2 | [UserEventService & Event Collection Overhaul](#slice-92-usereventservice--event-collection-overhaul) | ✓ |
 | 9.3 | [Service Stateful API Removal](#slice-93-service-stateful-api-removal) | ✓ |
 | 9.4 | [Model Trait & Mapping Infrastructure Removal](#slice-94-model-trait--mapping-infrastructure-removal) | ✓ |
-| 9.5 | [Base Architecture & Box\Model Removal](#slice-95-base-architecture--boxmodel-removal) | |
+| 9.5 | [Base Architecture & Box\Model Removal](#slice-95-base-architecture--boxmodel-removal) | ✓ | Completion: Removed legacy `BaseModel`, `Model`, `BoxModel` and interfaces. Migrated core infrastructure and resource models. Updated tests and migration docs. |
 | 9.6 | [Compatibility Alias Removal](#slice-96-compatibility-alias-removal) | |
 | 9.7 | [Docs & Migration Drift Pass](#slice-97-docs--migration-drift-pass) | |
 | 9.8 | [Final Type-Safety & Baseline Cleanup](#slice-98-final-type-safety--baseline-cleanup) | |

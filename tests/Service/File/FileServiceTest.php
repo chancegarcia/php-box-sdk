@@ -10,9 +10,9 @@ use Box\Dto\File\Request\CreateSharedLinkRequest;
 use Box\File\File;
 use Box\File\FileInterface;
 use Box\Http\Response\BoxResponseInterface;
-use Box\Item\SharedLink\SharedLinkInterface;
 use Box\Service\File\FileService;
 use PHPUnit\Framework\TestCase;
+use Box\Item\SharedLink\SharedLink;
 
 class FileServiceTest extends TestCase
 {
@@ -110,7 +110,17 @@ class FileServiceTest extends TestCase
         $file = new File();
         $file->setId($fileId);
 
-        $legacySharedLink = $this->createMock(SharedLinkInterface::class);
+        // In PHPUnit 10, addMethods is for non-existent methods on classes.
+        // For interfaces, use setMethods (deprecated) or just createMock and hope it has it,
+        // or better, use a class that implements the interface and has the method.
+        // Since we removed toArray from the interface, we can just use a generic mock
+        // and add the method if it's a class mock, or just mock the interface if we don't need toArray.
+        // However, FileService checks for method_exists($sharedLink, 'toArray').
+
+        $legacySharedLink = $this->getMockBuilder(SharedLink::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['toArray'])
+            ->getMock();
         $legacySharedLink->method('toArray')->willReturn(['access' => 'company']);
 
         $responseData = [

@@ -56,7 +56,12 @@ The legacy `BaseModelTrait` and `ModelTrait` have been removed. Mapping infrastr
     - **Removed Interface Methods**: `toClassVar`, `toBoxVar`, `mapBoxToClass`, `isInt`, `removeEmpty` have been removed from `BaseModelInterface`. `toBoxArray` and `buildQuery` have been removed from `ModelInterface`.
     - **Removed Class Methods**: `BaseModel` and `Model` no longer provide `toClassVar`, `toBoxVar`, `isInt`, `removeEmpty`, `classArray`, or `buildQuery`.
     - **Prefer `toArray()`**: Models now support `toArray()` for obtaining an associative array representation.
-    - **Prefer `Hydrator::hydrate()`**: Use `(new Hydrator())->hydrate($model, $data)` instead of `$model->mapBoxToClass($data)`. The `mapBoxToClass` and `toArray` methods on `Model` are now **deprecated bridge methods** scheduled for removal in Slice 9.5.
+    - **Prefer `Hydrator::hydrate()`**: Use `(new Hydrator())->hydrate($model, $data)` instead of `$model->mapBoxToClass($data)`. The `mapBoxToClass` and `toArray` methods on legacy `Model` have been removed along with the `Box\Model` base architecture.
+    - **Removed `Box\Model` Architecture**: `BaseModel`, `Model`, `BoxModel`, and their respective interfaces have been removed. Infrastructure and resource models no longer inherit from these legacy bases.
+    - **Infrastructure Migration**: `Service` and `Connection` hierarchies have been decoupled from legacy model bases. Both now implement `LoggerAwareInterface` directly to preserve logging capabilities.
+    - **Resource Migration**: All resource models (User, File, Folder, etc.) are now standalone classes and no longer extend legacy `Model`. They now include constructors that accept options for automatic hydration via `Hydrator`.
+    - **Service Response Parsing**: `Client::parseResponse()` now requires a valid `array` return. `BoxResponse::json()` has been hardened to return empty arrays/objects on invalid content to satisfy type hints.
+    - **Factory Migration**: `AbstractFactory::get()` now returns `object` instead of `ModelInterface` and no longer enforces inheritance from legacy model interfaces.
     - **Token `toArray()`**: The `Token` class now implements `toArray()` for easier serialization of credentials.
     - **ModelMapper Cleanup**: `ModelMapper` no longer provides `mapBoxToClass`, `isInt`, or `removeEmpty`. Use `Hydrator` for mapping and PHP native functions or specialized helpers for other tasks.
 

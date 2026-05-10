@@ -37,13 +37,10 @@
 namespace Box\Service;
 
 use Box\Http\Response\BoxResponseInterface;
-use Box\Model\BaseModelInterface;
+use Box\Connection\Token\TokenInterface;
 use Box\Connection\Connection;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\Token;
-use Box\Connection\Token\TokenInterface;
-use Box\Model\Model;
-use Box\Model\ModelInterface;
 use Box\Storage\Token\BaseTokenStorageInterface;
 use RuntimeException;
 use BadMethodCallException;
@@ -59,7 +56,7 @@ use stdClass;
  * Interface ServiceInterface
  * @package Box\Service
  */
-interface ServiceInterface extends BaseModelInterface
+interface ServiceInterface
 {
     public const TOKEN_URI = "https://www.box.com/api/oauth2/token";
     public const REVOKE_URI = "https://www.box.com/api/oauth2/revoke";
@@ -223,20 +220,18 @@ interface ServiceInterface extends BaseModelInterface
     public function queryBox($uri = null, $returnType = 'decoded');
 
     /**
-     * query box and map return values to a given class
-     *
      * @param null $uri box uri to query
      * @param string $type valid types are:
      *                              'original' (the return from the connection query {@see Connection::query()}),
      *                              'decoded' (normal json decode of the connection query [json_decode(original)]),
      *                              'flat' (associative array json decode of the connection query [json_decode(original, true)])
      *                              'mapped' map json data to provided ModelInterface
-     * @param ModelInterface $class class to map the box data to, the mapped data is the decoded results of the the box
+     * @param object|string|null $class class to map the box data to, the mapped data is the decoded results of the the box
      *                              query {@see queryBox()}; if none provided, the specified type will be returned
      *
-     * @return ModelInterface|Model
+     * @return object|stdClass|array|string
      */
-    public function getFromBox($uri = null, $type = 'original', ?ModelInterface $class = null);
+    public function getFromBox($uri = null, $type = 'original', ?object $class = null);
 
     /**
      * @param null $uri box uri to query
@@ -246,15 +241,15 @@ interface ServiceInterface extends BaseModelInterface
      *                              'decoded' (normal json decode of the connection query [json_decode(original)]),
      *                              'flat' (associative array json decode of the connection query
      *                              [json_decode(original, true)])
-     * @param ModelInterface $class class to map the box data to, the mapped data is the decoded results of the the box
+     * @param object|null $class class to map the box data to, the mapped data is the decoded results of the the box
      *                              query {@see queryBox()}; if none provided, the specified type will be returned
      *
-     * @return ModelInterface|stdClass|array|string
+     * @return object|stdClass|array|string
      * @throws \Box\Exception\BoxException
      * @throws \Box\Exception\TokenStorageException
      * @throws \Exception
      */
-    public function sendUpdateToBox($uri = null, $params = [], $type = 'original', ?ModelInterface $class = null);
+    public function sendUpdateToBox($uri = null, $params = [], $type = 'original', ?object $class = null);
 
     /**
      * refreshes the token and returns new token; it is up to the application to persist the new token data

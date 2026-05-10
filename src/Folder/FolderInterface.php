@@ -32,9 +32,7 @@
 
 namespace Box\Folder;
 
-use Box\Model\ModelInterface;
-
-interface FolderInterface extends ModelInterface
+interface FolderInterface
 {
     public const URI = 'https://api.box.com/2.0/folders';
     public const SHARED_ITEM_URI = "https://api.box.com/2.0/shared_items";

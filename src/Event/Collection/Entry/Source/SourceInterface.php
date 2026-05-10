@@ -36,9 +36,7 @@
 
 namespace Box\Event\Collection\Entry\Source;
 
-use Box\Model\BoxModelInterface;
-
-interface SourceInterface extends BoxModelInterface
+interface SourceInterface
 {
     /**
      * @return mixed
@@ -48,7 +46,7 @@ interface SourceInterface extends BoxModelInterface
     /**
      * @param mixed $synced
      *
-     * @return BoxModelInterface
+     * @return void
      */
     public function setSynced($synced = null);
 }

@@ -50,7 +50,10 @@ use Box\Http\Response\BoxResponseInterface;
 use Box\Http\Transport\CurlTransport;
 use Box\Http\Transport\GuzzleTransport;
 use Box\Http\Transport\TransportInterface;
-use Box\Model\Model;
+use Box\Mapper\Hydrator;
+use Box\Logger\LoggerAwareInterface;
+use Box\Trait\LoggerAwareTrait;
+use Box\Trait\BoxLoggerTrait;
 use CURLFile;
 use Psr\Log\LoggerInterface;
 use CurlHandle;
@@ -63,8 +66,11 @@ use CurlHandle;
  * @todo v1: make transport selection the primary way to configure HTTP execution
  * @todo v1: remove client credential synchronization and make Connection the source of truth
  */
-class Connection extends Model implements ConnectionInterface
+class Connection implements ConnectionInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+    use BoxLoggerTrait;
+
     public const TRANSPORT_CURL = 'curl';
     public const TRANSPORT_GUZZLE = 'guzzle';
 
@@ -93,23 +99,18 @@ class Connection extends Model implements ConnectionInterface
 
     public function __construct(?array $options = null, ?AuthenticationResponseFactoryInterface $authenticationResponseFactory = null)
     {
-        // Don't pass transport to parent construct if it's a string,
-        // handle it manually to avoid BaseModel trying to call setTransport(string)
-        $transport = null;
-        if (is_array($options) && isset($options['transport'])) {
-            $transport = $options['transport'];
-            unset($options['transport']);
-        }
-
-        parent::__construct($options);
-
-        $this->authenticationResponseFactory = $authenticationResponseFactory ?? new AuthenticationResponseFactory();
-
-        if ($transport) {
-            $this->setTransportName($transport);
-        }
-
         if (is_array($options)) {
+            $transport = $options['transport'] ?? null;
+            if ($transport) {
+                unset($options['transport']);
+            }
+
+            (new Hydrator())->hydrate($this, $options);
+
+            if ($transport) {
+                $this->setTransportName($transport);
+            }
+
             if (array_key_exists('disableSslVerification', $options) && is_bool($options['disableSslVerification'])) {
                 $this->disableSslVerification = $options['disableSslVerification'];
             }
@@ -117,6 +118,8 @@ class Connection extends Model implements ConnectionInterface
                 $this->setAccessToken($options['accessToken']);
             }
         }
+
+        $this->authenticationResponseFactory = $authenticationResponseFactory ?? new AuthenticationResponseFactory();
     }
 
     // relooking over auth flow, we have to assume app is already authorized externally.

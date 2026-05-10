@@ -36,9 +36,7 @@
 
 namespace Box\Event;
 
-use Box\Model\Model;
-
-class Event extends Model implements EventInterface
+class Event implements EventInterface
 {
     protected mixed $type = null;
 

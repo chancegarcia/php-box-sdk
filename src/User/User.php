@@ -32,14 +32,20 @@
 
 namespace Box\User;
 
-use Box\Model\Model;
+use Box\Mapper\Hydrator;
 use DateTimeInterface;
 
 /**
  * @deprecated Use Box\Resource\User instead. This class will be removed in v1.0.
  */
-class User extends Model
+class User
 {
+    public function __construct(?array $options = null)
+    {
+        if (is_array($options)) {
+            (new Hydrator())->hydrate($this, $options);
+        }
+    }
     protected mixed $type = "user";
     protected mixed $id = null;
     protected mixed $name = null;

@@ -37,11 +37,10 @@
 namespace Box\Event\Collection;
 
 use Box\Exception\BoxException;
-use Box\Model\Model;
 use Doctrine\Common\Collections\ArrayCollection as DoctrineArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-class EventCollection extends Model implements EventCollectionInterface
+class EventCollection implements EventCollectionInterface
 {
     protected $chunkSize;
     protected $nextStreamPosition;

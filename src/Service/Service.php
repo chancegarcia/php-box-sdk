@@ -39,14 +39,14 @@ namespace Box\Service;
 use Box\Exception\BoxResponseException;
 use Box\Exception\TokenStorageException;
 use Box\Http\Response\BoxResponseInterface;
-use Box\Model\BaseModel;
 use Box\Exception\BoxException;
 use Box\Connection\Connection;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\Token;
 use Box\Connection\Token\TokenInterface;
-use Box\Model\ModelInterface;
 use Box\Storage\Token\BaseTokenStorageInterface;
+use Box\Logger\LoggerAwareInterface;
+use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxLoggerTrait;
 use Box\Mapper\Hydrator;
 use OutOfBoundsException;
@@ -56,8 +56,9 @@ use BadMethodCallException;
 use stdClass;
 use Psr\Log\LoggerInterface;
 
-class Service extends BaseModel implements ServiceInterface
+class Service implements ServiceInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
     use BoxLoggerTrait;
 
     /**
@@ -261,7 +262,7 @@ class Service extends BaseModel implements ServiceInterface
      * @param BaseTokenStorageInterface|null $tokenStorage
      * @return void
      */
-    public function setTokenStorage(?BaseTokenStorageInterface $tokenStorage = null)
+    public function setTokenStorage(?BaseTokenStorageInterface $tokenStorage = null): void
     {
         $this->tokenStorage = $tokenStorage;
     }
@@ -398,7 +399,7 @@ class Service extends BaseModel implements ServiceInterface
         $uri = null,
         $params = [],
         $type = 'original',
-        ?ModelInterface $class = null
+        ?object $class = null
     ) {
         $this->validateReturnType($type);
         try {
@@ -459,7 +460,7 @@ class Service extends BaseModel implements ServiceInterface
         }
 
         $returnData = null;
-        if ($class instanceof ModelInterface) {
+        if (null !== $class) {
             (new Hydrator())->hydrate($class, $boxData);
             $returnData = $class;
         } else {
@@ -486,7 +487,7 @@ class Service extends BaseModel implements ServiceInterface
      *     previous token information here if it isn't set already from the TokenStorageException. then rethrow; Token
      *     storage is expected to set all other context values for information.
      */
-    final public function getFromBox($uri = null, $type = 'original', ?ModelInterface $class = null)
+    final public function getFromBox($uri = null, $type = 'original', ?object $class = null)
     {
         $this->validateReturnType($type);
 
@@ -539,7 +540,7 @@ class Service extends BaseModel implements ServiceInterface
 
         $returnData = null;
 
-        if ($class instanceof ModelInterface) {
+        if (null !== $class) {
             (new Hydrator())->hydrate($class, $boxData);
             $returnData = $class;
         } else {

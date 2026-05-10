@@ -33,13 +33,26 @@
 namespace Box\Folder;
 
 use Box\Exception\BoxException;
-use Box\Model\Model;
 use Countable;
+use Box\Mapper\Hydrator;
 use Box\Folder\FolderInterface;
+use Box\Logger\LoggerAwareInterface;
+use Box\Trait\LoggerAwareTrait;
+use Box\Trait\BoxLoggerTrait;
 use DateTimeInterface;
 
-class Folder extends Model implements FolderInterface
+class Folder implements FolderInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+    use BoxLoggerTrait;
+
+    public function __construct(?array $options = null)
+    {
+        if (is_array($options)) {
+            (new Hydrator())->hydrate($this, $options);
+        }
+    }
+
     protected string $type = "folder";
     protected mixed $id = null;
     protected mixed $sequenceId = null;

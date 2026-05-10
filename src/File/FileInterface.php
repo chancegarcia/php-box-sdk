@@ -36,11 +36,9 @@
 
 namespace Box\File;
 
-
-use Box\Model\ModelInterface;
 use Box\Item\SharedLink\SharedLink;
 
-interface FileInterface extends ModelInterface
+interface FileInterface
 {
     public const URI = "https://api.box.com/2.0/files";
     public const UPLOAD_URI = "https://upload.box.com/api/2.0/files/content";

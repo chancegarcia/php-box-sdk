@@ -37,9 +37,7 @@
 
 namespace Box\Item\SharedLink\Permissions;
 
-use Box\Model\ModelInterface;
-
-interface PermissionsInterface extends ModelInterface
+interface PermissionsInterface
 {
     /**
      * @return bool

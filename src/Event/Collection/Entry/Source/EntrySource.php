@@ -37,10 +37,9 @@
 namespace Box\Event\Collection\Entry\Source;
 
 use Box\Folder\Folder;
-use Box\Model\Model;
 use DateTimeInterface;
 
-class EntrySource extends Model implements SourceInterface
+class EntrySource implements SourceInterface
 {
     protected $type;
     protected $id;

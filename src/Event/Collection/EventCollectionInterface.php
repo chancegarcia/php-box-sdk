@@ -36,10 +36,9 @@
 
 namespace Box\Event\Collection;
 
-use Box\Model\ModelInterface;
 use Doctrine\Common\Collections\Collection;
 
-interface EventCollectionInterface extends ModelInterface
+interface EventCollectionInterface
 {
     /**
      * @return mixed

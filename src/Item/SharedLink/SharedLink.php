@@ -38,10 +38,9 @@ namespace Box\Item\SharedLink;
 
 use Box\Item\SharedLink\Permissions\PermissionsInterface;
 use Box\Item\SharedLink\SharedLinkInterface;
-use Box\Model\Model;
 use DateTimeInterface;
 
-class SharedLink extends Model implements SharedLinkInterface
+class SharedLink implements SharedLinkInterface
 {
     protected $access;
     protected $unsharedAt;
@@ -124,5 +123,14 @@ class SharedLink extends Model implements SharedLinkInterface
     public function getEffectiveAccess()
     {
         return $this->effectiveAccess;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'access' => $this->access,
+            'unshared_at' => $this->unsharedAt,
+            'password' => $this->password,
+        ];
     }
 }

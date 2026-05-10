@@ -92,12 +92,12 @@ class ClientTest extends TestCase
     public function testGetAccessTokenSuccess()
     {
         $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('getContent')->willReturn(json_encode([
+        $response->method('json')->with(true)->willReturn([
             'access_token' => 'access_foo',
             'refresh_token' => 'refresh_bar',
             'expires_in' => 3600,
             'token_type' => 'Bearer'
-        ], JSON_THROW_ON_ERROR));
+        ]);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
@@ -127,12 +127,12 @@ class ClientTest extends TestCase
         $this->client->setToken($token);
 
         $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('getContent')->willReturn(json_encode([
+        $response->method('json')->with(true)->willReturn([
             'access_token' => 'new_access',
             'refresh_token' => 'new_refresh',
             'expires_in' => 3600,
             'token_type' => 'Bearer'
-        ], JSON_THROW_ON_ERROR));
+        ]);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
@@ -180,7 +180,7 @@ class ClientTest extends TestCase
         $token->setAccessToken('test_token');
 
         $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('getContent')->willReturn(json_encode(['status' => 'success']));
+        $response->method('json')->with(true)->willReturn(['status' => 'success']);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
@@ -190,17 +190,17 @@ class ClientTest extends TestCase
         $this->client->setConnection($connection);
 
         $result = $this->client->destroyToken($token);
-        $this->assertEquals(['status' => 'success'], $data = json_decode(json_encode($result), true));
+        $this->assertEquals(['status' => 'success'], $result);
     }
 
     public function testGetFolderFromBox()
     {
         $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('getContent')->willReturn(json_encode([
+        $response->method('json')->with(true)->willReturn([
             'type' => 'folder',
             'id' => '123',
             'name' => 'Test Folder'
-        ]));
+        ]);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->method('query')->willReturn($response);
@@ -219,11 +219,11 @@ class ClientTest extends TestCase
     public function testCreateNewBoxFolder()
     {
         $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('getContent')->willReturn(json_encode([
+        $response->method('json')->with(true)->willReturn([
             'type' => 'folder',
             'id' => '456',
             'name' => 'New Folder'
-        ]));
+        ]);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
@@ -252,11 +252,11 @@ class ClientTest extends TestCase
     public function testUpdateBoxFolder()
     {
         $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('getContent')->willReturn(json_encode([
+        $response->method('json')->with(true)->willReturn([
             'type' => 'folder',
             'id' => '123',
             'name' => 'Updated Name'
-        ]));
+        ]);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
@@ -291,12 +291,12 @@ class ClientTest extends TestCase
     public function testExchangeAuthorizationCodeForToken()
     {
         $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('getContent')->willReturn(json_encode([
+        $response->method('json')->with(true)->willReturn([
             'access_token' => 'new_access_token',
             'expires_in' => 3600,
             'token_type' => 'bearer',
             'refresh_token' => 'new_refresh_token'
-        ]));
+        ]);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->method('post')->willReturn($response);
@@ -314,10 +314,10 @@ class ClientTest extends TestCase
     public function testGetFolderCollaborations()
     {
         $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('getContent')->willReturn(json_encode([
+        $response->method('json')->with(true)->willReturn([
             'total_count' => 1,
             'entries' => [['type' => 'collaboration', 'id' => 'collab1']]
-        ]));
+        ]);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->method('query')->willReturn($response);
@@ -339,10 +339,10 @@ class ClientTest extends TestCase
     public function testAddCollaboration()
     {
         $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('getContent')->willReturn(json_encode([
+        $response->method('json')->with(true)->willReturn([
             'type' => 'collaboration',
             'id' => 'collab2'
-        ]));
+        ]);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->method('post')->willReturn($response);
@@ -364,11 +364,11 @@ class ClientTest extends TestCase
     public function testCreateSharedLinkForFolder()
     {
         $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('getContent')->willReturn(json_encode([
+        $response->method('json')->with(true)->willReturn([
             'type' => 'folder',
             'id' => '123',
             'shared_link' => ['url' => 'https://box.com/s/foo']
-        ]));
+        ]);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->method('put')->willReturn($response);
@@ -389,10 +389,10 @@ class ClientTest extends TestCase
     public function testCopyBoxFolder()
     {
         $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('getContent')->willReturn(json_encode([
+        $response->method('json')->with(true)->willReturn([
             'type' => 'folder',
             'id' => 'copy123'
-        ]));
+        ]);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->method('post')->willReturn($response);
@@ -425,10 +425,10 @@ class ClientTest extends TestCase
     public function testGetBoxFolderItems()
     {
         $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('getContent')->willReturn(json_encode([
+        $response->method('json')->with(true)->willReturn([
             'total_count' => 1,
             'entries' => [['type' => 'file', 'id' => 'file1']]
-        ]));
+        ]);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->method('query')->willReturn($response);

@@ -37,9 +37,8 @@
 namespace Box\Item\SharedLink\Permissions;
 
 use Box\Item\SharedLink\Permissions\PermissionsInterface;
-use Box\Model\Model;
 
-class Permissions extends Model implements PermissionsInterface
+class Permissions implements PermissionsInterface
 {
     protected $canDownload;
     protected $canPreview;

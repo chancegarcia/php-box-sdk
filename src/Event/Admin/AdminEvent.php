@@ -57,10 +57,9 @@ class AdminEvent extends Event implements AdminEventInterface
     public function __construct(?array $options = null)
     {
         $this->streamType = self::STREAM_TYPE;
-        if (null === $options) {
-            $options = [];
+        if (is_array($options)) {
+            (new Hydrator())->hydrate($this, $options);
         }
-        parent::__construct($options);
     }
 
     /**

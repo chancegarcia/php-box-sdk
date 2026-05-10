@@ -56,18 +56,23 @@ use Box\Folder\FolderInterface;
 use Box\Group\GroupInterface;
 use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
-use Box\Model\Model;
 use Box\Mapper\Hydrator;
 use Box\Resource\User;
 use Box\Collaboration\Collaboration;
 use Box\Connection\Token\Token;
+use Box\Logger\LoggerAwareInterface;
+use Box\Trait\LoggerAwareTrait;
+use Box\Trait\BoxLoggerTrait;
 
 /**
  * Class Client
  * @package Box
  */
-class Client extends Model
+class Client implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+    use BoxLoggerTrait;
+
     public const AUTH_URI = "https://account.box.com/api/oauth2/authorize";
     public const TOKEN_URI = "https://www.box.com/api/oauth2/token";
     public const REVOKE_URI = "https://www.box.com/api/oauth2/revoke";
@@ -124,7 +129,9 @@ class Client extends Model
         ?TokenFactoryInterface $tokenFactory = null,
         ?ConnectionFactoryInterface $connectionFactory = null
     ) {
-        parent::__construct($options);
+        if (is_array($options)) {
+            (new Hydrator())->hydrate($this, $options);
+        }
         $this->folderFactory = $folderFactory ?? new FolderFactory();
         $this->fileFactory = $fileFactory ?? new FileFactory();
         $this->userFactory = $userFactory ?? new UserFactory();
@@ -706,7 +713,8 @@ class Client extends Model
      */
     public function parseResponse(BoxResponseInterface $response): array
     {
-        return parent::parseResponse($response);
+        $data = $response->json(true);
+        return is_array($data) ? $data : [];
     }
 
     /**

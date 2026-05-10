@@ -32,9 +32,7 @@
 
 namespace Box\Collaboration;
 
-use Box\Model\ModelInterface;
-
-interface CollaborationInterface extends ModelInterface
+interface CollaborationInterface
 {
     public const URI = "https://api.box.com/2.0/collaborations";
 

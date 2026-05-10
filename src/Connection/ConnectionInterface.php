@@ -34,12 +34,12 @@ namespace Box\Connection;
 
 use Box\Exception\BoxException;
 use Box\Http\Response\BoxResponseInterface;
-use Box\Model\ModelInterface;
+use Box\Logger\LoggerAwareInterface;
 use Box\Http\FileStream;
 use CURLFile;
 use CurlHandle;
 
-interface ConnectionInterface extends ModelInterface
+interface ConnectionInterface extends LoggerAwareInterface
 {
     /**
      * @return mixed

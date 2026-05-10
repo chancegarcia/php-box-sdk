@@ -32,12 +32,25 @@
 
 namespace Box\Collaboration;
 
-use Box\Model\Model;
+use Box\Mapper\Hydrator;
 use Box\Collaboration\CollaborationInterface;
+use Box\Logger\LoggerAwareInterface;
+use Box\Trait\LoggerAwareTrait;
+use Box\Trait\BoxLoggerTrait;
 use DateTimeInterface;
 
-class Collaboration extends Model implements CollaborationInterface
+class Collaboration implements CollaborationInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+    use BoxLoggerTrait;
+
+    public function __construct(?array $options = null)
+    {
+        if (is_array($options)) {
+            (new Hydrator())->hydrate($this, $options);
+        }
+    }
+
     protected mixed $id = null;
     protected mixed $type = 'collaboration';
     protected mixed $createdBy = null;

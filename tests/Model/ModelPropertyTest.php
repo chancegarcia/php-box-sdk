@@ -2,6 +2,7 @@
 
 namespace Box\Tests\Model;
 
+use Box\Mapper\Hydrator;
 use Box\File\File;
 use Box\Folder\Folder;
 use Box\User\User;
@@ -9,6 +10,12 @@ use PHPUnit\Framework\TestCase;
 
 class ModelPropertyTest extends TestCase
 {
+    private Hydrator $hydrator;
+
+    protected function setUp(): void
+    {
+        $this->hydrator = new Hydrator();
+    }
     public function testFileNewProperties(): void
     {
         $file = new File();
@@ -57,7 +64,7 @@ class ModelPropertyTest extends TestCase
             'metadata' => ['foo' => 'bar']
         ];
 
-        $file->mapBoxToClass($data);
+        $this->hydrator->hydrate($file, $data);
 
         $this->assertTrue($file->getIsExternallyOwned());
         $this->assertEquals(['editor'], $file->getAllowedInviteRoles());

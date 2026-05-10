@@ -32,15 +32,21 @@
 
 namespace Box\File;
 
-use Box\Model\Model;
+use Box\Mapper\Hydrator;
 use Box\File\FileInterface;
 use DateTimeInterface;
 use Box\User\User;
 use Box\Folder\Folder;
 use Box\Item\SharedLink\SharedLink;
 
-class File extends Model implements FileInterface
+class File implements FileInterface
 {
+    public function __construct(?array $options = null)
+    {
+        if (is_array($options)) {
+            (new Hydrator())->hydrate($this, $options);
+        }
+    }
     protected string|int|null $id = null;
     protected string $type = "file";
     protected ?string $sequenceId = null;

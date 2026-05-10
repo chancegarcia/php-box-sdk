@@ -32,9 +32,7 @@
 
 namespace Box\Connection\Token;
 
-use Box\Model\ModelInterface;
-
-interface TokenInterface extends ModelInterface
+interface TokenInterface
 {
     public function getGrantType(): mixed;
 

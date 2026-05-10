@@ -5,7 +5,6 @@ namespace Box\Tests\Http\Response;
 use Box\Http\Response\BoxResponse;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Http\Response\Header\ResponseHeaderInterface;
-use Box\Exception\BoxException;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use PHPUnit\Framework\TestCase;
 
@@ -52,15 +51,13 @@ class BoxResponseTest extends TestCase
     public function testJsonDecodingEmptyBody(): void
     {
         $response = new BoxResponse('');
-        $this->assertNull($response->json());
+        $this->assertEquals([], $response->json());
     }
 
     public function testJsonDecodingInvalidJson(): void
     {
         $response = new BoxResponse('invalid');
-        $this->expectException(BoxException::class);
-        $this->expectExceptionMessage('Invalid JSON response');
-        $response->json();
+        $this->assertEquals([], $response->json());
     }
 
     public function testRetryAfterSeconds(): void

@@ -37,10 +37,9 @@
 
 namespace Box\Item\SharedLink;
 
-use Box\Model\ModelInterface;
 use Box\Item\SharedLink\Permissions\PermissionsInterface;
 
-interface SharedLinkInterface extends ModelInterface
+interface SharedLinkInterface
 {
     /**
      * @return mixed

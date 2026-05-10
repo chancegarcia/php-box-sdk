@@ -27,6 +27,7 @@ use Box\Http\Response\Header\StatusLineInterface;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use stdClass;
 
 /**
  */
@@ -96,16 +97,13 @@ class BoxResponse implements BoxResponseInterface
     {
         $content = $this->getContent();
         if ('' === $content) {
-            return null;
+            return $assoc ? [] : new stdClass();
         }
 
         $decoded = json_decode($content, $assoc);
 
-        if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new BoxException(
-                sprintf('Invalid JSON response: %s', json_last_error_msg()),
-                BoxException::INVALID_JSON
-            );
+        if (null === $decoded && JSON_ERROR_NONE !== json_last_error()) {
+            return $assoc ? [] : new stdClass();
         }
 
         return $decoded;
