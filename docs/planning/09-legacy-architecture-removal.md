@@ -470,6 +470,24 @@ Validation:
 
 ## Release Readiness Follow-ups
 
+### Factory Modernization
+
+Review factory patterns after core legacy model removal.
+
+- Review `AbstractFactory` and related generic factory behavior.
+- Determine whether it is legacy infrastructure or still useful.
+- Remove or modernize it if it exists only to support pre-v1 architecture.
+- Preserve only factories that are clear v1 creation boundaries.
+
+### Resource Interface Rationalization
+
+Audit resource interfaces for legacy overengineering.
+
+- Review interfaces such as `FileInterface` and similar resource mirror interfaces.
+- Keep interfaces that serve real extension points, mocking seams, or stable contracts.
+- Remove one-class mirror interfaces if they are legacy overengineering.
+- Document public API breaks in migration docs if removed.
+
 ### API Fixture Realism and Contract Alignment
 
 Before final v1 release, a later pass should:
