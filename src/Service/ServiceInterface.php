@@ -73,8 +73,7 @@ interface ServiceInterface extends BaseModelInterface
 
     /**
      * @param Connection|ConnectionInterface $connection
-     *
-     * @return ServiceInterface|Service
+     * @return void
      */
     public function setConnection($connection = null);
 
@@ -86,8 +85,7 @@ interface ServiceInterface extends BaseModelInterface
 
     /**
      * @param Connection|ConnectionInterface $authorizedConnection
-     *
-     * @return ServiceInterface|Service
+     * @return void
      */
     public function setAuthorizedConnection($authorizedConnection = null);
 
@@ -98,8 +96,7 @@ interface ServiceInterface extends BaseModelInterface
 
     /**
      * @param array $additionalConnectionHeaders
-     *
-     * @return ServiceInterface|Service
+     * @return void
      */
     public function setAdditionalConnectionHeaders($additionalConnectionHeaders = null);
 
@@ -110,8 +107,7 @@ interface ServiceInterface extends BaseModelInterface
 
     /**
      * @param Token|TokenInterface $token
-     *
-     * @return ServiceInterface|Service
+     * @return void
      */
     public function setToken($token = null);
 
@@ -121,45 +117,41 @@ interface ServiceInterface extends BaseModelInterface
     public function getClientId();
 
     /**
-     * @param mixed $clientId
-     *
-     * @return ServiceInterface|Service
+     * @param string|null $clientId
+     * @return void
      */
     public function setClientId($clientId = null);
 
     /**
-     * @param mixed $clientSecret
-     *
-     * @return ServiceInterface|Service
+     * @param string|null $clientSecret
+     * @return void
      */
     public function setClientSecret($clientSecret = null);
 
     /**
-     * @return mixed
+     * @return string|null
      */
     public function getClientSecret();
 
     /**
-     * @return mixed
+     * @return string|null
      */
     public function getDeviceId();
 
     /**
-     * @param mixed $deviceId
-     *
-     * @return ServiceInterface|Service
+     * @param string|null $deviceId
+     * @return void
      */
     public function setDeviceId($deviceId = null);
 
     /**
-     * @return mixed
+     * @return string|null
      */
     public function getDeviceName();
 
     /**
-     * @param mixed $deviceName
-     *
-     * @return ServiceInterface|Service
+     * @param string|null $deviceName
+     * @return void
      */
     public function setDeviceName($deviceName = null);
 
@@ -295,8 +287,7 @@ interface ServiceInterface extends BaseModelInterface
 
     /**
      * @param BaseTokenStorageInterface|null $tokenStorage
-     *
-     * @return ServiceInterface
+     * @return void
      */
     public function setTokenStorage(?BaseTokenStorageInterface $tokenStorage = null);
 
@@ -307,8 +298,7 @@ interface ServiceInterface extends BaseModelInterface
 
     /**
      * @param mixed $tokenStorageContext
-     *
-     * @return ServiceInterface
+     * @return void
      */
     public function setTokenStorageContext($tokenStorageContext = null);
 
@@ -331,7 +321,7 @@ interface ServiceInterface extends BaseModelInterface
     /**
      * @param string $defaultReturnType
      *
-     * @return ServiceInterface
+     * @return void
      * @throws OutOfBoundsException
      * @throws InvalidArgumentException
      * @deprecated v0.11.0 service state is being removed in v1.0.0
@@ -341,7 +331,7 @@ interface ServiceInterface extends BaseModelInterface
     /**
      * @param string $type
      *
-     * @return ServiceInterface
+     * @return void
      * @throws OutOfBoundsException
      * @throws InvalidArgumentException
      */

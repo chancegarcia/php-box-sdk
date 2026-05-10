@@ -53,7 +53,7 @@ class FileService extends Service implements FileServiceInterface
      * @param FileInterface|null $file
      * @param SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink
      */
-    public function createSharedLink(?FileInterface $file = null, SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink = null)
+    public function createSharedLink(?FileInterface $file = null, SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink = null): FileInterface
     {
         $uri = $file::URI . "/" . $file->getId();
 
@@ -72,7 +72,7 @@ class FileService extends Service implements FileServiceInterface
     /**
      * @return FileInterface
      */
-    public function createNewFile()
+    public function createNewFile(): FileInterface
     {
         $file = new File();
 

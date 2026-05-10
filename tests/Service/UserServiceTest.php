@@ -27,7 +27,7 @@ class UserServiceTest extends TestCase
         $response = $this->createMock(BoxResponseInterface::class);
         $response->method('getContent')->willReturn(json_encode($userData));
         $response->method('isSuccessful')->willReturn(true);
-        $response->method('json')->willReturnCallback(function ($assoc) use ($userData) {
+        $response->method('json')->willReturnCallback(function (bool $assoc) use ($userData) {
             return $assoc ? $userData : (object)$userData;
         });
 
@@ -61,7 +61,7 @@ class UserServiceTest extends TestCase
         $response = $this->createMock(BoxResponseInterface::class);
         $response->method('getContent')->willReturn(json_encode($userData));
         $response->method('isSuccessful')->willReturn(true);
-        $response->method('json')->willReturnCallback(function ($assoc) use ($userData) {
+        $response->method('json')->willReturnCallback(function (bool $assoc) use ($userData) {
             return $assoc ? $userData : (object)$userData;
         });
 
@@ -100,7 +100,7 @@ class UserServiceTest extends TestCase
         $response = $this->createMock(BoxResponseInterface::class);
         $response->method('getContent')->willReturn(json_encode($userData));
         $response->method('isSuccessful')->willReturn(true);
-        $response->method('json')->willReturnCallback(function ($assoc) use ($userData) {
+        $response->method('json')->willReturnCallback(function (bool $assoc) use ($userData) {
             return $assoc ? $userData : (object)$userData;
         });
 
@@ -129,7 +129,7 @@ class UserServiceTest extends TestCase
         $response->method('isSuccessful')->willReturn(false);
         $response->method('getStatusCode')->willReturn(404);
         $response->method('getContent')->willReturn(json_encode($errorData));
-        $response->method('json')->willReturnCallback(function ($assoc) use ($errorData) {
+        $response->method('json')->willReturnCallback(function (bool $assoc) use ($errorData) {
             return $assoc ? $errorData : (object)$errorData;
         });
 

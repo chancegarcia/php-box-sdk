@@ -41,10 +41,10 @@ use Box\Exception\TokenStorageException;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Model\BaseModel;
 use Box\Exception\BoxException;
-use Box\Connection\Connection,
-
-Box\Connection\ConnectionInterface;
-use Box\Connection\Token\Token, Box\Connection\Token\TokenInterface;
+use Box\Connection\Connection;
+use Box\Connection\ConnectionInterface;
+use Box\Connection\Token\Token;
+use Box\Connection\Token\TokenInterface;
 use Box\Model\ModelInterface;
 use Box\Storage\Token\BaseTokenStorageInterface;
 use Box\Trait\BoxLoggerTrait;
@@ -134,8 +134,8 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     * {@inheritdoc}
-     * @deprecated v0.11.0 service state is being removed in v1.0.0
+     * @param string $defaultReturnType
+     * @return void
      */
     public function setDefaultReturnType($defaultReturnType = 'decoded')
     {
@@ -174,7 +174,8 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param Connection|ConnectionInterface $authorizedConnection
+     * @return void
      */
     public function setAuthorizedConnection($authorizedConnection = null)
     {
@@ -195,8 +196,7 @@ class Service extends BaseModel implements ServiceInterface
 
     /**
      * @param Connection|ConnectionInterface $connection
-     *
-     * @return ServiceInterface|Service
+     * @return void
      */
     public function setConnection($connection = null)
     {
@@ -212,7 +212,8 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $additionalConnectionHeaders
+     * @return void
      */
     public function setAdditionalConnectionHeaders($additionalConnectionHeaders = null)
     {
@@ -232,7 +233,8 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param Token|TokenInterface $token
+     * @return void
      */
     public function setToken($token = null)
     {
@@ -248,7 +250,8 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|null $clientId
+     * @return void
      */
     public function setClientId($clientId = null)
     {
@@ -256,15 +259,8 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getClientSecret()
-    {
-        return $this->clientSecret;
-    }
-
-    /**
-     * {@inheritdoc}
+     * @param string|null $clientSecret
+     * @return void
      */
     public function setClientSecret($clientSecret = null)
     {
@@ -272,7 +268,15 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     *{@inheritdoc}
+     * @return string|null
+     */
+    public function getClientSecret()
+    {
+        return $this->clientSecret;
+    }
+
+    /**
+     * @return string|null
      */
     public function getDeviceId()
     {
@@ -280,7 +284,8 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|null $deviceId
+     * @return void
      */
     public function setDeviceId($deviceId = null)
     {
@@ -288,7 +293,7 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return string|null
      */
     public function getDeviceName()
     {
@@ -296,7 +301,8 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|null $deviceName
+     * @return void
      */
     public function setDeviceName($deviceName = null)
     {
@@ -312,7 +318,8 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param BaseTokenStorageInterface|null $tokenStorage
+     * @return void
      */
     public function setTokenStorage(?BaseTokenStorageInterface $tokenStorage = null)
     {
@@ -320,7 +327,7 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
     public function getTokenStorageContext()
     {
@@ -328,7 +335,8 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $tokenStorageContext
+     * @return void
      */
     public function setTokenStorageContext($tokenStorageContext = null)
     {
@@ -861,7 +869,8 @@ class Service extends BaseModel implements ServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $type
+     * @return void
      */
     public function validateReturnType($type = null)
     {
@@ -1069,12 +1078,14 @@ class Service extends BaseModel implements ServiceInterface
     /**
      * Hydrate a decoded payload into a class.
      *
-     * @param string $targetClass
+     * @template T of object
+     * @param class-string<T> $targetClass
      * @param array|stdClass $data
-     * @return object
+     * @return T
      */
     protected function hydrate(string $targetClass, array|stdClass $data): object
     {
+        /** @var T */
         return (new Hydrator())->hydrate($targetClass, $data);
     }
 

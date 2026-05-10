@@ -29,7 +29,7 @@ class FileServiceTest extends TestCase
         $response = $this->createMock(BoxResponseInterface::class);
         $response->method('getContent')->willReturn(json_encode($data));
         $response->method('isSuccessful')->willReturn(true);
-        $response->method('json')->willReturnCallback(function ($assoc) use ($data) {
+        $response->method('json')->willReturnCallback(function (bool $assoc) use ($data) {
             return $assoc ? $data : (object)$data;
         });
         return $response;

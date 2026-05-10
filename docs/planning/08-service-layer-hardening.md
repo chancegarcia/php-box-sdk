@@ -49,7 +49,7 @@ This initiative covers:
 | 7 | [Service Error and Retry Semantics](#service-layer-hardening-slice-7---service-error-and-retry-semantics) | Completed ✓ |
 | 8 | [Legacy Architecture Removal and Cutover Planning](#service-layer-hardening-slice-8---legacy-architecture-removal-and-cutover-planning) | Completed ✓ |
 | 9 | [Service Documentation and Migration Drift Pass](#service-layer-hardening-slice-9---service-documentation-and-migration-drift-pass) | Completed ✓ |
-| 10 | [Service Type-Safety Cleanup](#service-layer-hardening-slice-10---service-type-safety-cleanup) | |
+| 10 | [Service Type-Safety Cleanup](#service-layer-hardening-slice-10---service-type-safety-cleanup) | Completed ✓ |
 | 11 | [Final Integration Review](#service-layer-hardening-slice-11---final-integration-review) | |
 
 ---
@@ -526,6 +526,16 @@ Validation:
 - Stricter type hints are used where possible without breaking BC.
 - No broad unrelated model cleanup.
 
+**Completion Note**:
+Slice 10 completed. Type-safety improved across base service and resource-specific services.
+- Refined `Service::hydrate` and other base helpers with PHPDoc generics (`template T`).
+- Standardized imports in `Service.php`.
+- Synchronized `void` return types for all setters in `ServiceInterface` and `Service`.
+- Added explicit return types to `FileServiceInterface` and `FileService`.
+- Improved test type-safety by adding type hints to anonymous callback parameters in `UserServiceTest` and `FileServiceTest`.
+- Cleaned up PHPStan baseline by removing unnecessary `return.missing` ignores for `Service.php`.
+- Full validation suite (`composer analyse`, `composer test`, `composer cs:check`) passed with zero errors.
+
 **Junie Prompt**:
 ```markdown
 Implement Service Layer Hardening Slice 10 — Service Type-Safety Cleanup.
@@ -593,7 +603,8 @@ Validation:
 - Slice 7: Completed ✓
 - Slice 8: Completed ✓
 - Slice 9: Completed ✓
-- Slices 10-11: Pending
+- Slice 10: Completed ✓
+- Slice 11: Pending
 
 ## Deferred Follow-up
 - Broad removal of legacy pre-v1 / v0.x architecture: This remains a v1 release requirement. If the remaining scope exceeds the current Service Layer Hardening tracker, it will be moved to a dedicated tracker, but it MUST be completed before v1 release.
