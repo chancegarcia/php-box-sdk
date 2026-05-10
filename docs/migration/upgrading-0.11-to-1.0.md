@@ -44,9 +44,8 @@ The service layer has been hardened to provide more consistent hydration, better
 - **Impact**: Low to Moderate (if you relied on stateful service properties).
 - **Migration**:
     - **Prefer Hardened Helpers**: Use `$service->getResourceFromBox()` or `$service->sendUpdateAndHydrate()` in custom service extensions.
-    - **Avoid Stateful Debugging**: Stop using `$service->getLastResult()`. Instead, catch `ApiException` and use `$e->getResponse()` to inspect the failed response.
-    - **New Hydration Pattern**: Services now return typed Resources (e.g., `Box\Resource\User`) hydrated via a centralized `hydrate()` helper.
-    - **Deprecations**: Stateful properties like `lastResult`, `lastResultDecoded`, and `lastResultFlat` are deprecated and will be removed in v1.0.
+    - **Avoid Stateful Debugging**: The `getLastResult()`, `getDefaultReturnType()`, and `setDefaultReturnType()` methods have been removed. Instead, catch `ApiException` and use `$e->getResponse()` to inspect the failed response.
+    - **Service State Removal**: Stateful properties like `lastResultOriginal`, `lastResultDecoded`, and `lastResultFlat` have been removed. Services now rely on explicit return values.
 
 ### Event Service Overhaul
 The `UserEventService` has been modernized to return a typed `EventResponse` DTO instead of raw associative arrays or relying on `getLastResult()`. Response mapping is now handled by `EventResponseMapper`. `EventResponse` returns a defensive copy of its entries to maintain immutability. `next_stream_position` is now represented as a `string` to safely handle large cursor values.

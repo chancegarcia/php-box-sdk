@@ -45,9 +45,7 @@ use Box\Connection\Token\TokenInterface;
 use Box\Model\Model;
 use Box\Model\ModelInterface;
 use Box\Storage\Token\BaseTokenStorageInterface;
-use OutOfBoundsException;
 use RuntimeException;
-use InvalidArgumentException;
 use BadMethodCallException;
 use stdClass;
 
@@ -302,38 +300,5 @@ interface ServiceInterface extends BaseModelInterface
      */
     public function setTokenStorageContext($tokenStorageContext = null);
 
-    /**
-     * @param string $type
-     *
-     * @return mixed
-     * @throws OutOfBoundsException
-     * @throws InvalidArgumentException
-     * @deprecated v0.11.0 service state is being removed in v1.0.0
-     */
-    public function getLastResult($type = 'decoded');
-
-    /**
-     * @return string
-     * @deprecated v0.11.0 service state is being removed in v1.0.0
-     */
-    public function getDefaultReturnType();
-
-    /**
-     * @param string $defaultReturnType
-     *
-     * @return void
-     * @throws OutOfBoundsException
-     * @throws InvalidArgumentException
-     * @deprecated v0.11.0 service state is being removed in v1.0.0
-     */
-    public function setDefaultReturnType($defaultReturnType = 'decoded');
-
-    /**
-     * @param string $type
-     *
-     * @return void
-     * @throws OutOfBoundsException
-     * @throws InvalidArgumentException
-     */
     public function validateReturnType($type = null);
 }

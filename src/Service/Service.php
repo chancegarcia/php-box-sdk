@@ -92,30 +92,6 @@ class Service extends BaseModel implements ServiceInterface
     protected $deviceName = null;
 
     /**
-     * @var string
-     * @deprecated v0.11.0 use 'decoded' only where necessary, 'flat' and 'original' will be removed in v1.0.0
-     */
-    protected $lastResultOriginal;
-
-    /**
-     * @var mixed
-     * @deprecated v0.11.0 use 'decoded' only where necessary, 'flat' and 'original' will be removed in v1.0.0
-     */
-    protected $lastResultDecoded;
-
-    /**
-     * @var array|null
-     * @deprecated v0.11.0 use 'decoded' only where necessary, 'flat' and 'original' will be removed in v1.0.0
-     */
-    protected $lastResultFlat;
-
-    /**
-     * @var string
-     * @deprecated v0.11.0 service state is being removed in v1.0.0
-     */
-    protected $defaultReturnType = 'decoded';
-
-    /**
      * @var array
      */
     private $allowedReturnTypes = [
@@ -124,42 +100,6 @@ class Service extends BaseModel implements ServiceInterface
         'flat',
     ];
 
-    /**
-     * {@inheritdoc}
-     * @deprecated v0.11.0 service state is being removed in v1.0.0
-     */
-    public function getDefaultReturnType()
-    {
-        return $this->defaultReturnType;
-    }
-
-    /**
-     * @param string $defaultReturnType
-     * @return void
-     */
-    public function setDefaultReturnType($defaultReturnType = 'decoded')
-    {
-        $this->validateReturnType($defaultReturnType);
-
-        $this->defaultReturnType = $defaultReturnType;
-    }
-
-    /**
-     * {@inheritdoc}
-     * @deprecated v0.11.0 service state is being removed in v1.0.0
-     */
-    public function getLastResult($type = 'decoded')
-    {
-        $this->validateReturnType($type);
-
-        $prop = "lastResult" . ucfirst($type);
-
-        return $this->{$prop};
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getAuthorizedConnection()
     {
         if (!$this->authorizedConnection instanceof ConnectionInterface) {
@@ -518,20 +458,9 @@ class Service extends BaseModel implements ServiceInterface
             );
         }
 
-        $errorCheck = $this->getLastResult('flat');
-
-        /**
-         * error decoding json data
-         */
-        if (null === $errorCheck) {
-            $errorData['error'] = "unable to decode json data";
-            $errorData['error_description'] = 'please check the logs for more details';
-            $this->error($errorData);
-        }
-
         $returnData = null;
         if ($class instanceof ModelInterface) {
-            $returnData = $class->mapBoxToClass($this->getLastResult('decoded'));
+            $returnData = $class->mapBoxToClass($boxData);
         } else {
             $returnData = $boxData;
         }
@@ -607,36 +536,7 @@ class Service extends BaseModel implements ServiceInterface
             throw $be;
         }
 
-        $errorCheck = $this->getLastResult('flat');
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug(
-                'error check: ' . var_export($errorCheck, true),
-                [
-                    __METHOD__ . ":" . __LINE__,
-                ]
-            );
-        }
-
-        /**
-         * error decoding json data
-         */
-        if (null === $errorCheck) {
-            $errorData['error'] = "unable to decode json data";
-            $errorData['error_description'] = 'try refreshing the token';
-            $this->error($errorData);
-        }
-
         $returnData = null;
-        $decodedBoxData = $this->getLastResult('decoded');
-
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug(
-                'final box data: ' . var_export($decodedBoxData, true),
-                [
-                    __METHOD__ . ":" . __LINE__,
-                ]
-            );
-        }
 
         if ($class instanceof ModelInterface) {
             $returnData = $class->mapBoxToClass($boxData);
@@ -754,9 +654,8 @@ class Service extends BaseModel implements ServiceInterface
         }
 
         try {
-            $this->lastResultOriginal = $json;
-            $this->lastResultDecoded = $response->json(false);
-            $this->lastResultFlat = $response->json(true);
+            $decoded = $response->json(false);
+            $flat = $response->json(true);
         } catch (BoxException $e) {
             $errorCheck = [];
             $errorCheck['error'] = "sdk_json_decode";
@@ -764,14 +663,11 @@ class Service extends BaseModel implements ServiceInterface
             $this->error($errorCheck, null, $response);
         }
 
-        $data = $this->getLastResult($this->getDefaultReturnType());
-        $errorCheck = $this->getLastResult('flat');
-
-        if (is_array($errorCheck) && array_key_exists('error', $errorCheck)) {
-            $this->error($errorCheck, null, $response);
+        if (is_array($flat) && array_key_exists('error', $flat)) {
+            $this->error($flat, null, $response);
         }
 
-        $this->setTokenData($token, $data);
+        $this->setTokenData($token, $decoded);
 
         $this->setToken($token);
 
@@ -847,18 +743,22 @@ class Service extends BaseModel implements ServiceInterface
 
         $json = $response->getContent();
         // @todo add error handling for null data
-        $this->lastResultOriginal = $json;
 
         try {
-            $this->lastResultDecoded = $response->json();
-            $this->lastResultFlat = $response->json(true);
+            $decoded = $response->json();
+            $flat = $response->json(true);
         } catch (\JsonException $e) {
             // Revoke often returns empty body on success, so we might need to handle that
-            $this->lastResultDecoded = new stdClass();
-            $this->lastResultFlat = [];
+            $decoded = new stdClass();
+            $flat = [];
         }
 
-        $data = $this->getLastResult($returnType);
+        $data = match ($returnType) {
+            'decoded' => $decoded,
+            'flat' => $flat,
+            'original' => $json,
+            default => throw new OutOfBoundsException($returnType . " is not a valid result type."),
+        };
 
         // remove token from storage
         if ($this->getTokenStorage() instanceof BaseTokenStorageInterface) {
@@ -1033,39 +933,42 @@ class Service extends BaseModel implements ServiceInterface
 
         if ($response instanceof BoxResponseInterface) {
             $json = $response->getContent();
-            $this->lastResultDecoded = $response->json(false);
-            $this->lastResultFlat = $response->json(true);
+            $decoded = $response->json(false);
+            $flat = $response->json(true);
         } else {
             $json = $response;
-            $this->lastResultDecoded = json_decode((string)$json);
-            $this->lastResultFlat = json_decode((string)$json, true);
+            $decoded = json_decode((string)$json);
+            $flat = json_decode((string)$json, true);
         }
 
-        $this->lastResultOriginal = $json;
+        $data = match ($returnType) {
+            'decoded' => $decoded,
+            'flat' => $flat,
+            'original' => $json,
+            default => throw new OutOfBoundsException($returnType . " is not a valid result type."),
+        };
 
-        $data = $this->getLastResult($returnType);
-
-        if (null === $this->lastResultFlat && '' !== (string)$json) {
+        if (null === $flat && '' !== (string)$json) {
             $this->error([
                 'error' => "sdk_json_decode",
                 'error_description' => "unable to decode or recursion level too deep",
             ]);
         }
 
-        if (is_array($this->lastResultFlat)) {
-            if (array_key_exists('error', $this->lastResultFlat)) {
-                $this->error($this->lastResultFlat);
+        if (is_array($flat)) {
+            if (array_key_exists('error', $flat)) {
+                $this->error($flat);
             }
 
-            if (array_key_exists('type', $this->lastResultFlat) && 'error' === $this->lastResultFlat['type']) {
+            if (array_key_exists('type', $flat) && 'error' === $flat['type']) {
                 $errorData = [
                     'error' => "sdk_unknown",
                     'error_description' => "sdk_unknown",
-                    'result_data' => $this->lastResultOriginal,
+                    'result_data' => $json,
                 ];
 
-                if (array_key_exists('code', $this->lastResultFlat)) {
-                    $errorData['code'] = $this->lastResultFlat['code'];
+                if (array_key_exists('code', $flat)) {
+                    $errorData['code'] = $flat['code'];
                 }
 
                 $this->error($errorData);
