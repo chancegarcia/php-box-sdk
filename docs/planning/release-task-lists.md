@@ -72,8 +72,8 @@ This document details the planned tasks for the `v0.11` transition release and t
 
 ### Auth & Features
 - **Must**: Add JWT authentication support (targeted for v1.0.0 foundation). *Rationale: Support server-to-server integrations.*
+- **Must**: Complete Token Storage support (In-Memory, PDO). *Rationale: Reliable token management for v1.*
 - **Should**: Add chunked upload support. *Rationale: Handle very large files reliably.*
-- **Should**: Add token storage support or a clear extension point. *Rationale: Simplify token management for users.*
 
 ### Models & Mapping
 - **Must**: Remove custom collection classes in favor of Doctrine Collections. *Rationale: Use standard, well-tested libraries.*

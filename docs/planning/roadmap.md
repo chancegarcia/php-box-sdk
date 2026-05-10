@@ -32,7 +32,7 @@ The CLI exists mainly as a quick, practical test tool for verifying SDK behavior
     - **No Legacy Baggage**: Remove all legacy aliases and deprecated namespaces.
     - **Strict Typing**: Enforce object-only types for nested model fields; standardize IDs as `string` and dates as `DateTimeImmutable`.
     - **Modern Auth Boundary**: Decouple `Connection` into `Transport` and `AuthProvider`.
-    - **Token Storage**: v1 core provides In-Memory and PDO storage with support for multiple contexts and one active token per context. PDO schema is documented (helper SQL); encryption at rest is application/integration responsibility with SDK guidance. Advanced multi-token storage and Doctrine ORM/Symfony bundle deferred to post-v1.
+    - **Token Storage**: v1 core provides In-Memory and PDO storage with support for multiple contexts and one active token per context. PDO schema is documented (helper SQL); encryption at rest is application/integration responsibility with SDK guidance. Filesystem storage evaluation is a v1 goal. Advanced multi-token storage and Doctrine ORM/Symfony bundle deferred to post-v1.
     - **Clean Connection**: Decouple `Connection` from `Model` inheritance; make it a raw request/response layer.
     - **Service Consistency**: Services will return mapped model objects or typed DTOs consistently.
     - **Modern DI**: Replace class-string setters with constructor injection or factories.

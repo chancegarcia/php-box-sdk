@@ -28,13 +28,14 @@ This work assumes the completion of:
 
 | Step | Title | Status |
 | :--- | :--- | :--- |
-| 10 | [Resource Namespace and Interface Rationalization](#step-10--resource-namespace-and-interface-rationalization) | In Progress |
+| 10 | [Resource Namespace and Interface Rationalization](#step-10--resource-namespace-and-interface-rationalization) | ✓ |
 | 11 | [Factory Modernization and Service Boundaries](#step-11--factory-modernization-and-service-boundaries) | Not Started |
-| 12 | [API Fixture Realism and Contract Alignment](#step-12--api-fixture-realism-and-contract-alignment) | Not Started |
-| 13 | [JWT/S2S Feasibility and Dependency Review](#step-13--jwts2s-feasibility-and-dependency-review) | Not Started |
-| 14 | [JWT/S2S Implementation](#step-14--jwts2s-implementation) | Not Started |
-| 15 | [Webhook Verification](#step-15--webhook-verification) | Not Started |
-| 16 | [v1 Release Readiness](#step-16--v1-release-readiness) | Not Started |
+| 12 | [Token Storage Completion](#step-12--token-storage-completion) | Not Started |
+| 13 | [API Fixture Realism and Contract Alignment](#step-13--api-fixture-realism-and-contract-alignment) | Not Started |
+| 14 | [JWT/S2S Feasibility and Dependency Review](#step-14--jwts2s-feasibility-and-dependency-review) | Not Started |
+| 15 | [JWT/S2S Implementation](#step-15--jwts2s-implementation) | Not Started |
+| 16 | [Webhook Verification](#step-16--webhook-verification) | Not Started |
+| 17 | [v1 Release Readiness](#step-17--v1-release-readiness) | Not Started |
 
 ## Recommended Sequencing
 The steps should generally be followed in numerical order. Step 10 and 11 are closely related as factories often return interfaces. Step 13 must precede Step 14. Step 16 is the final gate.
@@ -75,7 +76,7 @@ Audit and migrate remaining domain resource classes into the final v1 resource n
 | 10.4 | [Group and Collaboration Resource Rationalization](10-resource-namespace-interface-rationalization.md#slice-104--group-and-collaboration-resource-rationalization) | ✓ |
 | 10.5 | [Shared Item and Event Resource Rationalization](10-resource-namespace-interface-rationalization.md#slice-105--shared-item-and-event-resource-rationalization) | ✓ |
 | 10.6 | [Migration Docs and Baseline Cleanup](10-resource-namespace-interface-rationalization.md#slice-106--migration-docs-and-baseline-cleanup) | In Progress |
-| 10.7 | [Final Integration Review](10-resource-namespace-interface-rationalization.md#slice-107--final-integration-review) | Not Started |
+| 10.7 | [Final Integration Review](10-resource-namespace-interface-rationalization.md#slice-107--final-integration-review) | ✓ |
 
 ---
 
@@ -129,7 +130,49 @@ Audit and modernize factory patterns and service boundaries after interface rati
 
 ---
 
-## Step 12 — API Fixture Realism and Contract Alignment
+## Step 12 — Token Storage Completion
+
+### Purpose
+Audit and finalize token storage behavior for v1. This ensures the SDK provides reliable, out-of-the-box token management for persistent integrations (PDO) and ephemeral usage (In-Memory), while preserving extension points for future framework integrations.
+
+### Scope
+- **Storage Inventory and Audit**:
+    - Inventory all classes/interfaces under `src/Storage`.
+    - Identify current consumers in services/client/auth/token flows.
+    - Identify unused, incomplete, or misleading public classes.
+    - Identify PHPStan baseline entries related to storage classes.
+    - Identify any existing future notes about Symfony bundles, Doctrine, storage extension points, or framework integration.
+- **Supported v1 Storage Implementation**:
+    - Finalize supported v1 storage contracts.
+    - Implement/complete In-Memory token storage (required for v1).
+    - Implement/complete PDO token storage (required for v1).
+    - Evaluate Filesystem token storage feasibility for v1.
+    - Complete, remove, or explicitly defer unsupported/incomplete storage APIs.
+- **Extension Points and Future Compatibility**:
+    - Preserve and harden storage interfaces as intentional extension points.
+    - Ensure storage contracts allow for future Symfony bundle and Doctrine-backed integrations.
+    - Resolve missing-return and stale PHPStan baseline issues for storage classes.
+
+### Non-Goals
+- Do not implement the Symfony bundle or Doctrine integration in this step.
+- Do not refactor core auth/client logic unless necessary for storage integration.
+
+### Acceptance Criteria
+- Supported v1 storage contracts are finalized.
+- In-memory token storage is implemented/tested.
+- PDO token storage is implemented/tested.
+- Filesystem token storage is evaluated and either implemented/tested or explicitly deferred.
+- Unsupported/incomplete storage APIs are either completed, removed, or clearly marked/deferred.
+- Supported storage implementations have focused tests.
+- Token store/retrieve/update/delete or revoke-related flows are tested as appropriate.
+- Refresh-token persistence behavior is tested or explicitly documented.
+- Extension-point expectations are documented.
+- Missing-return and stale-baseline issues are resolved for storage classes.
+- Migration/user docs explain final storage behavior.
+
+---
+
+## Step 13 — API Fixture Realism and Contract Alignment
 
 ### Purpose
 Ensure service and resource tests reflect actual Box API behavior by using realistic fixtures.
@@ -149,7 +192,7 @@ Ensure service and resource tests reflect actual Box API behavior by using reali
 
 ---
 
-## Step 13 — JWT/S2S Feasibility and Dependency Review
+## Step 14 — JWT/S2S Feasibility and Dependency Review
 
 ### Purpose
 Evaluate requirements and dependencies for implementing Box JWT/S2S authentication.
@@ -169,7 +212,7 @@ Evaluate requirements and dependencies for implementing Box JWT/S2S authenticati
 
 ---
 
-## Step 14 — JWT/S2S Implementation
+## Step 15 — JWT/S2S Implementation
 
 ### Purpose
 Implement JWT/S2S authentication based on the feasibility study.
@@ -188,7 +231,7 @@ Implement JWT/S2S authentication based on the feasibility study.
 
 ---
 
-## Step 15 — Webhook Verification
+## Step 16 — Webhook Verification
 
 ### Purpose
 Implement Box webhook signature verification to ensure security for webhook consumers.
@@ -205,7 +248,7 @@ Implement Box webhook signature verification to ensure security for webhook cons
 
 ---
 
-## Step 16 — v1 Release Readiness
+## Step 17 — v1 Release Readiness
 
 ### Purpose
 Final polish and validation before tagging v1.0.0.
@@ -226,11 +269,12 @@ Final polish and validation before tagging v1.0.0.
 ## Release Blockers
 - Step 10 Resource Namespace and Interface Rationalization complete.
 - Step 11 Factory Modernization complete or explicitly deferred.
-- Step 12 API Fixture Realism complete enough for release confidence.
-- Step 13 JWT/S2S feasibility complete.
-- Step 14 JWT/S2S implementation complete.
-- Step 15 Webhook Verification decision and implementation complete.
-- Step 16 final release readiness complete.
+- Step 12 Token Storage Completion complete.
+- Step 13 API Fixture Realism complete enough for release confidence.
+- Step 14 JWT/S2S feasibility complete.
+- Step 15 JWT/S2S implementation complete.
+- Step 16 Webhook Verification decision and implementation complete.
+- Step 17 final release readiness complete.
 - `composer review` passes.
 - No known credential leaks.
 - Migration docs/changelog accurate.

@@ -93,7 +93,7 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
 
 ### Token Storage / Auth Provider
 - **Responsibility**: Managing credentials and token persistence.
-- **Boundary**: SDK provides standard implementations (In-memory, PDO); users can provide their own.
+- **Boundary**: SDK provides standard implementations (In-memory, PDO); Filesystem is evaluated for v1; users can provide their own.
 - **Token Storage Context**: Identifies the logical scope for a token (e.g., user, enterprise).
 - **Multi-context storage**: Ability to store tokens for multiple different logical contexts.
 - **Multi-token-per-context storage**: (Deferred) Storing multiple active tokens for the exact same context.
@@ -332,7 +332,7 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
     - **Passive** persistence and retrieval of `Token` DTOs.
     - Must NOT contain logic for token refresh or exchange.
     - Must NOT make network calls.
-    - **Scope**: v1 core SDK provides In-Memory and PDO implementations. Doctrine ORM is deferred.
+    - **Scope**: v1 core SDK provides In-Memory and PDO implementations; Filesystem is evaluated for v1. Doctrine ORM is deferred.
 - **Context Strategy**: v1 token storage MUST use a small `TokenStorageContext` DTO/value object or equivalent explicit context object to distinguish tokens for different users, accounts, or enterprises. This object should provide a canonical string representation for storage indexing.
     - **Context Examples**: `default`, `cli:local`, `user:123`, `enterprise:456`, `tenant:abc`, `integration:production`.
 - **One Active Token per Context**: v1 core SDK enforces a "one active token per context" rule. Each unique context maps to exactly one set of active credentials. Multi-token-per-context support (labels, history, profile selection) is deferred.
