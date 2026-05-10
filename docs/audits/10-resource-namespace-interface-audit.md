@@ -95,7 +95,25 @@ The following resources are identified for migration to `Box\Resource`.
 - **Status**: Targeted for removal in Step 10.2.
 - **Pre-requisite**: Move constants to `FileService` and update all type hints in `Client`, `FileService`, and `FileFactory`.
 
-## 6. Recommended Migration Sequence
+## 6. Deferred Architecture Smells (For Step 11)
+
+During Step 10, several architecture smells were identified that are non-blockers for namespace/interface rationalization but should be addressed during **Step 11 (Factory Modernization and Service Boundaries)**.
+
+### 6.1 Resource Purity Issues
+Resources should represent Box API data/state only. However, some resources currently:
+- Construct API endpoint URIs internally (e.g., `Folder::getBoxFolderItemsUri`).
+- Depend on Service classes or constants to build URIs.
+- Import Service classes for type hints or constant access.
+
+**Action**: Move URI construction and Service dependencies out of Resources and into dedicated Services/Mappers during Step 11.
+
+### 6.2 Client/Service Boundary Issues
+`Client.php` still contains API operation logic that belongs in dedicated services.
+- **Example**: `Client` methods that perform resource-specific API calls rather than delegating to the appropriate `Service`.
+
+**Action**: Audit `Client` and move resource API operation logic to services, leaving `Client` as a high-level facade/delegator.
+
+## 7. Recommended Migration Sequence
 
 1. **Step 10.1**: Validate `Box\Resource\User`. Confirm it is the template for others.
 2. **Step 10.2**: Migrate `Box\File\File` to `Box\Resource\File`.
@@ -114,3 +132,4 @@ The following resources are identified for migration to `Box\Resource`.
     - Move to `Box\Resource`.
     - Update `UserEventService`, `EventResponseMapper`.
 6. **Step 10.6**: Finalize docs and baseline cleanup.
+7. **Step 11**: Address deferred architecture smells (Resource purity and Service boundaries).

@@ -29,7 +29,7 @@ This work assumes the completion of:
 | Step | Title | Status |
 | :--- | :--- | :--- |
 | 10 | [Resource Namespace and Interface Rationalization](#step-10--resource-namespace-and-interface-rationalization) | Not Started |
-| 11 | [Factory Modernization](#step-11--factory-modernization) | Not Started |
+| 11 | [Factory Modernization and Service Boundaries](#step-11--factory-modernization-and-service-boundaries) | Not Started |
 | 12 | [API Fixture Realism and Contract Alignment](#step-12--api-fixture-realism-and-contract-alignment) | Not Started |
 | 13 | [JWT/S2S Feasibility and Dependency Review](#step-13--jwts2s-feasibility-and-dependency-review) | Not Started |
 | 14 | [JWT/S2S Implementation](#step-14--jwts2s-implementation) | Not Started |
@@ -79,15 +79,21 @@ Audit and migrate remaining domain resource classes into the final v1 resource n
 
 ---
 
-## Step 11 — Factory Modernization
+## Step 11 — Factory Modernization and Service Boundaries
 
 ### Purpose
-Audit and modernize factory patterns after interface rationalization to ensure clear construction boundaries.
+Audit and modernize factory patterns and service boundaries after interface rationalization to ensure clear construction and operational responsibilities. This step addresses "architecture smells" identified during Step 10.
 
 ### Scope
-- Review `AbstractFactory`, static factory methods, and generic `new $class($options)` behavior.
-- Replace legacy generic factories with explicit typed factories where useful.
-- Preserve factories that are clear v1 construction boundaries.
+- **Factory Modernization**:
+    - Review `AbstractFactory`, static factory methods, and generic `new $class($options)` behavior.
+    - Replace legacy generic factories with explicit typed factories where useful.
+    - Preserve factories that are clear v1 construction boundaries.
+- **Service Boundaries & Resource Purity**:
+    - Review and enforce service ownership of URI construction and API operations.
+    - Remove resource dependencies on service constants or internal URI builders (resource purity).
+    - Audit `Client` to decide which methods remain as high-level facade methods and which should delegate to dedicated services.
+    - Move operation logic from `Client` to appropriate services.
 
 ### Non-Goals
 - Do not remove useful factories just because they are simple.
@@ -95,13 +101,16 @@ Audit and modernize factory patterns after interface rationalization to ensure c
 
 ### Acceptance Criteria
 - Modernized factories following v1 patterns.
+- Resources no longer build their own API URIs.
+- `Client` methods delegate to services for resource-specific operations.
 - Removal of legacy factory traits or obsolete base classes.
 
 ### Draft Prompt Outline
-> Refine Step 11: Factory Modernization.
-> 1. Audit existing factories in `src/Factory/`.
-> 2. Modernize patterns to use explicit typed factories where beneficial.
-> 3. Remove legacy factory base classes/traits if they no longer serve v1.
+> Refine Step 11: Factory Modernization and Service Boundaries.
+> 1. Audit existing factories in `src/Factory/` and operational logic in `Client` and Resources.
+> 2. Modernize factory patterns to use explicit typed factories.
+> 3. Move URI construction and API orchestration from Resources/Client to Services.
+> 4. Remove legacy factory base classes/traits if they no longer serve v1.
 
 ---
 
