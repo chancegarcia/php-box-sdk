@@ -6,7 +6,8 @@ namespace Box\Tests\Service\Event;
 
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
-use Box\Event\Collection\EventCollectionInterface;
+use Box\Dto\Event\EventResponse;
+use Box\Event\Event;
 use Box\Exception\BoxException;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Service\Event\UserEventService;
@@ -110,6 +111,7 @@ class UserEventServiceTest extends TestCase
         $this->expectException(BoxException::class);
         $this->expectExceptionMessage('limit must be a valid integer value, (\'invalid\') given');
 
+        /** @noinspection PhpParamsInspection */
         $this->service->setLimit('invalid');
     }
 
@@ -118,17 +120,17 @@ class UserEventServiceTest extends TestCase
      */
     public function testSetNumericStringLimit(): void
     {
+        /** @noinspection PhpParamsInspection */
         $this->service->setLimit('50');
-        $this->assertSame('50', $this->service->getLimit());
+        $this->assertSame(50, $this->service->getLimit());
     }
 
     /**
-     * Characterization test: documents default stream position.
-     * Box API: Defaults to the current point in time if not provided, but SDK initializes to 0.
+     * v1 test: documents default stream position is "now".
      */
-    public function testDefaultStreamPosition(): void
+    public function testDefaultStreamPositionIsNow(): void
     {
-        $this->assertSame(0, $this->service->getStreamPosition());
+        $this->assertSame('now', $this->service->getStreamPosition());
     }
 
     /**
@@ -148,13 +150,12 @@ class UserEventServiceTest extends TestCase
     }
 
     /**
-     * Characterization test: documents invalid stream position throwing exception.
-     * Legacy SDK Error: Message incorrectly says "limit" instead of "stream position".
+     * v1 test: documents invalid stream position throwing exception with corrected message.
      */
     public function testSetInvalidStreamPositionThrowsException(): void
     {
         $this->expectException(BoxException::class);
-        $this->expectExceptionMessage('limit must be a valid integer value or "now", (\'invalid\') given');
+        $this->expectExceptionMessage('stream_position must be a valid integer value or "now", (\'invalid\') given');
 
         $this->service->setStreamPosition('invalid');
     }
@@ -166,26 +167,25 @@ class UserEventServiceTest extends TestCase
     {
         // Default state
         $this->assertSame(
-            'https://api.box.com/2.0/events?stream_type=all&stream_position=0&limit=100',
+            'https://api.box.com/2.0/events?stream_type=all&stream_position=now&limit=100',
             $this->service->getEventsUri()
         );
 
         // Changed state
         $this->service->setStreamType('changes');
-        $this->service->setStreamPosition('now');
+        $this->service->setStreamPosition(12345);
         $this->service->setLimit(500);
 
         $this->assertSame(
-            'https://api.box.com/2.0/events?stream_type=changes&stream_position=now&limit=500',
+            'https://api.box.com/2.0/events?stream_type=changes&stream_position=12345&limit=500',
             $this->service->getEventsUri()
         );
     }
 
     /**
-     * Characterization test: documents getEvents() behavior without collection.
-     * Box API: Response contains chunk_size, next_stream_position, and entries.
+     * v1 test: documents getEvents() behavior returning EventResponse.
      */
-    public function testGetEventsWithoutCollection(): void
+    public function testGetEventsReturnsEventResponse(): void
     {
         $eventsData = [
             'entries' => [
@@ -201,9 +201,7 @@ class UserEventServiceTest extends TestCase
 
         $response = $this->createMock(BoxResponseInterface::class);
         $response->method('isSuccessful')->willReturn(true);
-        $response->method('json')->willReturnCallback(function (bool $assoc) use ($eventsData) {
-            return $assoc ? $eventsData : (object)$eventsData;
-        });
+        $response->method('json')->willReturn($eventsData);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
@@ -216,85 +214,11 @@ class UserEventServiceTest extends TestCase
 
         $result = $this->service->getEvents();
 
-        $this->assertEquals((object)$eventsData, $result);
-        $this->assertEquals((object)$eventsData, $this->service->getLastResult('decoded'));
-    }
-
-    /**
-     * Characterization test: documents getEvents() behavior with flat type.
-     * Box API: Verifies response parsing matches expected associative array shape.
-     */
-    public function testGetEventsFlatType(): void
-    {
-        $eventsData = [
-            'entries' => [
-                [
-                    'type' => 'event',
-                    'event_id' => 'f82c3ba03e41f7e8a7608363cc6c0390183c3f83',
-                    'event_type' => 'FILE_MARKED_MALICIOUS'
-                ]
-            ],
-            'chunk_size' => 1,
-            'next_stream_position' => '1152922976252290886'
-        ];
-
-        $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('isSuccessful')->willReturn(true);
-        $response->method('json')->willReturnCallback(function (bool $assoc) use ($eventsData) {
-            return $assoc ? $eventsData : (object)$eventsData;
-        });
-
-        $connection = $this->createMock(ConnectionInterface::class);
-        $connection->method('query')->willReturn($response);
-
-        $this->service->setAuthorizedConnection($connection);
-        $this->service->setToken($this->createMock(TokenInterface::class));
-
-        $result = $this->service->getEvents('flat');
-
-        $this->assertSame($eventsData, $result);
-        $this->assertSame($eventsData, $this->service->getLastResult('flat'));
-    }
-
-    /**
-     * Characterization test: documents getEvents() behavior with collection.
-     * Legacy SDK: mapBoxToClass is a legacy method that often returns void or populates internal state.
-     */
-    public function testGetEventsWithCollection(): void
-    {
-        $eventsData = [
-            'entries' => [
-                [
-                    'type' => 'event',
-                    'event_id' => 'f82c3ba03e41f7e8a7608363cc6c0390183c3f83'
-                ]
-            ],
-            'chunk_size' => 1,
-            'next_stream_position' => '1152922976252290886'
-        ];
-
-        $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('isSuccessful')->willReturn(true);
-        $response->method('json')->willReturnCallback(function (bool $assoc) use ($eventsData) {
-            return $assoc ? $eventsData : (object)$eventsData;
-        });
-
-        $connection = $this->createMock(ConnectionInterface::class);
-        $connection->method('query')->willReturn($response);
-
-        $this->service->setAuthorizedConnection($connection);
-        $this->service->setToken($this->createMock(TokenInterface::class));
-
-        // Mock a collection that implements ModelInterface
-        $collection = $this->createMock(EventCollectionInterface::class);
-        $collection->expects($this->once())
-            ->method('mapBoxToClass')
-            ->with((object)$eventsData);
-
-        $result = $this->service->getEvents('decoded', $collection);
-
-        // Characterization test: documents that getEvents returns null when a collection is provided
-        // because mapBoxToClass returns void in legacy implementations.
-        $this->assertNull($result);
+        $this->assertInstanceOf(EventResponse::class, $result);
+        $this->assertCount(1, $result->getEntries());
+        $this->assertInstanceOf(Event::class, $result->getEntries()->first());
+        $this->assertSame('f82c3ba03e41f7e8a7608363cc6c0390183c3f83', $result->getEntries()->first()->getEventId());
+        $this->assertSame(1, $result->getChunkSize());
+        $this->assertSame('1152922976252290886', $result->getNextStreamPosition());
     }
 }

@@ -48,6 +48,18 @@ The service layer has been hardened to provide more consistent hydration, better
     - **New Hydration Pattern**: Services now return typed Resources (e.g., `Box\Resource\User`) hydrated via a centralized `hydrate()` helper.
     - **Deprecations**: Stateful properties like `lastResult`, `lastResultDecoded`, and `lastResultFlat` are deprecated and will be removed in v1.0.
 
+### Event Service Overhaul
+The `UserEventService` has been modernized to return a typed `EventResponse` DTO instead of raw associative arrays or relying on `getLastResult()`. Response mapping is now handled by `EventResponseMapper`. `EventResponse` returns a defensive copy of its entries to maintain immutability. `next_stream_position` is now represented as a `string` to safely handle large cursor values.
+
+- **Impact**: Moderate (Breaking change).
+- **Migration**:
+    - `getEvents()` now returns `Box\Dto\Event\EventResponse`.
+    - Access entries via `$response->getEntries()` which returns a Doctrine `Collection` of `Event` objects.
+    - Access pagination data via `$response->getNextStreamPosition()` and `$response->getChunkSize()`.
+    - Default `stream_position` is now `now` (API default) instead of `0`.
+    - Parameter `type` and optional `EventCollectionInterface` in `getEvents()` have been removed.
+    - Chained/fluent setters on `UserEventService` have been removed; setters now return `void`.
+
 ## Usage Comparison
 
 ### Exception Handling

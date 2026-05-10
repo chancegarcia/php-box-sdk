@@ -108,7 +108,7 @@ Legacy removal is required before v1 release. Removals must be intentional, test
 |---|---|---|
 | 9.0 | [Tracker & Readiness Review](#slice-90-tracker--readiness-review) | ✓ |
 | 9.1 | [UserEventService Characterization Tests](#slice-91-usereventservice-characterization-tests) | ✓ |
-| 9.2 | [UserEventService & Event Collection Overhaul](#slice-92-usereventservice--event-collection-overhaul) | |
+| 9.2 | [UserEventService & Event Collection Overhaul](#slice-92-usereventservice--event-collection-overhaul) | ✓ |
 | 9.3 | [Service Stateful API Removal](#slice-93-service-stateful-api-removal) | |
 | 9.4 | [Model Trait & Mapping Infrastructure Removal](#slice-94-model-trait--mapping-infrastructure-removal) | |
 | 9.5 | [Base Architecture & Box\Model Removal](#slice-95-base-architecture--boxmodel-removal) | |
@@ -184,17 +184,21 @@ Validation:
 
 ## Slice 9.2: UserEventService & Event Collection Overhaul
 
-**Purpose**: Modernize the event layer and remove legacy mapping dependencies.
+**Status**: Completed
 
-**Goal**: Refactor `UserEventService` to use hardened patterns and replace legacy `EventCollection` with a modern implementation (e.g., Doctrine-backed).
-
-**Scope**:
-- `UserEventService`, `EventCollection`, `Event`.
-- Removal of `mapBoxToClass` usage in these classes.
+**Notes**:
+- Modernized `UserEventService` to return `EventResponse` DTO.
+- Introduced `EventResponseMapper` to decouple service from response mapping/hydration.
+- `EventResponse` DTO is immutable by design using defensive copies of internal collections.
+- Removed dependency on `mapBoxToClass` and `getLastResult`.
+- Aligned default `stream_position` and error messages with Box API semantics.
+- `next_stream_position` is handled as a string to support large cursors.
+- Updated `UserEventServiceInterface` to use strict types where practical while preserving limited legacy string compatibility for numeric parameters.
+- Updated migration documentation.
 
 **Acceptance Criteria**:
-- `UserEventService` returns modern resource/collection objects.
-- Characterization tests from 9.1 pass (or are updated to reflect intentional API changes).
+- `UserEventService` returns modern resource/collection objects. ✓
+- Characterization tests from 9.1 pass (or are updated to reflect intentional API changes). ✓
 
 **Validation**:
 - `composer test`

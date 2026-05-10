@@ -36,15 +36,13 @@
 
 namespace Box\Service\Event;
 
-use Box\Event\Collection\EventCollectionInterface;
+use Box\Dto\Event\EventResponse;
 use Box\Service\ServiceInterface;
-use Box\Model\ModelInterface;
+use Box\Mapper\EventResponseMapper;
 
 /**
  * Interface UserEventServiceInterface
  * @package Box\Service\Event
- *
- * use magic method doc for IDEs to know they're getting a specific ModelInterface
  */
 interface UserEventServiceInterface extends ServiceInterface
 {
@@ -52,45 +50,48 @@ interface UserEventServiceInterface extends ServiceInterface
     public const LIMIT_DEFAULT = 100;
 
     /**
-     * @return array
+     * @return array<string>
      */
-    public function getValidStreamTypes();
+    public function getValidStreamTypes(): array;
 
     /**
      * @return string
      */
-    public function getStreamType();
+    public function getStreamType(): string;
 
     /**
-     * @param string $streamType
+     * @param string|null $streamType
      *
-     * @return UserEventServiceInterface
+     * @return void
      */
-    public function setStreamType($streamType = null);
+    public function setStreamType(?string $streamType = null): void;
 
     /**
      * @return int
      */
-    public function getLimit();
+    public function getLimit(): int;
 
     /**
-     * @param int|null $limit set null to reset to default value
+     * @param string|int|null $limit set null to reset to default value
      *
-     * @return UserEventServiceInterface
+     * @return void
      */
-    public function setLimit($limit = null);
+    public function setLimit(string|int|null $limit = null): void;
 
     /**
-     * @return int
+     * @return string|int
      */
-    public function getStreamPosition();
+    public function getStreamPosition(): string|int;
 
     /**
-     * @param int $streamPosition
-     * @return UserEventServiceInterface
+     * @param string|int|null $streamPosition
+     * @return void
      */
-    public function setStreamPosition($streamPosition = null);
+    public function setStreamPosition(string|int|null $streamPosition = null): void;
 
-    public function getEvents($type = 'decoded', ?EventCollectionInterface $eventCollection = null);
-    public function getEventsUri();
+    public function getEvents(): EventResponse;
+
+    public function getEventsUri(): string;
+
+    public function setEventResponseMapper(EventResponseMapper $mapper): void;
 }

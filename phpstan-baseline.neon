@@ -139,23 +139,6 @@ parameters:
 			count: 1
 			path: src/Item/SharedLink/Permissions/Permissions.php
 
-		-
-			message: '#^Method Box\\Service\\Event\\UserEventService\:\:setLimit\(\) should return Box\\Service\\Event\\UserEventServiceInterface but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/Service/Event/UserEventService.php
-
-		-
-			message: '#^Method Box\\Service\\Event\\UserEventService\:\:setStreamPosition\(\) should return Box\\Service\\Event\\UserEventServiceInterface but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/Service/Event/UserEventService.php
-
-		-
-			message: '#^Method Box\\Service\\Event\\UserEventService\:\:setStreamType\(\) should return Box\\Service\\Event\\UserEventServiceInterface but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/Service/Event/UserEventService.php
 
 
 
