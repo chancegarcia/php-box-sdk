@@ -47,7 +47,7 @@ This initiative covers:
 | 5 | [Representative Write/Update Service Migration](#service-layer-hardening-slice-5---representative-writeupdate-service-migration) | Completed |
 | 6 | [File/Upload Service Compatibility Pass](#service-layer-hardening-slice-6---fileupload-service-compatibility-pass) | Completed ✓ |
 | 7 | [Service Error and Retry Semantics](#service-layer-hardening-slice-7---service-error-and-retry-semantics) | Completed ✓ |
-| 8 | [Legacy Architecture Removal and Cutover](#service-layer-hardening-slice-8---legacy-architecture-removal-and-cutover) | |
+| 8 | [Legacy Architecture Removal and Cutover Planning](#service-layer-hardening-slice-8---legacy-architecture-removal-and-cutover-planning) | Completed ✓ |
 | 9 | [Service Documentation and Migration Drift Pass](#service-layer-hardening-slice-9---service-documentation-and-migration-drift-pass) | |
 | 10 | [Service Type-Safety Cleanup](#service-layer-hardening-slice-10---service-type-safety-cleanup) | |
 | 11 | [Final Integration Review](#service-layer-hardening-slice-11---final-integration-review) | |
@@ -434,46 +434,40 @@ Validation:
 
 ---
 
-## Service Layer Hardening Slice 8 — Legacy Architecture Removal and Cutover
+## Service Layer Hardening Slice 8 — Legacy Architecture Removal and Cutover Planning
 
-**Purpose**: Perform the intentional removal of legacy pre-v1 / v0.x service APIs and architectural patterns cataloged in Slice 1.
+**Purpose**: Perform focused legacy architecture removal cutover planning and partitioning.
 
-**Goal**: Ensure v1 readiness by removing legacy code that is no longer part of the hardened foundation.
+**Goal**: Convert the high-level legacy removal requirement into a concrete, sequenced removal plan with safe implementation sub-slices.
 
 **Scope**:
-- Removal of legacy pre-v1 service methods and patterns.
-- Removal of compatibility aliases identified for cutover.
-- Ensuring migration docs are updated to match these removals.
+- Planning and documentation only.
+- Cutover sequencing and risk analysis.
+- Tracker refinement.
+- Identifying safe removal sub-slices.
 
 **Non-goals**:
-- Broadly rewriting all resource models (unless required by the service removal).
+- Broad source code removal in this slice.
+- Deleting `src/Model/` or `BaseModel`.
 
 **Acceptance Criteria**:
-- All legacy APIs identified for removal in Slice 1 are removed.
-- Tests verify that remaining code functions correctly without the legacy layer.
-- Migration guides clearly document the removals and replacements.
+- A structured removal plan exists (e.g., `docs/planning/09-legacy-architecture-removal.md`).
+- Dependency graph and removal order are defined.
+- Removal work is broken into atomic sub-slices.
+- Handoff from Service Layer Hardening to Legacy Removal is clear.
+
+**Completion Note**:
+Slice 8 completed as a planning and handoff slice.
+- Legacy inventory and removal sequence documented in `docs/planning/09-legacy-architecture-removal.md`.
+- `UserEventService` identified as the primary blocker for core legacy removal.
+- Service Layer Hardening Slice 8 reframed as planning; execution moved to a dedicated Step 9 tracker.
+
+**Validation Expectations**:
+- Planning documents are valid Markdown.
+- Sequencing is logical and addresses dependencies.
 
 **Junie Prompt**:
-```markdown
-Implement Service Layer Hardening Slice 8 — Legacy Architecture Removal and Cutover.
-
-Goal: Intentionally remove legacy pre-v1 / v0.x service APIs and architectural patterns to ensure v1 readiness as the clean target architecture.
-
-Scope:
-- Remove legacy pre-v1 service methods, traits, and patterns identified in the Slice 1 audit.
-- Remove compatibility aliases that are not part of the v1 API.
-- Update migration docs to reflect these removals.
-
-Acceptance Criteria:
-- Legacy layer is removed as planned.
-- No accidental breakage of the new hardened layer.
-- Migration guide is accurate.
-
-Validation:
-- `composer test`
-- `composer analyse`
-- `composer review`
-```
+(Handled via Slice 8 implementation)
 
 ---
 
@@ -595,7 +589,10 @@ Validation:
 - Slice 3: Completed ✓
 - Slice 4: Completed ✓
 - Slice 5: Completed ✓
-- Slices 6-11: Pending
+- Slice 6: Completed ✓
+- Slice 7: Completed ✓
+- Slice 8: Completed ✓
+- Slices 9-11: Pending
 
 ## Deferred Follow-up
 - Broad removal of legacy pre-v1 / v0.x architecture: This remains a v1 release requirement. If the remaining scope exceeds the current Service Layer Hardening tracker, it will be moved to a dedicated tracker, but it MUST be completed before v1 release.

@@ -69,14 +69,17 @@
 
 ## 6. Proposed Cutover Sequence
 
-1. **Slice 2 (Base Stabilization)**: Refine `Service` base methods. Deprecate `getLastResult` and 'flat'/'original' return types where not needed.
-2. **Slice 3 (Boundary)**: Standardize how `Hydrator` is used across all 3 service types.
-3. **Slice 4 (Read)**: Fully migrate `UserService` to v1 patterns (no base service state).
-4. **Slice 5 (Write)**: Standardize `FileService` write patterns.
-5. **Slice 6 (Compatibility)**: Overhaul `UserEventService`.
-6. **Slice 8 (Removal)**: Final removal of `Box\Model\...` and legacy traits once all services are migrated.
+Legacy architecture removal is a critical v1 requirement. To ensure stability, the execution of the removal is moved to a dedicated tracker/plan.
 
-## 7. Deferred Tracker Candidates
+1. **Slice 2-7 (Implementation)**: Harden services and establish patterns. (Completed ✓)
+2. **Slice 8 (Cutover Planning)**: Perform focused audit and partitioning for removal. (Current ✓)
+3. **Dedicated Legacy Removal (Step 9)**: Execute removal sub-slices defined in `docs/planning/09-legacy-architecture-removal.md`.
+
+## 7. Service Layer Hardening Tracker Decision
+
+The legacy cutover (actual removal) is too broad for a single slice within the current tracker. It is recommended to treat **Slice 8** as the planning/handoff point and initiate a dedicated **Legacy Architecture Removal** initiative (Step 9).
+
+## 8. Deferred Tracker Candidates
 
 - **Collection Layer Overhaul**: Replacing all `EventCollection` etc. with Doctrine Collections.
 - **Full PHPStan Level Increase**: Should be done after major removals to avoid chasing ghosts.
