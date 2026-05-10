@@ -32,7 +32,6 @@
 
 namespace Box;
 
-use Box\Collaboration\CollaborationInterface;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
 use Box\Exception\BoxException;
@@ -50,15 +49,16 @@ use Box\Factory\TokenFactory;
 use Box\Factory\TokenFactoryInterface;
 use Box\Factory\UserFactory;
 use Box\Factory\UserFactoryInterface;
+use Box\Resource\Collaboration;
 use Box\Resource\File;
 use Box\Resource\Folder;
 use Box\Resource\User;
-use Box\Group\GroupInterface;
+use Box\Resource\Group;
+use Box\Service\Collaboration\CollaborationService;
 use Box\Service\Folder\FolderService;
 use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Mapper\Hydrator;
-use Box\Collaboration\Collaboration;
 use Box\Connection\Token\Token;
 use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
@@ -172,9 +172,9 @@ class Client implements LoggerAwareInterface
     /**
      * @param mixed $options
      *
-     * @return GroupInterface
+     * @return Group
      */
-    public function getNewGroup(mixed $options = null): GroupInterface
+    public function getNewGroup(mixed $options = null): Group
     {
         $instance = $this->groupFactory->createGroup($options);
         if ($this->logger && method_exists($instance, 'setLogger')) {
@@ -184,7 +184,7 @@ class Client implements LoggerAwareInterface
         return $instance;
     }
 
-    public function getNewCollaboration(mixed $options = null): CollaborationInterface
+    public function getNewCollaboration(mixed $options = null): Collaboration
     {
         $instance = $this->collaborationFactory->createCollaboration($options);
         if ($this->logger && method_exists($instance, 'setLogger')) {
@@ -280,7 +280,7 @@ class Client implements LoggerAwareInterface
             $group->setId($groupId);
         }
 
-        if (!$group instanceof GroupInterface) {
+        if (!$group instanceof Group) {
             throw new BoxException("Group object expected", BoxException::INVALID_INPUT);
         }
 
@@ -547,11 +547,11 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param null|Folder $folder
-     * @param null|User|GroupInterface $collaborator
+     * @param null|User|Group $collaborator
      * @param string $role see {@link http://developers.box.com/docs/#collaborations box documentation for all possible
      *     roles} default is viewer
      *
-     * @return Collaboration|CollaborationInterface
+     * @return Collaboration
      * @throws BoxException
      */
     public function addCollaboration($folder = null, $collaborator = null, $role = 'viewer')
@@ -562,13 +562,13 @@ class Client implements LoggerAwareInterface
             $this->error($err);
         }
 
-        if (!$collaborator instanceof User && !$collaborator instanceof GroupInterface) {
+        if (!$collaborator instanceof User && !$collaborator instanceof Group) {
             $err['error'] = 'sdk_unexpected_type';
-            $err['error_description'] = "expecting User class. given (" . var_export($collaborator, true) . ")";
+            $err['error_description'] = "expecting User or Group resource. given (" . var_export($collaborator, true) . ")";
             $this->error($err);
         }
 
-        $uri = CollaborationInterface::URI;
+        $uri = CollaborationService::ENDPOINT;
 
         $folderId = $folder->getId();
         $collaboratorId = $collaborator->getId();

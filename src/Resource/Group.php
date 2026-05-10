@@ -30,15 +30,15 @@
  *
  */
 
-namespace Box\Group;
+namespace Box\Resource;
 
 use Box\Mapper\Hydrator;
 use Box\Exception\BoxException;
 use Box\Exception\GroupException;
-use Box\Group\GroupInterface;
+use Box\Service\Group\GroupService;
 use DateTimeInterface;
 
-class Group implements GroupInterface
+class Group
 {
     public function __construct(?array $options = null)
     {
@@ -61,7 +61,7 @@ class Group implements GroupInterface
             );
         }
 
-        $uri = self::URI . "/" . $selfId . "/memberships" . "?offset=" . $offset . "&limit=" . $limit;
+        $uri = GroupService::ENDPOINT . "/" . $selfId . "/memberships" . "?offset=" . $offset . "&limit=" . $limit;
 
         return $uri;
     }

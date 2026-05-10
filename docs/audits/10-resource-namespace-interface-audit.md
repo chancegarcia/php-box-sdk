@@ -9,8 +9,8 @@ The following resources are identified for migration to `Box\Resource`.
 | `Box\Resource` | `User` | User | Resource | `Box\Resource\User` | Low | Already migrated. |
 | `Box\File` | `File` | File | Resource | `Box\Resource\File` | Medium | High usage in `FileService`. |
 | `Box\Folder` | `Folder` | Folder | Resource | `Box\Resource\Folder` | Medium | High usage in `Client` and factories. |
-| `Box\Collaboration` | `Collaboration` | Collaboration | Resource | `Box\Resource\Collaboration` | Low | |
-| `Box\Group` | `Group` | Group | Resource | `Box\Resource\Group` | Low | |
+| `Box\Collaboration` | `Collaboration` | Collaboration | Resource | `Box\Resource\Collaboration` | Low | Moved to flat resource namespace. |
+| `Box\Group` | `Group` | Group | Resource | `Box\Resource\Group` | Low | Moved to flat resource namespace. |
 | `Box\Event` | `Event` | Event | Resource | `Box\Resource\Event` | Medium | Complex hierarchy (Admin/User events). |
 | `Box\Event\Admin` | `AdminEvent` | Event | Resource | `Box\Resource\Event\AdminEvent` | Medium | |
 | `Box\Event\User` | `UserEvent` | Event | Resource | `Box\Resource\Event\UserEvent` | Medium | |
@@ -33,8 +33,8 @@ The following resources are identified for migration to `Box\Resource`.
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `FileInterface` | `File` | Yes | Remove | High | Used in `FileService`, `FileFactory`. |
 | `FolderInterface` | `Folder` | Yes | Remove | High | Used in `FolderFactory`, `Client`. |
-| `CollaborationInterface` | `Collaboration` | Yes | Remove | Medium | Used in `CollaborationFactory`. |
-| `GroupInterface` | `Group` | Yes | Remove | Medium | Used in `GroupFactory`. |
+| `CollaborationInterface` | `Collaboration` | Yes | Remove | Medium | Removed in Step 10.4. |
+| `GroupInterface` | `Group` | Yes | Remove | Medium | Removed in Step 10.4. |
 | `SharedLinkInterface` | `SharedLink` | Yes | Remove | Medium | Used in `FileService`. |
 | `PermissionsInterface` | `Permissions` | Yes | Remove | Low | |
 | `EventInterface` | `Event` | Yes | Remove | Medium | Base for other event interfaces. |

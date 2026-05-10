@@ -30,16 +30,15 @@
  *
  */
 
-namespace Box\Collaboration;
+namespace Box\Resource;
 
 use Box\Mapper\Hydrator;
-use Box\Collaboration\CollaborationInterface;
 use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxLoggerTrait;
 use DateTimeInterface;
 
-class Collaboration implements CollaborationInterface, LoggerAwareInterface
+class Collaboration implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
     use BoxLoggerTrait;

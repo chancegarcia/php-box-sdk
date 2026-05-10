@@ -74,11 +74,15 @@ Resource classes have been moved to the final `Box\Resource` namespace, and redu
     - **Namespace Updates**:
         - `Box\File\File` has been moved to `Box\Resource\File`.
         - `Box\Folder\Folder` has been moved to `Box\Resource\Folder`.
-    - **Interface Removal**: `Box\File\FileInterface` and `Box\Folder\FolderInterface` have been removed. Type hints should use the concrete resource classes.
+        - `Box\Group\Group` has been moved to `Box\Resource\Group`.
+        - `Box\Collaboration\Collaboration` has been moved to `Box\Resource\Collaboration`.
+    - **Interface Removal**: `Box\File\FileInterface`, `Box\Folder\FolderInterface`, `Box\Group\GroupInterface`, and `Box\Collaboration\CollaborationInterface` have been removed. Type hints should use the concrete resource classes.
     - **Endpoint Constants**:
         - `FileInterface::URI` and `FileInterface::UPLOAD_URI` have been moved to `FileService` as `ENDPOINT` and `UPLOAD_ENDPOINT`.
         - `FolderInterface::URI` and `FolderInterface::SHARED_ITEM_URI` have been moved to `FolderService` as `ENDPOINT` and `SHARED_ITEM_ENDPOINT`.
-    - **Service/Factory Returns**: `FileService`, `FolderService`, `FileFactory`, `FolderFactory`, and `Client` methods now return concrete resource classes (e.g., `Box\Resource\Folder`) instead of interfaces.
+        - `GroupInterface::URI` and `GroupInterface::MEMBERSHIP_URI` have been moved to `GroupService` as `ENDPOINT` and `MEMBERSHIP_ENDPOINT`.
+        - `CollaborationInterface::URI` has been moved to `CollaborationService` as `ENDPOINT`.
+    - **Service/Factory Returns**: `FileService`, `FolderService`, `GroupService`, `CollaborationService`, `FileFactory`, `FolderFactory`, `GroupFactory`, `CollaborationFactory`, and `Client` methods now return concrete resource classes (e.g., `Box\Resource\Folder`) instead of interfaces.
     - **FileService Signature**: `FileService::createSharedLink()` now requires a non-null `File` object. The previous nullable behavior was removed to ensure API safety.
 
 ### Event Service Overhaul

@@ -8,7 +8,7 @@ use Box\Contract\ConfigProviderInterface;
 use Box\Service\BoxClientFactory;
 use Box\Connection\ConnectionInterface;
 use Box\Resource\Folder;
-use Box\Collaboration\CollaborationInterface;
+use Box\Resource\Collaboration;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Box\Logger\LoggerFactory;
@@ -65,7 +65,7 @@ class LoggerPropagationTest extends TestCase
 
         $collaboration = $client->getNewCollaboration(['id' => '123']);
 
-        $this->assertInstanceOf(CollaborationInterface::class, $collaboration);
+        $this->assertInstanceOf(Collaboration::class, $collaboration);
         $this->assertSame($logger, $collaboration->getLogger());
     }
 

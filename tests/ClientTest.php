@@ -4,16 +4,15 @@ namespace Box\Tests;
 
 use Box\Client;
 use Box\Http\Response\BoxResponseInterface;
-use Box\Collaboration\CollaborationInterface;
+use Box\Resource\Collaboration;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
 use Box\Resource\Folder;
 use Box\Resource\File;
 use Box\Resource\User;
-use Box\Group\GroupInterface;
+use Box\Resource\Group;
 use Box\Exception\BoxException;
 use Box\Connection\Token\Token;
-use Box\Collaboration\Collaboration;
 use Box\Factory\FolderFactoryInterface;
 use Box\Service\Folder\FolderService;
 use JsonException;
@@ -38,8 +37,8 @@ class ClientTest extends TestCase
         $this->assertInstanceOf(Folder::class, $client->getNewFolder());
         $this->assertInstanceOf(File::class, $client->getNewFile());
         $this->assertInstanceOf(User::class, $client->getNewUser());
-        $this->assertInstanceOf(GroupInterface::class, $client->getNewGroup());
-        $this->assertInstanceOf(CollaborationInterface::class, $client->getNewCollaboration());
+        $this->assertInstanceOf(Group::class, $client->getNewGroup());
+        $this->assertInstanceOf(Collaboration::class, $client->getNewCollaboration());
         $this->assertInstanceOf(TokenInterface::class, $client->getToken());
         $this->assertInstanceOf(ConnectionInterface::class, $client->getConnection());
     }

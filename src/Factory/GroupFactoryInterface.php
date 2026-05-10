@@ -2,9 +2,9 @@
 
 namespace Box\Factory;
 
-use Box\Group\GroupInterface;
+use Box\Resource\Group;
 
 interface GroupFactoryInterface
 {
-    public function createGroup(?array $options = null): GroupInterface;
+    public function createGroup(?array $options = null): Group;
 }

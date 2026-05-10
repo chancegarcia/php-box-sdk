@@ -2,12 +2,11 @@
 
 namespace Box\Factory;
 
-use Box\Group\Group;
-use Box\Group\GroupInterface;
+use Box\Resource\Group;
 
 class GroupFactory implements GroupFactoryInterface
 {
-    public function createGroup(?array $options = null): GroupInterface
+    public function createGroup(?array $options = null): Group
     {
         return new Group($options);
     }

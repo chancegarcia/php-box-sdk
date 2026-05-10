@@ -2,12 +2,11 @@
 
 namespace Box\Factory;
 
-use Box\Collaboration\Collaboration;
-use Box\Collaboration\CollaborationInterface;
+use Box\Resource\Collaboration;
 
 class CollaborationFactory implements CollaborationFactoryInterface
 {
-    public function createCollaboration(?array $options = null): CollaborationInterface
+    public function createCollaboration(?array $options = null): Collaboration
     {
         return new Collaboration($options);
     }
