@@ -57,6 +57,7 @@ use Box\Group\GroupInterface;
 use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Model\Model;
+use Box\Mapper\Hydrator;
 use Box\Resource\User;
 use Box\Collaboration\Collaboration;
 use Box\Connection\Token\Token;
@@ -319,7 +320,7 @@ class Client extends Model
         foreach ($entries as $entry) {
             $userData = $entry['user'];
             $user = $this->getNewUser();
-            $user->mapBoxToClass($userData);
+            (new Hydrator())->hydrate($user, $userData);
             $members[] = $user;
         }
 
@@ -348,7 +349,7 @@ class Client extends Model
 
         if (is_array($jsonData) && array_key_exists('type', $jsonData) && 'folder' === $jsonData['type']) {
             $folder = $this->getNewFolder();
-            $folder->mapBoxToClass($jsonData);
+            (new Hydrator())->hydrate($folder, $jsonData);
         } else {
             if (is_array($jsonData) && array_key_exists('type', $jsonData) && 'error' === $jsonData['type']) {
                 $errorData['error'] = $jsonData['message'];
@@ -379,7 +380,7 @@ class Client extends Model
         $jsonData = $this->parseResponse($response);
 
         $folder = $this->getNewFolder();
-        $folder->mapBoxToClass($jsonData);
+        (new Hydrator())->hydrate($folder, $jsonData);
 
         return $folder;
     }
@@ -443,7 +444,7 @@ class Client extends Model
         $jsonData = $this->parseResponse($response);
 
         $folder = $this->getNewFolder();
-        $folder->mapBoxToClass($jsonData);
+        (new Hydrator())->hydrate($folder, $jsonData);
 
         return $folder;
     }
@@ -559,7 +560,7 @@ class Client extends Model
         $data = $this->parseResponse($response);
 
         $collaboration = $this->getNewCollaboration();
-        $collaboration->mapBoxToClass($data);
+        (new Hydrator())->hydrate($collaboration, $data);
 
         return $collaboration;
     }
@@ -603,7 +604,7 @@ class Client extends Model
         $data = $this->parseResponse($response);
 
         $updatedFolder = $this->getNewFolder();
-        $updatedFolder->mapBoxToClass($data);
+        (new Hydrator())->hydrate($updatedFolder, $data);
 
         return $updatedFolder;
     }
@@ -634,7 +635,7 @@ class Client extends Model
 
         if (is_array($parent)) {
             $folder = $this->getNewFolder();
-            $folder->mapBoxToClass($parent);
+            (new Hydrator())->hydrate($folder, $parent);
             $parent = $folder;
         }
 
@@ -661,7 +662,7 @@ class Client extends Model
         $data = $this->parseResponse($response);
 
         $copy = $this->getNewFolder();
-        $copy->mapBoxToClass($data);
+        (new Hydrator())->hydrate($copy, $data);
 
         if (true === $addToFolders && $copy instanceof Folder) {
             $this->addFolder($copy);
@@ -830,7 +831,7 @@ class Client extends Model
             $params['state'] = $state;
         }
 
-        $query = $this->buildQuery($params); // buildQuery does urlencode
+        $query = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
         $uri .= $query;
 
         $redirectUri = $this->getRedirectUri();

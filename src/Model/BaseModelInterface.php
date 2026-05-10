@@ -40,40 +40,9 @@ use stdClass;
 
 interface BaseModelInterface
 {
- /**
- * @param string $str
- *
- * @return string
- */
     public function toClassVar(string $str): string;
-
- /**
- * @param string $str
- *
- * @return string
- */
     public function toBoxVar(string $str): string;
-
- /**
- * @param array|stdClass $aData
- */
     public function mapBoxToClass(array|stdClass $aData): void;
-
- /**
- * validate integer value even if it is a string value, unlike is_int()
- *
- * @param mixed $number
- *
- * @return bool
- */
     public function isInt(mixed $number = null): bool;
-
- /**
- * recursively remove empty elements from an array (trim is applied to string values)
- *
- * @param array $haystack
- *
- * @return array
- */
     public function removeEmpty(array $haystack = []): array;
 }

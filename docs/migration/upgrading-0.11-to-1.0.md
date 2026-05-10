@@ -47,6 +47,16 @@ The service layer has been hardened to provide more consistent hydration, better
     - **Avoid Stateful Debugging**: The `getLastResult()`, `getDefaultReturnType()`, and `setDefaultReturnType()` methods have been removed. Instead, catch `ApiException` and use `$e->getResponse()` to inspect the failed response.
     - **Service State Removal**: Stateful properties like `lastResultOriginal`, `lastResultDecoded`, and `lastResultFlat` have been removed. Services now rely on explicit return values.
 
+### Model Trait and Mapping Infrastructure Removal
+The legacy `BaseModelTrait` and `ModelTrait` have been removed. Mapping infrastructure is now centralized in `Box\Mapper\Hydrator` and `Box\Mapper\ModelMapper`.
+
+- **Impact**: Moderate (if you relied on model traits or custom model hydration).
+- **Migration**:
+    - **Removed Traits**: `BaseModelTrait` and `ModelTrait` are gone. If you have custom models using these, switch to using `Box\Mapper\Hydrator` or extend `Box\Model\Model`.
+    - **Prefer `toArray()`**: Models now support `toArray()` for obtaining an associative array representation. The legacy `classArray()` and `toBoxArray()` methods are preserved for compatibility on the `Model` class but are deprecated.
+    - **Prefer `Hydrator::hydrate()`**: Use `(new Hydrator())->hydrate($model, $data)` instead of `$model->mapBoxToClass($data)`.
+    - **Token `toArray()`**: The `Token` class now implements `toArray()` for easier serialization of credentials.
+
 ### Event Service Overhaul
 The `UserEventService` has been modernized to return a typed `EventResponse` DTO instead of raw associative arrays or relying on `getLastResult()`. Response mapping is now handled by `EventResponseMapper`. `EventResponse` returns a defensive copy of its entries to maintain immutability. `next_stream_position` is now represented as a `string` to safely handle large cursor values.
 

@@ -59,7 +59,7 @@ class TransportOptionTest extends TestCase
         $this->configProvider->method('getRefreshToken')->willReturn('some-token');
 
         $token = $this->createMock(TokenInterface::class);
-        $token->method('toBoxArray')->willReturn([]);
+        $token->method('toArray')->willReturn([]);
         $this->client->method('refreshToken')->willReturn($token);
 
         $this->connection->expects($this->once())
@@ -86,7 +86,7 @@ class TransportOptionTest extends TestCase
         $this->configProvider->method('getRefreshToken')->willReturn('some-token');
 
         $token = $this->createMock(TokenInterface::class);
-        $token->method('toBoxArray')->willReturn([]);
+        $token->method('toArray')->willReturn([]);
         $this->client->method('refreshToken')->willReturn($token);
 
         $this->connection->expects($this->once())
@@ -132,7 +132,7 @@ class TransportOptionTest extends TestCase
         $this->configProvider->method('getRefreshToken')->willReturn('some-token');
 
         $token = $this->createMock(TokenInterface::class);
-        $token->method('toBoxArray')->willReturn([]);
+        $token->method('toArray')->willReturn([]);
         $this->client->method('refreshToken')->willReturn($token);
 
         $this->connection->expects($this->never())

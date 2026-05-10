@@ -63,10 +63,31 @@ class FileService extends Service implements FileServiceInterface
         }
 
         $params = [
-            'shared_link' => ($sharedLink instanceof CreateSharedLinkRequest) ? $sharedLink->toArray() : $sharedLink->toBoxArray()
+            'shared_link' => $this->normalizeSharedLinkPayload($sharedLink),
         ];
 
         return $this->sendUpdateAndHydrate($uri, $params, File::class);
+    }
+
+    /**
+     * @param SharedLinkInterface|CreateSharedLinkRequest|null $sharedLink
+     * @return array
+     */
+    private function normalizeSharedLinkPayload(SharedLinkInterface|CreateSharedLinkRequest|null $sharedLink): array
+    {
+        if ($sharedLink instanceof CreateSharedLinkRequest) {
+            return $sharedLink->toArray();
+        }
+
+        if (method_exists($sharedLink, 'toArray')) {
+            return $sharedLink->toArray();
+        }
+
+        if (method_exists($sharedLink, 'toBoxArray')) {
+            return $sharedLink->toBoxArray();
+        }
+
+        return [];
     }
 
     /**

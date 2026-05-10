@@ -115,7 +115,7 @@ class UserEventService extends Service implements UserEventServiceInterface
             $limit = self::LIMIT_DEFAULT;
         }
 
-        if (!$this->isInt($limit)) {
+        if (!is_numeric($limit)) {
             throw new BoxException('limit must be a valid integer value, (' . var_export($limit, true) . ') given');
         }
 
@@ -143,7 +143,7 @@ class UserEventService extends Service implements UserEventServiceInterface
             $streamPosition = 'now';
         }
 
-        if ("now" !== $streamPosition && !$this->isInt($streamPosition)) {
+        if ("now" !== $streamPosition && !is_numeric($streamPosition)) {
             throw new BoxException('stream_position must be a valid integer value or "now", ('
                                    . var_export($streamPosition, true)
                                    . ') given');

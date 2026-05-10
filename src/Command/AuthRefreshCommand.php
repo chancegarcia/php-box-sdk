@@ -62,7 +62,7 @@ class AuthRefreshCommand extends AbstractBoxCommand
         try {
             $io->comment('Refreshing token...');
             $newToken = $client->refreshToken();
-            $tokenData = $newToken->toBoxArray();
+            $tokenData = $newToken->toArray();
 
             if ($secretsPath = $input->getOption('secrets-file')) {
                 $this->writeSecrets($secretsPath, $tokenData, $io, (bool)$input->getOption('force'));

@@ -73,4 +73,6 @@ interface TokenInterface extends ModelInterface
      * @return bool
      */
     public function isExpired(): bool;
+
+    public function toArray(): array;
 }

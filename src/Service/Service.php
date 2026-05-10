@@ -460,7 +460,8 @@ class Service extends BaseModel implements ServiceInterface
 
         $returnData = null;
         if ($class instanceof ModelInterface) {
-            $returnData = $class->mapBoxToClass($boxData);
+            (new Hydrator())->hydrate($class, $boxData);
+            $returnData = $class;
         } else {
             $returnData = $boxData;
         }
@@ -539,7 +540,8 @@ class Service extends BaseModel implements ServiceInterface
         $returnData = null;
 
         if ($class instanceof ModelInterface) {
-            $returnData = $class->mapBoxToClass($boxData);
+            (new Hydrator())->hydrate($class, $boxData);
+            $returnData = $class;
         } else {
             $returnData = $boxData;
         }

@@ -290,7 +290,7 @@ class Connection extends Model implements ConnectionInterface
     public function put(string $uri, array|string $params = []): BoxResponseInterface
     {
         if (is_array($params)) {
-            $postParams = $this->buildQuery($params);
+            $postParams = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
             @trigger_error(
                 'the `params` value as an array will be deprecated in the future. Please provide a json encoded string',
                 E_USER_DEPRECATED
@@ -316,7 +316,7 @@ class Connection extends Model implements ConnectionInterface
         }
 
         if (is_array($params)) {
-            $postParams = $this->buildQuery($params);
+            $postParams = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
             @trigger_error(
                 'the `params` value as an array will be deprecated in the future. Please provide a json encoded string',
                 E_USER_DEPRECATED

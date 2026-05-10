@@ -152,5 +152,16 @@ class Token extends Model implements TokenInterface
         return $now >= $expirationTime;
     }
 
+    public function toArray(): array
+    {
+        return [
+            'access_token' => $this->accessToken,
+            'refresh_token' => $this->refreshToken,
+            'expires_in' => $this->expiresIn,
+            'token_type' => $this->tokenType,
+            'restricted_to' => $this->restrictedTo,
+        ];
+    }
+
     // all parameters must be url encoded
 }

@@ -32,17 +32,47 @@
 
 namespace Box\Model;
 
+use Box\Mapper\ModelMapper;
+
 class Model extends BaseModel implements ModelInterface
 {
-    use ModelTrait;
-
- /**
- * @param array|null $options
- */
+    /**
+     * @param array|null $options
+     */
     public function __construct(?array $options = null)
     {
         if (null !== $options) {
             $this->mapBoxToClass($options);
         }
+    }
+
+    public function toArray(): array
+    {
+        return $this->classArray();
+    }
+
+    public function classArray(): array
+    {
+        $aModel = get_object_vars($this);
+        $aArray = [];
+
+        foreach ($aModel as $k => $v) {
+            $sKey = $this->toBoxVar($k);
+            $aArray[ $sKey ] = $v;
+        }
+
+        return $aArray;
+    }
+
+    public function toBoxArray(): array
+    {
+        $arr = $this->classArray();
+
+        return ModelMapper::removeEmpty($arr, true);
+    }
+
+    public function buildQuery(array $params, string $numericPrefix = ''): string
+    {
+        return http_build_query($params, $numericPrefix, '&', PHP_QUERY_RFC3986);
     }
 }

@@ -61,7 +61,7 @@ class AuthExchangeCommand extends AbstractBoxCommand
         try {
             $io->comment('Exchanging code for token...');
             $token = $client->getAccessToken();
-            $tokenData = $token->toBoxArray();
+            $tokenData = $token->toArray();
 
             if ($secretsPath = $input->getOption('secrets-file')) {
                 $this->writeSecrets($secretsPath, $tokenData, $io, (bool)$input->getOption('force'));

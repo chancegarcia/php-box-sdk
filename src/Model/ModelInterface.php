@@ -43,17 +43,15 @@ interface ModelInterface extends BaseModelInterface
 {
     public function __construct(?array $options = null);
 
- /**
- * class properties as an array
- *
- * @return array
- */
-    public function classArray(): array;
+    /**
+     * @return array
+     */
+    public function toArray(): array;
 
- /**
- * same as class array except empty elements are filtered out
- * @return array
- */
+    /**
+     * same as class array except empty elements are filtered out
+     * @return array
+     */
     public function toBoxArray(): array;
 
  /**

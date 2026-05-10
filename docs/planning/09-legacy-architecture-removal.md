@@ -110,7 +110,7 @@ Legacy removal is required before v1 release. Removals must be intentional, test
 | 9.1 | [UserEventService Characterization Tests](#slice-91-usereventservice-characterization-tests) | ✓ |
 | 9.2 | [UserEventService & Event Collection Overhaul](#slice-92-usereventservice--event-collection-overhaul) | ✓ |
 | 9.3 | [Service Stateful API Removal](#slice-93-service-stateful-api-removal) | ✓ |
-| 9.4 | [Model Trait & Mapping Infrastructure Removal](#slice-94-model-trait--mapping-infrastructure-removal) | |
+| 9.4 | [Model Trait & Mapping Infrastructure Removal](#slice-94-model-trait--mapping-infrastructure-removal) | ✓ |
 | 9.5 | [Base Architecture & Box\Model Removal](#slice-95-base-architecture--boxmodel-removal) | |
 | 9.6 | [Compatibility Alias Removal](#slice-96-compatibility-alias-removal) | |
 | 9.7 | [Docs & Migration Drift Pass](#slice-97-docs--migration-drift-pass) | |
@@ -269,12 +269,26 @@ Validation:
 - `src/Model/ModelTrait.php`, `src/Model/BaseModelTrait.php`
 - `src/Mapper/ModelMapper.php` (cleanup)
 
+**Status**: Completed
+
+**Notes**:
+- Removed legacy traits `BaseModelTrait` and `ModelTrait`.
+- Updated `BaseModel`, `Model`, `BaseModelInterface`, and `ModelInterface` to implement legacy methods by proxying to `ModelMapper` or using native PHP/v1 alternatives, preparing for their eventual removal in Slice 9.5.
+- Replaced `mapBoxToClass` usage in `Client` and `Service` with `Hydrator::hydrate`.
+- Replaced `buildQuery` usage in `Client` and `Connection` with native `http_build_query`.
+- Replaced `isInt` usage in `UserEventService` with native `is_numeric`.
+- Replaced `toBoxArray` usage in `AuthExchangeCommand`, `AuthRefreshCommand`, and `FileService` with `toArray()` or mapper extraction.
+- Introduced `toArray()` to `TokenInterface` and `Token` to support clean serialization.
+- Updated migration documentation to reflect mapping infrastructure changes.
+
 **Acceptance Criteria**:
-- Mapping traits are removed.
-- No remaining usages in the SDK.
+- Mapping traits are removed. ✓
+- No remaining usages in the SDK. ✓
 
 **Validation**:
-- `composer review`
+- `composer test` ✓
+- `composer analyse` ✓
+- `composer cs:check` ✓
 
 **Draft Prompt (Refinement Required)**:
 ```markdown

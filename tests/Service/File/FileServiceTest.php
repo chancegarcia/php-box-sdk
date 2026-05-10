@@ -111,7 +111,7 @@ class FileServiceTest extends TestCase
         $file->setId($fileId);
 
         $legacySharedLink = $this->createMock(SharedLinkInterface::class);
-        $legacySharedLink->method('toBoxArray')->willReturn(['access' => 'company']);
+        $legacySharedLink->method('toArray')->willReturn(['access' => 'company']);
 
         $responseData = [
             'type' => 'file',

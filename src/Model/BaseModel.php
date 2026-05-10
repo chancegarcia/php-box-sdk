@@ -36,9 +36,40 @@
 
 namespace Box\Model;
 
+use Box\Mapper\Hydrator;
 use Box\Logger\LoggerAwareInterface;
+use Box\Trait\LoggerAwareTrait;
+use Box\Trait\BoxLoggerTrait;
+use Box\Mapper\ModelMapper;
+use stdClass;
 
 abstract class BaseModel implements BaseModelInterface, LoggerAwareInterface
 {
-    use BaseModelTrait;
+    use LoggerAwareTrait;
+    use BoxLoggerTrait;
+
+    public function toClassVar(string $str): string
+    {
+        return ModelMapper::toClassVar($str);
+    }
+
+    public function toBoxVar(string $str): string
+    {
+        return ModelMapper::toBoxVar($str);
+    }
+
+    public function mapBoxToClass(array|stdClass $aData): void
+    {
+        (new Hydrator())->hydrate($this, $aData);
+    }
+
+    public function isInt(mixed $number = null): bool
+    {
+        return ModelMapper::isInt($number);
+    }
+
+    public function removeEmpty(array $haystack = []): array
+    {
+        return ModelMapper::removeEmpty($haystack);
+    }
 }
