@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Box\Tests\Mapper;
 
 use Box\Dto\Event\EventResponse;
-use Box\Event\Event;
+use Box\Resource\Event;
 use Box\Exception\BoxException;
 use Box\Mapper\EventResponseMapper;
 use PHPUnit\Framework\TestCase;

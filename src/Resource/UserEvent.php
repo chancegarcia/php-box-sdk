@@ -3,8 +3,9 @@
 /**
  * Created by PhpStorm.
  * User: chance
- * Date: 9/29/15
- * Time: 3:26 PM
+ * Date: 9/17/15
+ * Time: 5:30 PM
+ *
  * @package     Box
  * @subpackage  Box_Model
  * @author      Chance Garcia
@@ -34,11 +35,9 @@
  *
  */
 
-namespace Box\Event\Collection\Entry;
+namespace Box\Resource;
 
-interface UserEntryInterface extends EntryInterface
+class UserEvent extends Event
 {
-    public function getRecordedAt();
-
-    public function setRecordedAt($recordedAt = null);
+    // GET
 }

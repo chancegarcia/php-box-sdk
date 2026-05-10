@@ -11,11 +11,11 @@ The following resources are identified for migration to `Box\Resource`.
 | `Box\Folder` | `Folder` | Folder | Resource | `Box\Resource\Folder` | Medium | High usage in `Client` and factories. |
 | `Box\Collaboration` | `Collaboration` | Collaboration | Resource | `Box\Resource\Collaboration` | Low | Moved to flat resource namespace. |
 | `Box\Group` | `Group` | Group | Resource | `Box\Resource\Group` | Low | Moved to flat resource namespace. |
-| `Box\Event` | `Event` | Event | Resource | `Box\Resource\Event` | Medium | Complex hierarchy (Admin/User events). |
-| `Box\Event\Admin` | `AdminEvent` | Event | Resource | `Box\Resource\Event\AdminEvent` | Medium | |
-| `Box\Event\User` | `UserEvent` | Event | Resource | `Box\Resource\Event\UserEvent` | Medium | |
-| `Box\Item\SharedLink` | `SharedLink` | Shared Link | Resource | `Box\Resource\SharedLink` | Low | Currently under `Box\Item`. |
-| `Box\Item\SharedLink\Permissions` | `Permissions` | Shared Link | Helper | `Box\Resource\SharedLink\Permissions` | Low | |
+| `Box\Event` | `Event` | Event | Resource | `Box\Resource\Event` | Low | Migrated in Step 10.5. |
+| `Box\Event\Admin` | `AdminEvent` | Event | Resource | `Box\Resource\AdminEvent` | Low | Migrated in Step 10.5. |
+| `Box\Event\User` | `UserEvent` | Event | Resource | `Box\Resource\UserEvent` | Low | Migrated in Step 10.5. |
+| `Box\Item\SharedLink` | `SharedLink` | Shared Link | Resource | `Box\Resource\SharedLink` | Low | Migrated in Step 10.5. |
+| `Box\Item\SharedLink\Permissions` | `Permissions` | Shared Link | Helper | `Box\Resource\SharedLink\Permissions` | Low | Migrated in Step 10.5. |
 | `Box\Dto` | | | DTO | `Box\Dto\...` | Low | Requests/Responses already here. |
 | `Box\Service` | | | Service | `Box\Service\...` | Low | Services remain here. |
 
@@ -35,12 +35,12 @@ The following resources are identified for migration to `Box\Resource`.
 | `FolderInterface` | `Folder` | Yes | Remove | High | Used in `FolderFactory`, `Client`. |
 | `CollaborationInterface` | `Collaboration` | Yes | Remove | Medium | Removed in Step 10.4. |
 | `GroupInterface` | `Group` | Yes | Remove | Medium | Removed in Step 10.4. |
-| `SharedLinkInterface` | `SharedLink` | Yes | Remove | Medium | Used in `FileService`. |
-| `PermissionsInterface` | `Permissions` | Yes | Remove | Low | |
-| `EventInterface` | `Event` | Yes | Remove | Medium | Base for other event interfaces. |
-| `AdminEventInterface` | `AdminEvent` | Yes | Remove | Low | |
-| `UserEventInterface` | `UserEvent` | Yes | Remove | Low | |
-| `EventCollectionInterface` | `EventCollection` | Yes | Remove | Low | |
+| `SharedLinkInterface` | `SharedLink` | Yes | Remove | Low | Migrated in Step 10.5. |
+| `PermissionsInterface` | `Permissions` | Yes | Remove | Low | Migrated in Step 10.5. |
+| `EventInterface` | `Event` | Yes | Remove | Low | Migrated in Step 10.5. |
+| `AdminEventInterface` | `AdminEvent` | Yes | Remove | Low | Migrated in Step 10.5. |
+| `UserEventInterface` | `UserEvent` | Yes | Remove | Low | Migrated in Step 10.5. |
+| `EventCollectionInterface` | `EventCollection` | Yes | Remove | Low | Migrated in Step 10.5. |
 
 ## 2.1 Interface Policy
 
@@ -60,8 +60,8 @@ The following resources are identified for migration to `Box\Resource`.
 | `URI` | `CollaborationInterface` | `CollaborationService::ENDPOINT` (To be created) |
 | `URI` | `GroupInterface` | `GroupService::ENDPOINT` |
 | `MEMBERSHIP_URI` | `GroupInterface` | `GroupService::MEMBERSHIP_ENDPOINT` |
-| `URI` | `AdminEventInterface` | `UserEventService::ADMIN_EVENTS_ENDPOINT` |
-| `URI` | `UserEventInterface` | `UserEventService::USER_EVENTS_ENDPOINT` |
+| `URI` | `AdminEventInterface` | `UserEventService::ENDPOINT` (Implicitly handled via stream_type) |
+| `URI` | `UserEventInterface` | `UserEventService::ENDPOINT` |
 
 ## 3.1 Endpoint Constants Policy
 

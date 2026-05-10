@@ -34,13 +34,13 @@
  *
  */
 
-namespace Box\Event\Collection;
+namespace Box\Resource\Event\Collection;
 
 use Box\Exception\BoxException;
 use Doctrine\Common\Collections\ArrayCollection as DoctrineArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-class EventCollection implements EventCollectionInterface
+class EventCollection
 {
     protected $chunkSize;
     protected $nextStreamPosition;
@@ -52,7 +52,7 @@ class EventCollection implements EventCollectionInterface
     protected $originalEntries;
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
     public function getOriginalEntries(): mixed
     {
@@ -60,7 +60,8 @@ class EventCollection implements EventCollectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $originalEntries
+     * @return void
      */
     public function setOriginalEntries($originalEntries = null): void
     {
@@ -68,7 +69,7 @@ class EventCollection implements EventCollectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
     public function getChunkSize(): mixed
     {
@@ -76,7 +77,8 @@ class EventCollection implements EventCollectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $chunkSize
+     * @return void
      */
     public function setChunkSize($chunkSize = null): void
     {
@@ -84,7 +86,7 @@ class EventCollection implements EventCollectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
     public function getNextStreamPosition(): mixed
     {
@@ -92,7 +94,8 @@ class EventCollection implements EventCollectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $nextStreamPosition
+     * @return void
      */
     public function setNextStreamPosition($nextStreamPosition = null): void
     {
@@ -100,7 +103,7 @@ class EventCollection implements EventCollectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return Collection
      */
     public function getEntries(): Collection
     {
@@ -108,7 +111,8 @@ class EventCollection implements EventCollectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param Collection|array|null $entries
+     * @return void
      */
     public function setEntries($entries = null): void
     {
@@ -116,7 +120,7 @@ class EventCollection implements EventCollectionInterface
             $this->originalEntries = $entries;
             $entries = new DoctrineArrayCollection($entries);
         } else {
-            if (!$entries instanceof Collection) {
+            if (!$entries instanceof Collection && null !== $entries) {
                 throw new BoxException('entries must be an array or instance of \Doctrine\Common\Collections\Collection');
             }
         }

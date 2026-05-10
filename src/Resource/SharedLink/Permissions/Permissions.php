@@ -3,10 +3,10 @@
 /**
  * Created by PhpStorm.
  * User: chance
- * Date: 9/29/15
- * Time: 3:20 PM
+ * Date: 10/9/15
+ * Time: 5:51 PM
  * @package     Box
- * @subpackage  Box_Model
+ * @subpackage  Box_Item
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -34,35 +34,44 @@
  *
  */
 
-namespace Box\Event\Collection\Entry;
+namespace Box\Resource\SharedLink\Permissions;
 
-interface EntryInterface
+class Permissions
 {
-    public function getSource();
+    protected $canDownload;
+    protected $canPreview;
 
-    public function setSource($source = null);
+    /**
+     * @return bool|null
+     */
+    public function getCanDownload()
+    {
+        return $this->canDownload;
+    }
 
-    public function getCreatedBy();
+    /**
+     * @param bool|null $canDownload
+     * @return void
+     */
+    public function setCanDownload($canDownload = null): void
+    {
+        $this->canDownload = $canDownload;
+    }
 
-    public function setCreatedBy($createdBy = null);
+    /**
+     * @return bool|null
+     */
+    public function getCanPreview()
+    {
+        return $this->canPreview;
+    }
 
-    public function getCreatedAt();
-
-    public function setCreatedAt($createdAt = null);
-
-    public function getEventId();
-
-    public function setEventId($eventId = null);
-
-    public function getEventType();
-
-    public function setEventType($eventType = null);
-
-    public function getType();
-
-    public function setType($type = null);
-
-    public function getSessionId();
-
-    public function setSessionId($sessionId = null);
+    /**
+     * @param bool|null $canPreview
+     * @return void
+     */
+    public function setCanPreview($canPreview = null): void
+    {
+        $this->canPreview = $canPreview;
+    }
 }

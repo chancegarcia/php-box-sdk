@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Box\Tests\Dto\Event;
 
 use Box\Dto\Event\EventResponse;
-use Box\Event\Event;
+use Box\Resource\Event;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\TestCase;
 

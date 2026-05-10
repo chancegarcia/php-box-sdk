@@ -7,7 +7,7 @@ namespace Box\Tests\Service\Event;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
 use Box\Dto\Event\EventResponse;
-use Box\Event\Event;
+use Box\Resource\Event;
 use Box\Exception\BoxException;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Service\Event\UserEventService;

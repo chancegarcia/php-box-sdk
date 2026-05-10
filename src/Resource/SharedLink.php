@@ -34,13 +34,12 @@
  *
  */
 
-namespace Box\Item\SharedLink;
+namespace Box\Resource;
 
-use Box\Item\SharedLink\Permissions\PermissionsInterface;
-use Box\Item\SharedLink\SharedLinkInterface;
+use Box\Resource\SharedLink\Permissions\Permissions;
 use DateTimeInterface;
 
-class SharedLink implements SharedLinkInterface
+class SharedLink
 {
     protected $access;
     protected $unsharedAt;
@@ -49,7 +48,7 @@ class SharedLink implements SharedLinkInterface
     protected $effectiveAccess;
 
     /**
-     * {@inheritdoc}
+     * @return string|null
      */
     public function getAccess()
     {
@@ -84,7 +83,7 @@ class SharedLink implements SharedLinkInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return string|null
      */
     public function getPassword()
     {
@@ -101,7 +100,7 @@ class SharedLink implements SharedLinkInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return Permissions|null
      */
     public function getPermissions()
     {
@@ -109,20 +108,29 @@ class SharedLink implements SharedLinkInterface
     }
 
     /**
-     * @param PermissionsInterface|null $permissions
+     * @param Permissions|null $permissions
      * @return void
      */
-    public function setPermissions(?PermissionsInterface $permissions = null): void
+    public function setPermissions(?Permissions $permissions = null): void
     {
         $this->permissions = $permissions;
     }
 
     /**
-     * {@inheritdoc}
+     * @return string|null
      */
     public function getEffectiveAccess()
     {
         return $this->effectiveAccess;
+    }
+
+    /**
+     * @param string|null $effectiveAccess
+     * @return void
+     */
+    public function setEffectiveAccess($effectiveAccess = null): void
+    {
+        $this->effectiveAccess = $effectiveAccess;
     }
 
     public function toArray(): array

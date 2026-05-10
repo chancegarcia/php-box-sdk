@@ -38,7 +38,7 @@ namespace Box\Service\File;
 
 use Box\Dto\File\Request\CreateSharedLinkRequest;
 use Box\Resource\File;
-use Box\Item\SharedLink\SharedLinkInterface;
+use Box\Resource\SharedLink;
 use Box\Service\Service;
 
 class FileService extends Service implements FileServiceInterface
@@ -52,9 +52,9 @@ class FileService extends Service implements FileServiceInterface
     /**
      * {@inheritdoc}
      * @param File $file
-     * @param SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink
+     * @param SharedLink|CreateSharedLinkRequest|array|null $sharedLink
      */
-    public function createSharedLink(File $file, SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink = null): File
+    public function createSharedLink(File $file, SharedLink|CreateSharedLinkRequest|array|null $sharedLink = null): File
     {
         $uri = self::ENDPOINT . "/" . $file->getId();
 
@@ -71,10 +71,10 @@ class FileService extends Service implements FileServiceInterface
     }
 
     /**
-     * @param SharedLinkInterface|CreateSharedLinkRequest|null $sharedLink
+     * @param SharedLink|CreateSharedLinkRequest|null $sharedLink
      * @return array
      */
-    private function normalizeSharedLinkPayload(SharedLinkInterface|CreateSharedLinkRequest|null $sharedLink): array
+    private function normalizeSharedLinkPayload(SharedLink|CreateSharedLinkRequest|null $sharedLink): array
     {
         if (null === $sharedLink) {
             return [];
@@ -84,7 +84,7 @@ class FileService extends Service implements FileServiceInterface
             return $sharedLink->toArray();
         }
 
-        // Fallback for legacy models that implement SharedLinkInterface but might not be fully hydrated to DTOs yet
+        // Fallback for legacy models that might not be fully hydrated to DTOs yet
         if (method_exists($sharedLink, 'toArray')) {
             return $sharedLink->toArray();
         }

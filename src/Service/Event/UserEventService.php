@@ -37,7 +37,6 @@
 namespace Box\Service\Event;
 
 use Box\Dto\Event\EventResponse;
-use Box\Event\User\UserEventInterface;
 use Box\Exception\BoxException;
 use Box\Mapper\EventResponseMapper;
 use Box\Service\Service;
@@ -49,6 +48,8 @@ use Psr\Log\LoggerInterface;
  */
 class UserEventService extends Service implements UserEventServiceInterface
 {
+    public const ENDPOINT = "https://api.box.com/2.0/events";
+
     protected array $validStreamTypes = [
         'all'
         /* returns everything */
@@ -191,6 +192,6 @@ class UserEventService extends Service implements UserEventServiceInterface
             'limit' => $this->getLimit(),
         ]);
 
-        return UserEventInterface::URI . "?" . $query;
+        return self::ENDPOINT . "?" . $query;
     }
 }

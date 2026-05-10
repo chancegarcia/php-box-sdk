@@ -35,19 +35,14 @@
  *
  */
 
-namespace Box\Event\Admin;
+namespace Box\Resource;
 
 use Box\Mapper\Hydrator;
-use Box\Event\Event;
 use stdClass;
 
-/**
- * Class AdminEvent
- * @package Box\Event\Admin
- */
-class AdminEvent extends Event implements AdminEventInterface
+class AdminEvent extends Event
 {
-    private mixed $streamType = null;
+    private mixed $streamType = "admin_logs";
 
     protected mixed $limit = 100;
     protected mixed $streamPosition = null;
@@ -56,15 +51,12 @@ class AdminEvent extends Event implements AdminEventInterface
 
     public function __construct(?array $options = null)
     {
-        $this->streamType = self::STREAM_TYPE;
         if (is_array($options)) {
             (new Hydrator())->hydrate($this, $options);
         }
     }
 
     /**
-     * remove any attempt to map to the private property
-     *
      * @param array|stdClass $aData
      * @deprecated Use Hydrator::hydrate() instead.
      */
@@ -80,7 +72,7 @@ class AdminEvent extends Event implements AdminEventInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
     public function getStreamType(): mixed
     {
@@ -88,7 +80,7 @@ class AdminEvent extends Event implements AdminEventInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
     public function getLimit(): mixed
     {
@@ -96,7 +88,8 @@ class AdminEvent extends Event implements AdminEventInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $limit
+     * @return void
      */
     public function setLimit(mixed $limit = null): void
     {
@@ -104,7 +97,7 @@ class AdminEvent extends Event implements AdminEventInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
     public function getStreamPosition(): mixed
     {
@@ -112,7 +105,8 @@ class AdminEvent extends Event implements AdminEventInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $streamPosition
+     * @return void
      */
     public function setStreamPosition(mixed $streamPosition = null): void
     {
@@ -120,7 +114,7 @@ class AdminEvent extends Event implements AdminEventInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
     public function getCreatedAfter(): mixed
     {
@@ -128,7 +122,8 @@ class AdminEvent extends Event implements AdminEventInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $createdAfter
+     * @return void
      */
     public function setCreatedAfter(mixed $createdAfter = null): void
     {
@@ -136,7 +131,7 @@ class AdminEvent extends Event implements AdminEventInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
     public function getCreatedBefore(): mixed
     {
@@ -144,12 +139,11 @@ class AdminEvent extends Event implements AdminEventInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $createdBefore
+     * @return void
      */
     public function setCreatedBefore(mixed $createdBefore = null): void
     {
         $this->createdBefore = $createdBefore;
     }
-
-    // GET
 }

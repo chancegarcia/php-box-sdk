@@ -3,8 +3,8 @@
 /**
  * Created by PhpStorm.
  * User: chance
- * Date: 9/29/15
- * Time: 3:34 PM
+ * Date: 9/28/15
+ * Time: 12:47 PM
  * @package     Box
  * @subpackage  Box_Model
  * @author      Chance Garcia
@@ -34,29 +34,29 @@
  *
  */
 
-namespace Box\Event\Collection\Entry\Source;
+namespace Box\Resource\Event\Collection\Entry\Source;
 
 use Box\Resource\Folder;
 use DateTimeInterface;
 
-class EntrySource implements SourceInterface
+class EntrySource
 {
-    protected $type;
-    protected $id;
-    protected $etag;
-    protected $name;
-    protected $createdAt;
-    protected $modifiedAt;
-    protected $description;
-    protected $size;
-    protected $createdBy;
-    protected $modifiedBy;
-    protected $ownedBy;
-    protected $sharedLink;
-    protected $parent;
-    protected $itemStatus;
+    protected string|int|null $sequenceId = null;
+    protected string $type = "file";
+    protected string|int|null $id = null;
+    protected ?string $etag = null;
+    protected ?string $name = null;
+    protected DateTimeInterface|string|null $createdAt = null;
+    protected DateTimeInterface|string|null $modifiedAt = null;
+    protected ?string $description = null;
+    protected ?int $size = null;
+    protected ?string $createdBy = null;
+    protected ?string $modifiedBy = null;
+    protected ?string $ownedBy = null;
+    protected ?string $sharedLink = null;
+    protected Folder|array|null $parent = null;
+    protected ?string $itemStatus = null;
     protected $synced;
-    protected $sequenceId;
 
     /**
      * @return string|int|null
@@ -68,15 +68,15 @@ class EntrySource implements SourceInterface
 
     /**
      * @param string|int|null $sequenceId
-     *
+     * @return void
      */
-    public function setSequenceId(string|int|null $sequenceId = null): void
+    public function setSequenceId(string|int|null $sequenceId): void
     {
         $this->sequenceId = $sequenceId;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getType(): string
     {
@@ -85,9 +85,9 @@ class EntrySource implements SourceInterface
 
     /**
      * @param string $type
-     *
+     * @return void
      */
-    public function setType(string $type = "file"): void
+    public function setType(string $type): void
     {
         $this->type = $type;
     }
@@ -102,9 +102,9 @@ class EntrySource implements SourceInterface
 
     /**
      * @param string|int|null $id
-     *
+     * @return void
      */
-    public function setId(string|int|null $id = null): void
+    public function setId(string|int|null $id): void
     {
         $this->id = $id;
     }
@@ -118,10 +118,10 @@ class EntrySource implements SourceInterface
     }
 
     /**
-     * @param mixed $etag
-     *
+     * @param string|null $etag
+     * @return void
      */
-    public function setEtag(?string $etag = null): void
+    public function setEtag(?string $etag): void
     {
         $this->etag = $etag;
     }
@@ -136,8 +136,9 @@ class EntrySource implements SourceInterface
 
     /**
      * @param string|null $name
+     * @return void
      */
-    public function setName(?string $name = null): void
+    public function setName(?string $name): void
     {
         $this->name = $name;
     }
@@ -152,8 +153,9 @@ class EntrySource implements SourceInterface
 
     /**
      * @param DateTimeInterface|string|null $createdAt
+     * @return void
      */
-    public function setCreatedAt(DateTimeInterface|string|null $createdAt = null): void
+    public function setCreatedAt(DateTimeInterface|string|null $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
@@ -168,9 +170,9 @@ class EntrySource implements SourceInterface
 
     /**
      * @param DateTimeInterface|string|null $modifiedAt
-     *
+     * @return void
      */
-    public function setModifiedAt(DateTimeInterface|string|null $modifiedAt = null): void
+    public function setModifiedAt(DateTimeInterface|string|null $modifiedAt): void
     {
         $this->modifiedAt = $modifiedAt;
     }
@@ -185,9 +187,9 @@ class EntrySource implements SourceInterface
 
     /**
      * @param string|null $description
-     *
+     * @return void
      */
-    public function setDescription(?string $description = null): void
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
     }
@@ -202,8 +204,9 @@ class EntrySource implements SourceInterface
 
     /**
      * @param int|null $size
+     * @return void
      */
-    public function setSize(?int $size = null): void
+    public function setSize(?int $size): void
     {
         $this->size = $size;
     }
@@ -218,8 +221,9 @@ class EntrySource implements SourceInterface
 
     /**
      * @param string|null $createdBy
+     * @return void
      */
-    public function setCreatedBy(?string $createdBy = null): void
+    public function setCreatedBy(?string $createdBy): void
     {
         $this->createdBy = $createdBy;
     }
@@ -234,9 +238,9 @@ class EntrySource implements SourceInterface
 
     /**
      * @param string|null $modifiedBy
-     *
+     * @return void
      */
-    public function setModifiedBy(?string $modifiedBy = null): void
+    public function setModifiedBy(?string $modifiedBy): void
     {
         $this->modifiedBy = $modifiedBy;
     }
@@ -251,9 +255,9 @@ class EntrySource implements SourceInterface
 
     /**
      * @param string|null $ownedBy
-     *
+     * @return void
      */
-    public function setOwnedBy(?string $ownedBy = null): void
+    public function setOwnedBy(?string $ownedBy): void
     {
         $this->ownedBy = $ownedBy;
     }
@@ -268,8 +272,9 @@ class EntrySource implements SourceInterface
 
     /**
      * @param string|null $sharedLink
+     * @return void
      */
-    public function setSharedLink(?string $sharedLink = null): void
+    public function setSharedLink(?string $sharedLink): void
     {
         $this->sharedLink = $sharedLink;
     }
@@ -283,9 +288,10 @@ class EntrySource implements SourceInterface
     }
 
     /**
-     * @param string|null $parent
+     * @param Folder|array|null $parent
+     * @return void
      */
-    public function setParent(Folder|array|null $parent = null): void
+    public function setParent(Folder|array|null $parent): void
     {
         $this->parent = $parent;
     }
@@ -300,8 +306,9 @@ class EntrySource implements SourceInterface
 
     /**
      * @param string|null $itemStatus
+     * @return void
      */
-    public function setItemStatus(?string $itemStatus = null): void
+    public function setItemStatus(?string $itemStatus): void
     {
         $this->itemStatus = $itemStatus;
     }
@@ -309,16 +316,16 @@ class EntrySource implements SourceInterface
     /**
      * @return mixed
      */
-    public function getSynced()
+    public function getSynced(): mixed
     {
         return $this->synced;
     }
 
     /**
      * @param mixed $synced
-     *
+     * @return void
      */
-    public function setSynced($synced = null): void
+    public function setSynced(mixed $synced): void
     {
         $this->synced = $synced;
     }

@@ -37,18 +37,18 @@ namespace Box\Service\File;
 
 use Box\Dto\File\Request\CreateSharedLinkRequest;
 use Box\Resource\File;
-use Box\Item\SharedLink\SharedLinkInterface;
+use Box\Resource\SharedLink;
 use Box\Service\ServiceInterface;
 
 interface FileServiceInterface extends ServiceInterface
 {
     /**
      * @param File $file
-     * @param SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink shared link object used to set box permissions
+     * @param SharedLink|CreateSharedLinkRequest|array|null $sharedLink shared link object used to set box permissions
      *
      * @return File
      */
-    public function createSharedLink(File $file, SharedLinkInterface|CreateSharedLinkRequest|array|null $sharedLink = null): File;
+    public function createSharedLink(File $file, SharedLink|CreateSharedLinkRequest|array|null $sharedLink = null): File;
 
     /**
      * @return File

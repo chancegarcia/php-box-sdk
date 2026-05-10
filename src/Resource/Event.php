@@ -34,9 +34,9 @@
  *
  */
 
-namespace Box\Event;
+namespace Box\Resource;
 
-class Event implements EventInterface
+class Event
 {
     protected mixed $type = null;
 
@@ -61,7 +61,7 @@ class Event implements EventInterface
     /**
      * @param mixed $type
      *
-     * @return EventInterface
+     * @return void
      */
     public function setType(mixed $type = null): void
     {
@@ -79,7 +79,7 @@ class Event implements EventInterface
     /**
      * @param mixed $eventId
      *
-     * @return EventInterface
+     * @return void
      */
     public function setEventId(mixed $eventId = null): void
     {
@@ -97,7 +97,7 @@ class Event implements EventInterface
     /**
      * @param mixed $createdBy
      *
-     * @return EventInterface
+     * @return void
      */
     public function setCreatedBy(mixed $createdBy = null): void
     {
@@ -115,7 +115,7 @@ class Event implements EventInterface
     /**
      * @param mixed $eventType
      *
-     * @return EventInterface
+     * @return void
      */
     public function setEventType(mixed $eventType = null): void
     {
@@ -133,7 +133,7 @@ class Event implements EventInterface
     /**
      * @param mixed $sessionId
      *
-     * @return EventInterface
+     * @return void
      */
     public function setSessionId(mixed $sessionId = null): void
     {
@@ -151,7 +151,7 @@ class Event implements EventInterface
     /**
      * @param mixed $source
      *
-     * @return EventInterface
+     * @return void
      */
     public function setSource(mixed $source = null): void
     {

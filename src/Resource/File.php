@@ -35,7 +35,7 @@ namespace Box\Resource;
 use Box\Mapper\Hydrator;
 use DateTimeInterface;
 use Box\Resource\Folder;
-use Box\Item\SharedLink\SharedLink;
+use Box\Resource\SharedLink;
 
 class File
 {
@@ -463,7 +463,7 @@ class File
      *
      * @return void
      */
-    public function setSharedLink(mixed $sharedLink = null): void
+    public function setSharedLink(SharedLink|array|null $sharedLink = null): void
     {
         if (is_array($sharedLink)) {
             // @todo v1.0 remove array support
@@ -473,9 +473,9 @@ class File
     }
 
     /**
-     * @return mixed
+     * @return SharedLink|null
      */
-    public function getSharedLink(): mixed
+    public function getSharedLink(): ?SharedLink
     {
         return $this->sharedLink;
     }

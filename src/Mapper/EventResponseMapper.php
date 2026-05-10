@@ -6,7 +6,7 @@ namespace Box\Mapper;
 
 use ArrayAccess;
 use Box\Dto\Event\EventResponse;
-use Box\Event\Event;
+use Box\Resource\Event;
 use Box\Exception\BoxException;
 use Doctrine\Common\Collections\ArrayCollection;
 use stdClass;

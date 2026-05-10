@@ -76,12 +76,17 @@ Resource classes have been moved to the final `Box\Resource` namespace, and redu
         - `Box\Folder\Folder` has been moved to `Box\Resource\Folder`.
         - `Box\Group\Group` has been moved to `Box\Resource\Group`.
         - `Box\Collaboration\Collaboration` has been moved to `Box\Resource\Collaboration`.
-    - **Interface Removal**: `Box\File\FileInterface`, `Box\Folder\FolderInterface`, `Box\Group\GroupInterface`, and `Box\Collaboration\CollaborationInterface` have been removed. Type hints should use the concrete resource classes.
+        - `Box\Item\SharedLink\SharedLink` has been moved to `Box\Resource\SharedLink`.
+        - `Box\Event\Event` has been moved to `Box\Resource\Event`.
+        - `Box\Event\Admin\AdminEvent` has been moved to `Box\Resource\AdminEvent`.
+        - `Box\Event\User\UserEvent` has been moved to `Box\Resource\UserEvent`.
+    - **Interface Removal**: `Box\File\FileInterface`, `Box\Folder\FolderInterface`, `Box\Group\GroupInterface`, `Box\Collaboration\CollaborationInterface`, `SharedLinkInterface`, and `EventInterface` (including Admin/User variants) have been removed. Type hints should use the concrete resource classes.
     - **Endpoint Constants**:
         - `FileInterface::URI` and `FileInterface::UPLOAD_URI` have been moved to `FileService` as `ENDPOINT` and `UPLOAD_ENDPOINT`.
         - `FolderInterface::URI` and `FolderInterface::SHARED_ITEM_URI` have been moved to `FolderService` as `ENDPOINT` and `SHARED_ITEM_ENDPOINT`.
         - `GroupInterface::URI` and `GroupInterface::MEMBERSHIP_URI` have been moved to `GroupService` as `ENDPOINT` and `MEMBERSHIP_ENDPOINT`.
         - `CollaborationInterface::URI` has been moved to `CollaborationService` as `ENDPOINT`.
+        - `UserEventInterface::URI` has been moved to `UserEventService` as `ENDPOINT`.
     - **Service/Factory Returns**: `FileService`, `FolderService`, `GroupService`, `CollaborationService`, `FileFactory`, `FolderFactory`, `GroupFactory`, `CollaborationFactory`, and `Client` methods now return concrete resource classes (e.g., `Box\Resource\Folder`) instead of interfaces.
     - **FileService Signature**: `FileService::createSharedLink()` now requires a non-null `File` object. The previous nullable behavior was removed to ensure API safety.
 
