@@ -43,55 +43,39 @@ The steps should generally be followed in numerical order. Step 10 and 11 are cl
 
 ## Step 10 — Resource Namespace and Interface Rationalization
 
+See [Detailed Step 10 Tracker](10-resource-namespace-interface-rationalization.md) for the full implementation plan.
+
 ### Purpose
 Audit and migrate remaining domain resource classes into the final v1 resource namespace, and rationalize resource interfaces such as `FileInterface`, `FolderInterface`, `GroupInterface`, `CollaborationInterface`, and related resource contracts to decide which are real v1 contracts and which are legacy one-class mirror interfaces.
 
 ### Scope
-- Audit current resource namespaces:
-    - `src/File`
-    - `src/Folder`
-    - `src/Group`
-    - `src/Collaboration`
-    - `src/Event`
-    - `src/Item`
-    - `src/Resource`
-- Decide/confirm the final v1 namespace convention (e.g., `Box\Resource\...`).
-- Move or replace old domain-root resources with `Box\Resource\...` resources where that is the target (aligning with existing `Box\Resource\User`).
-- Update services, factories, tests, and docs to use final resource namespaces.
-- Remove old namespace aliases/wrappers after migration.
-- Review all interfaces in `src/Resource/`, `src/File/`, `src/Folder/`, etc.
-- Identify "mirror interfaces" that merely replicate a single implementation's public methods without providing a useful abstraction or test seam.
-- Remove or simplify legacy mirror interfaces where appropriate.
-- Preserve interfaces that represent stable SDK contracts or meaningful extension points.
+- Resource Namespace Cutover: Move resources to `Box\Resource`.
+- Interface Rationalization: Remove mirror interfaces.
+- Service Alignment: Update signatures and move constants to services.
+- Migration Docs: Update documentation.
 
 ### Non-Goals
-- Do not perform factory modernization here (Step 11). Factory modernization must happen *after* resource namespace cutover so that factories target final classes.
+- Do not perform factory modernization here (Step 11).
 - Do not implement JWT/S2S (Step 14).
 - Do not perform broad resource behavior rewrites without tests.
 
 ### Acceptance Criteria
-- Minimalist set of resource interfaces that serve clear purposes.
-- All implementations updated to reflect interface changes.
-- Migration notes updated for any removed public interfaces.
-
-### Likely Slices
-- Slice 1: Interface Audit and Rationalization Plan.
-- Slice 2: Implementation of Rationalized Interfaces (File/Folder focus).
-- Slice 3: Implementation of Rationalized Interfaces (Other resources).
-
-### Validation Expectations
+- All resources in `Box\Resource`.
+- No one-class mirror interfaces remain.
 - `composer review` passes.
-- No regression in existing service tests.
 
-### Draft Prompt Outline
-> Refine Step 10: Resource Namespace and Interface Rationalization.
-> 1. Audit current resource namespaces (`src/File`, `src/Folder`, etc.).
-> 2. Confirm final v1 namespace convention (e.g., `Box\Resource`).
-> 3. Migrate resources to the final namespace and update all references.
-> 4. Audit all resource interfaces (e.g., `FileInterface`).
-> 5. For each, determine: Keep as is, Simplify, or Remove (merge into implementation).
-> 6. Implement changes, ensuring all usages (Services, Factories, Client) are updated.
-> 7. Update migration docs.
+### Status Table
+
+| Slice | Title | Status |
+| :--- | :--- | :--- |
+| 10.0 | [Tracker and Resource Surface Audit](10-resource-namespace-interface-rationalization.md#slice-100--tracker-and-resource-surface-audit) | Not Started |
+| 10.1 | [User Resource Validation](10-resource-namespace-interface-rationalization.md#slice-101--user-resource-validation) | Not Started |
+| 10.2 | [File Resource Namespace and Interface Rationalization](10-resource-namespace-interface-rationalization.md#slice-102--file-resource-namespace-and-interface-rationalization) | Not Started |
+| 10.3 | [Folder Resource Namespace and Interface Rationalization](10-resource-namespace-interface-rationalization.md#slice-103--folder-resource-namespace-and-interface-rationalization) | Not Started |
+| 10.4 | [Group and Collaboration Resource Rationalization](10-resource-namespace-interface-rationalization.md#slice-104--group-and-collaboration-resource-rationalization) | Not Started |
+| 10.5 | [Shared Item and Event Resource Rationalization](10-resource-namespace-interface-rationalization.md#slice-105--shared-item-and-event-resource-rationalization) | Not Started |
+| 10.6 | [Migration Docs and Baseline Cleanup](10-resource-namespace-interface-rationalization.md#slice-106--migration-docs-and-baseline-cleanup) | Not Started |
+| 10.7 | [Final Integration Review](10-resource-namespace-interface-rationalization.md#slice-107--final-integration-review) | Not Started |
 
 ---
 
