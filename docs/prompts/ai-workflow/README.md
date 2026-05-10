@@ -27,6 +27,8 @@ These documents are **reusable templates**. To use them in a new project:
     - Release processes.
 4. **Authoritative Guidelines**: Local project-specific guidelines (e.g., in `.junie/guidelines.md` or a root `README.md`) always override these generic templates.
 
-## Draft Prompts
+## Draft Prompts and Planning
 
-All prompt patterns included in these documents are **drafts**. They must be refined before execution to include the specific context of the current task, repository, and roadmap item. Never execute a generated prompt without human review.
+All prompt patterns included in these documents are **drafts**. They must be refined before execution to include the specific context of the current task, repository, and roadmap item.
+
+**Mandatory Review**: For every new step, segment, roadmap item, or initiative, begin with a tracker/plan review and refinement pass before implementation. This is required even for low-risk work. Confirm scope, slice order, dependencies, non-goals, validation expectations, and draft prompts are current before running the first implementation slice. Implementation should not begin until the current tracker/plan has been reviewed and accepted by the human reviewer.

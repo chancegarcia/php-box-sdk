@@ -38,6 +38,7 @@ docs/
 
 The coordinator maintains a tracker for each major initiative:
 
+- **Review and Refine**: For every new step, segment, roadmap item, or initiative, begin with a tracker/plan review and refinement pass before implementation. This is required even for low-risk work. Confirm scope, slice order, dependencies, non-goals, validation expectations, and draft prompts are current before running the first implementation slice. Implementation should not begin until the current tracker/plan has been reviewed and accepted by the human reviewer.
 - **Initiative**: Unified goal (e.g., "Add AI Support").
 - **Affected Repos**: List of implementation repos involved.
 - **Dependency Map**: Which repo must be updated before others.

@@ -227,6 +227,7 @@ Final summaries should report Composer commands and results. Direct `vendor/bin/
 
 For multi-slice initiatives such as Foundation Refinement:
 
+- For every new step, segment, roadmap item, or initiative, begin with a tracker/plan review and refinement pass before implementation. This is required even for low-risk work. Confirm scope, slice order, dependencies, non-goals, validation expectations, and draft prompts are current before running the first implementation slice.
 - Treat tracker-embedded prompts as drafts unless the user explicitly says otherwise.
 - Refine each slice prompt immediately before execution.
 - Execute one slice at a time.

@@ -50,14 +50,15 @@ After completing a task or slice, the AI assistant writes a final summary by rep
 
 ## Slice Workflow
 
-1. **Tracker Creation**: Create or update an initiative tracker in `docs/planning/`.
-2. **Draft Prompts**: Treat tracker-embedded prompts as drafts.
-3. **Prompt Refinement**: Refine the next slice's prompt immediately before execution.
-4. **Single Execution**: Run exactly one slice at a time.
-5. **Human Review**: Review the AI's implementation and validation output.
-6. **Cleanup/Refinement**: Run follow-up prompts if the slice requires minor fixes.
-7. **Commit**: Commit the completed, verified slice.
-8. **Progression**: Move to the next slice only after the previous one is committed.
+1. **Tracker/Plan Review**: For every new step, segment, roadmap item, or initiative, begin with a tracker/plan review and refinement pass before implementation. This is required even for low-risk work. Confirm scope, slice order, dependencies, non-goals, validation expectations, and draft prompts are current before running the first implementation slice. Implementation should not begin until the current tracker/plan has been reviewed and accepted by the human reviewer.
+2. **Tracker Creation**: Create or update an initiative tracker in `docs/planning/`.
+3. **Draft Prompts**: Treat tracker-embedded prompts as drafts.
+4. **Prompt Refinement**: Refine the next slice's prompt immediately before execution.
+5. **Single Execution**: Run exactly one slice at a time.
+6. **Human Review**: Review the AI's implementation and validation output.
+7. **Cleanup/Refinement**: Run follow-up prompts if the slice requires minor fixes.
+8. **Commit**: Commit the completed, verified slice.
+9. **Progression**: Move to the next slice only after the previous one is committed.
 
 ## Tracker Structure Template
 
