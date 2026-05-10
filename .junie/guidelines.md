@@ -41,15 +41,23 @@ General development rules:
 - Prefer small, composable services and interfaces over large procedural additions.
 
 Architecture guidelines:
+- Final v1 primary resource classes must use the flat `Box\Resource\{ResourceName}` pattern.
+- Do not introduce accidental double/nested primary resource names such as `Box\Resource\File\File`, `Box\Resource\Event\Event`, or `Box\Resource\SharedLink\SharedLink`.
+- Nested resource namespaces are allowed only for subordinate/supporting types when explicitly justified (e.g., collections, entries, sources, permissions, or nested value-object-like types).
+- When introducing or moving resources, document any intentional nested namespace exception in the relevant planning/audit docs.
+- Before completing a resource namespace slice, search for accidental double/nested primary resources and confirm final public class names match the tracker.
 - Prefer the newer flattened namespace structure for new code, such as:
     - `Box\Client`
-    - `Box\File\...`
-    - `Box\Folder\...`
-    - `Box\User\...`
-    - `Box\Group\...`
-    - `Box\Event\...`
+    - `Box\Resource\File` (Primary resource)
+    - `Box\Resource\Folder` (Primary resource)
+    - `Box\User\...` (Note: User resource is `Box\Resource\User`)
+    - `Box\Group\...` (Note: Group resource is `Box\Resource\Group`)
+    - `Box\Event\...` (Note: Event resource is `Box\Resource\Event`)
     - `Box\Connection\...`
     - `Box\Mapper\...`
+- For detailed architecture rules and resource namespace inventory, refer to:
+    - `docs/planning/10-resource-namespace-interface-rationalization.md`
+    - `docs/audits/10-resource-namespace-interface-audit.md`
 - Avoid adding new code under legacy `Box\Model\...` namespaces unless specifically maintaining a compatibility alias.
 - Legacy aliases may exist to support older consumers. If adding or modifying aliases:
     - Keep them minimal.
