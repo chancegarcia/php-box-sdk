@@ -340,7 +340,7 @@ class Service extends BaseModel implements ServiceInterface
      *
      * @throws BoxException
      */
-    public function error($data, $message = null, ?BoxResponseInterface $boxResponse = null): void
+    public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null): void
     {
         $error = $data['error'] ?? 'unknown_error';
         if (null === $message || !is_string($message)) {
@@ -1090,6 +1090,23 @@ class Service extends BaseModel implements ServiceInterface
     protected function getResourceFromBox(string $uri, string $resourceClass): object
     {
         $data = $this->getFromBox($uri, 'decoded');
+
+        return $this->hydrate($resourceClass, $data);
+    }
+
+    /**
+     * Helper to send an update to Box and hydrate the response.
+     *
+     * @template T of object
+     * @param string $uri
+     * @param array|string $params
+     * @param class-string<T> $resourceClass
+     * @return T
+     * @throws BoxException
+     */
+    protected function sendUpdateAndHydrate(string $uri, array|string $params, string $resourceClass): object
+    {
+        $data = $this->sendUpdateToBox($uri, $params, 'decoded');
 
         return $this->hydrate($resourceClass, $data);
     }

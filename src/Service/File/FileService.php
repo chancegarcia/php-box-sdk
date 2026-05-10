@@ -41,7 +41,6 @@ use Box\Dto\File\Request\CreateSharedLinkRequest;
 use Box\File\File;
 use Box\File\FileInterface;
 use Box\Item\SharedLink\SharedLinkInterface;
-use Box\Mapper\Hydrator;
 use Box\Service\Service;
 
 class FileService extends Service implements FileServiceInterface
@@ -60,16 +59,14 @@ class FileService extends Service implements FileServiceInterface
 
         if (is_array($sharedLink)) {
             // Normalize array to DTO
-            $sharedLink = (new Hydrator())->hydrate(CreateSharedLinkRequest::class, $sharedLink);
+            $sharedLink = $this->hydrate(CreateSharedLinkRequest::class, $sharedLink);
         }
 
         $params = [
             'shared_link' => ($sharedLink instanceof CreateSharedLinkRequest) ? $sharedLink->toArray() : $sharedLink->toBoxArray()
         ];
 
-        $updatedFile = $this->createNewFile();
-
-        return $this->sendUpdateToBox($uri, $params, 'decoded', $updatedFile);
+        return $this->sendUpdateAndHydrate($uri, $params, File::class);
     }
 
     /**

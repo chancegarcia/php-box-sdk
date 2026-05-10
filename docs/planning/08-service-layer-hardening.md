@@ -44,7 +44,7 @@ This initiative covers:
 | 2 | [Base Service Contract Stabilization](#service-layer-hardening-slice-2---base-service-contract-stabilization) | Completed |
 | 3 | [Hydration and Mapper Boundary](#service-layer-hardening-slice-3---hydration-and-mapper-boundary) | Completed |
 | 4 | [Representative Read Service Migration](#service-layer-hardening-slice-4---representative-read-service-migration) | Completed |
-| 5 | [Representative Write/Update Service Migration](#service-layer-hardening-slice-5---representative-writeupdate-service-migration) | |
+| 5 | [Representative Write/Update Service Migration](#service-layer-hardening-slice-5---representative-writeupdate-service-migration) | Completed |
 | 6 | [File/Upload Service Compatibility Pass](#service-layer-hardening-slice-6---fileupload-service-compatibility-pass) | |
 | 7 | [Service Error and Retry Semantics](#service-layer-hardening-slice-7---service-error-and-retry-semantics) | |
 | 8 | [Legacy Architecture Removal and Cutover](#service-layer-hardening-slice-8---legacy-architecture-removal-and-cutover) | |
@@ -318,6 +318,16 @@ Validation:
 - Error states are handled via the refined exception taxonomy.
 - No credential leakage in logs or exceptions.
 
+**Completion Note**:
+Slice 5 completed. Representative write/update migration pattern established.
+- `FileService::createSharedLink()` migrated to use hardened patterns.
+- `Service::sendUpdateAndHydrate()` helper implemented to centralize hydration and avoid `mapBoxToClass`.
+- Request normalization pattern handles `CreateSharedLinkRequest`, `array`, and legacy `SharedLinkInterface`.
+- Response hydration pattern uses `sendUpdateAndHydrate()` returning typed `File` resource.
+- `ServiceInterface` updated to fix type mismatch in `error()` method.
+- Unit tests added in `tests/Service/File/FileServiceTest.php` covering all input variants.
+- Full validation suite (`composer review` equivalents) passed.
+
 **Junie Prompt**:
 ```markdown
 Implement Service Layer Hardening Slice 5 — Representative Write/Update Service Migration.
@@ -574,7 +584,9 @@ Validation:
 - Slice 1: Completed ✓
 - Slice 2: Completed ✓
 - Slice 3: Completed ✓
-- Slices 4-11: Pending
+- Slice 4: Completed ✓
+- Slice 5: Completed ✓
+- Slices 6-11: Pending
 
 ## Deferred Follow-up
 - Broad removal of legacy pre-v1 / v0.x architecture: This remains a v1 release requirement. If the remaining scope exceeds the current Service Layer Hardening tracker, it will be moved to a dedicated tracker, but it MUST be completed before v1 release.

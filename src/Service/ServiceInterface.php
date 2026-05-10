@@ -166,11 +166,12 @@ interface ServiceInterface extends BaseModelInterface
     /**
      * used to throw exceptions that need to contain error information returned from Box
      *
-     * @param $data    array containing error and error_description keys
-     * @param $message string exception message
+     * @param array $data containing error and error_description keys
+     * @param string|null $message
+     * @param BoxResponseInterface|null $boxResponse
      *
      */
-    public function error($data, $message = null);
+    public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null): void;
 
     /**
      * @return string
