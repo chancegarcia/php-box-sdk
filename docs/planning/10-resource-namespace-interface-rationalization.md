@@ -20,20 +20,34 @@ This tracker covers the rationalization of the resource surface for the v1 relea
 This work assumes the completion of Step 9 (Legacy Architecture Removal), ensuring no resources inherit from legacy base models.
 
 ## Final Namespace Policy
-- All Box domain resources must reside in the `Box\Resource` namespace.
-- Domain-root namespaces (e.g., `Box\File`, `Box\Folder`) are deprecated and will be removed in this step.
+- All Box domain resources (e.g., File, Folder, User) must reside in the `Box\Resource` namespace.
+- Pure data transfer objects for requests and responses reside in the `Box\Dto` namespace.
+- Business logic and API orchestration reside in the `Box\Service` namespace.
+- Domain-root namespaces (e.g., `Box\File`, `Box\Folder`) are deprecated and will be removed in v1 after migration.
+- No compatibility aliases will be maintained in the final v1 release.
+
+## Alias/Removal Policy
+- **Resources**: Move to `Box\Resource` and remove the old domain-root namespace.
+- **Interfaces**: Remove one-class mirror interfaces. Retain contract and service interfaces.
+- **Migration**: Provide a clear mapping in `upgrading-0.11-to-1.0.md`.
+- **Tests**: Assert that new concrete classes are used.
+
+## Endpoint Constants Policy
+- All `URI` constants must move from resource interfaces to their respective services as `ENDPOINT` constants.
+- Naming: `ENDPOINT` or `[TYPE]_ENDPOINT`.
+- Visibility: `public`.
 
 ## Interface Rationalization Policy
 - **Remove**: Mirror interfaces that merely replicate a single implementation's public methods (e.g., `FileInterface`, `FolderInterface`).
-- **Retain**: Interfaces that represent stable SDK contracts, real extension points, or polymorphic boundaries used across multiple implementations.
-- **Action**: All `URI` constants must move from resource interfaces to their respective services as `ENDPOINT` constants.
+- **Retain**: Interfaces that represent stable SDK contracts, real extension points, or polymorphic boundaries used across multiple implementations (e.g., `BoxResponseInterface`, `TokenInterface`).
+- **Action**: Rationalize alongside namespace moves to ensure type safety.
 
 ## Status Table
 
 | Slice | Title | Status |
 | :--- | :--- | :--- |
-| 10.0 | [Tracker and Resource Surface Audit](#slice-100--tracker-and-resource-surface-audit) | Not Started |
-| 10.1 | [User Resource Validation](#slice-101--user-resource-validation) | Not Started |
+| 10.0 | [Tracker and Resource Surface Audit](#slice-100--tracker-and-resource-surface-audit) | ✓ |
+| 10.1 | [Resource Namespace Policy and Alias Plan](#slice-101--resource-namespace-policy-and-alias-plan) | ✓ |
 | 10.2 | [File Resource Namespace and Interface Rationalization](#slice-102--file-resource-namespace-and-interface-rationalization) | Not Started |
 | 10.3 | [Folder Resource Namespace and Interface Rationalization](#slice-103--folder-resource-namespace-and-interface-rationalization) | Not Started |
 | 10.4 | [Group and Collaboration Resource Rationalization](#slice-104--group-and-collaboration-resource-rationalization) | Not Started |
@@ -51,25 +65,36 @@ This work assumes the completion of Step 9 (Legacy Architecture Removal), ensuri
 - Finalize this planning document.
 - Audit all remaining interfaces in `src/`.
 - Confirm removal list for Slice 10.2–10.5.
+- Document findings in `docs/audits/10-resource-namespace-interface-audit.md`.
 
 **Acceptance Criteria**:
 - Tracker is approved.
-- Detailed list of interfaces to remove is documented.
+- Detailed list of interfaces to remove is documented in `docs/audits/10-resource-namespace-interface-audit.md`.
+- No implementation before prompt refinement.
+- Tracker prompts are drafts.
+- Step 10 must complete before Factory Modernization (Step 11).
+- Resource interface removal must follow namespace decisions.
 
 ---
 
-## Slice 10.1 — User Resource Validation
+## Slice 10.1 — Resource Namespace Policy and Alias Plan
 
-**Purpose**: Ensure `Box\Resource\User` is the canonical template and all references are correct.
+**Purpose**: Define the final v1 resource namespace policy and create a concrete alias/removal plan for old resource namespaces.
 
 **Scope**:
-- Check `UserService` and `Client` for any remaining `UserInterface` references (if any exist).
-- Ensure `User` is correctly used in all tests.
-- Confirm `Box\User` namespace is fully cleared.
+- Define Resource Namespace Policy.
+- Define Alias/Removal Policy.
+- Define Endpoint Constants Policy.
+- Document transitional patterns (FileService shared-link bridge, test comments).
+- Update tracker and audit docs.
 
 **Acceptance Criteria**:
-- `Box\Resource\User` is used consistently across the SDK.
-- `Box\User` namespace is gone.
+- Final namespace policy defined.
+- Alias/removal policy defined.
+- Endpoint constants policy defined.
+- Transitional patterns documented in `docs/audits/10-resource-namespace-interface-audit.md`.
+- Tracker and audit docs updated.
+- No implementation before prompt refinement.
 
 ---
 
