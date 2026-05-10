@@ -35,7 +35,7 @@ namespace Box\File;
 use Box\Mapper\Hydrator;
 use Box\File\FileInterface;
 use DateTimeInterface;
-use Box\User\User;
+use Box\Resource\User;
 use Box\Folder\Folder;
 use Box\Item\SharedLink\SharedLink;
 

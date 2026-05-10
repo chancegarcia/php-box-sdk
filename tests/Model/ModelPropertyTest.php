@@ -5,7 +5,7 @@ namespace Box\Tests\Model;
 use Box\Mapper\Hydrator;
 use Box\File\File;
 use Box\Folder\Folder;
-use Box\User\User;
+use Box\Resource\User;
 use PHPUnit\Framework\TestCase;
 
 class ModelPropertyTest extends TestCase

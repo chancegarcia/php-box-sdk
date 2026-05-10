@@ -44,4 +44,9 @@ class UserMigrationTest extends TestCase
         $this->assertFalse(interface_exists('Box\User\UserInterface'));
         $this->assertFalse(interface_exists('Box\Model\User\UserInterface'));
     }
+
+    public function testLegacyUserClassIsRemoved(): void
+    {
+        $this->assertFalse(class_exists('Box\User\User'), 'Legacy Box\User\User class should be removed in v1.0.');
+    }
 }
