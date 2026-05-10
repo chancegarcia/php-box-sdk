@@ -82,13 +82,23 @@ Audit and migrate remaining domain resource classes into the final v1 resource n
 ## Step 11 — Factory Modernization and Service Boundaries
 
 ### Purpose
-Audit and modernize factory patterns and service boundaries after interface rationalization to ensure clear construction and operational responsibilities. This step addresses "architecture smells" identified during Step 10.
+Audit and modernize factory patterns and service boundaries after interface rationalization to ensure clear construction and operational responsibilities. This step addresses "architecture smells" identified during Step 10, specifically around factory interface proliferation and resource self-hydration.
 
 ### Scope
-- **Factory Modernization**:
-    - Review `AbstractFactory`, static factory methods, and generic `new $class($options)` behavior.
+- **Factory Inventory and Rationalization**:
+    - List every factory and factory interface.
+    - Rationalize factory interfaces: retain only those representing meaningful public extension points or stable contracts.
+    - Remove one-class mirror factory interfaces where they add complexity without value.
+    - Review `AbstractFactory` consumers and usages.
+- **Factory Pattern Modernization**:
+    - Review static factory methods and generic `new $class($options)` behavior.
     - Replace legacy generic factories with explicit typed factories where useful.
     - Preserve factories that are clear v1 construction boundaries.
+- **Resource Construction Policy**:
+    - Audit resources with array-accepting/self-hydrating constructors.
+    - Decide whether resource constructors should be passive for v1 (state-only).
+    - Determine where hydration belongs: services, mappers, factories, or resource constructors.
+    - Document and test any retained constructor hydration as an intentional ergonomic choice.
 - **Service Boundaries & Resource Purity**:
     - Review and enforce service ownership of URI construction and API operations.
     - Remove resource dependencies on service constants or internal URI builders (resource purity).
@@ -100,17 +110,22 @@ Audit and modernize factory patterns and service boundaries after interface rati
 - Do not bundle JWT/S2S implementation here.
 
 ### Acceptance Criteria
-- Modernized factories following v1 patterns.
+- Factory interfaces audited and either retained with rationale or removed.
+- Resource constructor self-hydration audited and resolved or intentionally documented.
+- Construction and hydration responsibilities documented.
 - Resources no longer build their own API URIs.
 - `Client` methods delegate to services for resource-specific operations.
 - Removal of legacy factory traits or obsolete base classes.
+- Public API and migration implications are captured.
 
 ### Draft Prompt Outline
 > Refine Step 11: Factory Modernization and Service Boundaries.
-> 1. Audit existing factories in `src/Factory/` and operational logic in `Client` and Resources.
-> 2. Modernize factory patterns to use explicit typed factories.
-> 3. Move URI construction and API orchestration from Resources/Client to Services.
-> 4. Remove legacy factory base classes/traits if they no longer serve v1.
+> 1. Audit existing factories, factory interfaces, and resource constructors.
+> 2. Rationalize factory interfaces; remove redundant mirror interfaces.
+> 3. Modernize factory patterns to use explicit typed factories.
+> 4. Resolve resource self-hydration vs. passive object design.
+> 5. Move URI construction and API orchestration from Resources/Client to Services.
+> 6. Remove legacy factory base classes/traits if they no longer serve v1.
 
 ---
 

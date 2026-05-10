@@ -113,6 +113,14 @@ Resources should represent Box API data/state only. However, some resources curr
 
 **Action**: Audit `Client` and move resource API operation logic to services, leaving `Client` as a high-level facade/delegator.
 
+### 6.3 Factory Interface Rationalization
+Many resources have accompanying factory interfaces (e.g., `FileFactoryInterface`) that may be redundant if they only have one implementation and don't represent a meaningful extension point.
+- **Action**: Audit all factory interfaces and remove those that are simple mirrors of concrete factories unless they are needed for dependency inversion in v1.
+
+### 6.4 Resource Self-Hydration
+Most resources currently accept `?array $options` in their constructor and call `Hydrator::hydrate()`. This blurs the line between a data object and a hydration-aware object.
+- **Action**: Decide if resource constructors should be passive (no internal hydration) or if this ergonomic bridge should be retained for v1.
+
 ## 7. Recommended Migration Sequence
 
 1. **Step 10.1**: Validate `Box\Resource\User`. Confirm it is the template for others.

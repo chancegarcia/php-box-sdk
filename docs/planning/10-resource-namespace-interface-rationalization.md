@@ -11,7 +11,7 @@ This tracker covers the rationalization of the resource surface for the v1 relea
 - Service Alignment: Update service signatures and implementation to use the final v1 resource types and move endpoint constants from interfaces to services.
 - Migration Docs: Update documentation to reflect these breaking changes.
 
-> **Note**: Step 10 focuses on namespace and interface rationalization. Broader service-boundary (e.g., `Client` operations) and resource-purity (e.g., URI construction inside resources) issues identified during this step are documented as "smells" but deferred to Step 11 (Factory Modernization).
+> **Note**: Step 10 focuses on namespace and interface rationalization. Broader service-boundary (e.g., `Client` operations), resource-purity (e.g., URI construction inside resources), factory interface rationalization, and resource self-hydration issues identified during this step are documented as "smells" but deferred to Step 11 (Factory Modernization).
 
 ## Non-Goals
 - Factory Modernization (Step 11).
