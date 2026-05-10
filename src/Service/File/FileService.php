@@ -75,10 +75,15 @@ class FileService extends Service implements FileServiceInterface
      */
     private function normalizeSharedLinkPayload(SharedLinkInterface|CreateSharedLinkRequest|null $sharedLink): array
     {
+        if (null === $sharedLink) {
+            return [];
+        }
+
         if ($sharedLink instanceof CreateSharedLinkRequest) {
             return $sharedLink->toArray();
         }
 
+        // Fallback for legacy models that implement SharedLinkInterface but might not be fully hydrated to DTOs yet
         if (method_exists($sharedLink, 'toArray')) {
             return $sharedLink->toArray();
         }

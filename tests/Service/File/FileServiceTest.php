@@ -131,4 +131,32 @@ class FileServiceTest extends TestCase
 
         $this->assertInstanceOf(FileInterface::class, $result);
     }
+
+    public function testCreateSharedLinkWithNull(): void
+    {
+        $fileId = '998877';
+        $file = new File();
+        $file->setId($fileId);
+
+        $responseData = [
+            'type' => 'file',
+            'id' => $fileId,
+            'shared_link' => null
+        ];
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->expects($this->once())
+            ->method('put')
+            ->with(
+                FileInterface::URI . '/' . $fileId,
+                json_encode(['shared_link' => []])
+            )
+            ->willReturn($this->createMockResponse($responseData));
+
+        $service = $this->createService($connection);
+        $result = $service->createSharedLink($file, null);
+
+        $this->assertInstanceOf(FileInterface::class, $result);
+        $this->assertSame($fileId, $result->getId());
+    }
 }
