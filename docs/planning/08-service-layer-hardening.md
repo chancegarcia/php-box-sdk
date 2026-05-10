@@ -45,7 +45,7 @@ This initiative covers:
 | 3 | [Hydration and Mapper Boundary](#service-layer-hardening-slice-3---hydration-and-mapper-boundary) | Completed |
 | 4 | [Representative Read Service Migration](#service-layer-hardening-slice-4---representative-read-service-migration) | Completed |
 | 5 | [Representative Write/Update Service Migration](#service-layer-hardening-slice-5---representative-writeupdate-service-migration) | Completed |
-| 6 | [File/Upload Service Compatibility Pass](#service-layer-hardening-slice-6---fileupload-service-compatibility-pass) | |
+| 6 | [File/Upload Service Compatibility Pass](#service-layer-hardening-slice-6---fileupload-service-compatibility-pass) | Completed ✓ |
 | 7 | [Service Error and Retry Semantics](#service-layer-hardening-slice-7---service-error-and-retry-semantics) | |
 | 8 | [Legacy Architecture Removal and Cutover](#service-layer-hardening-slice-8---legacy-architecture-removal-and-cutover) | |
 | 9 | [Service Documentation and Migration Drift Pass](#service-layer-hardening-slice-9---service-documentation-and-migration-drift-pass) | |
@@ -368,23 +368,22 @@ Validation:
 - No real network calls in tests.
 - Large file/streaming support is preserved.
 
-**Junie Prompt**:
-```markdown
-Implement Service Layer Hardening Slice 6 — File/Upload Service Compatibility Pass.
+**Completion Note**:
+Slice 6 completed. File/upload compatibility verified.
+- Verified `FileService::createSharedLink()` remains compatible with hardened patterns.
+- Verified `Connection::postFile()` correctly handles multipart payloads for both Guzzle and Curl transports.
+- Added `tests/Connection/ConnectionUploadCompatibilityTest.php` covering:
+    - Guzzle resource-based multipart uploads.
+    - Curl `CURLFile`-based multipart uploads.
+    - `FileStream` integration for both transports.
+    - Validation for parent ID and file path.
+- Confirmed `FileStream` correctly manages resources and temporary file cleanup.
+- No regressions found in upload functionality.
 
-Goal: Ensure file/upload behavior remains compatible with the hardened service layer.
-
-Scope:
-- Verify and stabilize upload-related service methods.
-- Ensure multipart and streaming payloads are correctly handled by the hardened base.
-
-Acceptance Criteria:
-- No regression in upload functionality.
-- Compatible with Step 7 transport foundation.
-
-Validation:
-- `composer test`
-```
+**Validation Expectations**:
+- `composer test` passes.
+- `composer analyse` passes.
+- `composer cs:check` passes.
 
 ---
 
