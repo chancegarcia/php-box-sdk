@@ -12,6 +12,8 @@ This folder contains reusable AI-assisted development workflow templates and gui
   - Reusable PHP code-style preferences and validation expectations.
 - [Prompt Delivery Expectations](prompt-delivery-expectations.md)
   - Guidance on how AI assistants should format and deliver implementation prompts.
+- [Handoff Summary Template](handoff-summary-template.md)
+  - A reusable template for periodic handoff summaries to preserve context across sessions.
 
 ## Reuse Model
 

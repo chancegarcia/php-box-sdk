@@ -16,6 +16,7 @@ This workflow is designed for AI-assisted, slice-based software development with
 - **Avoid Scope Creep**: Stay focused on the current slice's goals. Document unrelated improvements as follow-ups.
 - **Canonical Validation**: Use the repository's native validation commands (e.g., Composer scripts, Makefile targets).
 - **No Junk Commits**: Do not commit generated summaries, logs, temp files, caches, or `vendor/` changes.
+- **Periodic Handoffs**: Produce a handoff summary every 2–3 slices or before ending a session to ensure work can be resumed if context is lost.
 - **Zero Secret Exposure**: Never include real credentials, tokens, or private data in code, tests, or summaries.
 
 ## Recommended Setup
@@ -47,6 +48,21 @@ After completing a task or slice, the AI assistant writes a final summary by rep
     - **Follow-ups**: Identified risks or deferred tasks.
 - **Privacy**: Redact all secrets, credentials, tokens, private account IDs, and sensitive local paths.
 - **Usage**: The summary is used to provide feedback in the review chat and is not committed to the repository.
+
+## Periodic Handoff Summary Workflow
+
+During long-running initiatives or before ending a session, the AI produces a concise handoff summary to preserve context.
+
+- **Frequency**:
+    - Every 2–3 completed slices.
+    - Before ending a long AI session.
+    - Before switching to a new major initiative.
+    - Whenever the user asks for one.
+- **Content**: Use the [Handoff Summary Template](handoff-summary-template.md). Include project name, current goal, completed/pending slices, active decisions, constraints, validation rules, and "gotchas".
+- **Storage**:
+    - Paste directly into the chat.
+    - Write to `var/tmp/ai-handoff-summary.md` (overwriting any previous handoff).
+- **No Commit**: Generated handoff files in `var/tmp/` must not be committed.
 
 ## Slice Workflow
 

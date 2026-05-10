@@ -120,6 +120,11 @@ Testing guidelines:
     - Keep the file redacted and free of secrets, credentials, tokens, private account IDs, local sensitive paths, and downstream/private implementation details. Redact any sensitive output.
     - Do not treat `var/tmp/last-task-summary.md` as a source artifact to commit.
     - Do not remove `var/tmp/.gitkeep`.
+- **Periodic Handoff Summaries**: During long-running initiatives or before ending a session, produce a handoff summary to preserve context.
+    - **Frequency**: Every 2–3 completed slices, before switching major initiatives, or before ending a long session.
+    - **Template**: Use `docs/prompts/ai-workflow/handoff-summary-template.md`.
+    - **Storage**: Paste into the chat or write to `var/tmp/ai-handoff-summary.md`.
+    - **No Commit**: Do not commit generated handoff files in `var/tmp/`.
 
 Static analysis and style:
 - Avoid nested ternary operators. Use explicit branching or a named helper method when conditional logic becomes nested. Simple one-level ternaries are acceptable when they remain readable.
