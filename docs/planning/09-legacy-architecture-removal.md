@@ -3,12 +3,23 @@
 Roadmap reference: v1 Step 9 (Sequenced from Step 8)
 
 ## Purpose
-This document outlines the sequenced plan for removing legacy pre-v1 / v0.x architecture and APIs from the SDK to achieve the "clean target architecture" of v1.0.
+
+This initiative is the intentional v1 major-version cutover that removes legacy pre-v1 / v0.x architecture and APIs. v1 is the clean target architecture. This does not mean removing newly established v1 APIs (e.g., those following the hardened patterns from Step 7 and 8). The goal is to completely remove the old legacy API architectural layer as part of the v1 major-version cutover.
+
+Legacy removal is required before v1 release. Removals must be intentional, tested, documented, and sequenced. Work must proceed in atomic slices.
 
 ## 1. Legacy Inventory by Category
 
 ### Base Model Architecture
-- **Files**: `src/Model/BaseModel.php`, `src/Model/BaseModelInterface.php`, `src/Model/BaseModelTrait.php`, `src/Model/Model.php`, `src/Model/ModelInterface.php`, `src/Model/ModelTrait.php`, `src/Model/BoxModel.php`, `src/Model/BoxModelInterface.php`
+- **Files**: 
+    - `src/Model/BaseModel.php`
+    - `src/Model/BaseModelInterface.php`
+    - `src/Model/BaseModelTrait.php`
+    - `src/Model/Model.php`
+    - `src/Model/ModelInterface.php`
+    - `src/Model/ModelTrait.php`
+    - `src/Model/BoxModel.php`
+    - `src/Model/BoxModelInterface.php`
 - **Usages**: Extended/Implemented by nearly all legacy resource models and services.
 - **v1 Replacement**: 
     - Resources: `Box\Resource\...` (e.g., `Box\Resource\User`)
@@ -19,71 +30,414 @@ This document outlines the sequenced plan for removing legacy pre-v1 / v0.x arch
 
 ### Service Base Patterns & Stateful APIs
 - **Files**: `src/Service/Service.php`
-- **Impacted Methods**: `getLastResult`, `getDefaultReturnType`, `refreshToken` (move to Auth), `refreshTokenIfExpired`
+- **Impacted Methods**: 
+    - `getLastResult`
+    - `lastResult` (property)
+    - `lastResultType` (property)
+    - `lastResultResponse` (property)
+    - `getDefaultReturnType`
+    - `refreshToken` (move to Auth/Connection)
+    - `refreshTokenIfExpired`
 - **Usages**: Consumers checking `getLastResult()` after service calls.
 - **v1 Replacement**: Typed return values from service methods; Auth handled by `Connection`.
 - **Risk**: Medium
 - **Dependency**: Update `Client` and CLI commands.
 
 ### Legacy Hydration & Mapping Flows
-- **Symbols**: `mapBoxToClass`, `classArray`, `toBoxArray`, `buildQuery` (on models)
-- **Files**: `src/Mapper/ModelMapper.php` (legacy methods), `src/Model/ModelTrait.php`
+- **Symbols**: 
+    - `mapBoxToClass` (on models and `ModelMapper`)
+    - `classArray` (on models and `ModelMapper`)
+    - `toBoxArray` (on models)
+    - `toClassVar` / `toBoxVar` (where used for legacy mapping)
+    - `buildQuery` (on models)
+- **Files**: 
+    - `src/Mapper/ModelMapper.php` (legacy methods)
+    - `src/Model/ModelTrait.php`
+    - `src/Model/BaseModelTrait.php`
 - **v1 Replacement**: `Box\Mapper\Hydrator::hydrate()`, `Hydrator::extract()` (or DTO `toArray()`)
 - **Risk**: Medium
 - **Dependency**: Migration of `UserEventService` and `Folder::classArray`.
 
 ### Custom Collection & Event Layers
-- **Files**: `src/Event/Collection/*`, `src/Event/User/*`, `src/Event/Admin/*`
+- **Files**: 
+    - `src/Event/Collection/*`
+    - `src/Event/User/*`
+    - `src/Event/Admin/*`
+    - `src/Collection/*` (Legacy collection layer)
 - **v1 Replacement**: Doctrine Collections, `Box\Resource\Event`.
 - **Risk**: Medium/High
 - **Dependency**: Full overhaul of `UserEventService`.
 
 ### Compatibility Aliases
-- **Files**: `src/User/User.php` (deprecated), etc.
+- **Files**: 
+    - `src/User/User.php` (deprecated)
+    - Other legacy resource aliases in non-flattened namespaces.
 - **v1 Replacement**: Flattened namespace equivalents (e.g., `Box\Resource\User`).
 - **Risk**: Low (Documentation/Migration impact)
 
-## 2. Dependency Graph / Removal Order
+## 2. Non-goals
+- Implementing new major features (auto-pagination, JWT/S2S auth) unless explicitly required for a removal.
+- Unrelated refactors of newly established v1 APIs.
+- Broad behavior changes not required for legacy cutover.
 
-1.  **Stage 1: Service Migration (HOTSPOTS)**
+## 3. Dependency Graph / Removal Order
+
+1.  **Stage 1: Characterization & Readiness**
+    - Add characterization tests for high-risk legacy areas (`UserEventService`, legacy collections).
+    - Audit `Client` and CLI for legacy state usage.
+2.  **Stage 2: UserEventService & Collection Overhaul**
     - Migrate `UserEventService` (removes dependency on `mapBoxToClass` and legacy collection).
-    - Migrate remaining services in `src/Service/` to hardened patterns.
-2.  **Stage 2: Resource/DTO Cutover**
+    - Replace legacy `EventCollection` etc. with modern patterns.
+3.  **Stage 3: Service & Resource Cutover**
     - Finalize all `Box\Resource\...` classes.
     - Update all services to return `Box\Resource` instead of legacy `Box\Model`.
-3.  **Stage 3: Infrastructure Removal**
-    - Remove `mapBoxToClass` usage in `Client` and services.
+    - Remove stateful service APIs (`getLastResult`).
+4.  **Stage 4: Infrastructure Removal**
+    - Remove `mapBoxToClass` and `classArray` usage in `Client` and services.
     - Remove `ModelTrait` and `BaseModelTrait`.
-    - Remove `BaseModel` and `Model` classes.
+    - Remove `BaseModel`, `Model`, `BoxModel` and their interfaces.
     - Remove `Box\Model` namespace entirely.
-4.  **Stage 4: Cleanup & Validation**
+5.  **Stage 5: Cleanup & Validation**
     - Remove compatibility aliases.
-    - Remove PHPStan baseline entries for legacy code.
-    - Update all tests to use v1 symbols.
+    - Remove PHPStan baseline entries for removed code.
+    - Final docs/migration drift pass.
 
-## 3. Removal Sub-slices
+## 4. Atomic Slices
 
-### Slice 9.1: UserEventService Overhaul
-- **Goal**: Modernize `UserEventService` and remove its reliance on `mapBoxToClass`.
-- **Scope**: `UserEventService`, `EventCollection`, `Event`.
-- **Validation**: `composer test` with focus on event hydration.
-- **Risk**: High.
+| Slice | Name | Status |
+|---|---|---|
+| 9.0 | [Tracker & Readiness Review](#slice-90-tracker--readiness-review) | In Progress * |
+| 9.1 | [UserEventService Characterization Tests](#slice-91-usereventservice-characterization-tests) | |
+| 9.2 | [UserEventService & Event Collection Overhaul](#slice-92-usereventservice--event-collection-overhaul) | |
+| 9.3 | [Service Stateful API Removal](#slice-93-service-stateful-api-removal) | |
+| 9.4 | [Model Trait & Mapping Infrastructure Removal](#slice-94-model-trait--mapping-infrastructure-removal) | |
+| 9.5 | [Base Architecture & Box\Model Removal](#slice-95-base-architecture--boxmodel-removal) | |
+| 9.6 | [Compatibility Alias Removal](#slice-96-compatibility-alias-removal) | |
+| 9.7 | [Docs & Migration Drift Pass](#slice-97-docs--migration-drift-pass) | |
+| 9.8 | [Final Type-Safety & Baseline Cleanup](#slice-98-final-type-safety--baseline-cleanup) | |
+| 9.9 | [Final Integration Review](#slice-99-final-integration-review) | |
 
-### Slice 9.2: Legacy Model Interface & Trait Removal
-- **Goal**: Remove `ModelInterface`, `ModelTrait`, `BaseModelInterface`, `BaseModelTrait`.
-- **Scope**: `src/Model/*.php` (except base classes).
-- **Dependency**: All resources must be migrated to `Box\Resource`.
+---
 
-### Slice 9.3: Base Architecture Cutover
-- **Goal**: Remove `BaseModel`, `Model`, `BoxModel`.
-- **Scope**: `src/Model/` (directory removal).
-- **Validation**: `composer review`.
+## Slice 9.0: Tracker & Readiness Review
 
-### Slice 9.4: Compatibility Alias & Docs Cleanup
-- **Goal**: Remove legacy aliases and update migration guides.
-- **Scope**: `src/User/User.php`, `docs/migration/`.
+**Purpose**: Review and refine the Step 9 tracker.
 
-## 4. Validation Requirements
+**Scope**:
+- Planning documentation only.
+- No source changes.
+
+**Acceptance Criteria**:
+- Tracker is refined and sequenced.
+- v1 removal policy is clearly stated.
+- Draft prompts are provided for each slice.
+
+---
+
+## Slice 9.1: UserEventService Characterization Tests
+
+**Purpose**: Ensure baseline behavior for `UserEventService` is documented via tests before overhaul.
+
+**Goal**: Add characterization tests that capture current behavior (even if messy) to prevent regressions during removal.
+
+**Scope**:
+- `tests/Service/Event/UserEventServiceTest.php` (new or updated)
+- Mocking Box API responses for events.
+
+**Non-goals**:
+- Fixing bugs found during testing (document them instead).
+
+**Acceptance Criteria**:
+- Core `UserEventService` flows are covered.
+- Event collection hydration is tested.
+
+**Validation**:
+- `composer test`
+
+**Draft Prompt (Refinement Required)**:
+```markdown
+Implement Step 9 Slice 9.1 — UserEventService Characterization Tests.
+
+Goal: Add characterization tests for UserEventService and its legacy collection/event layer to ensure baseline behavior is captured before removal.
+
+Scope:
+- Create or update tests for UserEventService.
+- Cover getEvents() with different stream types and positions.
+- Document how EventCollection and Event models are currently hydrated.
+
+Validation:
+- composer test
+```
+
+---
+
+## Slice 9.2: UserEventService & Event Collection Overhaul
+
+**Purpose**: Modernize the event layer and remove legacy mapping dependencies.
+
+**Goal**: Refactor `UserEventService` to use hardened patterns and replace legacy `EventCollection` with a modern implementation (e.g., Doctrine-backed).
+
+**Scope**:
+- `UserEventService`, `EventCollection`, `Event`.
+- Removal of `mapBoxToClass` usage in these classes.
+
+**Acceptance Criteria**:
+- `UserEventService` returns modern resource/collection objects.
+- Characterization tests from 9.1 pass (or are updated to reflect intentional API changes).
+
+**Validation**:
+- `composer test`
+- `composer analyse`
+
+**Draft Prompt (Refinement Required)**:
+```markdown
+Implement Step 9 Slice 9.2 — UserEventService & Event Collection Overhaul.
+
+Goal: Modernize UserEventService and the event collection layer, removing reliance on legacy mapping.
+
+Scope:
+- Refactor UserEventService to return modern Event resources.
+- Replace legacy EventCollection with a modern alternative.
+- Remove mapBoxToClass usage from the event layer.
+
+Validation:
+- composer test
+- composer analyse
+```
+
+---
+
+## Slice 9.3: Service Stateful API Removal
+
+**Purpose**: Remove stateful properties and methods from the base service.
+
+**Goal**: Remove `getLastResult`, `lastResult`, and related methods/properties that encourage stateful usage.
+
+**Scope**:
+- `src/Service/Service.php`
+- `src/Service/ServiceInterface.php`
+- Updates to `Client` and CLI commands using these APIs.
+
+**Acceptance Criteria**:
+- Stateful APIs are removed.
+- All core consumers (Client, CLI) use return values instead.
+
+**Validation**:
+- `composer test`
+- `composer review`
+
+**Draft Prompt (Refinement Required)**:
+```markdown
+Implement Step 9 Slice 9.3 — Service Stateful API Removal.
+
+Goal: Remove stateful APIs (getLastResult, etc.) from the Service layer.
+
+Scope:
+- Remove lastResult properties and getLastResult/getDefaultReturnType methods.
+- Update Client and CLI to use method return values.
+- Update tests that rely on stateful service behavior.
+
+Validation:
+- composer review
+```
+
+---
+
+## Slice 9.4: Model Trait & Mapping Infrastructure Removal
+
+**Purpose**: Remove the legacy mapping traits and `ModelMapper` legacy methods.
+
+**Goal**: Delete `ModelTrait`, `BaseModelTrait` and their methods like `classArray`, `toBoxArray`, `mapBoxToClass`.
+
+**Scope**:
+- `src/Model/ModelTrait.php`, `src/Model/BaseModelTrait.php`
+- `src/Mapper/ModelMapper.php` (cleanup)
+
+**Acceptance Criteria**:
+- Mapping traits are removed.
+- No remaining usages in the SDK.
+
+**Validation**:
+- `composer review`
+
+**Draft Prompt (Refinement Required)**:
+```markdown
+Implement Step 9 Slice 9.4 — Model Trait & Mapping Infrastructure Removal.
+
+Goal: Remove legacy mapping traits (ModelTrait, BaseModelTrait) and clean up ModelMapper.
+
+Scope:
+- Delete src/Model/ModelTrait.php and src/Model/BaseModelTrait.php.
+- Remove legacy mapping methods from ModelMapper.
+- Ensure no code relies on these traits.
+
+Validation:
+- composer review
+```
+
+---
+
+## Slice 9.5: Base Architecture & Box\Model Removal
+
+**Purpose**: Final removal of the legacy model base classes and namespace.
+
+**Goal**: Delete `BaseModel`, `Model`, `BoxModel` and the entire `src/Model/` directory.
+
+**Scope**:
+- `src/Model/`
+
+**Acceptance Criteria**:
+- `src/Model/` directory is gone.
+- SDK compiles and tests pass using `Box\Resource` and `Box\Dto`.
+
+**Validation**:
+- `composer review`
+
+**Draft Prompt (Refinement Required)**:
+```markdown
+Implement Step 9 Slice 9.5 — Base Architecture & Box\Model Removal.
+
+Goal: Remove the legacy BaseModel architecture and the Box\Model namespace.
+
+Scope:
+- Delete all files in src/Model/.
+- Ensure all resources have been migrated to Box\Resource.
+
+Validation:
+- composer review
+```
+
+---
+
+## Slice 9.6: Compatibility Alias Removal
+
+**Purpose**: Remove legacy aliases to enforce the flattened namespace.
+
+**Goal**: Delete deprecated alias files like `src/User/User.php`.
+
+**Scope**:
+- Legacy alias files.
+
+**Acceptance Criteria**:
+- All v0.x compatibility aliases are removed.
+
+**Validation**:
+- `composer review`
+
+**Draft Prompt (Refinement Required)**:
+```markdown
+Implement Step 9 Slice 9.6 — Compatibility Alias Removal.
+
+Goal: Remove all remaining v0.x compatibility aliases.
+
+Scope:
+- Identify and remove files that serve only as deprecated aliases to modern resources.
+
+Validation:
+- composer review
+```
+
+---
+
+## Slice 9.7: Docs & Migration Drift Pass
+
+**Purpose**: Ensure documentation and migration guides reflect the final v1 state.
+
+**Goal**: Update migration guides with "before/after" examples for the removed legacy APIs.
+
+**Scope**:
+- `docs/migration/upgrading-0.11-to-1.0.md`
+- `README.md`
+- `CHANGELOG.md`
+
+**Acceptance Criteria**:
+- Migration guide clearly documents removals and replacements.
+- No references to legacy symbols remain in documentation.
+
+**Validation**:
+- `composer lint`
+
+**Draft Prompt (Refinement Required)**:
+```markdown
+Implement Step 9 Slice 9.7 — Docs & Migration Drift Pass.
+
+Goal: Update documentation to reflect the final removal of legacy architecture.
+
+Scope:
+- Update the migration guide with final removal details and before/after examples.
+- Cleanup any remaining legacy references in README and user guides.
+- Update CHANGELOG following guidelines.
+
+Validation:
+- composer lint
+```
+
+---
+
+## Slice 9.8: Final Type-Safety & Baseline Cleanup
+
+**Purpose**: Clean up PHPStan baseline and improve final type safety.
+
+**Goal**: Remove baseline entries that were tied to legacy code and ensure the project passes analysis at the target level.
+
+**Scope**:
+- `phpstan-baseline.neon`
+- `phpstan.neon.dist`
+
+**Acceptance Criteria**:
+- `composer analyse` passes with a significantly reduced (or eliminated for core areas) baseline.
+
+**Validation**:
+- `composer analyse`
+
+**Draft Prompt (Refinement Required)**:
+```markdown
+Implement Step 9 Slice 9.8 — Final Type-Safety & Baseline Cleanup.
+
+Goal: Clean up the PHPStan baseline and perform final type-safety improvements.
+
+Scope:
+- Remove now-invalid baseline entries.
+- Improve type hints in areas where legacy code previously blocked it.
+
+Validation:
+- composer analyse
+```
+
+---
+
+## Slice 9.9: Final Integration Review
+
+**Purpose**: Close Step 9.
+
+**Goal**: Run the full suite and confirm the project is v1-ready from an architecture standpoint.
+
+**Scope**:
+- Full project review.
+
+**Acceptance Criteria**:
+- All tests green.
+- Static analysis clean.
+- Style check passes.
+
+**Validation**:
+- `composer review`
+
+**Draft Prompt (Refinement Required)**:
+```markdown
+Implement Step 9 Slice 9.9 — Final Integration Review.
+
+Goal: Final validation and closure of the Legacy Architecture Removal initiative.
+
+Scope:
+- Run full validation suite (composer review).
+- Verify no legacy symbols remain in the codebase.
+
+Validation:
+- composer review
+```
+
+## Validation Requirements
 - `composer test`: No regressions in service behavior.
 - `composer analyse`: Level 0 pass (at minimum) for all v1 code.
 - `composer review`: Full project check.
