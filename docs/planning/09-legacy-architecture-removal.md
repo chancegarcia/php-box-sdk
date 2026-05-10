@@ -106,8 +106,8 @@ Legacy removal is required before v1 release. Removals must be intentional, test
 
 | Slice | Name | Status |
 |---|---|---|
-| 9.0 | [Tracker & Readiness Review](#slice-90-tracker--readiness-review) | In Progress * |
-| 9.1 | [UserEventService Characterization Tests](#slice-91-usereventservice-characterization-tests) | |
+| 9.0 | [Tracker & Readiness Review](#slice-90-tracker--readiness-review) | ✓ |
+| 9.1 | [UserEventService Characterization Tests](#slice-91-usereventservice-characterization-tests) | ✓ |
 | 9.2 | [UserEventService & Event Collection Overhaul](#slice-92-usereventservice--event-collection-overhaul) | |
 | 9.3 | [Service Stateful API Removal](#slice-93-service-stateful-api-removal) | |
 | 9.4 | [Model Trait & Mapping Infrastructure Removal](#slice-94-model-trait--mapping-infrastructure-removal) | |
@@ -150,6 +150,17 @@ Legacy removal is required before v1 release. Removals must be intentional, test
 **Acceptance Criteria**:
 - Core `UserEventService` flows are covered.
 - Event collection hydration is tested.
+
+**Completion Note (2026-05-09)**:
+- Added `tests/Service/Event/UserEventServiceTest.php` with 17 characterization tests.
+- Checked API semantics against official Box Events API documentation (2024.0).
+- Identified legacy behaviors to be addressed in Slice 9.2:
+    - Default `stream_position` is `0` in SDK, while API defaults to "now" if omitted.
+    - Error message for `setStreamPosition` incorrectly references "limit".
+    - `getEvents()` returns `null` when using a mapping collection (legacy `mapBoxToClass` behavior).
+    - `getLimit()` returns a numeric string if the input was a numeric string.
+- Adjusted tests to use realistic Box response fixtures (`chunk_size`, `next_stream_position`, `entries`).
+- Next recommended slice: 9.2 (UserEventService & Event Collection Overhaul).
 
 **Validation**:
 - `composer test`
