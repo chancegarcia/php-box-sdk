@@ -36,13 +36,6 @@
 
 namespace Box\Model;
 
-use stdClass;
-
 interface BaseModelInterface
 {
-    public function toClassVar(string $str): string;
-    public function toBoxVar(string $str): string;
-    public function mapBoxToClass(array|stdClass $aData): void;
-    public function isInt(mixed $number = null): bool;
-    public function removeEmpty(array $haystack = []): array;
 }

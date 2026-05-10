@@ -45,30 +45,18 @@ interface ModelInterface extends BaseModelInterface
 
     /**
      * @return array
+     * @deprecated v0.11.0 use Hydrator::extract() or DTO toArray() instead. Scheduled for removal in v1.0.
      */
     public function toArray(): array;
 
     /**
-     * same as class array except empty elements are filtered out
-     * @return array
+     * used to throw exceptions that need to contain error information returned from Box
+     *
+     * @param array $data containing error and error_description keys
+     * @param string|null $message
+     * @param BoxResponseInterface|null $boxResponse
+     *
+     * @throws BoxException
      */
-    public function toBoxArray(): array;
-
- /**
- * used to throw exceptions that need to contain error information returned from Box
- *
- * @param array $data containing error and error_description keys
- * @param string|null $message
- * @param BoxResponseInterface|null $boxResponse
- *
- * @throws BoxException
- */
     public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null): void;
-
-    /**
-     * @param array $params
-     * @param string $numericPrefix
-     * @return string
-     */
-    public function buildQuery(array $params, string $numericPrefix = ''): string;
 }

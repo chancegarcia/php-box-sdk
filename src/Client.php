@@ -466,10 +466,36 @@ class Client extends Model
 
         $uri = FolderInterface::URI . '/' . $folder->getId();
 
-        $params = $folder->toBoxArray();
-        // Only certain fields should be sent for update, but toBoxArray() with removeEmpty()
-        // will at least avoid sending nulls. Usually name, description, parent, shared_link, etc.
-        // We'll keep it simple for now as per instructions to "Implement only if there is a clear existing connection method or established request pattern."
+        $params = [
+            'name' => $folder->getName(),
+            'description' => $folder->getDescription(),
+        ];
+
+        $parent = $folder->getParent();
+        if (null !== $parent) {
+            $parentId = null;
+            if (is_array($parent) && isset($parent['id'])) {
+                $parentId = $parent['id'];
+            } elseif (is_object($parent) && method_exists($parent, 'getId')) {
+                $parentId = $parent->getId();
+            }
+
+            if (null !== $parentId) {
+                $params['parent'] = ['id' => $parentId];
+            }
+        }
+
+        $sharedLink = $folder->getSharedLink();
+        if (null !== $sharedLink) {
+            if (method_exists($sharedLink, 'toArray')) {
+                $params['shared_link'] = $sharedLink->toArray();
+            } else {
+                // Basic mapping if toArray is not available
+                $params['shared_link'] = (array) $sharedLink;
+            }
+        }
+
+        $params = array_filter($params, fn($v) => null !== $v);
 
         $connection = $this->getConnection();
         $this->setConnectionAuthHeader($connection);

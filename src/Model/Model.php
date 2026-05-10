@@ -32,6 +32,8 @@
 
 namespace Box\Model;
 
+use stdClass;
+use Box\Mapper\Hydrator;
 use Box\Mapper\ModelMapper;
 
 class Model extends BaseModel implements ModelInterface
@@ -46,33 +48,29 @@ class Model extends BaseModel implements ModelInterface
         }
     }
 
-    public function toArray(): array
+    /**
+     * @param array|stdClass $aData
+     * @deprecated v0.11.0 use Hydrator::hydrate() instead. Scheduled for removal in v1.0.
+     */
+    public function mapBoxToClass(array|stdClass $aData): void
     {
-        return $this->classArray();
+        (new Hydrator())->hydrate($this, $aData);
     }
 
-    public function classArray(): array
+    /**
+     * @return array
+     * @deprecated v0.11.0 use Hydrator::extract() or DTO toArray() instead. Scheduled for removal in v1.0.
+     */
+    public function toArray(): array
     {
         $aModel = get_object_vars($this);
         $aArray = [];
 
         foreach ($aModel as $k => $v) {
-            $sKey = $this->toBoxVar($k);
+            $sKey = ModelMapper::toBoxVar($k);
             $aArray[ $sKey ] = $v;
         }
 
         return $aArray;
-    }
-
-    public function toBoxArray(): array
-    {
-        $arr = $this->classArray();
-
-        return ModelMapper::removeEmpty($arr, true);
-    }
-
-    public function buildQuery(array $params, string $numericPrefix = ''): string
-    {
-        return http_build_query($params, $numericPrefix, '&', PHP_QUERY_RFC3986);
     }
 }

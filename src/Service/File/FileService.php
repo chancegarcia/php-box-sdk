@@ -88,9 +88,6 @@ class FileService extends Service implements FileServiceInterface
             return $sharedLink->toArray();
         }
 
-        if (method_exists($sharedLink, 'toBoxArray')) {
-            return $sharedLink->toBoxArray();
-        }
 
         return [];
     }

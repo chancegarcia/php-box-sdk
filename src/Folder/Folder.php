@@ -65,7 +65,12 @@ class Folder extends Model implements FolderInterface
 
     public function classArray(string $syncState = "synced"): array
     {
-        $aFolder = parent::classArray();
+        $aFolder = [
+            'type' => $this->type,
+            'id' => $this->getId(),
+            'name' => $this->name,
+            'description' => $this->description,
+        ];
 
         if (
             !in_array(
@@ -80,25 +85,6 @@ class Folder extends Model implements FolderInterface
             throw new BoxException("invalid sync state value given (" . var_export($syncState, true) . ").\n
             Expecting one of the following values: synced, not_synced, partially_synced
             ");
-        }
-
-        foreach ($aFolder as $key => $value) {
-            $aAllowedRequestAttributes = [
-                "name",
-                "description",
-                "parent",
-                "shared_link",
-                "folder_upload_email",
-                "owned_by"
-            ];
-
-            if (!in_array($key, $aAllowedRequestAttributes)) {
-                unset($aFolder[$key]);
-            }
-        }
-
-        if (null === $aFolder['shared_link']) {
-            unset($aFolder['owned_by']);
         }
 
         $aFolder['parent'] = [

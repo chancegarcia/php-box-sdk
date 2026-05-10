@@ -274,6 +274,7 @@ Validation:
 **Notes**:
 - Removed legacy traits `BaseModelTrait` and `ModelTrait`.
 - Updated `BaseModel`, `Model`, `BaseModelInterface`, and `ModelInterface` to implement legacy methods by proxying to `ModelMapper` or using native PHP/v1 alternatives, preparing for their eventual removal in Slice 9.5.
+- **Bridge Update**: `Model::mapBoxToClass()` and `Model::toArray()` are explicitly marked as deprecated bridge methods to support remaining resource dependencies until Slice 9.5.
 - Replaced `mapBoxToClass` usage in `Client` and `Service` with `Hydrator::hydrate`.
 - Replaced `buildQuery` usage in `Client` and `Connection` with native `http_build_query`.
 - Replaced `isInt` usage in `UserEventService` with native `is_numeric`.

@@ -37,6 +37,7 @@
 
 namespace Box\Event\Admin;
 
+use Box\Mapper\Hydrator;
 use Box\Event\Event;
 use stdClass;
 
@@ -70,16 +71,13 @@ class AdminEvent extends Event implements AdminEventInterface
      */
     public function mapBoxToClass(array|stdClass $aData): void
     {
-        // @todo need to refactor base model to explicitly take an array as the argument
-        if (is_array($aData) && array_key_exists('stream_type', $aData)) {
+        if (is_array($aData)) {
             unset($aData['stream_type']);
-        } else {
-            if (is_object($aData)) {
-                unset($aData->stream_type);
-            }
+        } elseif (is_object($aData)) {
+            unset($aData->stream_type);
         }
 
-        parent::mapBoxToClass($aData);
+        (new Hydrator())->hydrate($this, $aData);
     }
 
     /**
