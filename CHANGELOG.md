@@ -3,57 +3,58 @@
 ## Unreleased
 
 ### Summary
-- Hardened the service layer architecture to provide more consistent hydration, better error handling, and clearer boundaries between raw API data and typed resources.
-- Introduced standardized service patterns for read and write operations, leveraging centralized hydration helpers.
-- Refactored the SDK response foundation to use a thin PSR-7-backed `BoxResponse`, improving compliance and providing helpful response utilities.
-- Hardened connection error handling with a refined exception taxonomy, ensuring more granular and descriptive errors (e.g., `ApiException`, `TransportException`).
-- Implemented automatic redaction of sensitive data (access tokens, refresh tokens, client secrets) in logs, exceptions, and CLI output.
-- Updated comprehensive public and migration documentation to reflect the hardened service layer and refined foundation.
+- Completed the v1 legacy architecture removal by deleting the `Box\Model` base architecture and all associated legacy shims.
+- Modernized the `UserEventService` to return a typed `EventResponse` DTO, improving type safety and immutability for event data.
+- Standardized the service layer as stateless by removing legacy result-tracking properties and methods.
+- Centralized model hydration and extraction in the `Hydrator` and `ModelMapper` components, removing legacy trait-based mapping.
+- Enforced the flattened v1 namespace by removing the `Box\User\User` compatibility alias and stale non-flattened references.
+- Updated documentation and migration guides with clear before/after examples for the v1 major-version cutover.
 
 ### Developer Details
+- **Legacy Architecture Removal**:
+    - Deleted `Box\Model\BaseModel`, `Box\Model\Model`, `Box\Model\BoxModel`, and their respective interfaces.
+    - Removed `Box\Model\BaseModelTrait` and `Box\Model\ModelTrait`.
+    - Removed the `Box\User\User` compatibility alias; consumers should use `Box\Resource\User`.
+    - Fully cleared the `src/Model` directory of legacy infrastructure.
+- **Event Service Modernization**:
+    - `UserEventService::getEvents()` now returns a typed `Box\Dto\Event\EventResponse` DTO.
+    - Introduced `Box\Mapper\EventResponseMapper` to decouple service logic from response parsing.
+    - `EventResponse` now returns a Doctrine `Collection` of `Event` objects via `getEntries()`, using defensive copies to maintain immutability.
+    - Aligned `next_stream_position` handling as a `string` to support large cursor values and set default `stream_position` to `now`.
 - **Service Layer Hardening**:
-    - Introduced `Service::getResourceFromBox()` to fetch and hydrate typed resources.
-    - Introduced `Service::sendUpdateAndHydrate()` to centralize payload submission and response hydration.
-    - Added `Service::hydrate()` helper to standardize resource creation via the `Hydrator`.
-    - Migrated `UserService` and `FileService::createSharedLink()` to representative hardened patterns.
-    - Deprecated stateful service properties (`lastResult`, `lastResultDecoded`, `lastResultFlat`) and methods (`getLastResult`, `getDefaultReturnType`).
-- **Response and Error Handling**:
-    - Replaced Symfony-inherited `BoxResponse` with a PSR-7-backed implementation wrapping `Psr\Http\Message\ResponseInterface`.
-    - Introduced `BoxResponseInterface` with helpers like `json()` for safe decoding and `getRetryAfter()` for rate-limit handling.
-    - Normalized all transports (Guzzle, Curl) to consistently return `BoxResponseInterface`.
-    - Implemented a hierarchical exception model: `BoxException` -> `BoxResponseException` -> `ApiException`.
-    - Added specialized `ApiException` subclasses for common HTTP status codes (401, 403, 404, 409, 429).
-    - Ensured `ApiException` preserves the original response object for programmatic inspection.
-- **Security and Redaction**:
-    - Added a `Redactor` utility to mask sensitive tokens and secrets.
-    - Integrated redaction into `BoxException` messages and `BoxLoggerTrait` for safe logging.
-    - Enabled automatic masking of tokens in CLI command output via `ConsoleOutputFormatter`.
-- **Documentation**:
-    - Updated `README.md`, `upgrading-0.11-to-1.0.md`, and `programmatic-usage.md` with new architectural details and examples.
-    - Standardized on Composer scripts (e.g., `composer review`) as the primary validation commands in all documentation.
+    - Removed stateful properties `lastResultOriginal`, `lastResultDecoded`, and `lastResultFlat`.
+    - Removed `getLastResult()`, `getDefaultReturnType()`, and `setDefaultReturnType()` from `ServiceInterface` and `Service`.
+    - Standardized internal validation by making `Service::validateReturnType()` protected.
+- **Mapping and Hydration**:
+    - Removed legacy mapping methods `mapBoxToClass`, `toBoxVar`, `toClassVar`, `isInt`, and `removeEmpty` from mapping infrastructure.
+    - Migrated remaining SDK internals to use `Hydrator::hydrate()` and native PHP alternatives.
+    - Added `toArray()` to `TokenInterface` and `Token` for clean serialization.
+
+### Breaking Changes
+- **Box\Model Removal**: The entire `Box\Model` namespace and base architecture have been removed. All resources and services no longer inherit from these legacy bases.
+- **UserEventService Signature**: `getEvents()` return type changed from `array|stdClass|null` to `EventResponse`. The `type` parameter and legacy collection support have been removed.
+- **Stateless Services**: Services no longer track the "last result" state. Access response data directly from method return values or `ApiException` context.
+- **Alias Removal**: The `Box\User\User` alias is gone. Update imports to `Box\Resource\User`.
 
 ### Migration Notes
-- **Response Wrapper**: `BoxResponse` no longer inherits from Symfony's `Response`. If your code relied on Symfony-specific response methods, update it to use the new `BoxResponseInterface` or access the underlying PSR-7 response via `getPsrResponse()`. See [Upgrading from v0.11 to v1.0](docs/migration/upgrading-0.11-to-1.0.md) for a detailed guide.
-- **Exception Handling**: While `BoxException` remains the base, it is recommended to catch more specific exceptions like `ApiException` to access the response context.
+- **Update Event Handling**: Update code calling `UserEventService::getEvents()` to handle the new `EventResponse` DTO.
     - *Before*:
       ~~~~php
-      try {
-          $client->getFile($id);
-      } catch (\Box\Exception\BoxException $e) {
-          // generic handling
-      }
+      $events = $service->getEvents();
+      $nextPos = $service->getLastResult()['next_stream_position'];
       ~~~~
     - *After*:
       ~~~~php
-      try {
-          $client->getFile($id);
-      } catch (\Box\Exception\ApiException $e) {
-          $errorData = $e->getResponse()->json();
-          $boxCode = $errorData['code'] ?? 'unknown';
-      } catch (\Box\Exception\TransportException $e) {
-          // network error
-      }
+      $response = $service->getEvents();
+      $events = $response->getEntries();
+      $nextPos = $response->getNextStreamPosition();
       ~~~~
+- **Replace mapBoxToClass**: Use the `Hydrator` for manual model hydration.
+    - *Before*: `$model->mapBoxToClass($data);`
+    - *After*: `(new Hydrator())->hydrate($model, $data);`
+- **Namespace Updates**: Update any remaining references to legacy namespaces or aliases.
+    - *Change*: `Box\User\User` -> `Box\Resource\User`
+    - *Change*: `Box\Model\Model` -> (Remove usage or use `Box\Resource` equivalents)
 
 ## v0.11.3
 

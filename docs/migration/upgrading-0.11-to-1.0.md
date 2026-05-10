@@ -80,6 +80,52 @@ The `UserEventService` has been modernized to return a typed `EventResponse` DTO
 
 ## Usage Comparison
 
+### Event Retrieval
+
+**Before (v0.11 style):**
+```php
+use Box\Service\Event\UserEventService;
+
+$eventService = new UserEventService();
+// ... setup ...
+$events = $eventService->getEvents(); // returned array|stdClass|null
+$nextPosition = $eventService->getLastResult()['next_stream_position'] ?? null;
+```
+
+**After (v1.0 Refined style):**
+```php
+use Box\Service\Event\UserEventService;
+
+$eventService = new UserEventService();
+// ... setup ...
+$response = $eventService->getEvents(); // returns Box\Dto\Event\EventResponse
+
+$events = $response->getEntries(); // Doctrine Collection of Event objects
+$nextPosition = $response->getNextStreamPosition(); // string
+```
+
+### Model Hydration
+
+**Before (v0.11 style):**
+```php
+use Box\Resource\User;
+
+$user = new User();
+$user->mapBoxToClass($data);
+```
+
+**After (v1.0 Refined style):**
+```php
+use Box\Mapper\Hydrator;
+use Box\Resource\User;
+
+$user = new User();
+(new Hydrator())->hydrate($user, $data);
+
+// OR via constructor (if the resource supports it)
+$user = new User(['name' => 'John Doe']);
+```
+
 ### Exception Handling
 
 **Before (v0.11 style):**
