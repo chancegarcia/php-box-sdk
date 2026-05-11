@@ -42,7 +42,7 @@ This work assumes the completion of:
 | 11.3 | Resource Passive State and Hydration Cleanup | ✓ |
 | 11.3.1 | Resource Getter Mutation Cleanup | ✓ |
 | 11.4 | Factory Hydration Support | ✓ |
-| 11.5 | Resource URI Helper Relocation | |
+| 11.5 | Resource URI Helper Relocation | ✓ |
 | 11.6 | Client Service Delegation (Phase 1: Folders) | |
 | 11.7 | Client Service Delegation (Phase 2: Others) | |
 | 11.8 | Documentation and Migration Cleanup | |
@@ -106,7 +106,7 @@ Audit and migrate remaining domain resource classes into the final v1 resource n
 - 11.3 | Resource Passive State and Hydration Cleanup | ✓ |
 - 11.3.1 | Resource Getter Mutation Cleanup | ✓ |
 - 11.4 | Factory Hydration Support | ✓ |
-- 11.5 | Resource URI Helper Relocation | |
+- 11.5 | Resource URI Helper Relocation | ✓ |
 - 11.6 | Client Service Delegation (Phase 1: Folders) | |
 - 11.7 | Client Service Delegation (Phase 2: Others) | |
 - 11.8 | Documentation and Migration Cleanup | |

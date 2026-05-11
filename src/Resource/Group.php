@@ -32,9 +32,7 @@
 
 namespace Box\Resource;
 
-use Box\Exception\BoxException;
 use Box\Exception\GroupException;
-use Box\Service\Group\GroupService;
 use DateTimeInterface;
 
 class Group
@@ -44,20 +42,6 @@ class Group
     protected ?string $name = null;
     protected DateTimeInterface|string|null $createdAt = null;
     protected DateTimeInterface|string|null $modifiedAt = null;
-
-    public function getMembershipListUri(int|string $limit = 100, int|string $offset = 0): string
-    {
-        $selfId = $this->getId();
-        if ($selfId === null) {
-            throw new BoxException(
-                "Please set the folder Id to retrieve items for this folder." . BoxException::MISSING_ID
-            );
-        }
-
-        $uri = GroupService::ENDPOINT . "/" . $selfId . "/memberships" . "?offset=" . $offset . "&limit=" . $limit;
-
-        return $uri;
-    }
 
     /**
      * @param string|int|null $id

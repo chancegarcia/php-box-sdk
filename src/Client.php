@@ -51,6 +51,7 @@ use Box\Resource\User;
 use Box\Resource\Group;
 use Box\Service\Collaboration\CollaborationService;
 use Box\Service\Folder\FolderService;
+use Box\Service\Group\GroupService;
 use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Mapper\Hydrator;
@@ -287,7 +288,7 @@ class Client implements LoggerAwareInterface
                 $limit = 100;
             }
 
-            $uri = $group->getMembershipListUri($limit, $offset);
+            $uri = (new GroupService())->getMembershipListUri($group->getId(), $limit, $offset);
 
             $data = $this->query($uri);
 
@@ -296,7 +297,7 @@ class Client implements LoggerAwareInterface
             $limit = 100;
             $offset = 0;
 
-            $uri = $group->getMembershipListUri($limit, $offset);
+            $uri = (new GroupService())->getMembershipListUri($group->getId(), $limit, $offset);
 
             $data = $this->query($uri);
 
@@ -308,7 +309,7 @@ class Client implements LoggerAwareInterface
 
             while ($currentTotal < $totalMembers) {
                 if (0 != $offset) {
-                    $nextPage = $group->getMembershipListUri($limit, $offset);
+                    $nextPage = (new GroupService())->getMembershipListUri($group->getId(), $limit, $offset);
                     $data = $this->query($nextPage);
                     $moreEntries = $data['entries'];
                     $entries = array_merge($entries, $moreEntries);
@@ -397,7 +398,7 @@ class Client implements LoggerAwareInterface
      */
     public function getBoxFolderItems($folder, $limit = 100, $offset = 0)
     {
-        $uri = $folder->getBoxFolderItemsUri($limit, $offset);
+        $uri = (new FolderService())->getFolderItemsUri($folder->getId(), $limit, $offset);
         $data = $this->query($uri);
 
         $folder->setItemCollection($data);

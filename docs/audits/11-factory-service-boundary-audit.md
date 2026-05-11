@@ -132,6 +132,7 @@ Current hydration entry points:
     - Goal: Move URI construction logic from resources to services.
     - Scope: `Folder`, `Group`, `FolderService`, `GroupService`.
     - Acceptance: Resources have no knowledge of endpoints.
+    - Status: Completed.
 
 8. **Slice 11.6: Client Service Delegation (Phase 1: Folders)**
     - Goal: Move folder-related orchestration from `Client` to `FolderService`.

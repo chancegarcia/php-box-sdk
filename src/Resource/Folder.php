@@ -38,7 +38,6 @@ use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxLoggerTrait;
 use DateTimeInterface;
-use Box\Service\Folder\FolderService;
 
 class Folder implements LoggerAwareInterface
 {
@@ -104,27 +103,6 @@ class Folder implements LoggerAwareInterface
         $aFolder['sync_state'] = $syncState;
 
         return $aFolder;
-    }
-
-    public function getBoxFolderItemsUri($limit = 100, $offset = 0)
-    {
-        $selfId = $this->getId();
-        if (!is_numeric($selfId)) {
-            throw new BoxException("Please set the folder Id to retrieve items for this folder."
-                                   . BoxException::MISSING_ID);
-        }
-
-        if (!is_numeric($limit)) {
-            throw new BoxException("Limit must be a valid integer", BoxException::INVALID_INPUT);
-        }
-
-        if (!is_numeric($offset)) {
-            throw new BoxException("Offset must be a valid integer", BoxException::INVALID_INPUT);
-        }
-
-        $uri = FolderService::ENDPOINT . "/" . $selfId . "/items" . "?limit=" . $limit . "&offset=" . $offset;
-
-        return $uri;
     }
 
     /**
