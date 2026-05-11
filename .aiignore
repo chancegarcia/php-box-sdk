@@ -3,3 +3,5 @@ var/**
 !var/tmp/
 !var/tmp/last-task-summary.md
 !var/tmp/ai-handoff-summary.md
+!docs/ai/ai-handoff-summary.md
+!docs/ai/last-task-summary.md
