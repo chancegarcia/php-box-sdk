@@ -114,6 +114,8 @@ Testing guidelines:
     - Always overwrite the file on every task; do not use create-only behavior. Replace its entire contents.
     - If `var/tmp/` does not exist, create the directory if appropriate, but do not remove `var/tmp/.gitkeep`.
     - Mirror the summary to `docs/ai/current-task-summary.md` when attachability in PhpStorm is needed.
+    - Refresh the handoff summary at `var/tmp/ai-handoff-summary.md` after every completed slice/task to ensure continuous context.
+    - Mirror the handoff to `docs/ai/current-handoff-summary.md` when attachability in PhpStorm is needed.
     - The persisted task summary should match the final response summary as closely as practical.
     - Persisted summaries must be plain UTF-8 Markdown text without null bytes, control characters, corrupted class names, or binary content.
     - If a generated summary contains corrupted text, rewrite it before reporting completion.
@@ -127,10 +129,10 @@ Testing guidelines:
         - Notes
         - Follow-ups
     - Keep the file redacted and free of secrets, credentials, tokens, private account IDs, local sensitive paths, and downstream/private implementation details. Redact any sensitive output.
-    - Do not treat `var/tmp/last-task-summary.md` as a source artifact to commit.
+    - Do not treat summary files as source artifacts to stage or commit.
     - Do not remove `var/tmp/.gitkeep`.
 - **Periodic Handoff Summaries**: During long-running initiatives or before ending a session, produce a handoff summary to preserve context.
-    - **Frequency**: Every 2–3 completed slices, before switching major initiatives, or before ending a long session.
+    - **Frequency**: Refresh after every completed slice/task.
     - **Template**: Use `docs/prompts/ai-workflow/handoff-summary-template.md`.
     - **Storage**: Paste into the chat or write to `var/tmp/ai-handoff-summary.md`.
     - Mirror the handoff to `docs/ai/current-handoff-summary.md` when attachability in PhpStorm is needed.

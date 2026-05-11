@@ -76,6 +76,7 @@ Audit and migrate remaining domain resource classes into the final v1 resource n
 ### Acceptance Criteria
 - All resources in `Box\Resource`.
 - No one-class mirror interfaces remain.
+- Box upload preflight/GCM scope behavior should be evaluated during API contract/upload hardening.
 - `composer review` passes.
 
 ### Status Table
