@@ -2,7 +2,9 @@
 
 ## Project Vision
 
-Build a reliable, developer-friendly PHP SDK for working with Box-related functionality. v0.11.0 is a **functional transition release** that modernization the codebase and introduces v1.0 architecture patterns while preserving backward compatibility.
+Build a reliable, developer-friendly PHP SDK for working with Box-related functionality. v1.0 is the **current focus**, implementing a hardened, service-oriented architecture with full PSR compliance.
+
+v0.11.0 was a **functional transition release** that modernized the codebase and introduced v1.0 architecture patterns while preserving backward compatibility.
 
 The CLI exists mainly as a quick, practical test tool for verifying SDK behavior without needing to wire the package into an existing Composer project during every iteration.
 
@@ -10,7 +12,7 @@ The CLI exists mainly as a quick, practical test tool for verifying SDK behavior
 
 ### v0.11.0 (Functional Transition)
 - **Goal**: Bridge v0.10.x and v1.0, stabilize core behavior, and modernize for PHP 8.4.
-- **Status**: Current Focus / Transition Release.
+- **Status**: Completed.
 - **Key Features**:
     - PHP 8.4+ requirement.
     - Flattened namespaces with legacy aliases.
@@ -24,6 +26,7 @@ The CLI exists mainly as a quick, practical test tool for verifying SDK behavior
 
 ### v1.0 (Design Perfection)
 - **Goal**: Full implementation of the future architecture with no legacy baggage.
+- **Status**: Current Focus.
 - **Key Focus**: See [v1.0 Planning](v1/overview.md) and [v1.0 Strategy](v1/strategy-and-contracts.md) for detailed technical goals.
 - **Planned Changes**:
     - **Client as Facade**: `Client` will become a lightweight facade over focused services (e.g., `FileService`, `UserService`).

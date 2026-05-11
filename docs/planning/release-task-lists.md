@@ -44,27 +44,28 @@ This document details the planned tasks for the `v0.11` transition release and t
 **Focus**: Architectural purity, removal of legacy baggage, and expanded coverage.
 
 ### Architecture
-- **Must**: Make `Client` a facade over focused services (FileService, UserService, etc.). *Rationale: Decouple the God object and improve maintainability.*
-- **Must**: Remove legacy namespaces and deprecated aliases. *Rationale: Clean up the API surface.*
-- **Must**: Remove transition-layer array support for nested model fields. *Rationale: Enforce type safety and object-oriented patterns.*
-- **Must**: Standardize IDs as `string`. *Rationale: Consistency across all resources.*
-- **Must**: Standardize dates as `DateTimeImmutable`. *Rationale: Immutability and standard PHP types.*
-- **Should**: Make `Connection` a raw request/response layer. *Rationale: Separate transport logic from model inheritance.*
-- **Should**: Replace class-string setters and `validateClass()` with constructor injection/factories. *Rationale: Modernize dependency management.*
-- **Could**: Support PSR-7 HTTP messages. *Rationale: Better interoperability with the PHP ecosystem.*
+- [x] Completed: Make `Client` a facade over focused services (FileService, UserService, etc.). *Rationale: Decouple the God object and improve maintainability.*
+- [x] Completed: Remove legacy namespaces and deprecated aliases. *Rationale: Clean up the API surface.*
+- [x] Completed: Remove transition-layer array support for nested model fields. *Rationale: Enforce type safety and object-oriented patterns.*
+- [x] Completed: Standardize IDs as `string`. *Rationale: Consistency across all resources.*
+- [x] Completed: Standardize dates as `DateTimeImmutable`. *Rationale: Immutability and standard PHP types.*
+- [x] Completed: Make `Connection` a raw request/response layer. *Rationale: Separate transport logic from model inheritance.*
+- [x] Completed: Replace class-string setters and `validateClass()` with constructor injection/factories. *Rationale: Modernize dependency management.*
+- [x] Completed: Support PSR-7 HTTP messages. *Rationale: Better interoperability with the PHP ecosystem.*
 
 ### API Coverage
-- **Must**: Implement missing high-priority endpoints. *Rationale: Complete the SDK's utility.*
-- **Must**: Achieve full PSR-12 compliance across the codebase. *Rationale: Modernize code quality and maintainability.*
-- **Must**: Implement core foundation services according to hardened v1 strategy (Transport refactor with `send()` and `request()` support, thin Response wrapper replacement, Auth boundaries, JWT/S2S target with feasibility checkpoint, Logging/Redaction, Retry defaults).
-- **Should**: Align HTTP layer with PSR-3, PSR-7, PSR-17, and PSR-18. *Rationale: Better interoperability with the PHP ecosystem.*
-    - File Versions
-    - Collections
-    - Comments
-    - Tasks
-    - Metadata
+- [x] Completed: Implement missing high-priority endpoints (Files, Folders, Users, Groups, Collaborations, Events).
+- [x] Completed: Achieve full PSR-12 compliance across the codebase.
+- [x] Completed: Implement core foundation services according to hardened v1 strategy (Transport refactor with `send()` and `request()` support, thin Response wrapper replacement, Auth boundaries, Logging/Redaction, Retry defaults).
+- [x] Completed: Align HTTP layer with PSR-3, PSR-7, PSR-17, and PSR-18.
+- **Must**: Implement remaining high-priority endpoints. *Rationale: Complete the SDK's utility.*
+    - File Versions [x]
+    - Collections [x]
+    - Comments [-] (Deferred)
+    - Tasks [-] (Deferred)
+    - Metadata [-] (Deferred)
 - **Should**: Implement secondary endpoints.
-    - File Requests
+    - File Requests [-] (Deferred)
 - **Could**: Implement governance/security endpoints.
     - Retention Policies
     - Legal Holds

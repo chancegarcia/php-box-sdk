@@ -78,11 +78,12 @@ Collected from Step 11 completion and audits:
 
 ## Recommended Cleanup Slices
 
-### Slice A: Planning Document Synchronization
-- Update `docs/planning/v1/implementation-checklist.md` to match `10-v1-release-work.md`.
-- Update `docs/planning/roadmap.md` and `docs/planning/release-task-lists.md` to reflect completed v1 work.
-- Update `docs/README.md` status section.
-- Sync `docs/planning/v1/overview.md` (remove completed "Remaining items").
+### Slice A: Planning Document Synchronization [✓]
+- Update `docs/planning/v1/implementation-checklist.md` to match `10-v1-release-work.md`. [✓]
+- Update `docs/roadmap.md` and `docs/planning/release-task-lists.md` to reflect completed v1 work. [✓]
+- Update `docs/README.md` status section. [✓]
+- Sync `docs/planning/v1/overview.md` (remove completed "Remaining items"). [✓]
+- Update root `README.md` status note. [✓]
 
 ### Slice B: Canonical Source and Decision Alignment
 - Refine `docs/planning/v1/strategy-and-contracts.md` and `docs/planning/v1/decision-index.md` to ensure they point to the main v1 tracker for step-specific details.

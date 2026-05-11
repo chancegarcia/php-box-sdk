@@ -26,16 +26,6 @@ This document tracks detailed architectural decisions, typing rules, and impleme
 ### Collections
 - **Doctrine Collections**: Full migration to Doctrine Collections for all resource sets. Custom collection classes will be removed.
 
-## Namespace Migration (v1.0 Final)
-
-Remaining items in `Box\Model` to be moved:
-
-| Class | v1.0 Destination |
-|---|---|
-| `Box\Model\ModelTrait` | `Box\Trait\ModelTrait` |
-| `Box\Model\BoxModelInterface` | `Box\Contract\BoxModelInterface` |
-| `Box\Model\BaseModel` | `Box\Base\BaseModel` |
-
 ## Model Specific Transitions
 
 - **Nested Resources**: Enforce object-only types for nested fields (e.g., `createdBy`, `parent`). Remove the transition-layer array support introduced in v0.11.0.

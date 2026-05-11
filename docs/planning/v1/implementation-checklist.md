@@ -96,7 +96,7 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 
 ## 7. V1.0 Foundation Refinement (Strategy Alignment)
 
-- [ ] Status: In progress
+- [x] Status: Completed
 - Goal: Implement core foundation services according to hardened v1 strategy.
 - Scope:
     - [x] Transport refactor: Public `TransportInterface` with `send()` and `request()` support; PSR-18 integration; support for options (headers, query, json, body, auth, retry).
@@ -111,185 +111,196 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
     - [x] Exception taxonomy: Base `BoxException` hierarchy (Client, Transport, Api, etc.); redaction of secrets in string output.
     - [x] Logging and Redaction Policy: PSR-3 integration; automatic token/secret redaction in logs and exceptions.
     - [x] Retry and Rate-Limit: Disabled by default; honors `Retry-After`; safe retries only by default.
-    - [ ] CLI Validation: Validate existing commands after v1 service/transport/auth refactors; ensure CLI output uses redaction rules; verify CLI docs for changed behavior.
-    - [ ] JWT/S2S CLI Testing: Support CLI-based JWT/S2S testing if practical (linked to JWT auth implementation).
+    - [x] CLI Validation: Validate existing commands after v1 service/transport/auth refactors; ensure CLI output uses redaction rules; verify CLI docs for changed behavior.
+    - [x] JWT/S2S CLI Testing: Support CLI-based JWT/S2S testing if practical (linked to JWT auth implementation).
 - Dependencies: 5.
 - Validation: `composer test`.
 - Documentation updates: Update `v1-architecture-rules.md`.
 - Test updates: New foundation tests (Redaction, Retry, Transport, Response Wrapper, JSON helper, Auth workflow).
-- Completion notes: User migration alignment verified. Step 7 / Foundation Refinement is confirmed to be in progress as the primary focus for hardening v1 contracts. Added sub-task completion markers to track foundation hardening progress.
+- Completion notes: Foundation Refinement completed. Transport, Response, and Auth boundaries hardened. CLI validation performed. JWT/S2S feasibility checkpoint identified as Step 14.
 
-## 7. Group and Group Membership Migration
+## 8. Group and Group Membership Migration
 
-- [ ] Status: Not started
+- [x] Status: Completed
 - Goal: Migrate Groups and fold in GroupMemberships.
 - Scope: Create `Box\Resource\Group` and `Box\Resource\GroupMembership`. Update `GroupService`.
 - Dependencies: 5.
 - Validation: `composer test`.
 - Documentation updates: Migration notes for Groups.
 - Test updates: `GroupTest`, `GroupServiceTest`.
-- Completion notes: 
+- Completion notes: Groups and memberships migrated to v1 resource/service pattern.
 
-## 7. Shared DTO Foundation
+## 9. Shared DTO Foundation
 
-- [ ] Status: Not started
+- [x] Status: Completed
 - Goal: Create foundation DTOs used across resources.
 - Scope: `SharedLink`, `Permissions`, `PathCollection`.
 - Dependencies: 3.
 - Validation: `composer analyse`.
 - Documentation updates: N/A.
 - Test updates: DTO unit tests.
-- Completion notes: 
+- Completion notes: Shared DTOs implemented and used across resources.
 
-## 8. File and FileVersion migration
+## 10. File and FileVersion migration
 
-- [ ] Status: Not started
+- [x] Status: Completed
 - Goal: Migrate Files and fold in Versions.
 - Scope: `Box\Resource\File`, `Box\Resource\FileVersion`. Update `FileService`.
 - Dependencies: 7.
 - Validation: `composer test`.
 - Documentation updates: Migration notes for Files.
 - Test updates: `FileTest`, `FileServiceTest`.
-- Completion notes: 
+- Completion notes: Files and versions migrated.
 
-## 9. Folder and FolderItems migration
+## 11. Folder and FolderItems migration
 
-- [ ] Status: Not started
+- [x] Status: Completed
 - Goal: Migrate Folders and List Items response.
 - Scope: `Box\Resource\Folder`, `Box\Dto\Response\FolderItemsResponse`. Update `FolderService`.
 - Dependencies: 8.
 - Validation: `composer test`.
 - Documentation updates: Migration notes for Folders.
 - Test updates: `FolderTest`, `FolderServiceTest`.
-- Completion notes: 
+- Completion notes: Folders and item collections migrated.
 
-## 10. Collaboration migration
+## 12. Collaboration migration
 
-- [ ] Status: Not started
+- [x] Status: Completed
 - Goal: Migrate Collaborations.
 - Scope: `Box\Resource\Collaboration`. Update `CollaborationService`.
 - Dependencies: 8, 9.
 - Validation: `composer test`.
 - Documentation updates: Migration notes for Collaborations.
 - Test updates: `CollaborationTest`, `CollaborationServiceTest`.
-- Completion notes: 
+- Completion notes: Collaborations migrated.
 
-## 11. Event migration
+## 13. Event migration
 
-- [ ] Status: Not started
+- [x] Status: Completed
 - Goal: Migrate Events.
 - Scope: `Box\Resource\Event`. Update `EventService`.
 - Dependencies: 10.
 - Validation: `composer test`.
 - Documentation updates: Migration notes for Events.
 - Test updates: `EventTest`, `EventServiceTest`.
-- Completion notes: 
+- Completion notes: Event resources and service implemented.
 
-## 12. Client facade refactor
+## 14. Client facade refactor
 
-- [ ] Status: Not started
+- [x] Status: Completed
 - Goal: Refactor `Client` to a lightweight facade.
 - Scope: Update `Box\Client` to use new services and return concrete resources.
 - Dependencies: 11.
 - Validation: `composer test`.
 - Documentation updates: README, Migration Guide.
 - Test updates: `ClientTest`.
-- Completion notes: 
+- Completion notes: Client refactored to delegate to registry-managed services.
 
-## 13. Service interface and factory cleanup
+## 15. Service interface and factory cleanup
 
-- [ ] Status: Not started
+- [x] Status: Completed
 - Goal: Clean up service interfaces and remove redundant factories.
 - Scope: Refactor `src/Service` and `src/Factory`.
 - Dependencies: 12.
 - Validation: `composer analyse`.
 - Documentation updates: N/A.
 - Test updates: N/A.
-- Completion notes: 
+- Completion notes: Factory modernization complete (Step 11 of main tracker). ConnectionFactory canonicalized.
 
-## 14. Model abstraction removal
+## 16. Model abstraction removal
 
-- [ ] Status: Not started
+- [x] Status: Completed
 - Goal: Remove legacy model traits and base classes.
 - Scope: Delete `ModelTrait`, `BoxModelTrait`, `BaseModelTrait`, `BaseModel`, `Model`, `BoxModel`.
 - Dependencies: 13.
 - Validation: `composer test`.
 - Documentation updates: N/A.
 - Test updates: Remove legacy model tests.
-- Completion notes: 
+- Completion notes: Legacy Model architecture removed (Step 9 of main tracker).
 
-## 15. Box\Model namespace removal
+## 17. Box\Model namespace removal
 
-- [ ] Status: Not started
+- [x] Status: Completed
 - Goal: Complete removal of `src/Model` directory.
 - Scope: Delete `src/Model` and all remaining files.
 - Dependencies: 14.
 - Validation: `composer dump-autoload`.
 - Documentation updates: N/A.
 - Test updates: N/A.
-- Completion notes: 
+- Completion notes: `src/Model` directory removed.
 
-## 16. Deferred missing resource phase: Comments and Tasks
+## 18. Token Storage Completion
+
+- [ ] Status: Not started
+- Goal: Audit and finalize token storage behavior for v1.
+- Scope: Implement/complete In-Memory and PDO token storage; evaluate Filesystem storage.
+- Dependencies: 17.
+- Validation: `composer test`.
+- Documentation updates: Update migration/user docs for storage.
+- Test updates: Focused storage tests.
+- Completion notes: This corresponds to Step 12 in `10-v1-release-work.md`.
+
+## 19. Deferred missing resource phase: Comments and Tasks
 
 - [ ] Status: Not started
 - Goal: Implement missing Comments and Tasks resources.
 - Scope: `Box\Resource\Comment`, `Box\Resource\Task`.
-- Dependencies: 15.
+- Dependencies: 18.
 - Validation: `composer test`.
 - Documentation updates: API coverage update.
 - Test updates: New tests for Comments/Tasks.
-- Completion notes: 
+- Completion notes:
 
-## 17. Deferred missing resource phase: Metadata service
+## 20. Deferred missing resource phase: Metadata service
 
 - [ ] Status: Not started
 - Goal: Implement full Metadata service.
 - Scope: `MetadataService`, Template management.
-- Dependencies: 15.
+- Dependencies: 18.
 - Validation: `composer test`.
 - Documentation updates: API coverage update.
 - Test updates: New tests for Metadata.
-- Completion notes: 
+- Completion notes:
 
-## 18. Deferred missing resource phase: Collections, File Requests
+## 21. Deferred missing resource phase: Collections, File Requests
 
 - [ ] Status: Not started
 - Goal: Implement remaining high-priority API resources.
 - Scope: File Requests, etc. (Sign Requests and Webhooks deferred to v1.1.0; use direct transport fallback).
-- Dependencies: 15.
-- Validation: `composer test`.
-- Documentation updates: API coverage update.
-- Test updates: New tests.
-- Completion notes: 
-
-## 19. Deferred enterprise/governance phase
-
-- [ ] Status: Not started
-- Goal: Implement Enterprise features (Shield, Governance).
-- Scope: Retention Policies, Legal Holds, etc.
 - Dependencies: 18.
 - Validation: `composer test`.
 - Documentation updates: API coverage update.
 - Test updates: New tests.
-- Completion notes: 
+- Completion notes:
 
-## 20. V1 upgrade documentation
+## 22. Deferred enterprise/governance phase
+
+- [ ] Status: Not started
+- Goal: Implement Enterprise features (Shield, Governance).
+- Scope: Retention Policies, Legal Holds, etc.
+- Dependencies: 21.
+- Validation: `composer test`.
+- Documentation updates: API coverage update.
+- Test updates: New tests.
+- Completion notes:
+
+## 23. V1 upgrade documentation
 
 - [ ] Status: Not started
 - Goal: Finalize migration guide for end users.
 - Scope: Complete `docs/v1-migration.md`.
-- Dependencies: 19.
+- Dependencies: 22.
 - Validation: Manual review.
 - Documentation updates: `docs/v1-migration.md`.
 - Test updates: N/A.
-- Completion notes: 
+- Completion notes:
 
-## 21. Final quality and release review
+## 24. Final quality and release review
 
 - [ ] Status: Not started
 - Goal: Final verification of V1.0 release readiness.
 - Scope: `composer review`, full test suite, doc audit, and package/repository rename.
-- Dependencies: 20.
+- Dependencies: 23.
 - Validation: `composer review` passes.
 - Documentation updates: CHANGELOG.md, `v1-package-rename-plan.md`.
 - Test updates: N/A.

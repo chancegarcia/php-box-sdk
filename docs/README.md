@@ -29,9 +29,8 @@ The v1.0 release focuses on architectural hardening and PSR compliance.
 - [Documentation Gap Inventory](planning/v1/documentation-gap-inventory.md): Tracking documentation needs.
 
 **Current Foundation Status:**
-- **Step 10 / Resource Namespace and Interface Rationalization**: In Progress.
-- **CLI Test Harness Scope**: Clarified and documented as a retained practical verification tool.
-- **User Migration Alignment**: Verified and documented in the [Interface and Model Audit](planning/v1/interface-and-model-audit.md).
+- **Step 11 / Factory Modernization and Service Boundaries**: Completed.
+- **Step 12 / Token Storage Completion**: Next Focus.
 
 ### [Future Integrations](planning/future/)
 - [Future Symfony Bundle](planning/future/future-symfony-bundle.md): Planning for Symfony/Doctrine/Configuration integration (Deferred).
