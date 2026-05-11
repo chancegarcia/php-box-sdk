@@ -99,6 +99,14 @@ Collected from Step 11 completion and audits:
 - Updated `docs/planning/v1/documentation-gap-inventory.md` to reflect resolved gaps. [✓]
 - Added historical context notes to `docs/migration/upgrading-0.10-to-0.11.md` and `docs/migration/model-namespace-migration-decisions.md`. [✓]
 
+### Slice D: Documentation Organization and Archive Plan [✓]
+- Created `docs/planning/README.md` as a central planning index. [✓]
+- Updated `docs/README.md` to clarify the role of various planning documents. [✓]
+- Labeled completed Step 7–10 trackers as "Completed / Retained for Traceability". [✓]
+- Marked historical/superseded documents in the planning index. [✓]
+- Ensured Step 12 is consistently marked as "Ready for Review" / "Next". [✓]
+- Validated that move-avoidance policy was followed to prevent link churn. [✓]
+
 ## Risks if not cleaned up
 - **Onboarding Risk**: Resolved. Documentation is now consistent.
 - **Implementation Risk**: Resolved. Strategy docs and migration guides are aligned with the foundation state.
@@ -106,7 +114,7 @@ Collected from Step 11 completion and audits:
 
 ## Conclusion
 
-The documentation plan drift cleanup (Slices A, B, and C) is now **100% complete**. The project documentation is in a reliable baseline state for **Step 12 — Token Storage Completion**.
+The documentation plan drift cleanup (Slices A–D) is now **100% complete**. The project documentation is in a reliable baseline state for **Step 12 — Token Storage Completion**. Documentation structure has been organized to improve discoverability and reduce clutter.
 
 ## Next Prompt Recommendation
 

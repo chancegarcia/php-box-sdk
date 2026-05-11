@@ -1,5 +1,7 @@
 # Service Layer Hardening
 
+**Status: COMPLETED** (Retained for Traceability)
+
 Roadmap reference: v1 Step 8
 
 ## Purpose

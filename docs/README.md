@@ -11,17 +11,19 @@ Welcome to the documentation for the Box PHP SDK.
 - [Model Namespace Migration Decisions](migration/model-namespace-migration-decisions.md): Background on namespace flattening.
 
 ## [Roadmap and Planning](planning/)
+- [Planning Documentation Index](planning/README.md): Central index for trackers, roadmaps, and plans.
 - [Roadmap](planning/roadmap.md): High-level project roadmap.
 - [Release Task Lists](planning/release-task-lists.md): Specific tasks for upcoming releases.
 
-### [v1.0 Planning](planning/v1/)
-The v1.0 release focuses on architectural hardening and PSR compliance.
+### [v1.0 Tracking](planning/v1/)
+- **[Main v1 Release Tracker](planning/10-v1-release-work.md) (Strategic)**: Current progress tracker for Steps 10-17.
+- **[v1.0 Implementation Checklist](planning/v1/implementation-checklist.md) (Operational)**: Detailed task-level progress.
+- **[Decision Index](planning/v1/decision-index.md)**: Central log of architectural decisions.
 
+### [v1.0 Architecture and Strategy](planning/v1/)
 - **[Strategy and Contracts](planning/v1/strategy-and-contracts.md) (Canonical)**: Core v1.0 architecture and strategy.
-- [v1.0 Overview](planning/v1/overview.md): High-level goals and typing standards.
-- [Implementation Checklist](planning/v1/implementation-checklist.md): Tracking progress of v1.0 work.
-- [Decision Index](planning/v1/decision-index.md): Central log of architectural decisions.
 - [Architecture Rules](planning/v1/architecture-rules.md): Coding and structure rules for v1.0.
+- [v1.0 Overview](planning/v1/overview.md) (Historical): High-level goals and typing standards.
 - [Test Coverage Plan](planning/v1/test-coverage-plan.md): Quality and testing strategy.
 - [API Coverage Audit](planning/v1/api-coverage-audit.md): Assessment of Box API endpoint coverage.
 - [Interface and Model Audit](planning/v1/interface-and-model-audit.md): Review of existing models for v1.0 alignment.
@@ -30,21 +32,9 @@ The v1.0 release focuses on architectural hardening and PSR compliance.
 
 **Current Foundation Status:**
 - **Step 11 / Factory Modernization and Service Boundaries**: Completed.
-- **Step 12 / Token Storage Completion**: In Progress.
+- **Step 12 / Token Storage Completion**: Ready for tracker/plan review (Next).
 
-### [Future Integrations](planning/future/)
-- [Future Symfony Bundle](planning/future/future-symfony-bundle.md): Planning for Symfony/Doctrine/Configuration integration (Deferred).
-
-## [Audits and Assessments](audits/)
-- [Documentation Audit](audits/documentation-audit.md): Evaluation of current documentation quality.
-- [PSR Compliance Assessment](audits/psr-compliance-assessment.md): Evaluating alignment with PSR standards.
-- [Box API Endpoint Coverage](audits/box-api-endpoint-coverage.md): Detailed endpoint support list.
-- [Model Signature Audit](audits/model-signature-audit.md): Technical review of model method signatures.
-- [Model Typing Decisions](audits/model-typing-decisions.md): Decisions on strict typing for model properties.
-
-## [Prompts](prompts/)
-- [Changelog Prompt](prompts/changelog-prompt.md): Instructions for updating `CHANGELOG.md`.
-- [AI Chat Prompt Format](prompts/generic-phpstorm-ai-chat-prompt-delivery-format.md): Internal AI assistant delivery format.
-
-## [AI and Internal Planning](ai/)
-- [AI Assistant Planning Context](ai/ai-assistant-planning-context.md): Context for AI-driven development.
+## [AI and Internal Status](ai/)
+- **[Current Task Summary](ai/current-task-summary.md)**: Details of the most recently completed task.
+- **[Current Handoff Summary](ai/current-handoff-summary.md)**: Latest state for the next session.
+- [AI Assistant Planning Context](ai/ai-assistant-planning-context.md): Background for AI-driven development.

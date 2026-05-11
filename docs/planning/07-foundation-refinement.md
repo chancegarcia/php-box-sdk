@@ -1,5 +1,7 @@
 # Foundation Refinement
 
+**Status: COMPLETED** (Retained for Traceability)
+
 Roadmap reference: v1 Step 7
 
 ## Purpose
