@@ -17,7 +17,7 @@ This audit evaluates the progress of the `v0.11` to `v1.0` architectural transit
 | Files | File | FileService | Yes (Partial) | Yes | **Full** | `Client::uploadFileToBox` still exists. |
 | Collaborations | Collaboration | CollaborationService | No | Yes | **Full** | Service exists but not exposed on `Client`. |
 | Groups | Group | GroupService | No | Yes | **Full** | Service exists but not exposed on `Client`. |
-| Users | User | UserService | No | Yes | **Partial** | Service is thin; uses legacy `getResourceFromBox`. |
+| Users | User | UserService | No | Yes | **Full** | Service implemented with interface and marked authenticated. |
 | Events (User) | Event | UserEventService | No | Yes | **Legacy** | Uses custom `EventResponseMapper` and `Dto`. |
 | Events (Admin) | AdminEvent | No | No | Yes | **Legacy** | Still uses `mapBoxToClass`. |
 | Shared Links | SharedLink | No | Yes | Yes | **Legacy** | Handled inside `Client` or as child of File/Folder. |

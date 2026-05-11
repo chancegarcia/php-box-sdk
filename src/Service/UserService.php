@@ -6,7 +6,7 @@ namespace Box\Service;
 
 use Box\Resource\User;
 
-class UserService extends Service
+class UserService extends Service implements UserServiceInterface
 {
     public const ENDPOINT = 'https://api.box.com/2.0/users';
     public const CURRENT_USER_ENDPOINT = 'https://api.box.com/2.0/users/me';
