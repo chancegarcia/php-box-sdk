@@ -8,7 +8,7 @@ This audit document inventories the current state of factories, resource constru
 |---|---|---|---|---|---|---|
 | `BoxClientFactory` | Infrastructure | 1 | External | Creates `Client` instance | Low | Retain; simplify constructor dependency injection. |
 | `CollaborationFactory` | Resource | 1 | `Client` | Creates `Collaboration`; accepts `$options`; uses constructor hydration | Medium | Removed interface (one-class mirror); move hydration to factory in later slice. |
-| `ConnectionFactory[Interface]` | Infrastructure | 1 | `Client` | Creates `ConnectionInterface`; implements `ConnectionFactoryInterface` | Medium | Retained interface; remove `AbstractFactory` dependency in later slice. |
+| `ConnectionFactory[Interface]` | Infrastructure | 1 | `Client` | Creates `ConnectionInterface`; implements `ConnectionFactoryInterface` | Medium | Retained modern `Box\Factory\ConnectionFactory`. Legacy `Box\Connection\ConnectionFactory` removed. |
 | `FileFactory` | Resource | 1 | `Client` | Creates `File`; accepts `$options`; uses constructor hydration | Medium | Removed interface (one-class mirror); move hydration to factory in later slice. |
 | `FolderFactory` | Resource | 1 | `Client` | Creates `Folder`; accepts `$options`; uses constructor hydration | Medium | Removed interface (one-class mirror); move hydration to factory in later slice. |
 | `GroupFactory` | Resource | 1 | `Client` | Creates `Group`; accepts `$options`; uses constructor hydration | Medium | Removed interface (one-class mirror); move hydration to factory in later slice. |
@@ -24,7 +24,7 @@ This audit document inventories the current state of factories, resource constru
 
 | Class | Usage | Behavior Provided | Status | Proposed Step 11 Action |
 |---|---|---|---|---|
-| `AbstractFactory` | Extended by `ConnectionFactory` | Basic `__construct` and internal logic for mapping | Legacy | Remove. `ConnectionFactory` can be a simple concrete class. |
+| `AbstractFactory` | N/A | Removed. | Legacy | Removed. `ConnectionFactory` is a simple concrete class. |
 
 **Findings:**
 - `AbstractFactory` is only used by `ConnectionFactory`.
@@ -102,32 +102,38 @@ Current hydration entry points:
     - Outcome: One-class mirror resource factory interfaces removed. Infrastructure interfaces retained.
     - Status: Completed.
 
-2. **Slice 11.2: Resource Passive State and Hydration Cleanup**
+2. **Slice 11.2: AbstractFactory Removal and ConnectionFactory Modernization**
+    - Goal: Remove `AbstractFactory` and modernize `ConnectionFactory`.
+    - Scope: `src/Factory/AbstractFactory.php`, `src/Connection/ConnectionFactory.php`, `src/Exception/FactoryException.php`.
+    - Outcome: `AbstractFactory` removed; `ConnectionFactory` modernized.
+    - Status: Completed.
+
+3. **Slice 11.3: Resource Passive State and Hydration Cleanup**
     - Goal: Remove constructor hydration from primary resources.
     - Scope: `File`, `Folder`, `Group`, `Collaboration`.
     - Acceptance: Constructors are empty or removed; `Hydrator` not called in resources.
 
-3. **Slice 11.3: Factory Hydration Support**
+4. **Slice 11.4: Factory Hydration Support**
     - Goal: Ensure factories can still handle array options.
     - Scope: `src/Factory/*`.
     - Acceptance: Factories handle the hydration previously done in constructors.
 
-4. **Slice 11.4: Resource URI Helper Relocation**
+5. **Slice 11.5: Resource URI Helper Relocation**
     - Goal: Move URI construction logic from resources to services.
     - Scope: `Folder`, `Group`, `FolderService`, `GroupService`.
     - Acceptance: Resources have no knowledge of endpoints.
 
-5. **Slice 11.5: Client Service Delegation (Phase 1: Folders)**
+6. **Slice 11.6: Client Service Delegation (Phase 1: Folders)**
     - Goal: Move folder-related orchestration from `Client` to `FolderService`.
     - Scope: `Client`, `FolderService`.
     - Acceptance: `Client` methods call `FolderService`.
 
-6. **Slice 11.6: Client Service Delegation (Phase 2: Others)**
+7. **Slice 11.7: Client Service Delegation (Phase 2: Others)**
     - Goal: Move remaining resource orchestration (Files, Groups, etc.) to services.
     - Scope: `Client`, `FileService`, `GroupService`, `CollaborationService`.
     - Acceptance: `Client` is a thin facade.
 
-7. **Slice 11.7: Documentation and Migration Cleanup**
+8. **Slice 11.8: Documentation and Migration Cleanup**
     - Goal: Update docs to reflect new construction patterns.
     - Scope: `docs/migration/*`, `README.md`.
 
