@@ -35,25 +35,12 @@ namespace Box;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
 use Box\Exception\BoxException;
-use Box\Factory\CollaborationFactory;
-use Box\Factory\ConnectionFactoryInterface;
-use Box\Factory\FileFactory;
-use Box\Factory\FolderFactory;
-use Box\Factory\GroupFactory;
-use Box\Factory\TokenFactoryInterface;
-use Box\Factory\UserFactory;
 use Box\Resource\Collaboration;
 use Box\Resource\File;
 use Box\Resource\Folder;
 use Box\Resource\User;
 use Box\Resource\Group;
 use Box\Service\Collaboration\CollaborationService;
-use Box\Service\Collaboration\CollaborationServiceInterface;
-use Box\Service\File\FileServiceInterface;
-use Box\Service\Folder\FolderServiceInterface;
-use Box\Service\Group\GroupServiceInterface;
-use Box\Service\SearchServiceInterface;
-use Box\Service\UserServiceInterface;
 use Box\Service\AuthenticatedServiceInterface;
 use Box\Service\ClientServiceRegistry;
 use Box\Service\ClientServiceRegistryInterface;
@@ -61,7 +48,6 @@ use Box\Service\ServiceInterface;
 use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Mapper\Hydrator;
-use Box\Connection\Token\Token;
 use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxLoggerTrait;
@@ -113,20 +99,6 @@ class Client implements LoggerAwareInterface
     protected ?string $deviceId = null;
     protected ?string $deviceName = null;
 
-    protected FolderFactory $folderFactory;
-    protected FileFactory $fileFactory;
-    protected UserFactory $userFactory;
-    protected GroupFactory $groupFactory;
-    protected CollaborationFactory $collaborationFactory;
-    protected TokenFactoryInterface $tokenFactory;
-    protected ConnectionFactoryInterface $connectionFactory;
-    protected FolderServiceInterface $folderService;
-    protected FileServiceInterface $fileService;
-    protected UserServiceInterface $userService;
-    protected GroupServiceInterface $groupService;
-    protected CollaborationServiceInterface $collaborationService;
-    protected SearchServiceInterface $searchService;
-
     protected ClientServiceRegistryInterface $serviceRegistry;
 
     public function __construct(
@@ -137,20 +109,6 @@ class Client implements LoggerAwareInterface
             $this->applyConfig($config);
         }
         $this->serviceRegistry = $serviceRegistry ?? new ClientServiceRegistry();
-
-        $this->folderFactory = $this->serviceRegistry->getFolderFactory();
-        $this->fileFactory = $this->serviceRegistry->getFileFactory();
-        $this->userFactory = $this->serviceRegistry->getUserFactory();
-        $this->groupFactory = $this->serviceRegistry->getGroupFactory();
-        $this->collaborationFactory = $this->serviceRegistry->getCollaborationFactory();
-        $this->tokenFactory = $this->serviceRegistry->getTokenFactory();
-        $this->connectionFactory = $this->serviceRegistry->getConnectionFactory();
-        $this->folderService = $this->serviceRegistry->getFolderService();
-        $this->fileService = $this->serviceRegistry->getFileService();
-        $this->userService = $this->serviceRegistry->getUserService();
-        $this->groupService = $this->serviceRegistry->getGroupService();
-        $this->collaborationService = $this->serviceRegistry->getCollaborationService();
-        $this->searchService = $this->serviceRegistry->getSearchService();
     }
 
     protected function applyConfig(ClientConfig $config): void
@@ -165,73 +123,53 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @param mixed $options
+     * @param array|null $options
      *
      * @return Folder
      */
-    public function getNewFolder(mixed $options = null): Folder
+    public function getNewFolder(?array $options = null): Folder
     {
-        $instance = $this->folderFactory->createFolder($options);
-        if ($this->logger && method_exists($instance, 'setLogger')) {
-            $instance->setLogger($this->logger);
-        }
-
-        return $instance;
+        return $this->serviceRegistry->getFolderFactory()->createFolder($options);
     }
 
     /**
-     * @param mixed $options
+     * @param array|null $options
      *
      * @return User
      */
-    public function getNewUser(mixed $options = null): User
+    public function getNewUser(?array $options = null): User
     {
-        $instance = $this->userFactory->createUser($options);
-        if ($this->logger && method_exists($instance, 'setLogger')) {
-            $instance->setLogger($this->logger);
-        }
-
-        return $instance;
+        return $this->serviceRegistry->getUserFactory()->createUser($options);
     }
 
     /**
-     * @param mixed $options
+     * @param array|null $options
      *
      * @return Group
      */
-    public function getNewGroup(mixed $options = null): Group
+    public function getNewGroup(?array $options = null): Group
     {
-        $instance = $this->groupFactory->createGroup($options);
-        if ($this->logger && method_exists($instance, 'setLogger')) {
-            $instance->setLogger($this->logger);
-        }
-
-        return $instance;
-    }
-
-    public function getNewCollaboration(mixed $options = null): Collaboration
-    {
-        $instance = $this->collaborationFactory->createCollaboration($options);
-        if ($this->logger && method_exists($instance, 'setLogger')) {
-            $instance->setLogger($this->logger);
-        }
-
-        return $instance;
+        return $this->serviceRegistry->getGroupFactory()->createGroup($options);
     }
 
     /**
-     * @param mixed $options
+     * @param array|null $options
+     *
+     * @return Collaboration
+     */
+    public function getNewCollaboration(?array $options = null): Collaboration
+    {
+        return $this->serviceRegistry->getCollaborationFactory()->createCollaboration($options);
+    }
+
+    /**
+     * @param array|null $options
      *
      * @return File
      */
-    public function getNewFile(mixed $options = null): File
+    public function getNewFile(?array $options = null): File
     {
-        $instance = $this->fileFactory->createFile($options);
-        if ($this->logger && method_exists($instance, 'setLogger')) {
-            $instance->setLogger($this->logger);
-        }
-
-        return $instance;
+        return $this->serviceRegistry->getFileFactory()->createFile($options);
     }
 
     /**
@@ -259,7 +197,7 @@ class Client implements LoggerAwareInterface
         return $folders[$id] ?? null;
     }
 
-    public function addFolder(mixed $folder): void
+    public function addFolder(Folder $folder): void
     {
         $folders = $this->getFolders(false) ?? [];
         $id = $folder->getId();
@@ -271,7 +209,11 @@ class Client implements LoggerAwareInterface
         $this->setFolders($folders);
     }
 
-    public function getFolders(bool $retrieve = true): mixed
+    /**
+     * @param bool $retrieve
+     * @return array<string|int, Folder>|null
+     */
+    public function getFolders(bool $retrieve = true): ?array
     {
         if (!$retrieve) {
             return $this->folders;
@@ -297,10 +239,10 @@ class Client implements LoggerAwareInterface
      * @return array returns an array of User objects that are in the group membership
      * @throws \Box\Exception\BoxException
      */
-    public function getGroupMembershipList($group = null, $limit = null, $offset = null)
+    public function getGroupMembershipList(Group|string|int|null $group = null, ?int $limit = null, ?int $offset = null): array
     {
         if (is_numeric($group)) {
-            $groupId = $group;
+            $groupId = (string) $group;
             $group = $this->getNewGroup();
             $group->setId($groupId);
         }
@@ -309,20 +251,20 @@ class Client implements LoggerAwareInterface
             throw new BoxException("Group object expected", BoxException::INVALID_INPUT);
         }
 
-        $service = $this->configureService($this->groupService);
+        $groupService = $this->configureService($this->serviceRegistry->getGroupService());
 
         if (is_numeric($limit) || is_numeric($offset)) {
             if (!is_numeric($limit)) {
                 $limit = 100;
             }
 
-            $data = $service->getGroupMembershipList($group->getId(), $limit, (int) ($offset ?? 0));
+            $data = $groupService->getGroupMembershipList($group->getId(), $limit, (int) ($offset ?? 0));
             $entries = $data['entries'];
         } else {
             $limit = 100;
             $offset = 0;
 
-            $data = $service->getGroupMembershipList($group->getId(), $limit, $offset);
+            $data = $groupService->getGroupMembershipList($group->getId(), $limit, $offset);
 
             $totalMembers = $data['total_count'] ?? count($data['entries']);
 
@@ -332,7 +274,7 @@ class Client implements LoggerAwareInterface
 
             while ($currentTotal < $totalMembers) {
                 $offset += $limit;
-                $data = $service->getGroupMembershipList($group->getId(), $limit, $offset);
+                $data = $groupService->getGroupMembershipList($group->getId(), $limit, $offset);
                 $moreEntries = $data['entries'];
                 foreach ($moreEntries as $moreEntry) {
                     $entries[] = $moreEntry;
@@ -359,15 +301,15 @@ class Client implements LoggerAwareInterface
     /**
      * @throws BoxException
      */
-    public function getFolderBySharedUri($sharedUri = null)
+    public function getFolderBySharedUri(?string $sharedUri = null): ?Folder
     {
-        if (!is_string($sharedUri)) {
+        if (null === $sharedUri) {
             throw new BoxException('shared uri must be a string value', BoxException::INVALID_INPUT);
         }
 
-        $service = $this->configureService($this->folderService);
+        $folderService = $this->configureService($this->serviceRegistry->getFolderService());
 
-        return $service->getFolderBySharedUri($sharedUri);
+        return $folderService->getFolderBySharedUri($sharedUri);
     }
 
     /**
@@ -375,11 +317,11 @@ class Client implements LoggerAwareInterface
      * @return Folder
      * @throws BoxException
      */
-    public function getFolderFromBox($id = 0): Folder
+    public function getFolderFromBox(string|int $id = 0): Folder
     {
-        $service = $this->configureService($this->folderService);
+        $folderService = $this->configureService($this->serviceRegistry->getFolderService());
 
-        return $service->getFolder($id);
+        return $folderService->getFolder($id);
     }
 
     /**
@@ -389,11 +331,11 @@ class Client implements LoggerAwareInterface
      *
      * @return Folder
      */
-    public function getBoxFolderItems($folder, $limit = 100, $offset = 0)
+    public function getBoxFolderItems(Folder $folder, int $limit = 100, int $offset = 0): Folder
     {
-        $service = $this->configureService($this->folderService);
+        $folderService = $this->configureService($this->serviceRegistry->getFolderService());
 
-        return $service->getFolderItems($folder->getId(), $limit, $offset);
+        return $folderService->getFolderItems($folder->getId(), $limit, $offset);
     }
 
     /**
@@ -401,7 +343,7 @@ class Client implements LoggerAwareInterface
      * @return array
      * @throws BoxException
      */
-    public function getFolderItems($id = 0)
+    public function getFolderItems(string|int $id = 0): array
     {
         /**
          * @var Folder $folder
@@ -414,16 +356,16 @@ class Client implements LoggerAwareInterface
     /**
      * @param string $name
      * @param string|int $parentFolderId
-     * @param array $options
+     * @param array|null $options
      *
      * @return Folder
      * @throws BoxException
      */
-    public function createNewBoxFolder($name, $parentFolderId = 0, ?array $options = [])
+    public function createNewBoxFolder(string $name, string|int $parentFolderId = 0, ?array $options = []): Folder
     {
-        $service = $this->configureService($this->folderService);
+        $folderService = $this->configureService($this->serviceRegistry->getFolderService());
 
-        return $service->createFolder($name, $parentFolderId, $options);
+        return $folderService->createFolder($name, $parentFolderId, $options);
     }
 
     /**
@@ -433,61 +375,37 @@ class Client implements LoggerAwareInterface
      * @throws BoxException
      * @return array updated folder data
      */
-    public function updateBoxFolder($folder, $ifMatchHeader = false)
+    public function updateBoxFolder(Folder $folder, string|bool $ifMatchHeader = false): array
     {
-        if (!$folder instanceof Folder) {
-            $err['error'] = 'sdk_unexpected_type';
-            $err['error_description'] = "expecting Folder class. given (" . get_debug_type($folder) . ")";
-            $this->error($err);
-        }
+        $folderService = $this->configureService($this->serviceRegistry->getFolderService());
 
-        $service = $this->configureService($this->folderService);
-
-        return $service->updateFolder($folder, $ifMatchHeader);
+        return $folderService->updateFolder($folder, $ifMatchHeader);
     }
 
     /**
-     * @param null|Folder $folder
+     * @param Folder $folder
      *
-     * @return mixed raw json data as an array
+     * @return array raw json data as an array
      * @throws BoxException
      */
-    public function getFolderCollaborations($folder = null)
+    public function getFolderCollaborations(Folder $folder): array
     {
-        if (!$folder instanceof Folder) {
-            $err['error'] = 'sdk_unexpected_type';
-            $err['error_description'] = "expecting Folder class. given (" . var_export($folder, true) . ")";
-            $this->error($err);
-        }
+        $collaborationService = $this->configureService($this->serviceRegistry->getCollaborationService());
 
-        $service = $this->configureService($this->collaborationService);
-
-        return $service->getFolderCollaborations($folder);
+        return $collaborationService->getFolderCollaborations($folder);
     }
 
     /**
-     * @param null|Folder $folder
-     * @param null|User|Group $collaborator
+     * @param Folder $folder
+     * @param User|Group $collaborator
      * @param string $role see {@link http://developers.box.com/docs/#collaborations box documentation for all possible
      *     roles} default is viewer
      *
      * @return Collaboration
      * @throws BoxException
      */
-    public function addCollaboration($folder = null, $collaborator = null, $role = 'viewer')
+    public function addCollaboration(Folder $folder, User|Group $collaborator, string $role = 'viewer'): Collaboration
     {
-        if (!$folder instanceof Folder) {
-            $err['error'] = 'sdk_unexpected_type';
-            $err['error_description'] = "expecting Folder class. given (" . var_export($folder, true) . ")";
-            $this->error($err);
-        }
-
-        if (!$collaborator instanceof User && !$collaborator instanceof Group) {
-            $err['error'] = 'sdk_unexpected_type';
-            $err['error_description'] = "expecting User or Group resource. given (" . var_export($collaborator, true) . ")";
-            $this->error($err);
-        }
-
         $uri = CollaborationService::ENDPOINT;
 
         $folderId = $folder->getId();
@@ -527,7 +445,7 @@ class Client implements LoggerAwareInterface
      * @return Folder
      * @throws BoxException
      */
-    public function createSharedLinkForFolder($folder = null, $params = null)
+    public function createSharedLinkForFolder(?Folder $folder = null, ?array $params = null): Folder
     {
         if (!$folder instanceof Folder) {
             $err['error'] = 'sdk_unexpected_type';
@@ -535,15 +453,15 @@ class Client implements LoggerAwareInterface
             $this->error($err);
         }
 
-        $service = $this->configureService($this->folderService);
+        $folderService = $this->configureService($this->serviceRegistry->getFolderService());
 
-        return $service->createSharedLink($folder, $params);
+        return $folderService->createSharedLink($folder, $params);
     }
 
     /**
      * @param Folder $originalFolder
-     * @param Folder|array $parent
-     * @param string $name
+     * @param Folder $parent
+     * @param string|null $name
      * @param bool $addToFolders
      *
      * @return Folder
@@ -551,32 +469,12 @@ class Client implements LoggerAwareInterface
      * @throws BoxException
      * @internal param $destinationId
      */
-    public function copyBoxFolder($originalFolder, $parent, $name = null, $addToFolders = true)
+    public function copyBoxFolder(Folder $originalFolder, Folder $parent, ?string $name = null, bool $addToFolders = true): Folder
     {
-        if (!$originalFolder instanceof Folder) {
-            $this->error([
-                'error' => 'Folder expected',
-                'error_description' => $originalFolder
-            ]);
-        }
+        $folderService = $this->configureService($this->serviceRegistry->getFolderService());
+        $copy = $folderService->copyFolder($originalFolder, $parent, $name);
 
-        if (is_array($parent)) {
-            $folder = $this->getNewFolder();
-            (new Hydrator())->hydrate($folder, $parent);
-            $parent = $folder;
-        }
-
-        if (!$parent instanceof Folder) {
-            $this->error([
-                'error' => 'Folder expected',
-                'error_description' => $parent
-            ]);
-        }
-
-        $service = $this->configureService($this->folderService);
-        $copy = $service->copyFolder($originalFolder, $parent, $name);
-
-        if (true === $addToFolders && $copy instanceof Folder) {
+        if (true === $addToFolders) {
             $this->addFolder($copy);
         }
 
@@ -604,17 +502,17 @@ class Client implements LoggerAwareInterface
      */
     public function uploadFileToBox(string|FileStream $file, string|int $parentId = 0): array
     {
-        $service = $this->configureService($this->fileService);
+        $fileService = $this->configureService($this->serviceRegistry->getFileService());
 
-        return $service->uploadFile($file, $parentId);
+        return $fileService->uploadFile($file, $parentId);
     }
 
-    public function exchangeAuthorizationCodeForToken()
+    public function exchangeAuthorizationCodeForToken(): TokenInterface
     {
         return $this->getAccessToken();
     }
 
-    public function getAccessToken()
+    public function getAccessToken(): TokenInterface
     {
         $connection = $this->getConnection();
         $params['grant_type'] = 'authorization_code';
@@ -634,9 +532,9 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @return Token|TokenInterface
+     * @return TokenInterface
      */
-    public function refreshToken()
+    public function refreshToken(): TokenInterface
     {
         // outside script will set token via getAccessToken
         $token = $this->getToken();
@@ -669,7 +567,7 @@ class Client implements LoggerAwareInterface
         return $token;
     }
 
-    public function getAuthorizationHeader()
+    public function getAuthorizationHeader(): string
     {
         $token = $this->getToken();
 
@@ -677,10 +575,10 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @param $token \Box\Connection\Token\TokenInterface
-     * @param $data
+     * @param TokenInterface $token
+     * @param array $data
      */
-    public function setTokenData($token, $data): void
+    public function setTokenData(TokenInterface $token, array $data): void
     {
         $token->setAccessToken($data['access_token']);
         $token->setExpiresIn($data['expires_in']);
@@ -689,11 +587,12 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @param $token \Box\Connection\Token\TokenInterface|\Box\Connection\Token\Token
+     * @param TokenInterface $token
      *
-     * @return mixed
+     * @return array
+     * @throws BoxException
      */
-    public function destroyToken($token)
+    public function destroyToken(TokenInterface $token): array
     {
         $params['client_id'] = $this->getClientId();
         $params['client_secret'] = $this->getClientSecret();
@@ -707,7 +606,7 @@ class Client implements LoggerAwareInterface
         return $this->parseResponse($response);
     }
 
-    public function auth()
+    public function auth(): void
     {
         // build get query to auth uri
         $query = $this->buildAuthQuery();
@@ -719,7 +618,7 @@ class Client implements LoggerAwareInterface
         $connection->query($query);
     }
 
-    public function buildAuthQuery()
+    public function buildAuthQuery(): string
     {
         $uri = self::AUTH_URI . '?';
         $params = [];
@@ -872,7 +771,7 @@ class Client implements LoggerAwareInterface
     public function getToken(): TokenInterface
     {
         if (null === $this->token) {
-            $this->token = $this->tokenFactory->createToken();
+            $this->token = $this->serviceRegistry->getTokenFactory()->createToken();
             if ($this->logger && method_exists($this->token, 'setLogger')) {
                 $this->token->setLogger($this->logger);
             }
@@ -925,7 +824,7 @@ class Client implements LoggerAwareInterface
     public function getConnection(): ConnectionInterface
     {
         if (null === $this->connection) {
-            $this->connection = $this->connectionFactory->createConnection();
+            $this->connection = $this->serviceRegistry->getConnectionFactory()->createConnection();
             if ($this->logger) {
                 $this->connection->setLogger($this->logger);
             }
@@ -942,46 +841,35 @@ class Client implements LoggerAwareInterface
 
 
     /**
-     * @todo determine best validation for this
-     *
-     * @param null $files
-     *
-     * @return $this
-     */
-    /**
-     * @param mixed $files
+     * @param array<string|int, File>|null $files
      * @return void
      */
-    public function setFiles(mixed $files = null): void
+    public function setFiles(?array $files = null): void
     {
         $this->files = $files;
     }
 
-    public function getFiles()
+    public function getFiles(): ?array
     {
         return $this->files;
     }
 
 
     /**
-     * @param mixed $folders
+     * @param array<string|int, Folder>|null $folders
      * @return void
      */
-    public function setFolders(mixed $folders = null): void
+    public function setFolders(?array $folders = null): void
     {
         $this->folders = $folders;
     }
 
 
     /**
-     * @param array $collaborations
-     *
-     */
-    /**
-     * @param mixed $collaborations
+     * @param array<int, Collaboration>|null $collaborations
      * @return void
      */
-    public function setCollaborations(mixed $collaborations = null): void
+    public function setCollaborations(?array $collaborations = null): void
     {
         $this->collaborations = $collaborations;
     }
@@ -989,80 +877,65 @@ class Client implements LoggerAwareInterface
     /**
      * @return array
      */
-    public function getCollaborations()
+    public function getCollaborations(): ?array
     {
         return $this->collaborations;
     }
 
-    /**
-     * @param mixed $deviceId
-     * @return void
-     */
-    public function setDeviceId(mixed $deviceId = null): void
+    public function setDeviceId(?string $deviceId = null): void
     {
         $this->deviceId = $deviceId;
     }
 
-    public function getDeviceId()
+    public function getDeviceId(): ?string
     {
         return $this->deviceId;
     }
 
-    /**
-     * @param mixed $deviceName
-     * @return void
-     */
-    public function setDeviceName(mixed $deviceName = null): void
+    public function setDeviceName(?string $deviceName = null): void
     {
         $this->deviceName = $deviceName;
     }
 
-    public function getDeviceName()
+    public function getDeviceName(): ?string
     {
         return $this->deviceName;
     }
 
-    /**
-     * @param mixed $state
-     * @return void
-     */
-    public function setState(mixed $state = null): void
+    public function setState(?string $state = null): void
     {
         $this->state = $state;
     }
 
-    public function getState()
+    public function getState(): ?string
     {
         return $this->state;
     }
 
     /**
-     * @param Folder $root
-     */
-    /**
-     * @param mixed $root
+     * @param Folder|null $root
      * @return void
      */
-    public function setRoot(mixed $root = null): void
+    public function setRoot(?Folder $root = null): void
     {
         $this->root = $root;
     }
 
     /**
-     * @return Folder
+     * @return Folder|null
      */
-    public function getRoot()
+    public function getRoot(): ?Folder
     {
         return $this->root;
     }
 
     /**
-     * @param $uri
+     * @param string $uri
      *
-     * @return mixed
+     * @return array
      * @throws BoxException
      */
-    public function query($uri = null)
+    public function query(string $uri): array
     {
         $connection = $this->getConnection();
         $this->setConnectionAuthHeader($connection);
@@ -1077,14 +950,14 @@ class Client implements LoggerAwareInterface
      * @param int|null $limit
      * @param int|null $offset
      * @param string|null $type
-     * @return mixed
+     * @return array
      * @throws BoxException
      */
-    public function search($query = null, $limit = null, $offset = null, $type = null)
+    public function search(?string $query = null, ?int $limit = null, ?int $offset = null, ?string $type = null): array
     {
-        $service = $this->configureService($this->searchService);
+        $searchService = $this->configureService($this->serviceRegistry->getSearchService());
 
-        return $service->search($query, $limit, $offset, $type);
+        return $searchService->search($query, $limit, $offset, $type);
     }
 
     protected function configureService(ServiceInterface $service): ServiceInterface

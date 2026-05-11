@@ -34,16 +34,10 @@ namespace Box\Resource;
 
 use Box\Exception\BoxException;
 use Countable;
-use Box\Logger\LoggerAwareInterface;
-use Box\Trait\LoggerAwareTrait;
-use Box\Trait\BoxLoggerTrait;
 use DateTimeInterface;
 
-class Folder implements LoggerAwareInterface
+class Folder
 {
-    use LoggerAwareTrait;
-    use BoxLoggerTrait;
-
     protected string $type = "folder";
     protected string|int|null $id = null;
     protected mixed $sequenceId = null;

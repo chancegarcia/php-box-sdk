@@ -13,9 +13,9 @@ This audit evaluates the progress of the `v0.11` to `v1.0` architectural transit
 
 | Domain | Resource | Service | Client Facade | Tests | Modern Pattern Status | Notes |
 |---|---|---|---|---|---|---|
-| Folders | Folder | FolderService | Yes (Partial) | Yes | **Full** | `Client` still has many legacy folder methods. |
+| Folders | Folder | FolderService | Yes | Yes | **Full** | |
 | Files | File | FileService | Yes | Yes | **Full** | Delegated from `Client` in 11.7. |
-| Collaborations | Collaboration | CollaborationService | Yes (Partial) | Yes | **Full** | `getFolderCollaborations` delegated. `addCollaboration` implementation remains inline to preserve test stability. |
+| Collaborations | Collaboration | CollaborationService | Yes | Yes | **Full** | Delegated from `Client` in 11.7. |
 | Groups | Group | GroupService | Yes | Yes | **Full** | Delegated from `Client` in 11.7. |
 | Users | User | UserService | Yes | Yes | **Full** | Delegated from `Client` in 11.7. |
 | Search | mixed | SearchService | Yes | Yes | **Full** | Delegated from `Client` in 11.7. |
@@ -39,7 +39,7 @@ The following major Box API areas lack dedicated Resources or Services:
 | `mapBoxToClass` | `AdminEvent`, `Event` | **Blocking for v1** | Remove; use `Hydrator` via `Factory`. | Pre-v1 artifact. |
 | `getResourceFromBox` | `Service` base | **Should fix** | Keep but ensure it uses `Hydrator`. | Transition helper. |
 | `Client` query methods | `Client::query`, `Client::search` | **Fixed** | Move to dedicated Search/General service. | `search` delegated to `SearchService` in 11.7. |
-| Mixed types | Multiple Resources | **Acceptable** | Narrow to specific types where possible. | Ongoing task. |
+| Mixed types | Multiple Resources | **Acceptable** | Narrow to specific types where possible. | `Client` usages reduced in 11.7.3. Resource audit deferred. |
 | Fluent Setters | Legacy models | **Should fix** | Change to `void` returns. | Enforced in new resources. |
 | Hard-coded URIs | `Client`, `UserService` | **Should fix** | Move to Service constants. | |
 | Nested Ternaries | Various | **Should fix** | Replace with explicit branching. | Guideline preference. |

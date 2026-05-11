@@ -32,16 +32,11 @@
 
 namespace Box\Resource;
 
-use Box\Logger\LoggerAwareInterface;
-use Box\Trait\LoggerAwareTrait;
-use Box\Trait\BoxLoggerTrait;
+use Box\Exception\BoxException;
 use DateTimeInterface;
 
-class Collaboration implements LoggerAwareInterface
+class Collaboration
 {
-    use LoggerAwareTrait;
-    use BoxLoggerTrait;
-
     protected mixed $id = null;
     protected mixed $type = 'collaboration';
     protected mixed $createdBy = null;
@@ -201,9 +196,10 @@ class Collaboration implements LoggerAwareInterface
         ];
 
         if (!in_array($status, $acceptable)) {
-            $err['error'] = "sdk_invalid_collaboration_status";
-            $err['error_description'] = "status can only be one of the following values: " . implode(', ', $acceptable);
-            $this->error($err);
+            throw new BoxException(
+                "status can only be one of the following values: " . implode(', ', $acceptable),
+                BoxException::INVALID_INPUT
+            );
         }
 
         $this->status = $status;

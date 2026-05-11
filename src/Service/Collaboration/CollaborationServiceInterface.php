@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Box\Service\Collaboration;
 
-use Box\Http\FileStream;
 use Box\Resource\Collaboration;
 use Box\Resource\Folder;
 use Box\Service\AuthenticatedServiceInterface;

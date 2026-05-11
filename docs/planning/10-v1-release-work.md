@@ -48,7 +48,11 @@ This work assumes the completion of:
 | 11.6.2 | Auth Boundary Hardening (AuthenticatedServiceInterface) | ✓ |
 | 11.6.3 | Service Interface and Client Boundary Cleanup | ✓ |
 | 11.7 | Client Service Delegation (Phase 2: Others) | ✓ |
-| 11.8 | Documentation and Migration Cleanup | |
+| 11.7.1 | Client Registry Usage and v1 Test Alignment Cleanup | ✓ |
+| 11.7.2 | Client Facade Readability, Resource Boundary, and Type Cleanup | ✓ |
+| 11.7.3 | Mixed Type Reduction and Client Factory Convenience Review | ✓ |
+| 11.8 | Documentation, Migration, and Planning Drift Cleanup | |
+| 11.9 | Final Integration Review, Code/Plan Conformance, and New-Chat Handoff | |
 | 12 | [Token Storage Completion](#step-12--token-storage-completion) | Not Started |
 | 13 | [API Fixture Realism and Contract Alignment](#step-13--api-fixture-realism-and-contract-alignment) | Not Started |
 | 14 | [JWT/S2S Feasibility and Dependency Review](#step-14--jwts2s-feasibility-and-dependency-review) | Not Started |
@@ -114,7 +118,8 @@ Audit and migrate remaining domain resource classes into the final v1 resource n
 - 11.6.1 | [v1 Service Coverage and Auth Boundary Audit](docs/audits/11-v1-service-coverage-auth-boundary-audit.md) | ✓ |
 - 11.6.2 | Auth Boundary Hardening (AuthenticatedServiceInterface) | ✓ |
 - 11.6.3 | Service Interface and Client Boundary Cleanup | ✓ |
-- 11.7 | Client Service Delegation (Phase 2: Others) | |
+- 11.7 | Client Service Delegation (Phase 2: Others) | ✓ |
+- 11.7.1 | Client Registry Usage and v1 Test Alignment Cleanup | ✓ |
 - 11.8 | Documentation and Migration Cleanup | |
 
 ### Purpose

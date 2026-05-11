@@ -45,7 +45,7 @@ class LoggerPropagationTest extends TestCase
         $this->assertSame($logger, $connection->getLogger());
     }
 
-    public function testLoggerPropagatesViaFactory(): void
+    public function testResourcesArePassiveAndNotLoggerAware(): void
     {
         $logger = $this->createMock(LoggerInterface::class);
         $client = new Client();
@@ -54,10 +54,12 @@ class LoggerPropagationTest extends TestCase
         $folder = $client->getNewFolder(['id' => '123']);
 
         $this->assertInstanceOf(Folder::class, $folder);
-        $this->assertSame($logger, $folder->getLogger());
+        // Resources should no longer have loggers propagated from Client in v1
+        $this->assertFalse(method_exists($folder, 'getLogger'));
+        $this->assertFalse(method_exists($folder, 'setLogger'));
     }
 
-    public function testLoggerPropagatesToCollaboration(): void
+    public function testCollaborationIsPassiveAndNotLoggerAware(): void
     {
         $logger = $this->createMock(LoggerInterface::class);
         $client = new Client();
@@ -66,7 +68,9 @@ class LoggerPropagationTest extends TestCase
         $collaboration = $client->getNewCollaboration(['id' => '123']);
 
         $this->assertInstanceOf(Collaboration::class, $collaboration);
-        $this->assertSame($logger, $collaboration->getLogger());
+        // Resources should no longer have loggers propagated from Client in v1
+        $this->assertFalse(method_exists($collaboration, 'getLogger'));
+        $this->assertFalse(method_exists($collaboration, 'setLogger'));
     }
 
 
