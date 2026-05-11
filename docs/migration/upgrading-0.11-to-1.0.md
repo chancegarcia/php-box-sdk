@@ -66,6 +66,23 @@ The legacy `BaseModelTrait` and `ModelTrait` have been removed. Mapping infrastr
     - **Token `toArray()`**: The `Token` class now implements `toArray()` for easier serialization of credentials.
     - **ModelMapper Cleanup**: `ModelMapper` no longer provides `mapBoxToClass`, `isInt`, or `removeEmpty`. Use `Hydrator` for mapping and PHP native functions or specialized helpers for other tasks.
 
+### Factory Interface Rationalization
+Redundant "one-class mirror" factory interfaces have been removed to simplify the SDK's internal structure while preserving the ability to inject concrete factories for testing.
+
+- **Impact**: Moderate (Breaking change if you implement these interfaces).
+- **Migration**:
+    - **Removed Interfaces**:
+        - `Box\Factory\FileFactoryInterface`
+        - `Box\Factory\FolderFactoryInterface`
+        - `Box\Factory\UserFactoryInterface`
+        - `Box\Factory\GroupFactoryInterface`
+        - `Box\Factory\CollaborationFactoryInterface`
+    - **Update Type Hints**: Update type hints and constructor injections to use the concrete factory classes (e.g., `Box\Factory\FileFactory`) instead of the removed interfaces.
+    - **Retained Interfaces**: Infrastructure-related factory interfaces have been retained as meaningful extension points:
+        - `Box\Factory\ConnectionFactoryInterface`
+        - `Box\Factory\TokenFactoryInterface`
+        - `Box\Factory\AuthenticationResponseFactoryInterface`
+
 ### Resource Namespace and Interface Rationalization
 Resource classes have been moved to the final `Box\Resource` namespace, and redundant mirror interfaces (e.g., `FileInterface`, `FolderInterface`) have been removed.
 

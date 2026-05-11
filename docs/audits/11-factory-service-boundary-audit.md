@@ -7,13 +7,13 @@ This audit document inventories the current state of factories, resource constru
 | Class/Interface | Type | Implementation Count | Consumers | Behavior | Risk | Proposed Step 11 Action |
 |---|---|---|---|---|---|---|
 | `BoxClientFactory` | Infrastructure | 1 | External | Creates `Client` instance | Low | Retain; simplify constructor dependency injection. |
-| `CollaborationFactory[Interface]` | Resource | 1 | `Client` | Creates `Collaboration`; accepts `$options`; uses constructor hydration | Medium | Rationalize interface; move hydration to factory. |
-| `ConnectionFactory[Interface]` | Infrastructure | 1 | `Client` | Creates `ConnectionInterface`; extends `AbstractFactory` | Medium | Rationalize interface; remove `AbstractFactory` dependency. |
-| `FileFactory[Interface]` | Resource | 1 | `Client` | Creates `File`; accepts `$options`; uses constructor hydration | Medium | Rationalize interface; move hydration to factory. |
-| `FolderFactory[Interface]` | Resource | 1 | `Client` | Creates `Folder`; accepts `$options`; uses constructor hydration | Medium | Rationalize interface; move hydration to factory. |
-| `GroupFactory[Interface]` | Resource | 1 | `Client` | Creates `Group`; accepts `$options`; uses constructor hydration | Medium | Rationalize interface; move hydration to factory. |
-| `TokenFactory[Interface]` | Infrastructure | 1 | `Client` | Creates `TokenInterface` | Medium | Rationalize interface. |
-| `UserFactory[Interface]` | Resource | 1 | `Client` | Creates `User`; accepts `$options`; `User` is modern (passive) | Low | Rationalize interface. |
+| `CollaborationFactory` | Resource | 1 | `Client` | Creates `Collaboration`; accepts `$options`; uses constructor hydration | Medium | Removed interface (one-class mirror); move hydration to factory in later slice. |
+| `ConnectionFactory[Interface]` | Infrastructure | 1 | `Client` | Creates `ConnectionInterface`; implements `ConnectionFactoryInterface` | Medium | Retained interface; remove `AbstractFactory` dependency in later slice. |
+| `FileFactory` | Resource | 1 | `Client` | Creates `File`; accepts `$options`; uses constructor hydration | Medium | Removed interface (one-class mirror); move hydration to factory in later slice. |
+| `FolderFactory` | Resource | 1 | `Client` | Creates `Folder`; accepts `$options`; uses constructor hydration | Medium | Removed interface (one-class mirror); move hydration to factory in later slice. |
+| `GroupFactory` | Resource | 1 | `Client` | Creates `Group`; accepts `$options`; uses constructor hydration | Medium | Removed interface (one-class mirror); move hydration to factory in later slice. |
+| `TokenFactory[Interface]` | Infrastructure | 1 | `Client` | Creates `TokenInterface` | Medium | Retained interface. |
+| `UserFactory` | Resource | 1 | `Client` | Creates `User`; accepts `$options`; `User` is modern (passive) | Low | Removed interface (one-class mirror). |
 
 **Findings:**
 - Most resource factories are "one-class mirror" interfaces that mostly wrap `new Resource($options)`.
@@ -96,10 +96,11 @@ Current hydration entry points:
 
 ## 8. Step 11 Implementation Slicing Proposal
 
-1. **Slice 11.1: Factory Modernization and AbstractFactory Removal**
-    - Goal: Remove `AbstractFactory`, rationalize resource factory interfaces.
+1. **Slice 11.1: Factory Interface Decision Pass**
+    - Goal: Rationalize factory interfaces; decide removal vs retention.
     - Scope: `src/Factory/*`.
-    - Acceptance: No `AbstractFactory`, consistent return types.
+    - Outcome: One-class mirror resource factory interfaces removed. Infrastructure interfaces retained.
+    - Status: Completed.
 
 2. **Slice 11.2: Resource Passive State and Hydration Cleanup**
     - Goal: Remove constructor hydration from primary resources.

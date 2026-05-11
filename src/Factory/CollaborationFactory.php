@@ -4,7 +4,7 @@ namespace Box\Factory;
 
 use Box\Resource\Collaboration;
 
-class CollaborationFactory implements CollaborationFactoryInterface
+class CollaborationFactory
 {
     public function createCollaboration(?array $options = null): Collaboration
     {

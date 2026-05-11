@@ -36,19 +36,14 @@ use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
 use Box\Exception\BoxException;
 use Box\Factory\CollaborationFactory;
-use Box\Factory\CollaborationFactoryInterface;
 use Box\Factory\ConnectionFactory;
 use Box\Factory\ConnectionFactoryInterface;
 use Box\Factory\FileFactory;
-use Box\Factory\FileFactoryInterface;
 use Box\Factory\FolderFactory;
-use Box\Factory\FolderFactoryInterface;
 use Box\Factory\GroupFactory;
-use Box\Factory\GroupFactoryInterface;
 use Box\Factory\TokenFactory;
 use Box\Factory\TokenFactoryInterface;
 use Box\Factory\UserFactory;
-use Box\Factory\UserFactoryInterface;
 use Box\Resource\Collaboration;
 use Box\Resource\File;
 use Box\Resource\Folder;
@@ -112,21 +107,21 @@ class Client implements LoggerAwareInterface
     protected ?string $deviceId = null;
     protected ?string $deviceName = null;
 
-    protected FolderFactoryInterface $folderFactory;
-    protected FileFactoryInterface $fileFactory;
-    protected UserFactoryInterface $userFactory;
-    protected GroupFactoryInterface $groupFactory;
-    protected CollaborationFactoryInterface $collaborationFactory;
+    protected FolderFactory $folderFactory;
+    protected FileFactory $fileFactory;
+    protected UserFactory $userFactory;
+    protected GroupFactory $groupFactory;
+    protected CollaborationFactory $collaborationFactory;
     protected TokenFactoryInterface $tokenFactory;
     protected ConnectionFactoryInterface $connectionFactory;
 
     public function __construct(
         ?array $options = null,
-        ?FolderFactoryInterface $folderFactory = null,
-        ?FileFactoryInterface $fileFactory = null,
-        ?UserFactoryInterface $userFactory = null,
-        ?GroupFactoryInterface $groupFactory = null,
-        ?CollaborationFactoryInterface $collaborationFactory = null,
+        ?FolderFactory $folderFactory = null,
+        ?FileFactory $fileFactory = null,
+        ?UserFactory $userFactory = null,
+        ?GroupFactory $groupFactory = null,
+        ?CollaborationFactory $collaborationFactory = null,
         ?TokenFactoryInterface $tokenFactory = null,
         ?ConnectionFactoryInterface $connectionFactory = null
     ) {

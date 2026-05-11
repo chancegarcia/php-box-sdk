@@ -4,7 +4,7 @@ namespace Box\Factory;
 
 use Box\Resource\Folder;
 
-class FolderFactory implements FolderFactoryInterface
+class FolderFactory
 {
     public function createFolder(?array $options = null): Folder
     {

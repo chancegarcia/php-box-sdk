@@ -36,7 +36,7 @@ This work assumes the completion of:
 | Slice | Title | Status |
 | :--- | :--- | :--- |
 | 11.0 | [Factory, Construction, Hydration, and Service-Boundary Audit](11-factory-service-boundary-audit.md) | ✓ |
-| 11.1 | Factory Modernization and AbstractFactory Removal | |
+| 11.1 | Factory Interface Decision Pass | Done |
 | 11.2 | Resource Passive State and Hydration Cleanup | |
 | 11.3 | Factory Hydration Support | |
 | 11.4 | Resource URI Helper Relocation | |

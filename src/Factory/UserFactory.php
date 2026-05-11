@@ -4,7 +4,7 @@ namespace Box\Factory;
 
 use Box\Resource\User;
 
-class UserFactory implements UserFactoryInterface
+class UserFactory
 {
     public function createUser(?array $options = null): User
     {

@@ -13,7 +13,7 @@ use Box\Resource\User;
 use Box\Resource\Group;
 use Box\Exception\BoxException;
 use Box\Connection\Token\Token;
-use Box\Factory\FolderFactoryInterface;
+use Box\Factory\FolderFactory;
 use Box\Service\Folder\FolderService;
 use JsonException;
 use PHPUnit\Framework\TestCase;
@@ -45,7 +45,7 @@ class ClientTest extends TestCase
 
     public function testInjectedFactoriesAreUsed(): void
     {
-        $folderFactory = $this->createMock(FolderFactoryInterface::class);
+        $folderFactory = $this->createMock(FolderFactory::class);
         $folderMock = $this->createMock(Folder::class);
         $folderFactory->expects($this->once())
             ->method('createFolder')

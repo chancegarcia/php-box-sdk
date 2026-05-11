@@ -4,7 +4,7 @@ namespace Box\Factory;
 
 use Box\Resource\File;
 
-class FileFactory implements FileFactoryInterface
+class FileFactory
 {
     public function createFile(?array $options = null): File
     {
