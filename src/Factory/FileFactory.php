@@ -8,6 +8,6 @@ class FileFactory
 {
     public function createFile(?array $options = null): File
     {
-        return new File($options);
+        return new File();
     }
 }

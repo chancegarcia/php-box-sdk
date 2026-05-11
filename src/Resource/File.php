@@ -32,19 +32,12 @@
 
 namespace Box\Resource;
 
-use Box\Mapper\Hydrator;
 use DateTimeInterface;
 use Box\Resource\Folder;
 use Box\Resource\SharedLink;
 
 class File
 {
-    public function __construct(?array $options = null)
-    {
-        if (is_array($options)) {
-            (new Hydrator())->hydrate($this, $options);
-        }
-    }
     protected string|int|null $id = null;
     protected string $type = "file";
     protected ?string $sequenceId = null;

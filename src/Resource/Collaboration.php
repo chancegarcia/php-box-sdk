@@ -32,7 +32,6 @@
 
 namespace Box\Resource;
 
-use Box\Mapper\Hydrator;
 use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxLoggerTrait;
@@ -42,13 +41,6 @@ class Collaboration implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
     use BoxLoggerTrait;
-
-    public function __construct(?array $options = null)
-    {
-        if (is_array($options)) {
-            (new Hydrator())->hydrate($this, $options);
-        }
-    }
 
     protected mixed $id = null;
     protected mixed $type = 'collaboration';

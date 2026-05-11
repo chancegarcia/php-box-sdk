@@ -8,6 +8,6 @@ class GroupFactory
 {
     public function createGroup(?array $options = null): Group
     {
-        return new Group($options);
+        return new Group();
     }
 }

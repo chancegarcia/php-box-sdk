@@ -8,6 +8,6 @@ class FolderFactory
 {
     public function createFolder(?array $options = null): Folder
     {
-        return new Folder($options);
+        return new Folder();
     }
 }

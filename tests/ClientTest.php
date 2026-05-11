@@ -414,7 +414,11 @@ class ClientTest extends TestCase
         $client->setToken($token);
         $client->setClientId('foo');
         $client->setClientSecret('bar');
-        $client->method('getFolderFromBox')->willReturn(new Folder(['id' => 'copy123']));
+        $client->method('getFolderFromBox')->willReturn((static function () {
+            $f = new Folder();
+            $f->setId('copy123');
+            return $f;
+        })());
 
         $copy = $client->copyBoxFolder($folder, $parent);
         $this->assertInstanceOf(Folder::class, $copy);
@@ -468,7 +472,8 @@ class ClientTest extends TestCase
         $this->assertNull($folders);
 
         // Test caching behavior if we manually populate folders
-        $folder = new Folder(['id' => '123']);
+        $folder = new Folder();
+        $folder->setId('123');
         $this->client->setFolders(['123' => $folder]);
         $this->assertSame($folder, $this->client->getFolder('123', false));
     }

@@ -34,7 +34,6 @@ namespace Box\Resource;
 
 use Box\Exception\BoxException;
 use Countable;
-use Box\Mapper\Hydrator;
 use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxLoggerTrait;
@@ -45,13 +44,6 @@ class Folder implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
     use BoxLoggerTrait;
-
-    public function __construct(?array $options = null)
-    {
-        if (is_array($options)) {
-            (new Hydrator())->hydrate($this, $options);
-        }
-    }
 
     protected string $type = "folder";
     protected mixed $id = null;

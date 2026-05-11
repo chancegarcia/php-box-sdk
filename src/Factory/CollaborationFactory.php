@@ -8,6 +8,6 @@ class CollaborationFactory
 {
     public function createCollaboration(?array $options = null): Collaboration
     {
-        return new Collaboration($options);
+        return new Collaboration();
     }
 }
