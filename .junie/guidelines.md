@@ -113,6 +113,7 @@ Testing guidelines:
 - After completing any task or slice, write the final task summary by replacing the full contents of `var/tmp/last-task-summary.md`.
     - Always overwrite the file on every task; do not use create-only behavior. Replace its entire contents.
     - If `var/tmp/` does not exist, create the directory if appropriate, but do not remove `var/tmp/.gitkeep`.
+    - Mirror the summary to `docs/ai/current-task-summary.md` when attachability in PhpStorm is needed.
     - The persisted task summary should match the final response summary as closely as practical.
     - Persisted summaries must be plain UTF-8 Markdown text without null bytes, control characters, corrupted class names, or binary content.
     - If a generated summary contains corrupted text, rewrite it before reporting completion.
@@ -132,7 +133,8 @@ Testing guidelines:
     - **Frequency**: Every 2–3 completed slices, before switching major initiatives, or before ending a long session.
     - **Template**: Use `docs/prompts/ai-workflow/handoff-summary-template.md`.
     - **Storage**: Paste into the chat or write to `var/tmp/ai-handoff-summary.md`.
-    - **No Commit**: Do not commit generated handoff files in `var/tmp/`.
+    - Mirror the handoff to `docs/ai/current-handoff-summary.md` when attachability in PhpStorm is needed.
+    - **No Commit**: Do not commit generated handoff files in `var/tmp/` or `docs/ai/current-*` summary files.
 
 Static analysis and style:
 - Avoid nested ternary operators. Use explicit branching or a named helper method when conditional logic becomes nested. Simple one-level ternaries are acceptable when they remain readable.

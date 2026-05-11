@@ -1,0 +1,5 @@
+# Ignore runtime/generated files but allow specific summary files if helpful for context
+var/**
+!var/tmp/
+!var/tmp/last-task-summary.md
+!var/tmp/ai-handoff-summary.md
