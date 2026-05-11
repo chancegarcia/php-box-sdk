@@ -29,14 +29,14 @@ This work assumes the completion of:
 | Step | Title | Status |
 | :--- | :--- | :--- |
 | 10 | [Resource Namespace and Interface Rationalization](#step-10--resource-namespace-and-interface-rationalization) | ✓ |
-| 11 | [Factory Modernization and Service Boundaries](#step-11--factory-modernization-and-service-boundaries) | In Progress |
+| 11 | [Factory Modernization and Service Boundaries](#step-11--factory-modernization-and-service-boundaries) | ✓ |
 
 ### Status Table
 
 | Slice | Title | Status |
 | :--- | :--- | :--- |
 | 11.0 | [Factory, Construction, Hydration, and Service-Boundary Audit](11-factory-service-boundary-audit.md) | ✓ |
-| 11.1 | Factory Interface Decision Pass | Done |
+| 11.1 | Factory Interface Decision Pass | ✓ |
 | 11.2 | AbstractFactory Removal and ConnectionFactory Modernization | ✓ |
 | 11.2.1 | ConnectionFactory Namespace Canonicalization | ✓ |
 | 11.3 | Resource Passive State and Hydration Cleanup | ✓ |
@@ -52,7 +52,7 @@ This work assumes the completion of:
 | 11.7.2 | Client Facade Readability, Resource Boundary, and Type Cleanup | ✓ |
 | 11.7.3 | Mixed Type Reduction and Client Factory Convenience Review | ✓ |
 | 11.8 | Documentation, Migration, and Planning Drift Cleanup | ✓ |
-| 11.9 | Final Integration Review, Code/Plan Conformance, and New-Chat Handoff | * |
+| 11.9 | Final Integration Review, Code/Plan Conformance, and New-Chat Handoff | ✓ |
 | 12 | [Token Storage Completion](#step-12--token-storage-completion) | Not Started |
 | 13 | [API Fixture Realism and Contract Alignment](#step-13--api-fixture-realism-and-contract-alignment) | Not Started |
 | 14 | [JWT/S2S Feasibility and Dependency Review](#step-14--jwts2s-feasibility-and-dependency-review) | Not Started |
@@ -104,7 +104,7 @@ Audit and migrate remaining domain resource classes into the final v1 resource n
 
 ---
 
-## Step 11 — Factory Modernization and Service Boundaries
+## Step 11 — Factory Modernization and Service Boundaries [✓]
 
 ### Status
 - 11.1 | Factory Interface Decision Pass | ✓ |
@@ -122,8 +122,8 @@ Audit and migrate remaining domain resource classes into the final v1 resource n
 - 11.7.1 | Client Registry Usage and v1 Test Alignment Cleanup | ✓ |
 - 11.7.2 | Client Facade Readability, Resource Boundary, and Type Cleanup | ✓ |
 - 11.7.3 | Mixed Type Reduction and Client Factory Convenience Review | ✓ |
-- 11.8 | Documentation and Migration Cleanup | ✓ |
-- 11.9 | Final Integration Review, Code/Plan Conformance, and New-Chat Handoff | In Progress |
+- 11.8 | Documentation, Migration, and Planning Drift Cleanup | ✓ |
+- 11.9 | Final Integration Review, Code/Plan Conformance, and New-Chat Handoff | ✓ |
 
 ### Purpose
 Audit and modernize factory patterns and service boundaries after interface rationalization to ensure clear construction and operational responsibilities. This step addresses "architecture smells" identified during Step 10, specifically around factory interface proliferation and resource self-hydration.
