@@ -135,6 +135,7 @@ Testing guidelines:
     - **No Commit**: Do not commit generated handoff files in `var/tmp/` or `docs/ai/current-*` summary files intentionally, but accidental commits are acceptable if redacted.
 
 Static analysis and style:
+- **Temporary Variables**: Inline trivial temporary variables that only store a value for immediate return and do not improve readability. Keep the temporary variable when it improves clarity, documents intent, avoids duplicate work, or supports debugging.
 - Avoid nested ternary operators. Use explicit branching or a named helper method when conditional logic becomes nested. Simple one-level ternaries are acceptable when they remain readable.
 - Do not add custom PHPCS/PHPStan enforcement for nested ternaries unless explicitly requested; enforce this preference through review and project guidelines for now.
 - Prefer `SomeClass::class` over hard-coded fully qualified class-name strings when referencing PHP classes or interfaces in code, including exception messages and logs.
