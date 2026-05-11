@@ -46,7 +46,7 @@ class Folder implements LoggerAwareInterface
     use BoxLoggerTrait;
 
     protected string $type = "folder";
-    protected mixed $id = null;
+    protected string|int|null $id = null;
     protected mixed $sequenceId = null;
     protected mixed $etag = null;
     protected mixed $name = null;
@@ -181,12 +181,8 @@ class Folder implements LoggerAwareInterface
         return true;
     }
 
-    public function getId(): mixed
+    public function getId(): string|int|null
     {
-        if (null === $this->id) {
-            $this->setId(0);
-        }
-
         return $this->id;
     }
 

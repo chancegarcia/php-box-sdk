@@ -37,8 +37,8 @@ This work assumes the completion of:
 | :--- | :--- | :--- |
 | 11.0 | [Factory, Construction, Hydration, and Service-Boundary Audit](11-factory-service-boundary-audit.md) | ✓ |
 | 11.1 | Factory Interface Decision Pass | Done |
-| 11.2 | Resource Passive State and Hydration Cleanup | |
-| 11.3 | Factory Hydration Support | |
+| 11.2 | Resource Passive State and Hydration Cleanup | ✓ |
+| 11.3 | Factory Hydration Support | ✓ |
 | 11.4 | Resource URI Helper Relocation | |
 | 11.5 | Client Service Delegation (Phase 1: Folders) | |
 | 11.6 | Client Service Delegation (Phase 2: Others) | |
@@ -100,8 +100,8 @@ Audit and migrate remaining domain resource classes into the final v1 resource n
 - 11.1 | Factory Interface Decision Pass | ✓ |
 - 11.2 | AbstractFactory Removal and ConnectionFactory Modernization | ✓ |
 - 11.2.1 | ConnectionFactory Namespace Canonicalization | ✓ |
-- 11.3 | Resource Passive State and Hydration Cleanup | |
-- 11.4 | Factory Hydration Support | |
+- 11.3 | Resource Passive State and Hydration Cleanup | ✓ |
+- 11.4 | Factory Hydration Support | ✓ |
 - 11.5 | Resource URI Helper Relocation | |
 - 11.6 | Client Service Delegation (Phase 1: Folders) | |
 - 11.7 | Client Service Delegation (Phase 2: Others) | |

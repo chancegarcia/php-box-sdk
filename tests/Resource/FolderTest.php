@@ -30,4 +30,23 @@ class FolderTest extends TestCase
         $folder->setItemCollection(['total_count' => 1, 'entries' => [['id' => '1']]]);
         $this->assertFalse($folder->isEmpty());
     }
+
+    public function testGetIdDoesNotMutateState(): void
+    {
+        $folder = new Folder();
+        $this->assertNull($folder->getId());
+        // verify it stayed null
+        $this->assertNull($folder->getId());
+    }
+
+    public function testExplicitRootId(): void
+    {
+        $folder = new Folder();
+        $folder->setId(0);
+        $this->assertEquals(0, $folder->getId());
+
+        $folder2 = new Folder();
+        $folder2->setId('0');
+        $this->assertEquals('0', $folder2->getId());
+    }
 }
