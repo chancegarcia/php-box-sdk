@@ -240,6 +240,7 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
     - **Integration**: Implement Client-level orchestration for loading/persisting tokens.
     - **Independence**: Verify services remain storage-independent.
     - **CLI/Harness**: Review CLI token storage configuration. Confirm CLI can run without storage. Define fallback behavior for resource commands. Define storage behavior for auth exchange and refresh. Preserve redaction/masking.
+    - **Deferred JWT/S2S CLI configuration note**: When JWT/S2S auth is implemented, evaluate whether the CLI/auth harness should support separate environment-variable groups or named auth profiles for OAuth2 versus JWT credentials. This would allow CLI testing of JWT and OAuth2 without manually swapping shared `BOX_CLIENT_ID` / `BOX_CLIENT_SECRET` values and reduce the risk of mismatched credential pairs or accidentally combining OAuth2 and JWT configuration. Do not implement this during Step 12 token storage unless a later approved plan explicitly includes CLI auth profile work.
 - Dependencies: 17.
 - Validation: `composer test`, `composer analyse`.
 - Documentation updates: Architecture rules, strategy, and user docs.

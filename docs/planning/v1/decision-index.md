@@ -154,6 +154,7 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 - **Decision**: Auth refresh commands must persist refreshed tokens to storage if storage is configured.
 - **Pending (Step 12)**: Specific CLI storage backend/configuration mechanism (options vs config provider).
 - **Pending (Step 12)**: CLI storage context selection policy.
+- **Decision (Step 12/15)**: **Deferred JWT/S2S CLI configuration note**. When JWT/S2S auth is implemented, evaluate whether the CLI/auth harness should support separate environment-variable groups or named auth profiles for OAuth2 versus JWT credentials. This would allow CLI testing of JWT and OAuth2 without manually swapping shared `BOX_CLIENT_ID` / `BOX_CLIENT_SECRET` values and reduce the risk of mismatched credential pairs or accidentally combining OAuth2 and JWT configuration. Do not implement this during Step 12 token storage unless a later approved plan explicitly includes CLI auth profile work.
 
 ## 3. Open Questions for Human Review
 

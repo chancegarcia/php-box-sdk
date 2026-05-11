@@ -299,6 +299,7 @@ Implement JWT/S2S authentication based on the feasibility study.
 - **JWT Configuration**: Support JWT-specific config (Client ID/Secret, Enterprise ID, Public Key ID, Private Key, Passphrase).
 - **Service Account Support**: Support Enterprise and App User auth modes.
 - **CLI/Harness**: Evaluate or implement CLI support for JWT auth.
+    - **Deferred JWT/S2S CLI configuration note**: When JWT/S2S auth is implemented, evaluate whether the CLI/auth harness should support separate environment-variable groups or named auth profiles for OAuth2 versus JWT credentials. This would allow CLI testing of JWT and OAuth2 without manually swapping shared `BOX_CLIENT_ID` / `BOX_CLIENT_SECRET` values and reduce the risk of mismatched credential pairs or accidentally combining OAuth2 and JWT configuration. Do not implement this during Step 12 token storage unless a later approved plan explicitly includes CLI auth profile work.
 - **Security**: Redaction review for private keys, client secrets, assertions, and tokens.
 - **Tests**: Add tests using placeholder fixtures only.
 
