@@ -3,11 +3,17 @@
 namespace Box\Factory;
 
 use Box\Resource\User;
+use Box\Mapper\Hydrator;
 
 class UserFactory
 {
     public function createUser(?array $options = null): User
     {
-        return new User();
+        $user = new User();
+        if (null !== $options) {
+            (new Hydrator())->hydrate($user, $options);
+        }
+
+        return $user;
     }
 }

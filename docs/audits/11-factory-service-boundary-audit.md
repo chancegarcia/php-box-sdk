@@ -108,32 +108,42 @@ Current hydration entry points:
     - Outcome: `AbstractFactory` removed; `ConnectionFactory` modernized.
     - Status: Completed.
 
-3. **Slice 11.3: Resource Passive State and Hydration Cleanup**
+3. **Slice 11.2.1: ConnectionFactory Namespace Canonicalization**
+    - Goal: Ensure `ConnectionFactory` is in the correct namespace.
+    - Status: Completed.
+
+4. **Slice 11.3: Resource Passive State and Hydration Cleanup**
     - Goal: Remove constructor hydration from primary resources.
     - Scope: `File`, `Folder`, `Group`, `Collaboration`.
     - Acceptance: Constructors are empty or removed; `Hydrator` not called in resources.
+    - Status: Completed.
 
-4. **Slice 11.4: Factory Hydration Support**
+5. **Slice 11.3.1: Resource Getter Mutation Cleanup**
+    - Goal: Remove state-mutating behavior from resource getters.
+    - Status: Completed.
+
+6. **Slice 11.4: Factory Hydration Support**
     - Goal: Ensure factories can still handle array options.
     - Scope: `src/Factory/*`.
     - Acceptance: Factories handle the hydration previously done in constructors.
+    - Status: Completed.
 
-5. **Slice 11.5: Resource URI Helper Relocation**
+7. **Slice 11.5: Resource URI Helper Relocation**
     - Goal: Move URI construction logic from resources to services.
     - Scope: `Folder`, `Group`, `FolderService`, `GroupService`.
     - Acceptance: Resources have no knowledge of endpoints.
 
-6. **Slice 11.6: Client Service Delegation (Phase 1: Folders)**
+8. **Slice 11.6: Client Service Delegation (Phase 1: Folders)**
     - Goal: Move folder-related orchestration from `Client` to `FolderService`.
     - Scope: `Client`, `FolderService`.
     - Acceptance: `Client` methods call `FolderService`.
 
-7. **Slice 11.7: Client Service Delegation (Phase 2: Others)**
+9. **Slice 11.7: Client Service Delegation (Phase 2: Others)**
     - Goal: Move remaining resource orchestration (Files, Groups, etc.) to services.
     - Scope: `Client`, `FileService`, `GroupService`, `CollaborationService`.
     - Acceptance: `Client` is a thin facade.
 
-8. **Slice 11.8: Documentation and Migration Cleanup**
+10. **Slice 11.8: Documentation and Migration Cleanup**
     - Goal: Update docs to reflect new construction patterns.
     - Scope: `docs/migration/*`, `README.md`.
 
