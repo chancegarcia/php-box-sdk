@@ -10,6 +10,11 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 | Service-first architecture | **Decided** | `v1-strategy-and-contracts.md` | None |
 | Resource vs DTO distinction | **Decided** | `v1-strategy-and-contracts.md` | None |
 | Passive typed Resources | **Decided** | `v1-architecture-rules.md` | None |
+| Resource getters must not mutate state | **Decided** | `10-v1-release-work.md` | None |
+| Factories hydrate user arrays | **Decided** | `10-v1-release-work.md` | None |
+| Services hydrate API responses | **Decided** | `10-v1-release-work.md` | None |
+| Services own URI construction | **Decided** | `10-v1-release-work.md` | None |
+| Authenticated service boundary | **Decided** | `11-v1-service-coverage-auth-boundary-audit.md` | None |
 | Public direct transport API | **Decided** | `v1-strategy-and-contracts.md` | None |
 | Guzzle 7 as default PSR-18 client | **Decided** | `v1-strategy-and-contracts.md` | None |
 | IDs as `string` | **Decided** | `v1-architecture-rules.md` | None |
@@ -26,6 +31,7 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 | Encryption at Rest | **Decided** | `v1-strategy-and-contracts.md` | None |
 | Multi-Token Support | **Decided** | `v1-strategy-and-contracts.md` | None |
 | Doctrine ORM Storage Deferral | **Decided** | `future-symfony-bundle.md` | None |
+| Doctrine Collections for Lists | **Decided** | `v1-architecture-rules.md` | None |
 | Migration Documentation Requirements | **Decided** | `v1-strategy-and-contracts.md` | None |
 | Documentation Gap Inventory | **Active** | `v1-documentation-gap-inventory.md` | Tracks ongoing P2/P3 items |
 | SDK Response Wrapper | **Decided** | `v1-strategy-and-contracts.md` | Implementation: Replace with thin PSR-7 wrapper |

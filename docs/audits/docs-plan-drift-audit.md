@@ -20,11 +20,12 @@ When conflicts exist, the following sources should be treated as canonical:
 
 | Topic | Canonical Source |
 | :--- | :--- |
-| **Current Progress** | `docs/planning/10-v1-release-work.md` |
+| **Current Progress** | `docs/planning/v1/implementation-checklist.md` (Operational) / `10-v1-release-work.md` (Strategic) |
 | **Architecture Rules** | `docs/planning/v1/architecture-rules.md` |
 | **Technical Strategy** | `docs/planning/v1/strategy-and-contracts.md` |
 | **Decisions** | `docs/planning/v1/decision-index.md` |
-| **Step Details** | Individual step trackers (e.g., `docs/planning/11-factory-service-boundary-audit.md` - *Wait, actually Step 11 details are in 10-v1-release-work.md*) |
+| **Migration Guidance** | `docs/migration/upgrading-0.11-to-1.0.md` |
+| **Step Details** | Individual step trackers (e.g., `docs/planning/10-resource-namespace-interface-rationalization.md`) |
 
 *Correction*: Step 11 details were largely managed within `docs/planning/10-v1-release-work.md`. Step 10 has its own detailed tracker `docs/planning/10-resource-namespace-interface-rationalization.md`.
 
@@ -85,9 +86,11 @@ Collected from Step 11 completion and audits:
 - Sync `docs/planning/v1/overview.md` (remove completed "Remaining items"). [✓]
 - Update root `README.md` status note. [✓]
 
-### Slice B: Canonical Source and Decision Alignment
-- Refine `docs/planning/v1/strategy-and-contracts.md` and `docs/planning/v1/decision-index.md` to ensure they point to the main v1 tracker for step-specific details.
-- Clarify "Selective" Doctrine Collection usage in `architecture-rules.md` based on Step 10/11 outcomes.
+### Slice B: Canonical Source and Decision Alignment [✓]
+- Refine `docs/planning/v1/strategy-and-contracts.md` and `docs/planning/v1/decision-index.md` to ensure they point to the main v1 tracker for step-specific details. [✓]
+- Clarify "Selective" Doctrine Collection usage in `architecture-rules.md` based on Step 10/11 outcomes. [✓]
+- Synchronized canonical source map in the audit report. [✓]
+- Added key v1 decisions (passive state, hydration boundaries) to `decision-index.md`. [✓]
 
 ### Slice C: Migration and User Documentation Polish
 - Ensure `docs/migration/upgrading-0.11-to-1.0.md` has a placeholder for Step 12 changes.

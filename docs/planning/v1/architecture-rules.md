@@ -31,7 +31,7 @@ These rules define the required structure for the Box PHP SDK V1.0 refactor.
     - Dates must use `DateTimeImmutable`.
     - Nested resources must be object-only (no raw arrays).
 - **Setters**: Must NOT be fluent. Return `void`.
-- **Collections**: Use Doctrine Collections selectively.
+- **Collections**: Use Doctrine Collections for list response entry sets.
 - **Payloads**: Raw Box API payloads should not be stored on resources by default.
 
 ## 4. Service Rules
@@ -101,11 +101,9 @@ These rules define the required structure for the Box PHP SDK V1.0 refactor.
 
 ## 7. Collections
 
-V1.0 should use Doctrine Collections selectively, not universally.
+V1.0 uses Doctrine Collections for list response entry sets where in-memory traversal, filtering, mapping, and matching are useful. They do not require Doctrine ORM or database mapping.
 
-Doctrine Collections are appropriate for list response entry sets where in-memory traversal, filtering, mapping, and matching are useful. They do not require Doctrine ORM or database mapping.
-
-Services should generally return specific response DTOs that contain a Doctrine Collection of entries plus typed pagination metadata.
+Services should return specific response DTOs that contain a Doctrine Collection of entries plus typed pagination metadata.
 
 Examples:
 
