@@ -59,7 +59,8 @@ The legacy `BaseModelTrait` and `ModelTrait` have been removed. Mapping infrastr
     - **Prefer `Hydrator::hydrate()`**: Use `(new Hydrator())->hydrate($model, $data)` instead of `$model->mapBoxToClass($data)`. The `mapBoxToClass` and `toArray` methods on legacy `Model` have been removed along with the `Box\Model` base architecture.
     - **Removed `Box\Model` Architecture**: `BaseModel`, `Model`, `BoxModel`, and their respective interfaces have been removed. Infrastructure and resource models no longer inherit from these legacy bases.
     - **Infrastructure Migration**: `Service` and `Connection` hierarchies have been decoupled from legacy model bases. Both now implement `LoggerAwareInterface` directly to preserve logging capabilities.
-    - **Resource Migration**: All resource models (User, File, Folder, etc.) are now standalone classes and no longer extend legacy `Model`. They now include constructors that accept options for automatic hydration via `Hydrator`. Some resources (notably `Folder`) may still contain legacy methods like `classArray()` or internal URI generation as transitional bridges. These transitional behaviors will be finalized in the upcoming service-boundary and resource-purity modernization.
+    - **Resource Migration**: All resource models (User, File, Folder, etc.) are now standalone classes and no longer extend legacy `Model`. They are now **passive state objects** (state-only) and no longer self-hydrate from the API, build their own URIs, or perform operations.
+    - **Resource Construction**: Resource constructors no longer automatically hydrate from arrays by default in v1. Use `Box\Mapper\Hydrator` for mapping API data to resources.
     - **Compatibility Alias Removal**: True compatibility aliases and shims have been removed. For example, `Box\User\User` has been removed in favor of `Box\Resource\User`. The `Box\Model` namespace has been fully cleared of legacy shims.
     - **Service Response Parsing**: `Client::parseResponse()` now requires a valid `array` return. `BoxResponse::json()` has been hardened to return empty arrays/objects on invalid content to satisfy type hints.
     - **Factory Migration**: The legacy `AbstractFactory` and `FactoryException` have been removed. The legacy `Box\Connection\ConnectionFactory` has been removed. Use `Box\Factory\ConnectionFactory` (which implements `ConnectionFactoryInterface`) for creating connections. Infrastructure-related factory interfaces like `ConnectionFactoryInterface` remain as meaningful extension points.
@@ -191,16 +192,21 @@ try {
 }
 ```
 
-### Response Decoding
+### Client Facade and Service Delegation
+The `Client` class has been refactored into a thin facade over focused services. It no longer contains primary operation logic; instead, it delegates to specialized services via a `ClientServiceRegistry`.
 
-**Before (v0.11 style):**
-```php
-$response = $client->getFile($id);
-$data = json_decode($response->getContent(), true);
-```
+- **Impact**: Moderate.
+- **Migration**:
+    - **Service Delegation**: Methods like `getFolder()`, `uploadFileToBox()`, and `getEvents()` now delegate to `FolderService`, `FileService`, and `UserEventService` respectively.
+    - **Registry Usage**: Custom `Client` extensions should use `$this->serviceRegistry->get*Service()` to access underlying services.
+    - **Narrowed Types**: Many `Client` methods have been narrowed to prefer concrete types (`Folder`, `File`) or specific scalar types over `mixed`. For example, `copyBoxFolder()` now requires `Folder` objects for both the original and parent arguments.
+    - **Authenticated Service Boundary**: Services requiring an active session must implement `AuthenticatedServiceInterface`. The `Client` will throw a `RuntimeException` if an authenticated service is accessed without an available access token.
 
-**After (v1.0 Refined style):**
-```php
-$response = $client->getFile($id);
-$data = $response->json();
-```
+### Resource Purity
+Resources in `Box\Resource` are now "pure" state objects. They do not own hydration logic, do not construct API URIs, and do not hold references to loggers or services.
+
+- **Impact**: Moderate.
+- **Migration**:
+    - **URI Constants**: Endpoint URIs have moved from Resource classes/interfaces to their respective Services (e.g., `FileService::ENDPOINT`).
+    - **Hydration**: Hydration is exclusively handled by `Hydrator` or Factories.
+    - **Passive State**: Avoid adding logic or dependencies to resource classes; they should remain simple data containers with typed properties, getters, and setters.

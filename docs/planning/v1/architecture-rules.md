@@ -24,6 +24,7 @@ These rules define the required structure for the Box PHP SDK V1.0 refactor.
 
 - **Location**: `Box\Resource`.
 - **Logic**: Resources must NOT build URLs, perform HTTP calls, call services, or own hydration logic.
+- **Construction**: Resource constructors should be passive and should NOT perform auto-hydration from arrays by default in v1.
 - **Endpoints**: Endpoint URI constants must NOT live in resource models or model interfaces.
 - **Types**:
     - IDs must be `string` typed.
@@ -36,7 +37,9 @@ These rules define the required structure for the Box PHP SDK V1.0 refactor.
 ## 4. Service Rules
 
 - **Location**: `Box\Service`.
-- **Responsibility**: services are the primary way to interact with the Box API.
+- **Responsibility**: Services are the primary way to interact with the Box API.
+- **Registry**: Services should be accessed through the `ClientServiceRegistry` and configured with appropriate connection/auth state.
+- **Authenticated Boundary**: Services requiring an active session must implement `AuthenticatedServiceInterface`.
 - **Input**: Use scalar IDs, request DTOs, enums, or value objects.
 - **Output**: Return concrete resource classes or DTOs.
 - **Facade**: The `Client` class should be a lightweight facade over these focused services.
