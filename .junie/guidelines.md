@@ -110,17 +110,14 @@ Testing guidelines:
 - Tests should be deterministic and not depend on network, local user files, or real credentials.
 - Since PHPUnit is configured to fail on deprecations, notices, and warnings, avoid test code that triggers them unless the test intentionally asserts deprecation behavior and handles it safely.
 - Run the most relevant checks after changes. For broad changes, run `composer review`.
-- After completing any task or slice, write the final task summary by replacing the full contents of `var/tmp/last-task-summary.md`.
+- After completing any task or slice, write the final task summary by replacing the full contents of `docs/ai/current-task-summary.md`.
     - Always overwrite the file on every task; do not use create-only behavior. Replace its entire contents.
-    - If `var/tmp/` does not exist, create the directory if appropriate, but do not remove `var/tmp/.gitkeep`.
-    - Mirror the summary to `docs/ai/current-task-summary.md` when attachability in PhpStorm is needed.
-    - Refresh the handoff summary at `var/tmp/ai-handoff-summary.md` after every completed slice/task to ensure continuous context.
-    - Mirror the handoff to `docs/ai/current-handoff-summary.md` when attachability in PhpStorm is needed.
+    - `var/tmp/last-task-summary.md` may remain a historical/local artifact, but is no longer the canonical target.
     - The persisted task summary should match the final response summary as closely as practical.
     - Persisted summaries must be plain UTF-8 Markdown text without null bytes, control characters, corrupted class names, or binary content.
     - If a generated summary contains corrupted text, rewrite it before reporting completion.
     - If the persisted summary includes additional detail, it must not contradict the final response.
-    - Prefer making `var/tmp/last-task-summary.md` the canonical detailed review summary.
+    - Prefer making `docs/ai/current-task-summary.md` the canonical detailed review summary.
     - The final response may be concise, but it should mention that the detailed summary was written to the file.
     - The persisted summary must include, where applicable:
         - Summary
@@ -129,14 +126,13 @@ Testing guidelines:
         - Notes
         - Follow-ups
     - Keep the file redacted and free of secrets, credentials, tokens, private account IDs, local sensitive paths, and downstream/private implementation details. Redact any sensitive output.
-    - Do not treat summary files as source artifacts to stage or commit.
-    - Do not remove `var/tmp/.gitkeep`.
+    - Summary/handoff files should generally not be staged or committed intentionally, but accidental commits are acceptable if they contain no secrets.
 - **Periodic Handoff Summaries**: During long-running initiatives or before ending a session, produce a handoff summary to preserve context.
     - **Frequency**: Refresh after every completed slice/task.
     - **Template**: Use `docs/prompts/ai-workflow/handoff-summary-template.md`.
-    - **Storage**: Paste into the chat or write to `var/tmp/ai-handoff-summary.md`.
-    - Mirror the handoff to `docs/ai/current-handoff-summary.md` when attachability in PhpStorm is needed.
-    - **No Commit**: Do not commit generated handoff files in `var/tmp/` or `docs/ai/current-*` summary files.
+    - **Storage**: Paste into the chat or write to `docs/ai/current-handoff-summary.md`.
+    - `var/tmp/ai-handoff-summary.md` may remain a historical/local artifact, but is no longer the canonical target.
+    - **No Commit**: Do not commit generated handoff files in `var/tmp/` or `docs/ai/current-*` summary files intentionally, but accidental commits are acceptable if redacted.
 
 Static analysis and style:
 - Avoid nested ternary operators. Use explicit branching or a named helper method when conditional logic becomes nested. Simple one-level ternaries are acceptable when they remain readable.
@@ -208,6 +204,21 @@ Code review priorities:
 - PSR-12 style
 - Adequate tests and documentation
 - Avoiding unnecessary architectural churn
+
+## Preferred Prompt Delivery Format
+
+When delivering prompts for future slices or tasks, use a single fenced Markdown block for easy copy/paste. The prompt should include clear headings and follow this structure:
+
+- `Task`: Include the slice number and title (e.g., "Slice 11.3 — Resource Passive State and Hydration Cleanup").
+- `Context`: Brief background.
+- `Scope`: Explicit boundaries to avoid scope creep.
+- `Non-Goals`: What not to do.
+- `Requirements`: Specific functional or technical needs.
+- `Acceptance Criteria`: Clear conditions for success.
+- `Validation`: Instructions to use Composer scripts only.
+- `Notes`: Additional context if needed.
+
+Prompts should not mention context attachments unless explicitly required.
 
 ## File Moves, Renames, and Git History
 

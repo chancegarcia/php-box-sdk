@@ -23,7 +23,3 @@ var/tmp/*
 
 var/log/*
 !var/log/.gitkeep
-
-# AI Summaries (ignored but attachable in IDE)
-/docs/ai/current-task-summary.md
-/docs/ai/current-handoff-summary.md
