@@ -2,8 +2,8 @@
 
 namespace Box\Service\Collaboration;
 
-use Box\Service\ServiceInterface;
+use Box\Service\AuthenticatedServiceInterface;
 
-interface CollaborationServiceInterface extends ServiceInterface
+interface CollaborationServiceInterface extends AuthenticatedServiceInterface
 {
 }

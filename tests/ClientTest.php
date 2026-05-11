@@ -3,7 +3,9 @@
 namespace Box\Tests;
 
 use Box\Client;
+use Box\ClientConfig;
 use Box\Http\Response\BoxResponseInterface;
+use Box\Service\ClientServiceRegistry;
 use Box\Resource\Collaboration;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
@@ -15,6 +17,8 @@ use Box\Exception\BoxException;
 use Box\Connection\Token\Token;
 use Box\Factory\FolderFactory;
 use Box\Service\Folder\FolderService;
+use Box\Http\Response\Header\ResponseHeaderInterface;
+use Box\Http\Response\Header\StatusLineInterface;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 
@@ -51,10 +55,45 @@ class ClientTest extends TestCase
             ->method('createFolder')
             ->willReturn($folderMock);
 
-        $client = new Client(null, $folderFactory);
+        $registry = new ClientServiceRegistry(null, $folderFactory);
+        $client = new Client(null, $registry);
         $result = $client->getNewFolder();
 
         $this->assertSame($folderMock, $result);
+    }
+
+    public function testConstructionWithConfig(): void
+    {
+        $config = new ClientConfig([
+            'clientId' => 'conf_id',
+            'clientSecret' => 'conf_secret',
+            'deviceName' => 'conf_device'
+        ]);
+
+        $client = new Client($config);
+
+        $this->assertEquals('conf_id', $client->getClientId());
+        $this->assertEquals('conf_secret', $client->getClientSecret());
+        $this->assertEquals('conf_device', $client->getDeviceName());
+    }
+
+    public function testAuthenticatedServiceEnforcesToken(): void
+    {
+        $client = new Client();
+        // Client creates empty token by default, but it has no access_token
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Access token is not set for authenticated service');
+        // FolderService is an AuthenticatedServiceInterface
+        $client->getFolder('123');
+    }
+
+    public function testUnknownConfigOptionThrowsException(): void
+    {
+        $this->expectException(BoxException::class);
+        $this->expectExceptionMessage('Unknown configuration option: invalid_key');
+
+        new ClientConfig(['invalid_key' => 'value']);
     }
 
     public function testBuildAuthQuery()
@@ -192,10 +231,26 @@ class ClientTest extends TestCase
         $this->assertEquals(['status' => 'success'], $result);
     }
 
-    public function testGetFolderFromBox()
+    protected function createMockResponse(array $data, bool $success = true)
     {
         $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('json')->with(true)->willReturn([
+        $response->method('json')->willReturn($data);
+        $response->method('isSuccessful')->willReturn($success);
+
+        $statusLine = $this->createMock(StatusLineInterface::class);
+        $statusLine->method('getStatusCode')->willReturn($success ? 200 : 400);
+
+        $header = $this->createMock(ResponseHeaderInterface::class);
+        $header->method('getStatusLine')->willReturn($statusLine);
+
+        $response->method('getResponseHeader')->willReturn($header);
+
+        return $response;
+    }
+
+    public function testGetFolderFromBox()
+    {
+        $response = $this->createMockResponse([
             'type' => 'folder',
             'id' => '123',
             'name' => 'Test Folder'
@@ -217,8 +272,7 @@ class ClientTest extends TestCase
 
     public function testCreateNewBoxFolder()
     {
-        $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('json')->with(true)->willReturn([
+        $response = $this->createMockResponse([
             'type' => 'folder',
             'id' => '456',
             'name' => 'New Folder'
@@ -234,7 +288,7 @@ class ClientTest extends TestCase
                     'parent' => ['id' => '123'],
                     'description' => 'A description'
                 ],
-                true
+                true // reverted back to true
             )
             ->willReturn($response);
         $this->client->setConnection($connection);
@@ -250,8 +304,7 @@ class ClientTest extends TestCase
 
     public function testUpdateBoxFolder()
     {
-        $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('json')->with(true)->willReturn([
+        $response = $this->createMockResponse([
             'type' => 'folder',
             'id' => '123',
             'name' => 'Updated Name'
@@ -312,8 +365,7 @@ class ClientTest extends TestCase
 
     public function testGetFolderCollaborations()
     {
-        $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('json')->with(true)->willReturn([
+        $response = $this->createMockResponse([
             'total_count' => 1,
             'entries' => [['type' => 'collaboration', 'id' => 'collab1']]
         ]);
@@ -337,8 +389,7 @@ class ClientTest extends TestCase
 
     public function testAddCollaboration()
     {
-        $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('json')->with(true)->willReturn([
+        $response = $this->createMockResponse([
             'type' => 'collaboration',
             'id' => 'collab2'
         ]);
@@ -362,8 +413,7 @@ class ClientTest extends TestCase
 
     public function testCreateSharedLinkForFolder()
     {
-        $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('json')->with(true)->willReturn([
+        $response = $this->createMockResponse([
             'type' => 'folder',
             'id' => '123',
             'shared_link' => ['url' => 'https://box.com/s/foo']
@@ -387,14 +437,19 @@ class ClientTest extends TestCase
 
     public function testCopyBoxFolder()
     {
-        $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('json')->with(true)->willReturn([
+        $response = $this->createMockResponse([
             'type' => 'folder',
             'id' => 'copy123'
         ]);
 
         $connection = $this->createMock(ConnectionInterface::class);
-        $connection->method('post')->willReturn($response);
+        $connection->method('post')
+            ->with(
+                $this->anything(),
+                $this->anything(),
+                true // reverted back to true
+            )
+            ->willReturn($response);
         $this->client->setConnection($connection);
 
         $token = $this->createMock(TokenInterface::class);
@@ -406,29 +461,14 @@ class ClientTest extends TestCase
         $parent = new Folder();
         $parent->setId('0');
 
-        // Mocking getFolderFromBox to avoid its side effects if it calls connection
-        $client = $this->getMockBuilder(Client::class)
-            ->onlyMethods(['getFolderFromBox'])
-            ->getMock();
-        $client->setConnection($connection);
-        $client->setToken($token);
-        $client->setClientId('foo');
-        $client->setClientSecret('bar');
-        $client->method('getFolderFromBox')->willReturn((static function () {
-            $f = new Folder();
-            $f->setId('copy123');
-            return $f;
-        })());
-
-        $copy = $client->copyBoxFolder($folder, $parent);
+        $copy = $this->client->copyBoxFolder($folder, $parent);
         $this->assertInstanceOf(Folder::class, $copy);
         $this->assertEquals('copy123', $copy->getId());
     }
 
     public function testGetBoxFolderItems()
     {
-        $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('json')->with(true)->willReturn([
+        $response = $this->createMockResponse([
             'total_count' => 1,
             'entries' => [['type' => 'file', 'id' => 'file1']]
         ]);
@@ -445,8 +485,8 @@ class ClientTest extends TestCase
         $folder->setId('123');
 
         $result = $this->client->getBoxFolderItems($folder);
-        $this->assertSame($folder, $result);
-        $this->assertEquals(1, $folder->getItemCollection()['total_count']);
+        $this->assertInstanceOf(Folder::class, $result);
+        $this->assertEquals(1, $result->getItemCollection()['total_count']);
     }
 
     public function testGetFolder()
@@ -458,11 +498,11 @@ class ClientTest extends TestCase
         $token->method('getAccessToken')->willReturn('foo');
         $this->client->setToken($token);
 
-        $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('getContent')->willReturn(json_encode([
+        $response = $this->createMockResponse([
             'type' => 'folder',
             'id' => '0'
-        ]));
+        ]);
+
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->method('query')->willReturn($response);
         $this->client->setConnection($connection);

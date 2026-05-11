@@ -36,12 +36,10 @@ use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
 use Box\Exception\BoxException;
 use Box\Factory\CollaborationFactory;
-use Box\Factory\ConnectionFactory;
 use Box\Factory\ConnectionFactoryInterface;
 use Box\Factory\FileFactory;
 use Box\Factory\FolderFactory;
 use Box\Factory\GroupFactory;
-use Box\Factory\TokenFactory;
 use Box\Factory\TokenFactoryInterface;
 use Box\Factory\UserFactory;
 use Box\Resource\Collaboration;
@@ -50,8 +48,12 @@ use Box\Resource\Folder;
 use Box\Resource\User;
 use Box\Resource\Group;
 use Box\Service\Collaboration\CollaborationService;
-use Box\Service\Folder\FolderService;
+use Box\Service\Folder\FolderServiceInterface;
 use Box\Service\Group\GroupService;
+use Box\Service\AuthenticatedServiceInterface;
+use Box\Service\ClientServiceRegistry;
+use Box\Service\ClientServiceRegistryInterface;
+use Box\Service\ServiceInterface;
 use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Mapper\Hydrator;
@@ -115,27 +117,38 @@ class Client implements LoggerAwareInterface
     protected CollaborationFactory $collaborationFactory;
     protected TokenFactoryInterface $tokenFactory;
     protected ConnectionFactoryInterface $connectionFactory;
+    protected FolderServiceInterface $folderService;
+
+    protected ClientServiceRegistryInterface $serviceRegistry;
 
     public function __construct(
-        ?array $options = null,
-        ?FolderFactory $folderFactory = null,
-        ?FileFactory $fileFactory = null,
-        ?UserFactory $userFactory = null,
-        ?GroupFactory $groupFactory = null,
-        ?CollaborationFactory $collaborationFactory = null,
-        ?TokenFactoryInterface $tokenFactory = null,
-        ?ConnectionFactoryInterface $connectionFactory = null
+        ?ClientConfig $config = null,
+        ?ClientServiceRegistryInterface $serviceRegistry = null
     ) {
-        if (is_array($options)) {
-            (new Hydrator())->hydrate($this, $options);
+        if ($config instanceof ClientConfig) {
+            $this->applyConfig($config);
         }
-        $this->folderFactory = $folderFactory ?? new FolderFactory();
-        $this->fileFactory = $fileFactory ?? new FileFactory();
-        $this->userFactory = $userFactory ?? new UserFactory();
-        $this->groupFactory = $groupFactory ?? new GroupFactory();
-        $this->collaborationFactory = $collaborationFactory ?? new CollaborationFactory();
-        $this->tokenFactory = $tokenFactory ?? new TokenFactory();
-        $this->connectionFactory = $connectionFactory ?? new ConnectionFactory();
+        $this->serviceRegistry = $serviceRegistry ?? new ClientServiceRegistry();
+
+        $this->folderFactory = $this->serviceRegistry->getFolderFactory();
+        $this->fileFactory = $this->serviceRegistry->getFileFactory();
+        $this->userFactory = $this->serviceRegistry->getUserFactory();
+        $this->groupFactory = $this->serviceRegistry->getGroupFactory();
+        $this->collaborationFactory = $this->serviceRegistry->getCollaborationFactory();
+        $this->tokenFactory = $this->serviceRegistry->getTokenFactory();
+        $this->connectionFactory = $this->serviceRegistry->getConnectionFactory();
+        $this->folderService = $this->serviceRegistry->getFolderService();
+    }
+
+    protected function applyConfig(ClientConfig $config): void
+    {
+        $this->clientId = $config->getClientId();
+        $this->clientSecret = $config->getClientSecret();
+        $this->redirectUri = $config->getRedirectUri();
+        $this->authorizationCode = $config->getAuthorizationCode();
+        $this->deviceId = $config->getDeviceId();
+        $this->deviceName = $config->getDeviceName();
+        $this->state = $config->getState();
     }
 
     /**
@@ -340,31 +353,9 @@ class Client implements LoggerAwareInterface
             throw new BoxException('shared uri must be a string value', BoxException::INVALID_INPUT);
         }
 
-        $uri = FolderService::SHARED_ITEM_ENDPOINT;
-        $sSharedLinkHeader = "BoxApi: shared_link=" . $sharedUri;
-        $aSharedLinkHeader = [$sSharedLinkHeader];
+        $service = $this->configureService($this->folderService);
 
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection, $aSharedLinkHeader);
-
-        $response = $connection->query($uri);
-
-        $jsonData = $this->parseResponse($response);
-
-        if (is_array($jsonData) && array_key_exists('type', $jsonData) && 'folder' === $jsonData['type']) {
-            $folder = $this->getNewFolder();
-            (new Hydrator())->hydrate($folder, $jsonData);
-        } else {
-            if (is_array($jsonData) && array_key_exists('type', $jsonData) && 'error' === $jsonData['type']) {
-                $errorData['error'] = $jsonData['message'];
-                $errorData['error_description'] = $jsonData;
-                $this->error($errorData, null, $response);
-            } else {
-                $folder = false;
-            }
-        }
-
-        return $folder;
+        return $service->getFolderBySharedUri($sharedUri);
     }
 
     /**
@@ -374,19 +365,9 @@ class Client implements LoggerAwareInterface
      */
     public function getFolderFromBox($id = 0): Folder
     {
-        $uri = FolderService::ENDPOINT . '/' . $id; // all class constant URIs do not end in a slash
+        $service = $this->configureService($this->folderService);
 
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
-
-        $response = $connection->query($uri);
-
-        $jsonData = $this->parseResponse($response);
-
-        $folder = $this->getNewFolder();
-        (new Hydrator())->hydrate($folder, $jsonData);
-
-        return $folder;
+        return $service->getFolder($id);
     }
 
     /**
@@ -398,12 +379,9 @@ class Client implements LoggerAwareInterface
      */
     public function getBoxFolderItems($folder, $limit = 100, $offset = 0)
     {
-        $uri = (new FolderService())->getFolderItemsUri($folder->getId(), $limit, $offset);
-        $data = $this->query($uri);
+        $service = $this->configureService($this->folderService);
 
-        $folder->setItemCollection($data);
-
-        return $folder;
+        return $service->getFolderItems($folder->getId(), $limit, $offset);
     }
 
     /**
@@ -431,26 +409,9 @@ class Client implements LoggerAwareInterface
      */
     public function createNewBoxFolder($name, $parentFolderId = 0, ?array $options = [])
     {
-        $uri = FolderService::ENDPOINT;
+        $service = $this->configureService($this->folderService);
 
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
-
-        $params = [
-            'name' => $name,
-            'parent' => ['id' => (string)$parentFolderId]
-        ];
-
-        $params = array_merge_recursive($params, $options);
-
-        $response = $connection->post($uri, $params, true);
-
-        $jsonData = $this->parseResponse($response);
-
-        $folder = $this->getNewFolder();
-        (new Hydrator())->hydrate($folder, $jsonData);
-
-        return $folder;
+        return $service->createFolder($name, $parentFolderId, $options);
     }
 
     /**
@@ -468,53 +429,9 @@ class Client implements LoggerAwareInterface
             $this->error($err);
         }
 
-        $uri = FolderService::ENDPOINT . '/' . $folder->getId();
+        $service = $this->configureService($this->folderService);
 
-        $params = [
-            'name' => $folder->getName(),
-            'description' => $folder->getDescription(),
-        ];
-
-        $parent = $folder->getParent();
-        if (null !== $parent) {
-            $parentId = null;
-            if (is_array($parent) && isset($parent['id'])) {
-                $parentId = $parent['id'];
-            } elseif (is_object($parent) && method_exists($parent, 'getId')) {
-                $parentId = $parent->getId();
-            }
-
-            if (null !== $parentId) {
-                $params['parent'] = ['id' => $parentId];
-            }
-        }
-
-        $sharedLink = $folder->getSharedLink();
-        if (null !== $sharedLink) {
-            if (method_exists($sharedLink, 'toArray')) {
-                $params['shared_link'] = $sharedLink->toArray();
-            } else {
-                // Basic mapping if toArray is not available
-                $params['shared_link'] = (array) $sharedLink;
-            }
-        }
-
-        $params = array_filter($params, fn($v) => null !== $v);
-
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
-
-        if (true === $ifMatchHeader) {
-            $ifMatchHeader = $folder->getEtag();
-        }
-
-        if (is_string($ifMatchHeader) && !empty($ifMatchHeader)) {
-            $connection->addHeader('If-Match', $ifMatchHeader);
-        }
-
-        $response = $connection->put($uri, $params, true);
-
-        return $this->parseResponse($response);
+        return $service->updateFolder($folder, $ifMatchHeader);
     }
 
     /**
@@ -530,15 +447,10 @@ class Client implements LoggerAwareInterface
             $err['error_description'] = "expecting Folder class. given (" . var_export($folder, true) . ")";
             $this->error($err);
         }
-        $folderId = $folder->getId();
-        $uri = FolderService::ENDPOINT . '/' . $folderId . '/collaborations';
 
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
+        $service = $this->configureService($this->folderService);
 
-        $response = $connection->query($uri);
-
-        return $this->parseResponse($response);
+        return $service->getFolderCollaborations($folder);
     }
 
     /**
@@ -611,32 +523,9 @@ class Client implements LoggerAwareInterface
             $this->error($err);
         }
 
-        $uri = FolderService::ENDPOINT;
+        $service = $this->configureService($this->folderService);
 
-        $folderId = $folder->getId();
-
-        $uri .= "/" . $folderId;
-
-        if (!is_array($params)) {
-            $params = [
-                'shared_link' => [
-                    'access' => 'collaborators'
-                ]
-            ];
-        }
-
-        // can be refactored a bit more but the json encode works in the connection class
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
-
-        $response = $connection->put($uri, $params, true);
-
-        $data = $this->parseResponse($response);
-
-        $updatedFolder = $this->getNewFolder();
-        (new Hydrator())->hydrate($updatedFolder, $data);
-
-        return $updatedFolder;
+        return $service->createSharedLink($folder, $params);
     }
 
     /**
@@ -659,10 +548,6 @@ class Client implements LoggerAwareInterface
             ]);
         }
 
-        $uri = FolderService::ENDPOINT . '/' . $originalFolder->getId() . '/copy';
-        $this->debug("copy uri: " . $uri, [__METHOD__, __LINE__]);
-        $this->debug("initial parent: " . var_export($parent, true), [__METHOD__, __LINE__]);
-
         if (is_array($parent)) {
             $folder = $this->getNewFolder();
             (new Hydrator())->hydrate($folder, $parent);
@@ -676,23 +561,8 @@ class Client implements LoggerAwareInterface
             ]);
         }
 
-        $params['parent'] = ['id' => (string)$parent->getId()];
-        if (null !== $name) {
-            $params['name'] = $name;
-        }
-
-        $this->debug("params: " . var_export($params, true), [__METHOD__, __LINE__]);
-
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
-
-        $response = $connection->post($uri, $params, true);
-        $this->debug("response header: " . var_export($response->getResponseHeader(), true), [__METHOD__, __LINE__]);
-
-        $data = $this->parseResponse($response);
-
-        $copy = $this->getNewFolder();
-        (new Hydrator())->hydrate($copy, $data);
+        $service = $this->configureService($this->folderService);
+        $copy = $service->copyFolder($originalFolder, $parent, $name);
 
         if (true === $addToFolders && $copy instanceof Folder) {
             $this->addFolder($copy);
@@ -1233,5 +1103,35 @@ class Client implements LoggerAwareInterface
         $this->debug("full search uri: " . $uri, [__METHOD__, __LINE__]);
 
         return $this->query($uri);
+    }
+
+    protected function configureService(ServiceInterface $service): ServiceInterface
+    {
+        $service->setConnection($this->getConnection());
+        $service->setAuthorizedConnection($this->getConnection());
+        $service->setClientId($this->getClientId());
+        $service->setClientSecret($this->getClientSecret());
+        $service->setDeviceId($this->getDeviceId());
+        $service->setDeviceName($this->getDeviceName());
+
+        if ($service instanceof AuthenticatedServiceInterface) {
+            $token = $this->getToken();
+            if (null === $token->getAccessToken()) {
+                throw new \RuntimeException("Access token is not set for authenticated service: " . $service::class);
+            }
+            $service->setToken($token);
+        } else {
+            try {
+                $service->setToken($this->getToken());
+            } catch (\RuntimeException $e) {
+                // Token not set on client, skip setting it on service
+            }
+        }
+
+        if ($this->logger) {
+            $service->setLogger($this->logger);
+        }
+
+        return $service;
     }
 }

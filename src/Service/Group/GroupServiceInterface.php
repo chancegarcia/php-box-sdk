@@ -2,9 +2,9 @@
 
 namespace Box\Service\Group;
 
-use Box\Service\ServiceInterface;
+use Box\Service\AuthenticatedServiceInterface;
 
-interface GroupServiceInterface extends ServiceInterface
+interface GroupServiceInterface extends AuthenticatedServiceInterface
 {
     /**
      * @param string|int $groupId

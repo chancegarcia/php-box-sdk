@@ -99,6 +99,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
         'decoded',
         'original',
         'flat',
+        'array',
     ];
 
     public function getAuthorizedConnection()
@@ -758,7 +759,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
 
         $data = match ($returnType) {
             'decoded' => $decoded,
-            'flat' => $flat,
+            'flat', 'array' => $flat,
             'original' => $json,
             default => throw new OutOfBoundsException($returnType . " is not a valid result type."),
         };
@@ -779,6 +780,10 @@ class Service implements ServiceInterface, LoggerAwareInterface
     {
         if (!is_string($type)) {
             throw new InvalidArgumentException('string type expected');
+        }
+
+        if ('array' === $type) {
+            return;
         }
 
         if (!in_array($type, $this->allowedReturnTypes)) {
@@ -946,7 +951,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
 
         $data = match ($returnType) {
             'decoded' => $decoded,
-            'flat' => $flat,
+            'flat', 'array' => $flat,
             'original' => $json,
             default => throw new OutOfBoundsException($returnType . " is not a valid result type."),
         };

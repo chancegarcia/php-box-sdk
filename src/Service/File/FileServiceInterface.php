@@ -38,9 +38,9 @@ namespace Box\Service\File;
 use Box\Dto\File\Request\CreateSharedLinkRequest;
 use Box\Resource\File;
 use Box\Resource\SharedLink;
-use Box\Service\ServiceInterface;
+use Box\Service\AuthenticatedServiceInterface;
 
-interface FileServiceInterface extends ServiceInterface
+interface FileServiceInterface extends AuthenticatedServiceInterface
 {
     /**
      * @param File $file
