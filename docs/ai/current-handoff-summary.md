@@ -1,46 +1,67 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-11 04:15:00.000
+- **Timestamp**: 2026-05-11 05:05:22.000
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
+- **Current Phase**: Step 12 — Token Storage Completion (Ready for Review)
 
 ## Core Workflow Rules
 - **One Slice at a Time**: Complete and verify exactly one slice before proceeding.
 - **Tracker Review**: Begin every new task with a review of the tracker/plan and relevant audit docs.
-- **Canonical Summaries**: Use `docs/ai/current-task-summary.md` and `docs/ai/current-handoff-summary.md`. Overwrite them with fresh content upon task completion.
-- **Composer Scripts**: Use only `composer test`, `composer analyse`, `composer cs:check`, and `composer review`.
-- **No Commit Messages**: The user uses PhpStorm AI for commit message generation. Do NOT suggest commit messages.
-- **No Secrets**: Keep all code and summaries redacted.
+- **Canonical Summaries**: Always overwrite `docs/ai/current-task-summary.md` and `docs/ai/current-handoff-summary.md` on task completion.
+- **Composer Scripts**: Use ONLY `composer test`, `composer analyse`, `composer cs:check`, and `composer review`.
+- **No Commit Messages**: Do NOT suggest commit messages.
+- **No Secrets**: Keep all code and summaries redacted. Do not include tokens or credentials.
 
-## Step 11 Completion: Factory Modernization and Service Boundaries
-Step 11 is **fully complete**. All slices 11.0 through 11.9 are verified and documented.
-- **Passive Resources**: File, Folder, User, Group, Collaboration are passive state-only objects.
-- **Service Delegation**: `Client` delegates resource-specific operations to services via `ClientServiceRegistry`.
-- **Authenticated Boundary**: Enforced via `AuthenticatedServiceInterface` and `Client::configureService()`.
-- **Hydration**: Factories handle user arrays; Services handle API responses.
+## Recently Completed
+1. **Step 11 — Factory Modernization and Service Boundaries**: Fully complete and closed.
+2. **Docs Plan Drift Cleanup (Slices A–D)**: Fully complete. Planning docs, trackers, and implementation checklists are synchronized.
+3. **Planning Structure Refresh**: `docs/planning/README.md` now serves as the central index.
 
-## Next Phase: Step 12 — Token Storage Completion
-Step 12 has **not** been started.
+## Architecture State (Ready for Step 12)
+- **Resources**: Passive state objects. Getters must not mutate state.
+- **Factories**: Hydrate user-provided arrays.
+- **Services**: Hydrate API responses; own endpoint URI construction.
+- **Client**: Lightweight facade delegating to services via `ClientServiceRegistry`.
+- **Auth Boundary**: Services implement `AuthenticatedServiceInterface`; `Client` configures services.
+- **Token Storage**: Passive data store ONLY. MUST NOT make network calls or contain refresh logic.
+- **Collections**: Doctrine Collections are the standard for list response entry sets.
+- **Redaction**: Tokens and secrets are automatically redacted in logs and exceptions.
 
-### Key Step 12 Goals
-- Finalize supported v1 storage contracts.
+## Next Chat: Step 12 — Token Storage Completion
+Step 12 has **NOT** started. Implementation must not begin without a prior tracker and plan review.
+
+### Step 12 Goals
+- Finalize supported v1 storage contracts (`TokenStorageInterface`).
 - Complete In-Memory and PDO token storage implementations and tests.
 - Evaluate Filesystem token storage feasibility.
-- Resolve missing-return and static analysis issues for storage classes.
+- Resolve missing-return and static analysis (PHPStan) issues for storage classes.
 
-## Deferred Follow-Ups
-- **Event Resource Modernization**: `AdminEvent` and `Event` still use legacy constructor hydration and `mapBoxToClass`.
-- **Resource Property Type Narrowing**: Further narrowing of `mixed` types in resources is deferred to a future audit.
-- **Legacy Client State**: Remaining state/cache methods in `Client` (e.g., `setFolders`) are retained for v0.11 compatibility.
+### Canonical Reference Files
+- `.junie/guidelines.md`
+- `docs/ai/current-handoff-summary.md`
+- `docs/ai/current-task-summary.md`
+- `docs/planning/README.md`
+- `docs/planning/10-v1-release-work.md`
+- `docs/planning/v1/architecture-rules.md`
+- `docs/planning/v1/decision-index.md`
+- `docs/planning/v1/implementation-checklist.md`
+- `docs/audits/docs-plan-drift-audit.md`
 
-## Next Chat Instructions (Start Here)
-1. Review `.junie/guidelines.md`.
-2. Review `docs/ai/current-handoff-summary.md`.
-3. Review `docs/ai/current-task-summary.md`.
-4. Review `docs/planning/10-v1-release-work.md`.
-5. Start **Step 12 — Token Storage Completion** with a tracker and implementation plan review pass.
-6. Do **NOT** skip the planning/review phase for Step 12.
-7. Do **NOT** suggest commit messages.
+## Deferred Follow-Ups (Do not pull into Step 12)
+- **Event Resource Modernization**: `AdminEvent` and `Event` still use legacy patterns.
+- **Resource Property Type Narrowing**: Further narrowing of `mixed` types.
+- **Legacy Client State**: Remaining v0.11 compatibility methods in `Client`.
+- **API Coverage Gaps**: Comments, Tasks, etc.
+- **Code Style**: Update guidance for inlining trivial temporary variables.
+- **Archive Policy**: Final deletion of historical docs deferred until after v1.0.
+
+## Next Chat Instructions
+1. Initialize chat with a review of `docs/planning/10-v1-release-work.md#step-12--token-storage-completion`.
+2. Propose an implementation plan for Step 12 based on the refined tracker.
+3. Do NOT start Step 13.
+4. Do NOT suggest commit messages.
 
 ## Validation
-- Full `composer review` passed after Step 11 completion.
-- Results: 233 tests, 616 assertions (OK).
+- This was a documentation-only handoff refresh.
+- No code validation was required.
+- Handoff manually verified for consistency and redaction.
