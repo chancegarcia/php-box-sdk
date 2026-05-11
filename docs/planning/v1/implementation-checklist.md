@@ -229,79 +229,63 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 - Test updates: N/A.
 - Completion notes: `src/Model` directory removed.
 
-## 18. Token Storage Completion
+## 18. Token Storage Completion and Integration
 
 - [ ] Status: Not started
 - Goal: Audit and finalize token storage behavior for v1.
-- Scope: Implement/complete In-Memory and PDO token storage; evaluate Filesystem storage.
+- Scope:
+    - Finalize `TokenStorageInterface` for v1.
+    - Implement/complete `InMemoryTokenStorage` and `PdoTokenStorage`; evaluate `FilesystemTokenStorage`.
+    - **Passive Storage**: Ensure storage does not make network calls or contain refresh logic.
+    - **Integration**: Implement Client-level orchestration for loading/persisting tokens.
+    - **Independence**: Verify services remain storage-independent.
+    - **CLI/Harness**: Review CLI token storage configuration. Confirm CLI can run without storage. Define fallback behavior for resource commands. Define storage behavior for auth exchange and refresh. Preserve redaction/masking.
 - Dependencies: 17.
-- Validation: `composer test`.
-- Documentation updates: Update migration/user docs for storage.
-- Test updates: Focused storage tests.
-- Completion notes: This corresponds to Step 12 in `10-v1-release-work.md`.
+- Validation: `composer test`, `composer analyse`.
+- Documentation updates: Architecture rules, strategy, and user docs.
+- Test updates: Focused storage and orchestration tests.
+- Completion notes: Corresponds to Step 12 in `10-v1-release-work.md`.
 
-## 19. Deferred missing resource phase: Comments and Tasks
+## 18.1 Auth Lifecycle Extraction
 
 - [ ] Status: Not started
-- Goal: Implement missing Comments and Tasks resources.
-- Scope: `Box\Resource\Comment`, `Box\Resource\Task`.
+- Goal: Extract auth lifecycle management into a dedicated provider layer.
+- Scope:
+    - Create `AuthProvider` / `AuthLifecycle` component.
+    - Move token exchange/refresh/revoke logic behind the auth boundary.
+    - Coordinate Client + Auth + Storage orchestration.
 - Dependencies: 18.
-- Validation: `composer test`.
-- Documentation updates: API coverage update.
-- Test updates: New tests for Comments/Tasks.
-- Completion notes:
+- Completion notes: Required for v1 release.
 
-## 20. Deferred missing resource phase: Metadata service
+## 18.2 JWT/S2S Auth Foundation and Implementation
 
 - [ ] Status: Not started
-- Goal: Implement full Metadata service.
-- Scope: `MetadataService`, Template management.
-- Dependencies: 18.
-- Validation: `composer test`.
-- Documentation updates: API coverage update.
-- Test updates: New tests for Metadata.
-- Completion notes:
+- Goal: Implement JWT/Server-to-Server authentication (Required for v1).
+- Scope: Feasibility study, JWT signing, token exchange, Client/Connection integration, and CLI/harness support.
+- Dependencies: 18.1.
+- Validation: `composer test`, `composer analyse`.
+- Documentation updates: JWT usage guide and migration notes.
+- Test updates: Signing and exchange tests with placeholder fixtures.
+- Completion notes: Required for v1 release. Corresponds to Steps 14-15 in `10-v1-release-work.md`.
 
-## 21. Deferred missing resource phase: Collections, File Requests
-
-- [ ] Status: Not started
-- Goal: Implement remaining high-priority API resources.
-- Scope: File Requests, etc. (Sign Requests and Webhooks deferred to v1.1.0; use direct transport fallback).
-- Dependencies: 18.
-- Validation: `composer test`.
-- Documentation updates: API coverage update.
-- Test updates: New tests.
-- Completion notes:
-
-## 22. Deferred enterprise/governance phase
+## 19. Box API Coverage Alignment
 
 - [ ] Status: Not started
-- Goal: Implement Enterprise features (Shield, Governance).
-- Scope: Retention Policies, Legal Holds, etc.
-- Dependencies: 21.
-- Validation: `composer test`.
-- Documentation updates: API coverage update.
-- Test updates: New tests.
-- Completion notes:
+- Goal: Audit SDK against Box API to ensure high value per core resource.
+- Scope:
+    - Audit core services (Files, Folders, Users, Groups, Collabs, Events).
+    - Align with basic Box API CRUD operations.
+    - Produce coverage matrix.
+- Dependencies: 18.2.
+- Completion notes: Corresponds to Step 15.1 in `10-v1-release-work.md`.
 
-## 23. V1 upgrade documentation
-
-- [ ] Status: Not started
-- Goal: Finalize migration guide for end users.
-- Scope: Complete `docs/v1-migration.md`.
-- Dependencies: 22.
-- Validation: Manual review.
-- Documentation updates: `docs/v1-migration.md`.
-- Test updates: N/A.
-- Completion notes:
-
-## 24. Final quality and release review
+## 20. Evaluation Phase: Missing Resources and Webhooks
 
 - [ ] Status: Not started
-- Goal: Final verification of V1.0 release readiness.
-- Scope: `composer review`, full test suite, doc audit, and package/repository rename.
-- Dependencies: 23.
-- Validation: `composer review` passes.
-- Documentation updates: CHANGELOG.md, `v1-package-rename-plan.md`.
-- Test updates: N/A.
-- Completion notes: 
+- Goal: Evaluate and potentially implement remaining resources.
+- Scope:
+    - **Comments and Tasks**: `Box\Resource\Comment`, `Box\Resource\Task`.
+    - **Metadata Service**: Template management.
+    - **Webhooks**: Signature verification (Required) and CRUD management (Evaluation).
+- Dependencies: 19.
+- Completion notes: Corresponds to Step 16 and deferred resource steps.

@@ -55,12 +55,25 @@ This work assumes the completion of:
 | 11.7.3 | Mixed Type Reduction and Client Factory Convenience Review | ✓ |
 | 11.8 | Documentation, Migration, and Planning Drift Cleanup | ✓ |
 | 11.9 | Final Integration Review, Code/Plan Conformance, and New-Chat Handoff | ✓ |
-| 12 | [Token Storage Completion](#step-12--token-storage-completion) | Not Started |
+| 12 | [Token Storage Completion and Integration](#step-12--token-storage-completion-and-integration) | Not Started |
 | 13 | [API Fixture Realism and Contract Alignment](#step-13--api-fixture-realism-and-contract-alignment) | Not Started |
 | 14 | [JWT/S2S Feasibility and Dependency Review](#step-14--jwts2s-feasibility-and-dependency-review) | Not Started |
 | 15 | [JWT/S2S Implementation](#step-15--jwts2s-implementation) | Not Started |
-| 16 | [Webhook Verification](#step-16--webhook-verification) | Not Started |
+| 15.1 | [Box API Coverage Alignment](#step-151--box-api-coverage-alignment) | Not Started |
+| 16 | [Webhook Verification and Evaluation](#step-16--webhook-verification-and-evaluation) | Not Started |
 | 17 | [v1 Release Readiness](#step-17--v1-release-readiness) | Not Started |
+
+## Remaining v1 Sequence
+
+| Order | Work item | v1 classification | Depends on | Expected outcome |
+|---:|---|---|---|---|
+| 1 | **Token Storage Completion** | Required | Step 11 | Passive storage (PDO/In-Memory); Client orchestration; Service independence. |
+| 2 | **Auth Lifecycle Extraction** | Required | Step 12 | Dedicated `AuthProvider` component; Client coordinates auth+storage. |
+| 3 | **JWT / Server-to-Server Auth** | Required | Step 12 (Auth boundary) | RSA-4096 signing; Enterprise/App User support; Config/Tests/Docs. |
+| 4 | **API Fixture Realism** | Required | Step 11 | Realistic fixtures for core resources (File, Folder, User, Group). |
+| 5 | **API Coverage Alignment** | Required | Step 15 | Audit SDK vs Box API; Prioritize core resource value; Matrix produced. |
+| 6 | **Webhook Evaluation** | Evaluation | Step 15.1 | Verification implementation; Decision to include/defer full service. |
+| 7 | **Release Readiness** | Required | Step 16 | Final docs, changelog, security scan, `composer review`. |
 
 ## Recommended Sequencing
 The steps should generally be followed in numerical order. Step 10 and 11 are closely related as factories often return interfaces. Step 13 must precede Step 14. Step 16 is the final gate.
@@ -175,45 +188,58 @@ Audit and modernize factory patterns and service boundaries after interface rati
 
 ---
 
-## Step 12 — Token Storage Completion
+### Step 12 — Token Storage Completion and Integration
 
-### Purpose
-Audit and finalize token storage behavior for v1. This ensures the SDK provides reliable, out-of-the-box token management for persistent integrations (PDO) and ephemeral usage (In-Memory), while preserving extension points for future framework integrations.
+#### Status
+- **Required for v1 release**
+- Implementation has **NOT** started.
+- Earlier prompts for Step 12 are **STALE** and must be revised based on current alignment.
 
-### Scope
-- **Storage Inventory and Audit**:
-    - Inventory all classes/interfaces under `src/Storage`.
-    - Identify current consumers in services/client/auth/token flows.
-    - Identify unused, incomplete, or misleading public classes.
-    - Identify PHPStan baseline entries related to storage classes.
-    - Identify any existing future notes about Symfony bundles, Doctrine, storage extension points, or framework integration.
-- **Supported v1 Storage Implementation**:
-    - Finalize supported v1 storage contracts.
-    - Implement/complete In-Memory token storage (required for v1).
-    - Implement/complete PDO token storage (required for v1).
-    - Evaluate Filesystem token storage feasibility for v1.
-    - Complete, remove, or explicitly defer unsupported/incomplete storage APIs.
-- **Extension Points and Future Compatibility**:
-    - Preserve and harden storage interfaces as intentional extension points.
-    - Ensure storage contracts allow for future Symfony bundle and Doctrine-backed integrations.
-    - Resolve missing-return and stale PHPStan baseline issues for storage classes.
+#### Purpose
+Audit and finalize token storage behavior for v1. This ensures the SDK provides reliable, out-of-the-box token management for persistent integrations (PDO) and ephemeral usage (In-Memory), while ensuring storage is properly integrated with the Client configuration and CLI/harness flows.
 
-### Non-Goals
-- Do not implement the Symfony bundle or Doctrine integration in this step.
-- Do not refactor core auth/client logic unless necessary for storage integration.
+#### Scope
+1. **Token Storage Completion**:
+    - Finalize `TokenStorageInterface` for v1.
+    - Implement/complete `InMemoryTokenStorage` (required).
+    - Implement/complete `PdoTokenStorage` (required).
+    - Evaluate `FilesystemTokenStorage` (support, defer, or exclude).
+    - Ensure all storage is **passive** (no network, no refresh logic).
+    - Support `TokenStorageContext` (one active token per context).
+2. **Client Orchestration Integration**:
+    - Review and implement Client configuration for token storage.
+    - Ensure Client can load tokens from storage to initialize auth state.
+    - Ensure Client can persist refreshed tokens back to storage via `AuthProvider` callbacks or coordinated flow.
+3. **Service Independence Verification**:
+    - Verify that Services remain completely independent of token storage.
+4. **CLI/Auth Harness Review and Configuration**:
+    - Review CLI token storage configuration (options, env/config, or config provider).
+    - Ensure CLI can run and be discovered without storage configured.
+    - Confirm CLI commands (Resource and Auth) follow the documented auth resolution priority.
+    - Determine if CLI persistence is implemented through Client orchestration or explicit command orchestration.
+    - Implement or explicitly defer CLI persistence with a clear rationale.
+    - **Step 12 Design Decision**: Backend selection mechanism and context selection for CLI.
+5. **Static Analysis**:
+    - Resolve storage-related PHPStan/static-analysis issues.
 
-### Acceptance Criteria
-- Supported v1 storage contracts are finalized.
-- In-memory token storage is implemented/tested.
-- PDO token storage is implemented/tested.
-- Filesystem token storage is evaluated and either implemented/tested or explicitly deferred.
-- Unsupported/incomplete storage APIs are either completed, removed, or clearly marked/deferred.
-- Supported storage implementations have focused tests.
-- Token store/retrieve/update/delete or revoke-related flows are tested as appropriate.
-- Refresh-token persistence behavior is tested or explicitly documented.
-- Extension-point expectations are documented.
-- Missing-return and stale-baseline issues are resolved for storage classes.
-- Migration/user docs explain final storage behavior.
+#### Non-Goals
+- Do not implement Symfony bundle or Doctrine integration.
+- Do not implement JWT/S2S in this step (Step 14/15).
+- Do not refactor core auth logic unless required for orchestration.
+
+#### Acceptance Criteria
+- `TokenStorageInterface` is finalized for v1.
+- In-memory and PDO storage are complete and tested.
+- Filesystem storage decision is documented.
+- Token storage remains strictly passive.
+- Services do not depend on token storage.
+- Client coordinates token load/refresh/persist convenience flow.
+- CLI token storage is optional/configurable and does not block command discovery.
+- CLI resource commands follow auth resolution order (Storage -> Explicit -> Graceful Failure).
+- Auth exchange/refresh commands are storage-aware when storage is configured.
+- CLI/auth harness persistence is reviewed and either implemented or explicitly deferred.
+- No secrets are introduced in docs, tests, fixtures, or summaries.
+- PHPStan/static-analysis issues for storage code are resolved.
 
 ---
 
@@ -239,57 +265,92 @@ Ensure service and resource tests reflect actual Box API behavior by using reali
 
 ## Step 14 — JWT/S2S Feasibility and Dependency Review
 
-### Purpose
-Evaluate requirements and dependencies for implementing Box JWT/S2S authentication.
+#### Status
+- **Required for v1 release**
+- Implementation has **NOT** started.
 
-### Scope
+#### Purpose
+Evaluate requirements and dependencies for implementing Box JWT/S2S authentication. This is a primary v1 feature, not an optional follow-up.
+
+#### Scope
 - Review Box JWT/S2S auth requirements (RSA-4096, signing, etc.).
 - Identify crypto dependencies (e.g., OpenSSL).
 - Plan DTOs for configuration and token storage.
-- Produce implementation slices for Step 14.
+- Produce implementation slices for Step 15.
+- **Client Integration**: Plan how JWT configuration (Enterprise ID, App Auth, Private Key) integrates with `Client` and `Connection`.
 
-### Non-Goals
-- Do not implement JWT/S2S logic in this step.
-
-### Acceptance Criteria
+#### Acceptance Criteria
 - Feasibility report documented.
-- Clear implementation plan for Step 14.
+- Clear implementation plan for Step 15.
 
 ---
 
 ## Step 15 — JWT/S2S Implementation
 
-### Purpose
+#### Status
+- **Required for v1 release**
+
+#### Purpose
 Implement JWT/S2S authentication based on the feasibility study.
 
-### Scope
+#### Scope
 - Implement JWT signing and token exchange.
-- Integrate with `AuthProvider` / `Connection` flows.
-- Add tests using fake keys only.
+- Integrate with `AuthProvider` / `Connection` / `Client` flows.
+- **JWT Configuration**: Support JWT-specific config (Client ID/Secret, Enterprise ID, Public Key ID, Private Key, Passphrase).
+- **Service Account Support**: Support Enterprise and App User auth modes.
+- **CLI/Harness**: Evaluate or implement CLI support for JWT auth.
+- **Security**: Redaction review for private keys, client secrets, assertions, and tokens.
+- **Tests**: Add tests using placeholder fixtures only.
 
-### Non-Goals
-- Do not use real keys or real Box accounts.
-
-### Acceptance Criteria
+#### Acceptance Criteria
 - Working JWT/S2S authentication flow.
-- Unit tests cover signing and response handling.
+- Unit tests cover signing, response handling, and configuration.
+- Public docs and migration notes include JWT usage.
 
 ---
 
-## Step 16 — Webhook Verification
+## Step 15.1 — Box API Coverage Alignment
+
+#### Status
+- **Required for v1 release**
+- Implementation has **NOT** started.
+
+#### Purpose
+Audit the current SDK against current Box API documentation to ensure core resources provide high value per resource. This is about depth of support for core resources, not full API parity.
+
+#### Scope
+1. **Audit**:
+    - Compare current `FileService`, `FolderService`, `UserService`, `GroupService`, `CollaborationService`, and `EventService` against current Box API docs.
+    - Identify missing common/basic CRUD operations or important fields.
+2. **Prioritization**:
+    - **Required for v1 baseline**: Files, Folders, Users, Groups, Collaborations, Shared Links, Search, Events.
+    - **Evaluate for v1 if feasible**: Comments, Tasks, Metadata, Webhooks, Collections.
+    - **Defer**: Specialized enterprise/compliance APIs, large new API families.
+3. **Outcome**:
+    - Produce an endpoint coverage matrix.
+    - Explicitly defer unsupported/non-core endpoints.
+    - Ensure core resources provide more value per supported resource than prior releases.
+
+#### Acceptance Criteria
+- Endpoint coverage matrix produced.
+- Core resources (Files, Folders, Users, Groups, Collabs) audited and aligned with basic Box API CRUD.
+- Unsupported endpoints explicitly deferred in documentation.
+
+---
+
+## Step 16 — Webhook Verification and Evaluation
 
 ### Purpose
-Implement Box webhook signature verification to ensure security for webhook consumers.
+Implement Box webhook signature verification and evaluate whether a full `WebhookService` is required for v1.
 
 ### Scope
-- Implement signature verification logic according to Box documentation.
+- Implement signature verification logic (Security requirement).
 - Provide a utility or service for verifying incoming webhook requests.
-
-### Non-Goals
-- Do not implement framework-specific adapters (e.g., Symfony/Laravel) unless scoped as a sub-task.
+- **Evaluation**: Decide if full webhook management (CRUD via API) is required for v1 or can be deferred.
 
 ### Acceptance Criteria
 - Verification logic implemented and tested with mock signatures.
+- Decision on v1 Webhook management recorded in `decision-index.md`.
 
 ---
 
@@ -312,9 +373,9 @@ Final polish and validation before tagging v1.0.0.
 ---
 
 ## Release Blockers
-- Step 10 Resource Namespace and Interface Rationalization complete.
-- Step 11 Factory Modernization complete or explicitly deferred.
-- Step 12 Token Storage Completion complete.
+- Step 10 Resource Namespace and Interface Rationalization complete. ✓
+- Step 11 Factory Modernization and Service Boundaries complete. ✓
+- Step 12 Token Storage Completion and Integration complete.
 - Step 13 API Fixture Realism complete enough for release confidence.
 - Step 14 JWT/S2S feasibility complete.
 - Step 15 JWT/S2S implementation complete.
@@ -323,6 +384,19 @@ Final polish and validation before tagging v1.0.0.
 - `composer review` passes.
 - No known credential leaks.
 - Migration docs/changelog accurate.
+
+| Capability | v1 status | Notes |
+|---|---|---|
+| OAuth2 authorization-code auth | Required / existing | Keep compatible |
+| OAuth2 refresh-token auth | Required / existing | Auth layer refreshes; Client may coordinate |
+| Passive token storage | Required / Step 12 | Storage only loads/saves |
+| Client token-storage orchestration | Required / Step 12 | Client convenience path |
+| Service-level manual auth control | Required / architectural boundary | Services stay storage-independent |
+| CLI/auth harness token persistence | Evaluate in Step 12 | Implement or explicitly defer |
+| PDO token storage | Required / Step 12 | Tested |
+| In-memory token storage | Required / Step 12 | Tested |
+| Filesystem token storage | Evaluate in Step 12 | Support/defer/exclude decision |
+| JWT / Server-to-Server auth | Required before v1 | Dedicated required v1 step (Steps 14-15) |
 
 ## Deferred / Post-v1 Candidates
 - Advanced auto-pagination.

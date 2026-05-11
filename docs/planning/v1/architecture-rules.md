@@ -129,12 +129,24 @@ Collection filtering is in-memory only and should not be presented as a replacem
 - **Service Return Types**: Services MUST return Resources or DTOs, not the response wrapper.
 - **Default Client**: Guzzle 7 is the default PSR-18 implementation.
 
-## 9. Raw API Payload Debugging
+## 10. Authentication and Token Storage
 
-Resources should not store raw Box API payloads by default.
+### Auth Provider (Lifecycle)
+- **Responsibility**: Manages the authentication lifecycle (OAuth2, JWT/S2S).
+- **Network**: Auth providers MAY make network calls to exchange codes or refresh tokens.
+- **Independence**: Auth providers MUST NOT persist tokens themselves.
 
-The SDK may support optional raw payload capture at the hydrator/mapper layer for debugging and migration diagnostics. This feature must be disabled by default.
+### Token Storage (Passive)
+- **Responsibility**: Passive data store for tokens (In-Memory, PDO).
+- **Network**: Token storage MUST NOT make network calls.
+- **Logic**: Token storage MUST NOT contain refresh or exchange logic.
+- **Context**: Must support `TokenStorageContext` for one active token per context.
 
-Preferred implementation is a separate debug payload store, potentially backed by `WeakMap<object, array>`, so resources remain clean typed objects.
+### Client (Orchestrator)
+- **Responsibility**: High-level convenience path.
+- **Workflow**: Coordinates loading tokens from storage, providing them to the auth layer, and persisting refreshed tokens back to storage.
+- **Opt-out**: Advanced users can bypass this orchestration by using Services directly with their own auth/refresh strategy.
 
-Raw payloads must not be logged, serialized, or exposed as the primary way to access resource fields. They must not be treated as the primary SDK API.
+### Services
+- **Independence**: Services MUST be independent of token storage. They MUST NOT load or save tokens.
+- **Auth State**: Services operate with the authenticated state they are given.

@@ -29,8 +29,12 @@ These documents track completed steps of the v1.0 foundation work:
 
 ## Upcoming Work
 
-- **Step 12: Token Storage Completion** (Ready for tracker/plan review)
-- **Step 13: API Fixture Realism** (Pending)
+- **Step 12: Token Storage Completion and Integration** (Ready for implementation)
+- **Step 13: API Fixture Realism** (Required)
+- **Step 14: JWT/S2S Feasibility** (Required)
+- **Step 15: JWT/S2S Implementation** (Required)
+- **Step 15.1: Box API Coverage Alignment** (Required)
+- **Step 16: Webhook Verification and Evaluation** (Required/Evaluation)
 
 ## Historical and Superseded
 

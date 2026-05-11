@@ -36,8 +36,14 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 | Documentation Gap Inventory | **Active** | `v1-documentation-gap-inventory.md` | Tracks ongoing P2/P3 items |
 | SDK Response Wrapper | **Decided** | `v1-strategy-and-contracts.md` | Implementation: Replace with thin PSR-7 wrapper |
 | Response Strategy Alignment | **Decided** | `v1-strategy-and-contracts.md` | None |
-| JWT/S2S Auth Timing | **Decided** | `v1-strategy-and-contracts.md` | Feasibility checkpoint after foundation |
-| Sign Requests / Webhooks | **Decided** | `v1-strategy-and-contracts.md` | v1.1.0 priority |
+| JWT/S2S Auth Required | **Decided** | `10-v1-release-work.md` | Required for v1 release |
+| Token Storage Integration Review | **Decided** | `10-v1-release-work.md` | Client and CLI integration required |
+| API Coverage Depth vs Parity | **Decided** | `10-v1-release-work.md` | Prioritize core resource value for v1 |
+| Webhook Verification Required | **Decided** | `10-v1-release-work.md` | Security requirement for v1 |
+| Webhook Management (CRUD) | **Evaluation** | `10-v1-release-work.md` | Evaluate for v1 or defer |
+| Comments / Tasks / Metadata | **Evaluation** | `10-v1-release-work.md` | Evaluate for v1 or defer |
+| CLI Persistence | **Decided** | `strategy-and-contracts.md` | Optional/Configurable; Resolution order defined |
+| Sign Requests | **Deferred** | `v1-strategy-and-contracts.md` | v1.1.0 priority |
 | Auto-pagination | **Deferred** | `v1-strategy-and-contracts.md` | v1.x candidate |
 | Upload Progress | **Deferred** | `v1-strategy-and-contracts.md` | v1.1.0 candidate |
 
@@ -91,6 +97,8 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 ### Auth Provider and Token Storage Boundary
 - **Decision**: `AuthProvider` manages lifecycle (refresh, exchange, injection); `TokenStorage` is a **passive** data store only.
 - **Requirement**: `TokenStorage` MUST NOT make network calls or contain refresh logic.
+- **Orchestration**: The `Client` (or a dedicated orchestrator service) coordinates between `AuthProvider` and `TokenStorage` to load, refresh, and persist tokens.
+- **Independence**: Services MUST NOT depend on `TokenStorage`.
 
 ### Error Taxonomy
 - **Decision**: Comprehensive hierarchy based on `BoxException` defined in `v1-architecture-rules.md`.
@@ -101,10 +109,10 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 ### Migration Documentation Requirements
 - **Decision**: The migration guide must explicitly cover the shift to facade/services, passive resources, direct transport, the new response wrapper, and the exception hierarchy.
 
-### JWT/S2S Auth Sequencing
-- **Decision**: JWT/S2S is a targeted v1.0.0 requirement.
-- **Checkpoint**: A feasibility checkpoint will be performed after the core transport/auth-provider boundaries are established.
-- **Fallback**: Fallback to v1.1.0 only with explicit rationale if implementation discovery shows material risk to core architecture or release stability.
+### JWT/S2S Auth Strategy
+- **Decision**: JWT/S2S is **REQUIRED** for v1.0.0.
+- **Scope**: Includes JWT configuration, assertion generation, token exchange, and integration with `Client` and `Connection`.
+- **CLI**: CLI/harness support must be evaluated or implemented during Step 15.
 
 ### Endpoint Priority (Sign Requests and Webhooks)
 - **Decision**: Sign Requests and Webhooks are v1.1.0 items.
@@ -134,6 +142,18 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 - **Rationale**: Multi-context storage supports real-world SDK usage without forcing application-specific token selection policy into the core SDK. Multiple active tokens per context create token selection, refresh, revocation, schema, and security complexity better suited to future Symfony/Doctrine integration work.
 - **v1.0 Scope**: In-memory and PDO storage support context-aware persistence with one active token per context.
 - **Deferred Scope**: Token history, multiple active grants per context, token labels/profiles, active/default selection, and Doctrine-backed multi-token models.
+
+### CLI Token Storage and Auth Behavior
+
+- **Decision**: CLI token storage is **optional and configurable**. The CLI MUST NOT globally require token storage to be configured or present.
+- **Decision**: Resource-related CLI commands (e.g., `file:get`) follow a specific auth resolution priority:
+    1. **Configured Storage**: Use configured token storage and context if available.
+    2. **Explicit Input**: Use explicit auth input (e.g., `--token` option), environment variables, or config file paths if supported.
+    3. **Graceful Failure**: Fail with clear, actionable error message if no auth source is available.
+- **Decision**: Auth exchange commands may optionally persist tokens to storage if configured or explicitly requested.
+- **Decision**: Auth refresh commands must persist refreshed tokens to storage if storage is configured.
+- **Pending (Step 12)**: Specific CLI storage backend/configuration mechanism (options vs config provider).
+- **Pending (Step 12)**: CLI storage context selection policy.
 
 ## 3. Open Questions for Human Review
 

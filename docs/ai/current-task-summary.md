@@ -1,18 +1,21 @@
-# Current Task Summary — Documentation Cleanup: Readability Rules
-
-**Date**: 2026-05-11 05:15:00.000
-
 ### Summary
-- Documented the project's preference for inlining trivial temporary variables in PHP code to improve readability.
+- Performed a documentation and planning clarification pass for CLI token storage behavior.
+- Established that CLI token storage is optional and configurable, not a global requirement.
+- Defined auth resolution priority for CLI resource commands.
+- Updated Step 12 planning to include CLI configuration review and fallback behavior.
 
 ### Changes
-- **Updated `docs/prompts/ai-workflow/php-code-style-guidance.md`**: Added a new section under "Readability and Logic" for temporary variables, including a PHP code example of preferred inlining.
-- **Updated `.junie/guidelines.md`**: Added a rule under "Static analysis and style" regarding the preference for inlining trivial temporary variables.
+- Updated `docs/planning/v1/strategy-and-contracts.md` with CLI auth resolution order and storage interaction rules.
+- Updated `docs/planning/10-v1-release-work.md` (Step 12) to include specific CLI review items and design decisions.
+- Updated `docs/planning/v1/decision-index.md` with new decisions regarding CLI storage optionality and auth resolution.
+- Updated `docs/planning/v1/implementation-checklist.md` (Step 18/Step 12) with refined CLI/harness scope.
 
 ### Verification
-- **Manual Verification**: Confirmed that the Markdown rendered correctly and that the PHP code blocks used proper syntax highlighting.
-- **Consistency Check**: Verified that the new guidance does not conflict with existing readability rules (e.g., nested ternaries, early returns).
+- Manually verified Markdown consistency and links.
+- Ran `composer cs:check` to ensure no style regressions.
+- Ran `composer review` to ensure project validity.
 
 ### Notes
-- **Documentation Only**: No source code changes were made as part of this task.
-- **No Tooling Enforcement**: No PHPCS or PHPStan rules were added, as requested.
+- No source code changes were made in this task.
+- No secrets or real credentials were introduced.
+- Step 12 implementation remains "Not Started" but now has a clearer requirements baseline for CLI integration.

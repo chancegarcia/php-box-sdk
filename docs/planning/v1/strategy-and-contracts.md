@@ -49,8 +49,9 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
 - **HTTP Client**: The underlying library (e.g., Guzzle) that implements PSR-18.
 - **Request / Response**: The messages exchanged via HTTP. v1 prefers PSR-7 for these.
 - **Token**: An authentication artifact (Access, Refresh).
-- **Token Storage**: A contract for persisting and retrieving tokens.
+- **Token Storage**: A contract for **passive** persistence and retrieval of tokens.
 - **Authentication Provider**: A component that manages the auth lifecycle (obtaining/refreshing tokens).
+- **Client (Orchestrator)**: Coordinates between `AuthProvider`, `TokenStorage`, and `Services` for a seamless high-level experience.
 - **Retry Policy**: Rules governing automatic re-execution of failed requests.
 - **Rate Limit**: Restrictions imposed by the Box API on request frequency.
 - **Public SDK Contract**: The set of classes, interfaces, and methods guaranteed stable in v1.0.
@@ -59,13 +60,20 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
 
 ## 3. Object Boundary Definition
 
-### Client (Facade)
-- **Responsibility**: High-level entry point; provides access to services; holds shared configuration.
+### Client (Facade and Orchestrator)
+- **Responsibility**: High-level entry point; provides access to services; holds shared configuration; **convenience orchestrator for token lifecycle**.
+- **Orchestration**: When configured with storage and auth capabilities, the Client may:
+    - Load tokens from storage for a configured context.
+    - Attach tokens to service calls.
+    - Coordinate with the `AuthProvider` to refresh tokens when expired.
+    - Persist refreshed tokens back to storage.
 - **Non-Responsibility**: Implementing business logic or individual API operations.
 
 ### Service
 - **Responsibility**: Orchestrating API calls for a specific resource family; input validation (via DTOs); calling transport; handling hydration.
-- **Non-Responsibility**: Managing raw HTTP sockets; persisting tokens.
+- **Independence**: Services **must not** depend on or even know about token storage. They operate with the token/auth/connection state they are explicitly given.
+- **Auth Failures**: Services surface authentication failures (401) clearly, allowing advanced users to catch them and implement custom refresh/retry behavior.
+- **Non-Responsibility**: Managing raw HTTP sockets; persisting tokens; loading tokens from storage.
 - **Network Calls**: Yes, via Transport.
 - **Expose Raw Transport**: No.
 
@@ -91,13 +99,29 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
 - **Responsibility**: Converting raw arrays/JSON to DTOs/Resources and vice versa.
 - **Location**: Used primarily by Services.
 
-### Token Storage / Auth Provider
-- **Responsibility**: Managing credentials and token persistence.
-- **Boundary**: SDK provides standard implementations (In-memory, PDO); Filesystem is evaluated for v1; users can provide their own.
-- **Token Storage Context**: Identifies the logical scope for a token (e.g., user, enterprise).
-- **Multi-context storage**: Ability to store tokens for multiple different logical contexts.
-- **Multi-token-per-context storage**: (Deferred) Storing multiple active tokens for the exact same context.
-- **One active token per context**: The core SDK rule for v1.0.0 persistence.
+### Token Storage (Passive Persistence)
+- **Responsibility**: Passive data store for tokens.
+- **Capabilities**:
+    - Saving tokens.
+    - Loading tokens.
+    - Deleting/clearing tokens.
+    - Supporting context-aware lookups (one active token per context).
+- **Non-Responsibility**:
+    - Making network calls.
+    - Refreshing tokens.
+    - Exchanging authorization codes.
+    - Revoking tokens.
+    - Retrying API calls.
+    - Knowing about API services.
+    - Logging or exposing secrets.
+
+### Auth Provider (Lifecycle and Capability)
+- **Responsibility**: Managing credentials and token lifecycle (exchange, refresh, injection).
+- **Capabilities**:
+    - Performing OAuth2 code exchange.
+    - Performing token refresh via the Box API.
+    - Generating JWT assertions for S2S auth.
+- **Non-Responsibility**: Persisting tokens (delegated to Client/Orchestrator or handled manually by the user).
 
 ## 4. Core Contract Definitions
 
@@ -333,6 +357,13 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
     - Must NOT contain logic for token refresh or exchange.
     - Must NOT make network calls.
     - **Scope**: v1 core SDK provides In-Memory and PDO implementations; Filesystem is evaluated for v1. Doctrine ORM is deferred.
+- **Client (Orchestrator) Responsibility**:
+    - Coordinating the high-level convenience flow.
+    - Loading tokens from `TokenStorage` to initialize the `AuthProvider` / `Transport`.
+    - Persisting updated tokens from `AuthProvider` back to `TokenStorage` after a successful refresh.
+- **Service Independence**:
+    - Services MUST NOT depend on or interact with `TokenStorage`.
+    - Services operate with an authenticated `Transport` provided by the `Client` or user.
 - **Context Strategy**: v1 token storage MUST use a small `TokenStorageContext` DTO/value object or equivalent explicit context object to distinguish tokens for different users, accounts, or enterprises. This object should provide a canonical string representation for storage indexing.
     - **Context Examples**: `default`, `cli:local`, `user:123`, `enterprise:456`, `tenant:abc`, `integration:production`.
 - **One Active Token per Context**: v1 core SDK enforces a "one active token per context" rule. Each unique context maps to exactly one set of active credentials. Multi-token-per-context support (labels, history, profile selection) is deferred.
@@ -412,6 +443,18 @@ The final migration guide MUST cover:
 - CLI output MUST preserve SDK redaction rules.
 - Must not leak: access tokens, refresh tokens, client secrets, auth codes, JWT private keys, or sensitive body content.
 - CLI tests should include redaction coverage where practical.
+
+### CLI Token Storage and Auth Behavior
+- **Optionality**: CLI token storage is **optional and configurable**. The CLI MUST NOT globally require token storage to be configured or present.
+- **Resource Command Auth Resolution**: Resource-related CLI commands (e.g., `file:get`) SHOULD follow this auth resolution priority:
+    1. **Configured Storage**: Use configured token storage and context if available.
+    2. **Explicit Input**: Use explicit auth input (e.g., `--token` option), environment variables, or config file paths if supported.
+    3. **Graceful Failure**: If neither storage nor explicit input is available, fail gracefully with a clear, actionable error message instructing the user how to authenticate or provide a token.
+- **Auth Command Storage Interaction**:
+    - **Auth Exchange**: May persist the newly obtained token when token storage is configured OR when a storage option is explicitly provided to the command.
+    - **Auth Refresh**: May load an existing token from storage and MUST persist the refreshed token back to storage when storage is configured.
+- **Redaction**: All CLI auth interactions MUST strictly follow SDK redaction rules. Raw tokens or secrets MUST NOT be leaked to console output.
+- **Discovery**: CLI commands MUST remain available for discovery (help, list) even when no auth or storage is configured.
 
 ## 21. Decision Records
 
