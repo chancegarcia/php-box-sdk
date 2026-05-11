@@ -37,6 +37,7 @@
 namespace Box\Service\File;
 
 use Box\Dto\File\Request\CreateSharedLinkRequest;
+use Box\Http\FileStream;
 use Box\Resource\File;
 use Box\Resource\SharedLink;
 use Box\Service\Service;
@@ -90,6 +91,17 @@ class FileService extends Service implements FileServiceInterface
         }
 
         return [];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function uploadFile(string|FileStream $file, string|int $parentId): array
+    {
+        $uri = self::UPLOAD_ENDPOINT;
+        $response = $this->getAuthorizedConnection()->postFile($uri, $file, $parentId);
+
+        return $this->handleBoxResponse($response, 'flat');
     }
 
     /**

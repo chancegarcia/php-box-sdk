@@ -26,6 +26,7 @@ class ReproIssueTest extends TestCase
         $client = new Client();
 
         $token = $this->createMock(TokenInterface::class);
+        $token->method('getAccessToken')->willReturn('fake_token');
         $client->setToken($token);
 
         $connection = $this->createMock(ConnectionInterface::class);
@@ -41,7 +42,7 @@ class ReproIssueTest extends TestCase
 
         $this->expectException(BoxException::class);
         // We expect a message containing the HTTP status, not a JSON syntax error
-        $this->expectExceptionMessage('BOX_ACCESS_TOKEN is required for upload.');
+        $this->expectExceptionMessage('Box Response was unsuccessful.');
 
         $client->uploadFileToBox('some/file/path');
     }

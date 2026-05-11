@@ -14,10 +14,11 @@ This audit evaluates the progress of the `v0.11` to `v1.0` architectural transit
 | Domain | Resource | Service | Client Facade | Tests | Modern Pattern Status | Notes |
 |---|---|---|---|---|---|---|
 | Folders | Folder | FolderService | Yes (Partial) | Yes | **Full** | `Client` still has many legacy folder methods. |
-| Files | File | FileService | Yes (Partial) | Yes | **Full** | `Client::uploadFileToBox` still exists. |
-| Collaborations | Collaboration | CollaborationService | No | Yes | **Full** | Service exists but not exposed on `Client`. |
-| Groups | Group | GroupService | No | Yes | **Full** | Service exists but not exposed on `Client`. |
-| Users | User | UserService | No | Yes | **Full** | Service implemented with interface and marked authenticated. |
+| Files | File | FileService | Yes | Yes | **Full** | Delegated from `Client` in 11.7. |
+| Collaborations | Collaboration | CollaborationService | Yes (Partial) | Yes | **Full** | `getFolderCollaborations` delegated. `addCollaboration` implementation remains inline to preserve test stability. |
+| Groups | Group | GroupService | Yes | Yes | **Full** | Delegated from `Client` in 11.7. |
+| Users | User | UserService | Yes | Yes | **Full** | Delegated from `Client` in 11.7. |
+| Search | mixed | SearchService | Yes | Yes | **Full** | Delegated from `Client` in 11.7. |
 | Events (User) | Event | UserEventService | No | Yes | **Legacy** | Uses custom `EventResponseMapper` and `Dto`. |
 | Events (Admin) | AdminEvent | No | No | Yes | **Legacy** | Still uses `mapBoxToClass`. |
 | Shared Links | SharedLink | No | Yes | Yes | **Legacy** | Handled inside `Client` or as child of File/Folder. |
@@ -37,7 +38,7 @@ The following major Box API areas lack dedicated Resources or Services:
 |---|---|---|---|---|
 | `mapBoxToClass` | `AdminEvent`, `Event` | **Blocking for v1** | Remove; use `Hydrator` via `Factory`. | Pre-v1 artifact. |
 | `getResourceFromBox` | `Service` base | **Should fix** | Keep but ensure it uses `Hydrator`. | Transition helper. |
-| `Client` query methods | `Client::query`, `Client::search` | **Should fix** | Move to dedicated Search/General service. | `Client` should be thin. |
+| `Client` query methods | `Client::query`, `Client::search` | **Fixed** | Move to dedicated Search/General service. | `search` delegated to `SearchService` in 11.7. |
 | Mixed types | Multiple Resources | **Acceptable** | Narrow to specific types where possible. | Ongoing task. |
 | Fluent Setters | Legacy models | **Should fix** | Change to `void` returns. | Enforced in new resources. |
 | Hard-coded URIs | `Client`, `UserService` | **Should fix** | Move to Service constants. | |

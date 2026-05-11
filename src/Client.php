@@ -48,8 +48,12 @@ use Box\Resource\Folder;
 use Box\Resource\User;
 use Box\Resource\Group;
 use Box\Service\Collaboration\CollaborationService;
+use Box\Service\Collaboration\CollaborationServiceInterface;
+use Box\Service\File\FileServiceInterface;
 use Box\Service\Folder\FolderServiceInterface;
-use Box\Service\Group\GroupService;
+use Box\Service\Group\GroupServiceInterface;
+use Box\Service\SearchServiceInterface;
+use Box\Service\UserServiceInterface;
 use Box\Service\AuthenticatedServiceInterface;
 use Box\Service\ClientServiceRegistry;
 use Box\Service\ClientServiceRegistryInterface;
@@ -61,7 +65,6 @@ use Box\Connection\Token\Token;
 use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxLoggerTrait;
-use Box\Service\File\FileService;
 
 /**
  * Class Client
@@ -118,6 +121,11 @@ class Client implements LoggerAwareInterface
     protected TokenFactoryInterface $tokenFactory;
     protected ConnectionFactoryInterface $connectionFactory;
     protected FolderServiceInterface $folderService;
+    protected FileServiceInterface $fileService;
+    protected UserServiceInterface $userService;
+    protected GroupServiceInterface $groupService;
+    protected CollaborationServiceInterface $collaborationService;
+    protected SearchServiceInterface $searchService;
 
     protected ClientServiceRegistryInterface $serviceRegistry;
 
@@ -138,6 +146,11 @@ class Client implements LoggerAwareInterface
         $this->tokenFactory = $this->serviceRegistry->getTokenFactory();
         $this->connectionFactory = $this->serviceRegistry->getConnectionFactory();
         $this->folderService = $this->serviceRegistry->getFolderService();
+        $this->fileService = $this->serviceRegistry->getFileService();
+        $this->userService = $this->serviceRegistry->getUserService();
+        $this->groupService = $this->serviceRegistry->getGroupService();
+        $this->collaborationService = $this->serviceRegistry->getCollaborationService();
+        $this->searchService = $this->serviceRegistry->getSearchService();
     }
 
     protected function applyConfig(ClientConfig $config): void
@@ -173,8 +186,11 @@ class Client implements LoggerAwareInterface
      */
     public function getNewUser(mixed $options = null): User
     {
-        $instance = new User();
-        // Options handling might be needed if legacy code passed them here
+        $instance = $this->userFactory->createUser($options);
+        if ($this->logger && method_exists($instance, 'setLogger')) {
+            $instance->setLogger($this->logger);
+        }
+
         return $instance;
     }
 
@@ -293,47 +309,43 @@ class Client implements LoggerAwareInterface
             throw new BoxException("Group object expected", BoxException::INVALID_INPUT);
         }
 
-        $members = [];
-        $entries = [];
+        $service = $this->configureService($this->groupService);
 
         if (is_numeric($limit) || is_numeric($offset)) {
             if (!is_numeric($limit)) {
                 $limit = 100;
             }
 
-            $uri = (new GroupService())->getMembershipListUri($group->getId(), $limit, $offset);
-
-            $data = $this->query($uri);
-
+            $data = $service->getGroupMembershipList($group->getId(), $limit, (int) ($offset ?? 0));
             $entries = $data['entries'];
         } else {
             $limit = 100;
             $offset = 0;
 
-            $uri = (new GroupService())->getMembershipListUri($group->getId(), $limit, $offset);
+            $data = $service->getGroupMembershipList($group->getId(), $limit, $offset);
 
-            $data = $this->query($uri);
-
-            $totalMembers = $data['total_count'];
+            $totalMembers = $data['total_count'] ?? count($data['entries']);
 
             $entries = $data['entries'];
 
             $currentTotal = count($entries);
 
             while ($currentTotal < $totalMembers) {
-                if (0 != $offset) {
-                    $nextPage = (new GroupService())->getMembershipListUri($group->getId(), $limit, $offset);
-                    $data = $this->query($nextPage);
-                    $moreEntries = $data['entries'];
-                    $entries = array_merge($entries, $moreEntries);
-
-                    $currentTotal = count($entries);
+                $offset += $limit;
+                $data = $service->getGroupMembershipList($group->getId(), $limit, $offset);
+                $moreEntries = $data['entries'];
+                foreach ($moreEntries as $moreEntry) {
+                    $entries[] = $moreEntry;
                 }
 
-                $offset += $limit;
+                $currentTotal = count($entries);
+                if (empty($moreEntries)) {
+                    break;
+                }
             }
         }
 
+        $members = [];
         foreach ($entries as $entry) {
             $userData = $entry['user'];
             $user = $this->getNewUser();
@@ -448,7 +460,7 @@ class Client implements LoggerAwareInterface
             $this->error($err);
         }
 
-        $service = $this->configureService($this->folderService);
+        $service = $this->configureService($this->collaborationService);
 
         return $service->getFolderCollaborations($folder);
     }
@@ -592,19 +604,9 @@ class Client implements LoggerAwareInterface
      */
     public function uploadFileToBox(string|FileStream $file, string|int $parentId = 0): array
     {
-        $accessToken = $this->getToken()->getAccessToken();
-        if (empty($accessToken) || trim($accessToken) === '') {
-            throw new BoxException('BOX_ACCESS_TOKEN is required for upload.', BoxException::INVALID_INPUT);
-        }
+        $service = $this->configureService($this->fileService);
 
-        $uri = FileService::UPLOAD_ENDPOINT;
-
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
-
-        $response = $connection->postFile($uri, $file, $parentId);
-
-        return $this->parseResponse($response);
+        return $service->uploadFile($file, $parentId);
     }
 
     public function exchangeAuthorizationCodeForToken()
@@ -1080,29 +1082,9 @@ class Client implements LoggerAwareInterface
      */
     public function search($query = null, $limit = null, $offset = null, $type = null)
     {
-        if (empty($query)) {
-            throw new BoxException('please enter a search term', BoxException::INVALID_INPUT);
-        }
+        $service = $this->configureService($this->searchService);
 
-        $uriQuery = rawurlencode($query);
-
-        $uri = self::SEARCH_URI . "/?query=" . $uriQuery;
-
-        if (is_string($type) && in_array($type, ['folder', 'file'])) {
-            $uri .= "&type=" . $type;
-        }
-
-        if (is_numeric($limit) && is_int($limit)) {
-            $uri .= "&limit=" . $limit;
-        }
-
-        if (is_numeric($offset) && is_int($offset)) {
-            $uri .= "&offset=" . $offset;
-        }
-
-        $this->debug("full search uri: " . $uri, [__METHOD__, __LINE__]);
-
-        return $this->query($uri);
+        return $service->search($query, $limit, $offset, $type);
     }
 
     protected function configureService(ServiceInterface $service): ServiceInterface

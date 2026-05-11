@@ -47,7 +47,7 @@ This work assumes the completion of:
 | 11.6.1 | [v1 Service Coverage and Auth Boundary Audit](docs/audits/11-v1-service-coverage-auth-boundary-audit.md) | ✓ |
 | 11.6.2 | Auth Boundary Hardening (AuthenticatedServiceInterface) | ✓ |
 | 11.6.3 | Service Interface and Client Boundary Cleanup | ✓ |
-| 11.7 | Client Service Delegation (Phase 2: Others) | |
+| 11.7 | Client Service Delegation (Phase 2: Others) | ✓ |
 | 11.8 | Documentation and Migration Cleanup | |
 | 12 | [Token Storage Completion](#step-12--token-storage-completion) | Not Started |
 | 13 | [API Fixture Realism and Contract Alignment](#step-13--api-fixture-realism-and-contract-alignment) | Not Started |

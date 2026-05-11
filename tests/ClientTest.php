@@ -55,7 +55,7 @@ class ClientTest extends TestCase
             ->method('createFolder')
             ->willReturn($folderMock);
 
-        $registry = new ClientServiceRegistry(null, $folderFactory);
+        $registry = new ClientServiceRegistry(null, null, null, null, null, null, $folderFactory);
         $client = new Client(null, $registry);
         $result = $client->getNewFolder();
 
@@ -236,6 +236,8 @@ class ClientTest extends TestCase
         $response = $this->createMock(BoxResponseInterface::class);
         $response->method('json')->willReturn($data);
         $response->method('isSuccessful')->willReturn($success);
+        $response->method('isClientError')->willReturn(!$success);
+        $response->method('isServerError')->willReturn(false);
 
         $statusLine = $this->createMock(StatusLineInterface::class);
         $statusLine->method('getStatusCode')->willReturn($success ? 200 : 400);
@@ -244,6 +246,7 @@ class ClientTest extends TestCase
         $header->method('getStatusLine')->willReturn($statusLine);
 
         $response->method('getResponseHeader')->willReturn($header);
+        $response->method('getStatusCode')->willReturn($success ? 200 : 400);
 
         return $response;
     }

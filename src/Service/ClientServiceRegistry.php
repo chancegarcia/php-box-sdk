@@ -13,12 +13,23 @@ use Box\Factory\GroupFactory;
 use Box\Factory\TokenFactory;
 use Box\Factory\TokenFactoryInterface;
 use Box\Factory\UserFactory;
+use Box\Service\Collaboration\CollaborationService;
+use Box\Service\Collaboration\CollaborationServiceInterface;
+use Box\Service\File\FileService;
+use Box\Service\File\FileServiceInterface;
 use Box\Service\Folder\FolderService;
 use Box\Service\Folder\FolderServiceInterface;
+use Box\Service\Group\GroupService;
+use Box\Service\Group\GroupServiceInterface;
 
 class ClientServiceRegistry implements ClientServiceRegistryInterface
 {
     protected FolderServiceInterface $folderService;
+    protected FileServiceInterface $fileService;
+    protected UserServiceInterface $userService;
+    protected GroupServiceInterface $groupService;
+    protected CollaborationServiceInterface $collaborationService;
+    protected SearchServiceInterface $searchService;
     protected FolderFactory $folderFactory;
     protected FileFactory $fileFactory;
     protected UserFactory $userFactory;
@@ -29,6 +40,11 @@ class ClientServiceRegistry implements ClientServiceRegistryInterface
 
     public function __construct(
         ?FolderServiceInterface $folderService = null,
+        ?FileServiceInterface $fileService = null,
+        ?UserServiceInterface $userService = null,
+        ?GroupServiceInterface $groupService = null,
+        ?CollaborationServiceInterface $collaborationService = null,
+        ?SearchServiceInterface $searchService = null,
         ?FolderFactory $folderFactory = null,
         ?FileFactory $fileFactory = null,
         ?UserFactory $userFactory = null,
@@ -38,6 +54,11 @@ class ClientServiceRegistry implements ClientServiceRegistryInterface
         ?ConnectionFactoryInterface $connectionFactory = null
     ) {
         $this->folderService = $folderService ?? new FolderService();
+        $this->fileService = $fileService ?? new FileService();
+        $this->userService = $userService ?? new UserService();
+        $this->groupService = $groupService ?? new GroupService();
+        $this->collaborationService = $collaborationService ?? new CollaborationService();
+        $this->searchService = $searchService ?? new SearchService();
         $this->folderFactory = $folderFactory ?? new FolderFactory();
         $this->fileFactory = $fileFactory ?? new FileFactory();
         $this->userFactory = $userFactory ?? new UserFactory();
@@ -50,6 +71,31 @@ class ClientServiceRegistry implements ClientServiceRegistryInterface
     public function getFolderService(): FolderServiceInterface
     {
         return $this->folderService;
+    }
+
+    public function getFileService(): FileServiceInterface
+    {
+        return $this->fileService;
+    }
+
+    public function getUserService(): UserServiceInterface
+    {
+        return $this->userService;
+    }
+
+    public function getGroupService(): GroupServiceInterface
+    {
+        return $this->groupService;
+    }
+
+    public function getCollaborationService(): CollaborationServiceInterface
+    {
+        return $this->collaborationService;
+    }
+
+    public function getSearchService(): SearchServiceInterface
+    {
+        return $this->searchService;
     }
 
     public function getFolderFactory(): FolderFactory
