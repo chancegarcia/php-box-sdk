@@ -1,6 +1,6 @@
 ### Model Namespace Migration Decisions
 
-**Status**: Historical / Reference only. Active decisions are consolidated in [v1.0 Planning](../planning/v1/overview.md).
+**Status**: Historical / Reference only. Active decisions are consolidated in [v1.0 Planning](../planning/v1/overview.md). Legacy bases and traits listed below were **removed** in v1.0 as part of Step 9.
 
 This document lists classes currently under `Box\Model` where the long-term namespace/location is ambiguous or where movement is deferred.
 

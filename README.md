@@ -8,7 +8,7 @@
 
 A modern PHP SDK for interacting with the [Box.com API](https://developer.box.com/).
 
-**Status:** Deep in **v1.0 implementation**. v0.11.0 was a **functional transition release** bridging the gap between legacy v0.10.x and the final v1.0 architecture.
+**Status:** Deep in **v1.0 implementation**. Step 11 is complete. Step 12 (Token Storage) is in progress.
 
 This library is designed as a boundary layer for Box API access, suitable for standalone use or integration into frameworks like Symfony.
 

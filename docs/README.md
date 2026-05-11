@@ -30,7 +30,7 @@ The v1.0 release focuses on architectural hardening and PSR compliance.
 
 **Current Foundation Status:**
 - **Step 11 / Factory Modernization and Service Boundaries**: Completed.
-- **Step 12 / Token Storage Completion**: Next Focus.
+- **Step 12 / Token Storage Completion**: In Progress.
 
 ### [Future Integrations](planning/future/)
 - [Future Symfony Bundle](planning/future/future-symfony-bundle.md): Planning for Symfony/Doctrine/Configuration integration (Deferred).

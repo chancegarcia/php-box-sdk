@@ -99,6 +99,7 @@ Resource classes have been moved to the final `Box\Resource` namespace, and redu
         - `Box\Event\Admin\AdminEvent` has been moved to `Box\Resource\AdminEvent`.
         - `Box\Event\User\UserEvent` has been moved to `Box\Resource\UserEvent`.
     - **Interface Removal**: `Box\File\FileInterface`, `Box\Folder\FolderInterface`, `Box\Group\GroupInterface`, `Box\Collaboration\CollaborationInterface`, `SharedLinkInterface`, and `EventInterface` (including Admin/User variants) have been removed. Type hints should use the concrete resource classes.
+    - **Doctrine Collections**: Entry sets in list responses (e.g., in `EventResponse`) now use Doctrine Collections as the standard container.
     - **Endpoint Constants**:
         - `FileInterface::URI` and `FileInterface::UPLOAD_URI` have been moved to `FileService` as `ENDPOINT` and `UPLOAD_ENDPOINT`.
         - `FolderInterface::URI` and `FolderInterface::SHARED_ITEM_URI` have been moved to `FolderService` as `ENDPOINT` and `SHARED_ITEM_ENDPOINT`.
@@ -208,5 +209,17 @@ Resources in `Box\Resource` are now "pure" state objects. They do not own hydrat
 - **Impact**: Moderate.
 - **Migration**:
     - **URI Constants**: Endpoint URIs have moved from Resource classes/interfaces to their respective Services (e.g., `FileService::ENDPOINT`).
-    - **Hydration**: Hydration is exclusively handled by `Hydrator` or Factories.
+    - **Hydration**: Hydration is exclusively handled by `Hydrator` or Factories. In v1, services handle API response hydration internally, while factories manage the initial creation of resource objects from raw arrays where needed.
     - **Passive State**: Avoid adding logic or dependencies to resource classes; they should remain simple data containers with typed properties, getters, and setters.
+    - **Doctrine Collections**: Resources themselves should not manage collections. Collections are returned by services or DTOs.
+
+## Token Storage (Planned - Step 12)
+
+Upcoming changes in Step 12 will introduce a formal Token Storage mechanism.
+
+- **Impact**: Expected Moderate to High.
+- **Planned Changes**:
+    - Introduction of `TokenStorageInterface`.
+    - Built-in support for Filesystem storage.
+    - Decoupling of token persistence from the `Client` facade.
+- **Migration**: Detailed notes will be provided upon completion of Step 12.

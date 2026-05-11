@@ -60,10 +60,13 @@ The SDK provides a `Box\Connection\Token\Token` model. Your application is respo
 3. **Reloading** the token into the `Client` for subsequent requests.
 4. **Refreshing** the token before or upon expiration using `$client->refreshToken()`.
 
+> **Note**: Step 12 will introduce a formal `TokenStorageInterface` to simplify this process.
+
 ```php
 // Token Refresh Example
 if ($token->isExpired()) {
     $newToken = $client->refreshToken();
+    // Your application persists $newToken
     $this->tokenRepo->save($newToken);
 }
 ```
@@ -105,12 +108,21 @@ An `ApiException` contains a `BoxResponseInterface` (via `$e->getResponse()`). T
 **Key Security Feature:** The SDK automatically sanitizes sensitive data (access tokens, refresh tokens, client secrets) from exception messages and context information using its internal `Redactor`.
 
 ### Auth Aliases and Exchange
-In v0.11, `exchangeAuthorizationCodeForToken()` is preferred for the OAuth2 code exchange step for better clarity.
+Use `exchangeAuthorizationCodeForToken()` for the OAuth2 code exchange step for better clarity.
 
 ```php
 $client->setAuthorizationCode($_GET['code']);
 $token = $client->exchangeAuthorizationCodeForToken();
 // Equivalent to: $token = $client->getAccessToken();
+```
+
+### Authenticated Service Boundary
+Services requiring an active session must implement `AuthenticatedServiceInterface`. The `Client` facade ensures that an access token is available before delegating calls to these services. If no token is set, a `RuntimeException` will be thrown.
+
+```php
+// Ensure client has a token before calling authenticated services
+$client->setToken($token);
+$folder = $client->getFolder('12345'); 
 ```
 
 ### Advanced Context and Retry-After

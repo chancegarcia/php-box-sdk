@@ -48,7 +48,9 @@ Model hydration is now handled by the standalone `Box\Mapper\Hydrator` class, wh
 The custom `Box\Collection\ArrayCollection` has been deprecated in favor of `Doctrine\Common\Collections\ArrayCollection`. Existing collection classes like `EventCollection` now use Doctrine interfaces.
 
 ### Namespace Flattening
-The namespace structure has been simplified to provide cleaner top-level `Box\...` access for public SDK resources.
+The namespace structure has been simplified to provide cleaner top-level `Box\...` access for public SDK resources. 
+
+> **Important**: In v1.0, these namespaces have been further rationalized. Resources are now located in `Box\Resource` (e.g., `Box\Resource\File`) and mirror interfaces have been removed. See the [v1.0 Upgrade Guide](upgrading-0.11-to-1.0.md) for the final v1.0 structure.
 
 | Old Namespace | New Namespace |
 | --- | --- |
