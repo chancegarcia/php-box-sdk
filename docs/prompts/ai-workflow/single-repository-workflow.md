@@ -144,6 +144,25 @@ Before starting implementation for major features or refactors, use a planning p
 ### Pattern: Review Completed Slice
 "Review the implementation of Slice [N]. Check against acceptance criteria, verify that all validation commands passed, and ensure no public API regressions were introduced."
 
+## Final Documentation Status Reconciliation
+
+Before the final response of an implementation slice, reconcile all planning and handoff documentation so they reflect the completed state of the current slice.
+
+The AI should update, as applicable:
+- Roadmap/tracker docs (e.g., `docs/planning/v1-release-roadmap.md`)
+- Audit docs (e.g., `docs/audits/13-auth-lifecycle-provider-extraction-audit.md`)
+- Current task summary (`docs/ai/current-task-summary.md`)
+- Current handoff summary (`docs/ai/current-handoff-summary.md`)
+
+The documentation must consistently state:
+- The completed slice is marked complete.
+- The next slice is identified as next/current.
+- The parent step or initiative status is accurate.
+- Strategic status points to the next slice.
+- No contradictory status entries remain across roadmap, audit, handoff, and task summary.
+
+The final response should include a brief documentation/status reconciliation item.
+
 ## Validation
 
 Use the repository's canonical validation commands. Do not substitute direct tool binaries if the project defines wrapper scripts.

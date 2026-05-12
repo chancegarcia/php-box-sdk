@@ -43,6 +43,7 @@ Final delivery expectations:
   - Include expected deliverables.
   - Include testing or validation expectations (e.g., PHPUnit tests, static analysis, coding standards).
   - Include documentation update expectations when behavior, public APIs, configuration, usage, commands, or extension points change.
+  - Include a requirement for Final Documentation Status Reconciliation: after implementation, reconcile roadmap, tracker, task-summary, and handoff documentation to reflect the completed state and identify next steps.
 
 - Repository and documentation awareness:
   - Respect repository boundaries.

@@ -58,7 +58,12 @@ The coordinator maintains a tracker for each major initiative:
     - **Overwriting**: Overwrite the file on every task; do not use create-only behavior.
     - **Encoding**: Persisted summaries must be plain UTF-8 Markdown text without null bytes, control characters, or corrupted content. Rewrite if corruption is detected.
 7. **Feedback Loop**: The summary is returned to the Coordinating Repo.
-8. **Status Update**: The Coordinator AI updates the cross-repo tracker based on the results.
+8. **Final Documentation Status Reconciliation**: Before the final response / handoff of an implementation slice, reconcile all planning and handoff documentation in the implementation repo (and the coordinating repo if applicable) so they reflect the completed state of the current slice.
+    - **Status Update**: The Coordinator AI updates the cross-repo tracker based on the results.
+    - **Roadmap/Tracker**: Update roadmap and tracker files to mark the slice as complete.
+    - **Next Step**: Identify the next slice as current/next.
+    - **Summaries**: Update local task and handoff summaries.
+    - **Consistency**: Ensure no contradictory status entries remain across docs.
 9. **Commit and Sequence**: The implementation repo is committed/pushed before the next dependent repo begins its work.
 
 ## Context Sanitization Guidance

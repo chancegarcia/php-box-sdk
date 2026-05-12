@@ -1,21 +1,28 @@
 ### Summary
-- Completed **Guzzle Default Transport Cleanup (Step 13.2)**.
-- Guzzle is now the default and only bundled transport for v1.
-- The legacy `CurlTransport` and its selection path have been removed.
+- Completed **Connection Interface Modernization (Step 13.3)**.
+- Fully removed curl-specific public SDK surface from `ConnectionInterface` and implementation details from `Connection`.
+- Updated the AI workflow documentation to require Final Documentation Status Reconciliation for all future implementation slices.
 
 ### Changes
-- **Connection**: Updated `Connection::getTransport()` to default to `GuzzleTransport` and removed the selection logic for `CurlTransport`.
-- **Transport**: Deleted `src/Http/Transport/CurlTransport.php` and its associated test.
-- **CLI**: Updated `AbstractBoxCommand` to only allow `guzzle` as a transport option.
-- **Tests**: Updated `TransportOptionTest`, `ConnectionUploadCompatibilityTest`, and `ConnectionTest` to reflect Guzzle defaulting and the removal of Curl selection.
-- **Docs**: Updated `docs/audits/13-auth-lifecycle-provider-extraction-audit.md` and `docs/planning/v1-release-roadmap.md` to reflect completion of Step 13.2.
+- **ConnectionInterface**: Removed 7 curl-specific methods and type hints (`CurlHandle`, `CURLFile`).
+- **Connection**: Flattened the class by removing all `curl_*` implementation logic, constants, and the `setCurlOpts`/`getCurlOpts` methods.
+- **Connection::postFile**: Refactored to use transport-neutral Guzzle-compatible multipart options.
+- **SDK Surface**: Removed `CurlHandle` and `CURLFile` usages from the public API.
+- **Client/Service/Factory**: Updated to use `addHeader()` instead of `setCurlOpts()` for authentication and custom headers.
+- **Workflow Docs**: Updated `docs/prompts/ai-workflow/single-repository-workflow.md` with a new standard requirement for documentation status reconciliation.
 
 ### Verification
 - Ran `composer review`, which includes:
     - `composer lint`: Passed.
-    - `composer test`: Passed (263 tests, 689 assertions).
+    - `composer test`: Passed (259 tests, 688 assertions).
     - `composer cs:check`: Passed.
     - `composer analyse`: Passed (No errors).
+- Confirmed that `ClientTest`, `ConnectionTest`, and all other tests are green.
+
+### Token Storage Boundary Verification
+- Token storage remains passive persistence only.
+- Services remain storage-independent.
+- Client ownership of token storage hooks remains intact.
 
 ### Follow-ups
-- **Connection Interface Modernization (Step 13.3)**: Fully remove curl-specific methods from `ConnectionInterface` and modernize `Connection` implementation.
+- **Authenticated Request Boundary Cleanup (Step 13.4)**: Centralize bearer token application in `Connection` and remove manual header pushing from `Client` and `Service`.
