@@ -35,6 +35,19 @@ This document defines how an AI assistant should format and deliver implementati
 - **Redaction**: Redact internal project names or proprietary details unless the task is explicitly for a private repository and the context is authorized.
 - **Placeholders**: Use standard placeholders like `YOUR_CLIENT_ID` or `[REPO_NAME]`.
 
+## Persistence Expectations for Repository Planning Tasks
+
+- **Durable Documentation**: Repository-local planning, audit, tracker, handoff, and slice-planning outputs should normally be persisted to appropriate documentation files (e.g., `docs/planning/`, `docs/audits/`) unless explicitly requested as chat-only.
+- **Explicit Paths**: Prompts should specify exact artifact paths when persistence is expected.
+- **Chat-Only Intent**: If a prompt is intended to be chat-only, it should say so explicitly.
+- **Reporting**: Final responses should report which files were created or updated. If no files were changed, explain why the output was intentionally chat-only.
+
+## Reviewer Notes and Actionable Follow-ups
+
+- **Dual Nature**: Reviewer notes may contain both temporary context (useful for the immediate session) and actionable follow-ups (needed for future slices or initiatives).
+- **Refinement**: Actionable items discovered during review should be refined and persisted into the relevant durable documentation (handoff, tracker, audit, or follow-up section) rather than left only in session summaries.
+- **Preservation**: Do not remove useful reviewer context from task summaries unless it has been successfully duplicated into durable documentation.
+
 ## Reuse and Adaptation
 
 This document can be copied into other projects. When doing so:

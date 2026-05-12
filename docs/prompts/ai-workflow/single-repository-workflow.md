@@ -31,11 +31,11 @@ This workflow is designed for AI-assisted, slice-based software development with
 
 ## Persistent Task Summary Workflow
 
-After completing a task or slice, the AI assistant writes a final summary by replacing the full contents of `var/tmp/last-task-summary.md`.
+After completing a task or slice, the AI assistant writes a final summary by replacing the full contents of `docs/ai/current-task-summary.md` (or a project-specific path like `var/tmp/last-task-summary.md`).
 
-- **Frequency**: Overwrite the file after every task. Do not use create-only behavior; an existing file must be overwritten.
-- **Directory Management**: If `var/tmp/` does not exist, create it if appropriate, but do not remove `var/tmp/.gitkeep`.
+- **Frequency**: Overwrite the file after every task unless explicitly skipped by the user or local guidelines. Do not use create-only behavior; an existing file must be overwritten.
 - **Canonical Source**: The persisted task summary should be the canonical detailed review summary for a task.
+- **Persistence by Default**: Repository-local planning, audit, tracker, and handoff outputs should normally be persisted to documentation files unless explicitly requested as chat-only.
 - **Consistency**: The persisted task summary should match the final response summary as closely as practical.
     - **Encoding**: Persisted summaries must be plain UTF-8 Markdown text. They must not contain null bytes, control characters, corrupted class names, or binary content. If a generated summary contains corrupted text, rewrite it before reporting completion.
     - **Detail**: If the persisted summary includes additional detail, it must not contradict the final response.
@@ -57,12 +57,14 @@ During long-running initiatives or before ending a session, the AI produces a co
     - Every 2–3 completed slices.
     - Before ending a long AI session.
     - Before switching to a new major initiative.
+    - Whenever task state, roadmap state, future-agent context, or actionable deferred follow-ups change.
     - Whenever the user asks for one.
 - **Content**: Use the [Handoff Summary Template](handoff-summary-template.md). Include project name, current goal, completed/pending slices, active decisions, constraints, validation rules, and "gotchas".
+- **Actionable Follow-ups**: Actionable items discovered during review (e.g., from human-reviewer notes) should be refined and persisted into the handoff summary or relevant planning docs.
 - **Storage**:
     - Paste directly into the chat.
-    - Write to `var/tmp/ai-handoff-summary.md` (overwriting any previous handoff).
-- **No Commit**: Generated handoff files in `var/tmp/` must not be committed.
+    - Write to `docs/ai/current-handoff-summary.md` (or a project-specific path like `var/tmp/ai-handoff-summary.md`), overwriting any previous handoff.
+- **No Commit**: Generated handoff files in temporary directories must not be committed. Accidental commits in documentation folders are acceptable if redacted.
 
 ## Slice Workflow
 
