@@ -6,6 +6,7 @@ namespace Box\Tests\Service;
 
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
+use Box\Dto\TokenStorageContext;
 use Box\Exception\BoxException;
 use Box\Exception\BoxResponseException;
 use Box\Exception\TransportException;
@@ -120,7 +121,7 @@ class ServiceErrorTest extends TestCase
 
         $tokenStorage->expects($this->once())
             ->method('updateToken')
-            ->with($newToken, null);
+            ->with($newToken, $this->isInstanceOf(TokenStorageContext::class));
 
         $result = $service->getFromBox('some/uri', 'decoded');
         $this->assertEquals(['id' => '123'], $result);

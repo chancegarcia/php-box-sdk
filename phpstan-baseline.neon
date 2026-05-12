@@ -9,42 +9,4 @@ parameters:
 
 
 
-		-
-			message: '#^Method Box\\Storage\\Token\\Pdo\\TokenStorage\:\:setDsn\(\) should return Box\\Storage\\Token\\Pdo\\TokenStorage but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/Storage/Token/Pdo/TokenStorage.php
-
-		-
-			message: '#^Method Box\\Storage\\Token\\Pdo\\TokenStorage\:\:setOptions\(\) should return Box\\Storage\\Token\\Pdo\\TokenStorage but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/Storage/Token/Pdo/TokenStorage.php
-
-		-
-			message: '#^Method Box\\Storage\\Token\\Pdo\\TokenStorage\:\:setPassword\(\) should return Box\\Storage\\Token\\Pdo\\TokenStorage but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/Storage/Token/Pdo/TokenStorage.php
-
-		-
-			message: '#^Method Box\\Storage\\Token\\Pdo\\TokenStorage\:\:setPdo\(\) should return Box\\Storage\\Token\\Pdo\\TokenStorage but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/Storage/Token/Pdo/TokenStorage.php
-
-
-
-		-
-			message: '#^Method Box\\Storage\\Token\\Pdo\\TokenStorage\:\:setTokenTableName\(\) should return Box\\Storage\\Token\\Pdo\\TokenStorage but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/Storage/Token/Pdo/TokenStorage.php
-
-
-		-
-			message: '#^Method Box\\Storage\\Token\\Pdo\\TokenStorage\:\:setUsername\(\) should return Box\\Storage\\Token\\Pdo\\TokenStorage but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: src/Storage/Token/Pdo/TokenStorage.php
 

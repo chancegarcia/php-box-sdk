@@ -38,83 +38,34 @@ namespace Box\Storage\Token\Pdo;
 
 use Box\Storage\Token\TokenStorageInterface as BaseInterface;
 use PDO;
-use Traversable;
 
 interface TokenStorageInterface extends BaseInterface
 {
-    public function getDsn();
+    public function getDsn(): ?string;
 
-    public function setDsn($dsn = null);
+    public function setDsn(?string $dsn = null): void;
 
-    public function getUsername();
+    public function getUsername(): ?string;
 
-    public function setUsername($username = null);
+    public function setUsername(?string $username = null): void;
 
-    public function getPassword();
+    public function getPassword(): ?string;
 
-    public function setPassword($password = null);
+    public function setPassword(?string $password = null): void;
 
-    public function getOptions();
+    public function getOptions(): array;
 
-    public function setOptions(?array $options = null);
+    public function setOptions(?array $options = null): void;
 
-    public function getPdo();
+    public function getPdo(): ?PDO;
 
-    public function setPdo(?PDO $pdo = null);
+    public function setPdo(?PDO $pdo = null): void;
 
-    public function getTokenTableName();
+    public function getTokenTableName(): string;
 
-    public function setTokenTableName($tokenTableName = null);
+    public function setTokenTableName(?string $tokenTableName = null): void;
 
-    /**
-     * @param null $tokenTableId
-     *
-     * @return TokenStorageInterface;
-     */
-    public function setTokenTableId($tokenTableId = null);
+    public function getTokenMap(): array;
 
-    public function getAdditionalTokenTableData();
-
-    /**
-     * @param array|Traversable $additionalTokenTableData
-     *
-     * @return TokenStorageInterface
-     */
-    public function setAdditionalTokenTableData(?array $additionalTokenTableData = null);
-
-    /**
-     * @return boolean
-     */
-    public function isUseCompositeKey();
-
-    /**
-     * @param boolean $useCompositeKey
-     *
-     * @return TokenStorageInterface
-     */
-    public function setUseCompositeKey($useCompositeKey = null);
-
-    /**
-     * @return array|Traversable
-     */
-    public function getTokenCompositeKeyMap();
-
-    /**
-     * @param array|Traversable $tokenCompositeKeyMap
-     *
-     * @return TokenStorageInterface
-     */
-    public function setTokenCompositeKeyMap($tokenCompositeKeyMap = null);
-
-    /**
-     * @return array|Traversable
-     */
-    public function getTokenMap();
-
-    /**
-     * @param array|Traversable $tokenMap
-     *
-     * @return TokenStorageInterface
-     */
-    public function setTokenMap($tokenMap = null);
+    public function setTokenMap(?array $tokenMap = null): void;
 }

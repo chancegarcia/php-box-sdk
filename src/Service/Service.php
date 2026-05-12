@@ -873,8 +873,8 @@ class Service implements ServiceInterface, LoggerAwareInterface
                 );
             }
 
-            if ($this->getTokenStorage() instanceof TokenStorageInterface && $tokenStorageContext instanceof TokenStorageContext) {
-                $this->getTokenStorage()->updateToken($refreshedToken, $tokenStorageContext);
+            if ($this->getTokenStorage() instanceof TokenStorageInterface) {
+                $this->getTokenStorage()->updateToken($refreshedToken, $tokenStorageContext ?? new TokenStorageContext());
             }
             $this->setToken($refreshedToken);
 
