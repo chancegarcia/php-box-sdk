@@ -5,7 +5,6 @@ namespace Box\Tests\Model\Connection;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Connection\Connection;
 use PHPUnit\Framework\TestCase;
-use CurlHandle;
 use Box\Http\FileStream;
 
 class ConnectionTest extends TestCase
@@ -19,37 +18,6 @@ class ConnectionTest extends TestCase
     {
         parent::setUp();
         $this->connection = new Connection();
-    }
-
-    public function testInitCurlReturnsResource()
-    {
-        $this->assertInstanceOf(CurlHandle::class, $this->connection->initCurl());
-    }
-
-    public function testInitAdditionalCurlOptsReturnsResource()
-    {
-        $ch = $this->connection->initCurl();
-        $this->assertInstanceOf(CurlHandle::class, $this->connection->initAdditionalCurlOpts($ch));
-    }
-
-    public function testSetCurlOpts()
-    {
-        $opts = [CURLOPT_TIMEOUT => 30];
-        $this->connection->setCurlOpts($opts);
-        $this->assertEquals($opts, $this->connection->getCurlOpts());
-    }
-
-    public function testInitAdditionalCurlOptsWithHeaders()
-    {
-        $ch = curl_init();
-        $this->connection->setCurlOpts([
-            'CURLOPT_HTTPHEADER' => ['X-Test: foo']
-        ]);
-
-        $this->connection->initAdditionalCurlOpts($ch);
-        // We can't easily verify curl options from the handle in PHP without extra extensions
-        // but we can ensure it doesn't crash and returns the handle.
-        $this->assertInstanceOf(CurlHandle::class, $ch);
     }
 
     public function testGetSetClientId()

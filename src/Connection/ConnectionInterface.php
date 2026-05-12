@@ -36,8 +36,6 @@ use Box\Exception\BoxException;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Logger\LoggerAwareInterface;
 use Box\Http\FileStream;
-use CURLFile;
-use CurlHandle;
 
 interface ConnectionInterface extends LoggerAwareInterface
 {
@@ -68,40 +66,6 @@ interface ConnectionInterface extends LoggerAwareInterface
     public function post(string $uri, array|string $params = [], bool $nameValuePair = false): BoxResponseInterface;
 
     /**
-     * @param CurlHandle $ch
-     * @return CurlHandle
-     * @throws BoxException
-     */
-    public function initAdditionalCurlOpts(CurlHandle $ch): CurlHandle;
-
-    /**
-     * @param array|null $curlOpts
-     */
-    public function setCurlOpts(?array $curlOpts = null): void;
-
-    /**
-     * @return array
-     */
-    public function getCurlOpts(): array;
-
-    /**
-     * @return CurlHandle
-     */
-    public function initCurl(): CurlHandle;
-
-    /**
-     * @param CurlHandle $ch
-     * @return CurlHandle
-     */
-    public function initCurlOpts(CurlHandle $ch): CurlHandle;
-
-    /**
-     * @param CurlHandle $ch
-     * @return BoxResponseInterface
-     */
-    public function getCurlData(CurlHandle $ch): BoxResponseInterface;
-
-    /**
      * @param string $uri
      * @param array|string $params array will be deprecated in the future;
      *                             json encoded string will become the only valid value
@@ -109,14 +73,6 @@ interface ConnectionInterface extends LoggerAwareInterface
      * @return BoxResponseInterface
      */
     public function put(string $uri, array|string $params = []): BoxResponseInterface;
-
-    /**
-     * @param string $pathToFile
-     * @param string $mimeType
-     * @param string $filename name of the file/post name
-     * @return CURLFile
-     */
-    public function createCurlFile(string $pathToFile, string $mimeType, string $filename): CURLFile;
 
     /**
      * @param string $file file/path to file

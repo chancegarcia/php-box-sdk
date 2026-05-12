@@ -50,7 +50,12 @@ class ConnectionFactory implements ConnectionFactoryInterface
         }
 
         $connection = $this->createConnection($options);
-        $connection->setCurlOpts(['CURLOPT_HTTPHEADER' => $headers]);
+        foreach ($headers as $header) {
+            if (str_contains($header, ': ')) {
+                [$name, $value] = explode(': ', $header, 2);
+                $connection->addHeader($name, $value);
+            }
+        }
 
         return $connection;
     }

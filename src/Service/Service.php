@@ -101,7 +101,12 @@ class Service implements ServiceInterface, LoggerAwareInterface
 
         $headers = $this->getConnectionHeaders();
 
-        $this->authorizedConnection->setCurlOpts(['CURLOPT_HTTPHEADER' => $headers]);
+        foreach ($headers as $header) {
+            if (str_contains($header, ': ')) {
+                [$name, $value] = explode(': ', $header, 2);
+                $this->authorizedConnection->addHeader($name, $value);
+            }
+        }
 
         return $this->authorizedConnection;
     }

@@ -669,12 +669,8 @@ class Client implements LoggerAwareInterface
              throw new BoxException('BOX_ACCESS_TOKEN is required for upload.', BoxException::INVALID_INPUT);
         }
 
-        $authorizationHeader = 'Authorization: Bearer ' . $accessToken;
-
         // SYNC: ensure connection has the access token
-        if ($connection instanceof ConnectionInterface) {
-            $connection->setAccessToken($this->getToken()->getAccessToken());
-        }
+        $connection->setAccessToken($accessToken);
 
         if (null !== $additionalHeaders && !is_array($additionalHeaders)) {
             throw new BoxException('additional headers must be in array format', BoxException::INVALID_INPUT);
@@ -693,15 +689,6 @@ class Client implements LoggerAwareInterface
                 }
             }
         }
-
-        // header opt will require a merge with other headers to not overwrite.
-        // @todo refactor to allow additional headers with auth header
-        // For compatibility, we still call setCurlOpts if it's a CurlTransport or if someone depends on it
-        $headers = [$authorizationHeader];
-        if (is_array($additionalHeaders)) {
-            $headers = array_merge($headers, $additionalHeaders);
-        }
-        $connection->setCurlOpts(['CURLOPT_HTTPHEADER' => $headers]);
     }
 
     /**

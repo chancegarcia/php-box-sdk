@@ -201,15 +201,14 @@ class ClientTest extends TestCase
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
-            ->method('setCurlOpts')
-            ->with($this->callback(function ($opts) {
-                return isset($opts['CURLOPT_HTTPHEADER']) &&
-                       in_array('Authorization: Bearer test_token', $opts['CURLOPT_HTTPHEADER']) &&
-                       in_array('X-Extra: foo', $opts['CURLOPT_HTTPHEADER']);
-            }));
+            ->method('setAccessToken')
+            ->with('test_token');
 
-        $this->client->setConnectionAuthHeader($connection, ['X-Extra: foo']);
-        $this->assertTrue(true); // satisfy risky test
+        $connection->expects($this->exactly(1))
+            ->method('addHeader')
+            ->with('X-Extra', 'foo');
+
+        $this->client->setConnectionAuthHeader($connection, ['X-Extra' => 'foo']);
     }
 
     public function testDestroyToken()
@@ -323,9 +322,18 @@ class ClientTest extends TestCase
             )
             ->willReturn($response);
 
-        $connection->expects($this->once())
-            ->method('addHeader')
-            ->with('If-Match', 'etag123');
+        $connection->method('addHeader')
+            ->willReturnCallback(function ($name, $value) {
+                static $calls = 0;
+                $calls++;
+                if ($calls === 1) {
+                    $this->assertEquals('Authorization', $name);
+                    $this->assertEquals('Bearer foo', $value);
+                } elseif ($calls === 2) {
+                    $this->assertEquals('If-Match', $name);
+                    $this->assertEquals('etag123', $value);
+                }
+            });
 
         $this->client->setConnection($connection);
 

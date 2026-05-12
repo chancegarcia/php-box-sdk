@@ -135,12 +135,12 @@ Remaining `Client` responsibilities:
 - Remove curl transport and selection path.
 - Update tests to rely on Guzzle.
 
-### 13.3 — Connection Interface Modernization (Curl Removal) (NEXT)
+### 13.3 — Connection Interface Modernization (Step 13.3) (COMPLETED)
 - Remove curl-specific methods from `ConnectionInterface`.
-- Flatten `Connection` implementation.
-- Update file upload to use Guzzle-native multipart.
+- Flatten `Connection` implementation and remove `curl_*` usage.
+- Update file upload to use Guzzle-native multipart via `request` options.
 
-### 13.4 — Authenticated Request Boundary Cleanup
+### 13.4 — Authenticated Request Boundary Cleanup (NEXT)
 - Centralize bearer token application in `Connection`.
 - Remove manual header pushing from `Client` and `Service`.
 

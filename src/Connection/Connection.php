@@ -42,26 +42,19 @@ use Box\Exception\ConflictException;
 use Box\Exception\ForbiddenException;
 use Box\Exception\NotFoundException;
 use Box\Exception\RateLimitException;
-use Box\Exception\TransportException;
 use Box\Exception\UnauthorizedException;
 use Box\Http\FileStream;
-use Box\Http\Response\BoxResponse;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Http\Transport\GuzzleTransport;
 use Box\Http\Transport\TransportInterface;
 use Box\Mapper\Hydrator;
 use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxLoggerTrait;
-use CURLFile;
 use Psr\Log\LoggerInterface;
-use CurlHandle;
 
 /**
  * Class Connection
  * @package Box\Model
- * @todo add in method to access last curl info, error and error number for debugging
- * @todo v1: remove cURL-specific methods from this class or move to transport-specific interface
- * @todo v1: make transport selection the primary way to configure HTTP execution
  * @todo v1: remove client credential synchronization and make Connection the source of truth
  */
 class Connection implements ConnectionInterface
@@ -69,7 +62,6 @@ class Connection implements ConnectionInterface
     use LoggerAwareTrait;
     use BoxLoggerTrait;
 
-    public const TRANSPORT_CURL = 'curl';
     public const TRANSPORT_GUZZLE = 'guzzle';
 
     protected mixed $responseType = "code";
@@ -87,11 +79,6 @@ class Connection implements ConnectionInterface
 
     protected mixed $authenticationResponse = null;
     protected AuthenticationResponseFactoryInterface $authenticationResponseFactory;
-
-    /**
-     * @var array array of options with the options as the key and the option values as the value
-     */
-    protected array $curlOpts = [];
 
     private bool $disableSslVerification = false;
 
@@ -126,102 +113,6 @@ class Connection implements ConnectionInterface
     public function connect(): mixed
     {
         throw new BoxException('method not yet implemented');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function initCurl(): CurlHandle
-    {
-        $ch = curl_init();
-        $this->initCurlOpts($ch);
-        return $ch;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function initCurlOpts(CurlHandle $ch): CurlHandle
-    {
-        // figure out how to log to verbose output to file. maybe make a box logger? or do output buffer capture?
-        //curl_setopt($ch, CURLOPT_VERBOSE, true);
-        // get full response with headers
-        // http://stackoverflow.com/questions/9183178/php-curl-retrieving-response-headers-and-body-in-a-single-request
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-
-        // note: disable should only be used for development purposes.
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, !$this->getDisableSslVerification());
-        return $ch;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCurlData(CurlHandle $ch): BoxResponseInterface
-    {
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug('before curl_exec curl opts', [
-                __METHOD__ . ":" . __LINE__,
-                var_export(curl_getinfo($ch), true),
-            ]);
-        }
-        $sResponse = curl_exec($ch);
-
-        if (false === $sResponse) {
-            $error = curl_error($ch);
-            $errno = curl_errno($ch);
-            throw new TransportException($error, $errno);
-        }
-
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug('curl_exec response: ' . $sResponse, [
-                __METHOD__ . ":" . __LINE__,
-            ]);
-        }
-
-        // split curl result into header and body
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $header = substr($sResponse, 0, $header_size);
-        $body = substr($sResponse, $header_size) ?: "";
-
-        return new BoxResponse($body, $header);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function initAdditionalCurlOpts(CurlHandle $ch): CurlHandle
-    {
-        $opts = $this->getCurlOpts();
-        if (0 != count($opts)) {
-            foreach ($opts as $opt => $optValue) {
-                // CURLOPT_HTTPHEADER, CURLOPT_QUOTE, CURLOPT_HTTP200ALIASES and CURLOPT_POSTQUOTE
-                // require array or object arguments
-
-                switch ($opt) {
-                    case "CURLOPT_HTTPHEADER":
-                    case "CURLOPT_QUOTE":
-                    case "CURLOPT_HTTP200ALIASES":
-                    case "CURLOPT_POSTQUOTE":
-                        // throw exception so it doesn't throw a warning
-                        if (!is_array($optValue)) {
-                            $this->error(
-                                [
-                                    'error' => 'curl opt (' . $opt . ') needs to be an array or object',
-                                    'error_description' => 'curl opt (' . $opt . ') needs to be an array or object'
-                                ]
-                            );
-                        }
-                        curl_setopt($ch, constant($opt), $optValue);
-                        break;
-                    default:
-                        curl_setopt($ch, constant($opt), $optValue);
-                        break;
-                }
-            }
-        }
-        return $ch;
     }
 
     /**
@@ -332,14 +223,6 @@ class Connection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function createCurlFile(string $pathToFile, string $mimeType, string $filename): CURLFile
-    {
-        return new CURLFile($pathToFile, $mimeType, $filename);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getMimeType(string $file): mixed
     {
         $fInfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -390,90 +273,23 @@ class Connection implements ConnectionInterface
             }
         }
 
-        if (self::TRANSPORT_GUZZLE === $this->getTransportName()) {
-            return $this->request('POST', $uri, [
-                'multipart' => [
-                    [
-                        'name' => 'file',
-                        'contents' => $resource,
-                        'filename' => $filename,
-                        'headers' => [
-                            'Content-Type' => $mimeType
-                        ]
-                    ],
-                    [
-                        'name' => 'parent_id',
-                        'contents' => (string)$parentId
-                    ]
-                ]
-            ]);
-        }
-
-        if ($file instanceof FileStream) {
-            // For CurlTransport, we might need a temporary file if it only supports CURLFile with paths
-            // But CurlTransport's request() method just passes $options['multipart']
-            // to curl_setopt(..., CURLOPT_POSTFIELDS, $fields)
-            // If we use Guzzle's approach of passing the resource, curl might not handle it correctly
-            // in an array for multipart.
-            // Actually, curl_setopt with an array for CURLOPT_POSTFIELDS expects CURLFile or string
-            // (starting with @ is deprecated).
-
-            // To be safe and compatible with CurlTransport's current implementation:
-            $tmpFile = tempnam(sys_get_temp_dir(), 'box_upload_');
-            $tmpResource = fopen($tmpFile, 'wb');
-            if (!$tmpResource) {
-                throw new BoxException("Failed to create temporary file for upload", BoxException::INVALID_INPUT);
-            }
-            stream_copy_to_stream($resource, $tmpResource);
-            fclose($tmpResource);
-            rewind($resource);
-            // keep original resource state if possible, though it's probably better to just use the path now
-
-            $curlFile = $this->createCurlFile($tmpFile, $mimeType, $filename);
-
-            $response = $this->request('POST', $uri, [
-                'multipart' => [
-                    ['name' => 'file', 'contents' => $curlFile],
-                    ['name' => 'parent_id', 'contents' => (string)$parentId]
-                ]
-            ]);
-
-            unlink($tmpFile);
-            return $response;
-        }
-
-        $curlFile = $this->createCurlFile($file, $mimeType, $filename);
-
         return $this->request('POST', $uri, [
             'multipart' => [
-                ['name' => 'file', 'contents' => $curlFile],
-                ['name' => 'parent_id', 'contents' => (string)$parentId]
+                [
+                    'name' => 'file',
+                    'contents' => $resource,
+                    'filename' => $filename,
+                    'headers' => [
+                        'Content-Type' => $mimeType
+                    ]
+                ],
+                [
+                    'name' => 'parent_id',
+                    'contents' => (string)$parentId
+                ]
             ]
         ]);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    /**
-     * @param array|null $curlOpts
-     */
-    public function setCurlOpts(?array $curlOpts = null): void
-    {
-        if (!is_array($curlOpts)) {
-            $curlOpts = $curlOpts !== null ? [$curlOpts] : [];
-        }
-        $this->curlOpts = $curlOpts;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCurlOpts(): array
-    {
-        return $this->curlOpts;
-    }
-
 
     /**
      * @param mixed $clientId
