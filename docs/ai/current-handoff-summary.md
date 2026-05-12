@@ -1,41 +1,44 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-12 01:30:00.000
+- **Timestamp**: 2026-05-12 02:25:00.000
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Current Status
-- **Step 12 — Token Storage Completion**: Planning and Audit phase COMPLETED.
-- **Audit Document**: `docs/audits/12-token-storage-completion-audit.md` (Created).
-- **Implementation Status**: Not started. Slice 12.1 is the next action.
+- **Step 12 — Token Storage Completion**: IMPLEMENTATION STARTED.
+- **Audit Document**: `docs/audits/12-token-storage-completion-audit.md` (Updated).
+- **Implementation Status**: Slice 12.1 COMPLETED. Slice 12.2 is the next action.
 
-## Key Findings from Step 12 Audit
-- **Service Dependency**: `Box\Service\Service` has an improper dependency on token storage that must be removed.
-- **PDO Debt**: `Box\Storage\Token\Pdo\TokenStorage` is incomplete and requires a full rewrite.
-- **Context Handling**: `TokenStorageContext` DTO is required to support multi-token persistence.
-- **Passive Boundary**: Storage must remain strictly passive (no network/refresh).
+## Key Outcomes from Step 12.1
+- **V1 Passive Token Storage Contract**: Finalized `Box\Storage\Token\TokenStorageInterface` with strict types and context-driven signatures.
+- **Context DTO**: Created `Box\Dto\TokenStorageContext` for formal identification of tokens in storage.
+- **Container Alignment**: `Box\Storage\Token\Container\TokenStorageContainer` updated to be fully context-aware.
+- **Exception Refinement**: `Box\Exception\TokenStorageException` updated for the new contract and redaction-safe context handling.
+- **Service Alignment**: `Box\Service\Service` and `ServiceInterface` minimally updated to support the new contract.
+- **PDO Alignment**: `Box\Storage\Token\Pdo\TokenStorage` minimally aligned for compilation; functional rewrite deferred to 12.3.
 
 ## Step 12 Implementation Plan (Summary)
-1. **12.1 — Storage Contract Finalization**: Define `TokenStorageInterface` and `TokenStorageContext`.
-2. **12.2 — In-Memory Storage Completion**: Support contexts in-memory.
-3. **12.3 — PDO Storage Implementation**: Functional PDO backend with SQLite tests.
-4. **12.4 — Service Storage-Independence Cleanup**: Decouple services from storage.
-5. **12.5 — Client Integration Hooks**: Orchestration in `Client`.
-6. **12.6 — CLI/Auth Harness Storage Integration**: Optional CLI storage support.
-7. **12.7 — Final Review**: Type-safety and final validation.
+1. **12.1 — Storage Contract Finalization**: ✓ (Completed)
+2. **12.2 — In-Memory Storage Completion**: *Next* (Support full in-memory container lifecycle and edge cases)
+3. **12.3 — PDO Storage Implementation**: Pending (Functional PDO backend with SQLite tests)
+4. **12.4 — Service Storage-Independence Cleanup**: Pending (Decouple services from storage; address untyped properties)
+5. **12.5 — Client Integration Hooks**: Pending (Orchestration in `Client`)
+6. **12.6 — CLI/Auth Harness Storage Integration**: Pending (Optional CLI storage support)
+7. **12.7 — Final Review**: Pending (Type-safety and final validation)
 
 ## Next Steps
-- **Service type-safety follow-up**: `Box\Service\Service` still contains untyped properties and methods, including storage-related properties/accessors and transitional service/auth methods. Address this in the appropriate Step 12 service storage-independence/type-safety slice after the v1 token storage contract is finalized. Do not fold this into Slice 12.1 unless required for the storage contract compile/test path.
-- **Review Slice 12.1**: Refine the draft prompt in `docs/audits/12-token-storage-completion-audit.md` before execution.
-- **Deferred JWT/S2S CLI configuration note**: When JWT/S2S auth is implemented, evaluate separate env-variable groups or named auth profiles for OAuth2 vs JWT credentials to prevent collisions.
+- **Review and Commit Slice 12.1**: Ensure 12.1 changes are reviewed and committed before starting Slice 12.2.
+- **Execute Slice 12.2**: Complete in-memory storage. Note: 12.2 should reuse the `TokenStorageContainer` and `TokenStorageContext` work from 12.1.
+- **Service type-safety follow-up**: `Box\Service\Service` still contains untyped properties and methods. Broader service storage-independence and type-safety cleanup remains deferred to Slice 12.4.
+- **Deferred JWT/S2S CLI configuration note**: When JWT/S2S auth is implemented, evaluate separate env-variable groups or named auth profiles for OAuth2 vs JWT credentials.
 - **Auth Lifecycle Extraction**: This remains future work following Step 12.
 
-## Validation
-- Documentation-only changes.
-- `composer review`: (Not run for doc-only follow-up)
-- `composer cs:check`: PASSED
-- `composer test`: (Not run for doc-only follow-up)
+## Validation (Slice 12.1)
+- `composer test tests/Storage/TokenStorageContractTest.php`: PASSED
+- `composer lint`: PASSED
+- `composer cs:check`: PASSED (`composer cs:fix` was run)
+- `composer analyse`: PASSED (Baseline cleaned)
 
 ## Security
-- No source changes made.
+- Source files were updated in Slice 12.1.
 - No secrets introduced.
-- Redaction requirements reinforced for storage layer.
+- Redaction requirements remain in force; exceptions and logs must not leak token secrets.

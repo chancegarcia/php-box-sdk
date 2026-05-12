@@ -37,6 +37,8 @@
 namespace Box\Storage\Token\Pdo;
 
 use Box\Connection\Token\TokenInterface;
+use Box\Dto\TokenStorageContext;
+use Box\Storage\Token\TokenStorageInterface;
 use PDO;
 
 /**
@@ -66,15 +68,12 @@ class TokenStorage implements TokenStorageInterface
      */
     public function getPreviousToken(): TokenInterface
     {
-        return $this->previousToken;
+        throw new \RuntimeException('Method deprecated and removed in v1 TokenStorageInterface');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setPreviousToken(?TokenInterface $previousToken = null): void
     {
-        $this->previousToken = $previousToken;
+        throw new \RuntimeException('Method deprecated and removed in v1 TokenStorageInterface');
     }
 
     /**
@@ -307,49 +306,41 @@ class TokenStorage implements TokenStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function storeToken(TokenInterface $token)
+    public function storeToken(TokenInterface $token, TokenStorageContext $context): void
     {
-        $sql = "INSERT INTO `" . $this->getTokenTableName() . "`
-                SET `";
-
-        $tokenMap = $this->getTokenMap();
-
-        $first = true;
-        foreach ($tokenMap as $column => $value) {
-            $sql .= "`" . $this->getTokenTableName() . "`" . "`" . $column . "`"
-                    . " = ";
-
-            if (false === $first) {
-                $sql .= " AND ";
-            }
-        }
+        // TODO: Implement storeToken() method in Step 12.3.
     }
 
     /**
      * {@inheritdoc}
      */
-    public function updateToken(TokenInterface $token, mixed $tokenUpdateClause = null)
+    public function updateToken(TokenInterface $token, TokenStorageContext $context): void
     {
-        // TODO: Implement updateToken() method.
+        // TODO: Implement updateToken() method in Step 12.3.
     }
 
     /**
      * {@inheritdoc}
      */
-    public function retrieveToken(mixed $retrievalWhereClause = null)
+    public function retrieveToken(TokenStorageContext $context): ?TokenInterface
     {
-        // TODO: Implement retrieveToken() method.
+        // TODO: Implement retrieveToken() method in Step 12.3.
+        return null;
     }
 
     /**
-     * remove token from storage
-     *
-     * @param TokenInterface $token
-     * @param null $tokenContext
-     *
+     * {@inheritdoc}
      */
-    public function removeToken(TokenInterface $token, $tokenContext = null)
+    public function removeToken(TokenStorageContext $context): void
     {
-        // TODO: Implement removeToken() method.
+        // TODO: Implement removeToken() method in Step 12.3.
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clear(): void
+    {
+        // TODO: Implement clear() method in Step 12.3.
     }
 }

@@ -10,7 +10,7 @@ use Box\Http\Response\BoxResponseInterface;
 use Box\Service\Service;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Box\Storage\Token\BaseTokenStorageInterface;
+use Box\Storage\Token\TokenStorageInterface;
 
 class ServiceAuthTest extends TestCase
 {
@@ -27,7 +27,7 @@ class ServiceAuthTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->service->setLogger($this->logger);
 
-        $tokenStorage = $this->createMock(BaseTokenStorageInterface::class);
+        $tokenStorage = $this->createMock(TokenStorageInterface::class);
         $this->service->setTokenStorage($tokenStorage);
     }
 

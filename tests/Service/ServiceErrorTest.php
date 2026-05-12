@@ -11,7 +11,7 @@ use Box\Exception\BoxResponseException;
 use Box\Exception\TransportException;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Service\Service;
-use Box\Storage\Token\BaseTokenStorageInterface;
+use Box\Storage\Token\TokenStorageInterface;
 use PHPUnit\Framework\TestCase;
 
 class ServiceErrorTest extends TestCase
@@ -111,7 +111,7 @@ class ServiceErrorTest extends TestCase
         $service->setAuthorizedConnection($this->connection);
         $service->setToken($this->token);
 
-        $tokenStorage = $this->createMock(BaseTokenStorageInterface::class);
+        $tokenStorage = $this->createMock(TokenStorageInterface::class);
         $service->setTokenStorage($tokenStorage);
 
         $service->expects($this->once())
@@ -150,7 +150,7 @@ class ServiceErrorTest extends TestCase
             ->getMock();
         $service->setAuthorizedConnection($this->connection);
         $service->setToken($this->token);
-        $service->setTokenStorage($this->createMock(BaseTokenStorageInterface::class));
+        $service->setTokenStorage($this->createMock(TokenStorageInterface::class));
 
         $service->expects($this->once())
             ->method('refreshToken')
@@ -175,7 +175,7 @@ class ServiceErrorTest extends TestCase
             ->getMock();
         $service->setAuthorizedConnection($this->connection);
         $service->setToken($this->token);
-        $service->setTokenStorage($this->createMock(BaseTokenStorageInterface::class));
+        $service->setTokenStorage($this->createMock(TokenStorageInterface::class));
 
         $refreshException = new BoxException('Refresh failed');
         $service->method('refreshToken')->willThrowException($refreshException);

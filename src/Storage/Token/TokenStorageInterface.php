@@ -38,53 +38,50 @@
 namespace Box\Storage\Token;
 
 use Box\Connection\Token\TokenInterface;
+use Box\Dto\TokenStorageContext;
 
-interface BaseTokenStorageInterface
+interface TokenStorageInterface
 {
     /**
-     * add/insert/store token to storage
+     * Store token to storage.
+     * Implementation should handle one-active-token-per-context behavior.
      *
      * @param TokenInterface $token
-     *
-     * @return bool return value is success of storage
+     * @param TokenStorageContext $context
+     * @return void
      */
-    public function storeToken(TokenInterface $token);
+    public function storeToken(TokenInterface $token, TokenStorageContext $context): void;
 
     /**
+     * Update token in storage for a given context.
+     *
      * @param TokenInterface $token
-     * @param mixed|null $tokenUpdateClause update context such as a where clause
-     *
-     * @return bool return value is success of storage
+     * @param TokenStorageContext $context
+     * @return void
      */
-    public function updateToken(TokenInterface $token, mixed $tokenUpdateClause = null);
+    public function updateToken(TokenInterface $token, TokenStorageContext $context): void;
 
     /**
-     * @param mixed|null $retrievalWhereClause retrieval context such as a where clause
+     * Retrieve token from storage for a given context.
      *
-     * @return TokenInterface
+     * @param TokenStorageContext $context
+     * @return TokenInterface|null Returns null if no token is found for the context.
      */
-    public function retrieveToken(mixed $retrievalWhereClause = null);
+    public function retrieveToken(TokenStorageContext $context): ?TokenInterface;
 
     /**
-     * @return TokenInterface
+     * Remove token from storage for a given context.
+     *
+     * @param TokenStorageContext $context
+     * @return void
      */
-    public function getPreviousToken(): TokenInterface;
+    public function removeToken(TokenStorageContext $context): void;
 
     /**
-     * store previous token for usage
-     *
-     * @param TokenInterface|null $previousToken
+     * Clear all tokens from storage.
+     * Optional implementation for clearing the entire storage backend.
      *
      * @return void
      */
-    public function setPreviousToken(?TokenInterface $previousToken = null): void;
-
-    /**
-     * remove token from storage
-     *
-     * @param TokenInterface $token
-     * @param mixed $tokenContext
-     *
-     */
-    public function removeToken(TokenInterface $token, mixed $tokenContext = null);
+    public function clear(): void;
 }

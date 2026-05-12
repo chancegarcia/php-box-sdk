@@ -44,7 +44,8 @@ use Box\Connection\Connection;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\Token;
 use Box\Connection\Token\TokenInterface;
-use Box\Storage\Token\BaseTokenStorageInterface;
+use Box\Dto\TokenStorageContext;
+use Box\Storage\Token\TokenStorageInterface;
 use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxLoggerTrait;
@@ -81,10 +82,13 @@ class Service implements ServiceInterface, LoggerAwareInterface
     protected $token;
 
     /**
-     * @var BaseTokenStorageInterface
+     * @var TokenStorageInterface|null
      */
     protected $tokenStorage;
 
+    /**
+     * @var TokenStorageContext|null
+     */
     protected $tokenStorageContext;
 
     protected $clientId;
@@ -260,16 +264,17 @@ class Service implements ServiceInterface, LoggerAwareInterface
     }
 
     /**
-     * @param BaseTokenStorageInterface|null $tokenStorage
+     * @param TokenStorageInterface|null $tokenStorage
+     *
      * @return void
      */
-    public function setTokenStorage(?BaseTokenStorageInterface $tokenStorage = null): void
+    public function setTokenStorage(?TokenStorageInterface $tokenStorage = null): void
     {
         $this->tokenStorage = $tokenStorage;
     }
 
     /**
-     * @return mixed
+     * @return TokenStorageContext|null
      */
     public function getTokenStorageContext()
     {
@@ -277,10 +282,10 @@ class Service implements ServiceInterface, LoggerAwareInterface
     }
 
     /**
-     * @param mixed $tokenStorageContext
+     * @param TokenStorageContext|null $tokenStorageContext
      * @return void
      */
-    public function setTokenStorageContext($tokenStorageContext = null)
+    public function setTokenStorageContext(?TokenStorageContext $tokenStorageContext = null): void
     {
         $this->tokenStorageContext = $tokenStorageContext;
     }
@@ -765,8 +770,8 @@ class Service implements ServiceInterface, LoggerAwareInterface
         };
 
         // remove token from storage
-        if ($this->getTokenStorage() instanceof BaseTokenStorageInterface) {
-            $this->getTokenStorage()->removeToken($token, $this->getTokenStorageContext());
+        if ($this->getTokenStorage() instanceof TokenStorageInterface && $this->getTokenStorageContext() instanceof TokenStorageContext) {
+            $this->getTokenStorage()->removeToken($this->getTokenStorageContext());
         }
 
         return $data;
@@ -856,8 +861,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
         }
 
         try {
-            // set previous token information for token storage to use if needed
-            $this->getTokenStorage()->setPreviousToken($currentToken);
             $refreshedToken = $this->refreshToken();
             $tokenStorageContext = $this->getTokenStorageContext();
 
@@ -870,7 +873,9 @@ class Service implements ServiceInterface, LoggerAwareInterface
                 );
             }
 
-            $this->getTokenStorage()->updateToken($refreshedToken, $tokenStorageContext);
+            if ($this->getTokenStorage() instanceof TokenStorageInterface && $tokenStorageContext instanceof TokenStorageContext) {
+                $this->getTokenStorage()->updateToken($refreshedToken, $tokenStorageContext);
+            }
             $this->setToken($refreshedToken);
 
             // retry query
@@ -886,7 +891,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
                 );
             }
         } catch (BoxException $refreshException) {
-            $this->getTokenStorage()->setPreviousToken(null);
             $refreshMessage = "encountered exception during refresh token attempt: " . $refreshException->getMessage();
             $finalException = new BoxException($refreshMessage, $refreshException->getCode(), $be);
             $finalException->addContext($refreshException);
@@ -906,11 +910,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
             }
             throw $finalException;
         } catch (TokenStorageException $tse) {
-            // add some context if none already given and rethrow
-            if (!$tse->getPreviousToken() instanceof TokenInterface) {
-                $tse->setPreviousToken($currentToken);
-            }
-
             if ($this->getLogger() instanceof LoggerInterface) {
                 $this->getLogger()->error(
                     "token storage exception: " . $tse->getMessage(),

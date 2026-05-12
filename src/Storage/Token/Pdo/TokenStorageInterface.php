@@ -36,11 +36,11 @@
 
 namespace Box\Storage\Token\Pdo;
 
-use Box\Storage\Token\BaseTokenStorageInterface;
+use Box\Storage\Token\TokenStorageInterface as BaseInterface;
 use PDO;
 use Traversable;
 
-interface TokenStorageInterface extends BaseTokenStorageInterface
+interface TokenStorageInterface extends BaseInterface
 {
     public function getDsn();
 

@@ -41,7 +41,8 @@ use Box\Connection\Token\TokenInterface;
 use Box\Connection\Connection;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\Token;
-use Box\Storage\Token\BaseTokenStorageInterface;
+use Box\Dto\TokenStorageContext;
+use Box\Storage\Token\TokenStorageInterface;
 use RuntimeException;
 use BadMethodCallException;
 use stdClass;
@@ -274,24 +275,25 @@ interface ServiceInterface
     public function destroyToken(TokenInterface $token);
 
     /**
-     * @return BaseTokenStorageInterface
+     * @return TokenStorageInterface
      */
     public function getTokenStorage();
 
     /**
-     * @param BaseTokenStorageInterface|null $tokenStorage
+     * @param TokenStorageInterface|null $tokenStorage
+     *
      * @return void
      */
-    public function setTokenStorage(?BaseTokenStorageInterface $tokenStorage = null);
+    public function setTokenStorage(?TokenStorageInterface $tokenStorage = null);
 
     /**
-     * @return mixed
+     * @return TokenStorageContext|null
      */
     public function getTokenStorageContext();
 
     /**
-     * @param mixed $tokenStorageContext
+     * @param TokenStorageContext|null $tokenStorageContext
      * @return void
      */
-    public function setTokenStorageContext($tokenStorageContext = null);
+    public function setTokenStorageContext(?TokenStorageContext $tokenStorageContext = null);
 }

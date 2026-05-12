@@ -36,110 +36,43 @@
 
 namespace Box\Exception;
 
-use Box\Connection\Token\TokenInterface;
-use Box\Storage\Token\BaseTokenStorageInterface;
+use Box\Dto\TokenStorageContext;
+use Box\Storage\Token\TokenStorageInterface;
 
 class TokenStorageException extends \Exception
 {
-    /**
-     * @var TokenInterface
-     */
-    protected $token;
+    protected ?TokenStorageInterface $tokenStorage = null;
+    protected ?TokenStorageContext $tokenStorageContext = null;
 
     /**
-     * @var TokenInterface
+     * @return TokenStorageInterface|null
      */
-    protected $previousToken;
-
-    /**
-     * @var BaseTokenStorageInterface
-     */
-    protected $tokenStorage;
-    protected $tokenStorageContext;
-    protected $callingClass;
-
-    /**
-     * @return TokenInterface
-     */
-    public function getToken()
-    {
-        return $this->token;
-    }
-
-    /**
-     * @param TokenInterface $token
-     *
-     */
-    public function setToken(?TokenInterface $token = null): void
-    {
-        $this->token = $token;
-    }
-
-    /**
-     * @return TokenInterface
-     */
-    public function getPreviousToken()
-    {
-        return $this->previousToken;
-    }
-
-    /**
-     * @param TokenInterface $previousToken
-     *
-     */
-    public function setPreviousToken(?TokenInterface $previousToken = null): void
-    {
-        $this->previousToken = $previousToken;
-    }
-
-    /**
-     * @return BaseTokenStorageInterface
-     */
-    public function getTokenStorage()
+    public function getTokenStorage(): ?TokenStorageInterface
     {
         return $this->tokenStorage;
     }
 
     /**
-     * @param BaseTokenStorageInterface $tokenStorage
-     *
+     * @param TokenStorageInterface|null $tokenStorage
      */
-    public function setTokenStorage($tokenStorage = null): void
+    public function setTokenStorage(?TokenStorageInterface $tokenStorage = null): void
     {
         $this->tokenStorage = $tokenStorage;
     }
 
     /**
-     * @return mixed
+     * @return TokenStorageContext|null
      */
-    public function getTokenStorageContext()
+    public function getTokenStorageContext(): ?TokenStorageContext
     {
         return $this->tokenStorageContext;
     }
 
     /**
-     * @param mixed $tokenStorageContext
-     *
+     * @param TokenStorageContext|null $tokenStorageContext
      */
-    public function setTokenStorageContext($tokenStorageContext = null): void
+    public function setTokenStorageContext(?TokenStorageContext $tokenStorageContext = null): void
     {
         $this->tokenStorageContext = $tokenStorageContext;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCallingClass()
-    {
-        return $this->callingClass;
-    }
-
-    /**
-     * @param mixed $callingClass
-     *
-     */
-    public function setCallingClass($callingClass = null): void
-    {
-        $this->callingClass = $callingClass;
     }
 }

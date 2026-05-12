@@ -2,7 +2,7 @@
 
 ## Status
 - **Date**: 2026-05-12
-- **Status**: Planning Completed / Implementation Pending
+- **Status**: Slice 12.1 Completed
 - **Step**: 12 (v1 Release)
 
 ## Step 12 Requirements Summary
@@ -16,19 +16,19 @@ Step 12 aims to finalize the passive token storage layer for the v1 release.
 ## Existing Token Storage Inventory
 
 ### Interfaces
-- `Box\Storage\Token\BaseTokenStorageInterface`: Current base contract. Needs renaming to `TokenStorageInterface` for v1.
-- `Box\Storage\Token\Pdo\TokenStorageInterface`: Extension for PDO-specific storage.
+- `Box\Storage\Token\TokenStorageInterface`: Final v1 base contract. Introduced `TokenStorageContext` requirement.
+- `Box\Storage\Token\Pdo\TokenStorageInterface`: Extension for PDO-specific storage. Updated to extend v1 contract.
 
 ### Implementations
-- `Box\Storage\Token\Container\TokenStorageContainer`: In-memory implementation. Currently context-unaware (manages a single token).
-- `Box\Storage\Token\Pdo\TokenStorage`: Incomplete. `storeToken` has broken SQL, other methods are `TODO`.
+- `Box\Storage\Token\Container\TokenStorageContainer`: In-memory implementation. Now fully context-aware and implements v1 contract.
+- `Box\Storage\Token\Pdo\TokenStorage`: Updated with v1 method stubs. Final implementation deferred to 12.3.
 
 ### Token Model
 - `Box\Connection\Token\TokenInterface`: The primary DTO used for token data.
 - `Box\Connection\Token\Token`: Concrete implementation.
 
 ### Exceptions
-- `Box\Exception\BoxStorageException`: General storage exception. Needs review for redaction of secrets in messages.
+- `Box\Exception\TokenStorageException`: Updated to use `TokenStorageContext` and enforce secret redaction (no token fields in exception).
 
 ## Usage Inventory
 

@@ -37,68 +37,53 @@
 namespace Box\Storage\Token\Container;
 
 use Box\Connection\Token\TokenInterface;
-use Box\Storage\Token\BaseTokenStorageInterface;
+use Box\Dto\TokenStorageContext;
+use Box\Storage\Token\TokenStorageInterface;
 
-class TokenStorageContainer implements BaseTokenStorageInterface
+class TokenStorageContainer implements TokenStorageInterface
 {
     /**
-     * @var TokenInterface|null
+     * @var array<string, TokenInterface>
      */
-    protected $token;
-    /**
-     * @var TokenInterface|null
-     */
-    protected $previousToken;
+    protected array $tokens = [];
 
     /**
      * {@inheritdoc}
      */
-    public function getPreviousToken(): TokenInterface
+    public function retrieveToken(TokenStorageContext $context): ?TokenInterface
     {
-        return $this->previousToken;
+        return $this->tokens[$context->getCanonicalKey()] ?? null;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setPreviousToken(?TokenInterface $previousToken = null): void
+    public function storeToken(TokenInterface $token, TokenStorageContext $context): void
     {
-        $this->previousToken = $previousToken;
+        $this->tokens[$context->getCanonicalKey()] = $token;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function retrieveToken(mixed $retrievalWhereClause = null)
+    public function updateToken(TokenInterface $token, TokenStorageContext $context): void
     {
-        return $this->token;
+        $this->tokens[$context->getCanonicalKey()] = $token;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function storeToken(?TokenInterface $token = null)
+    public function removeToken(TokenStorageContext $context): void
     {
-        $this->token = $token;
+        unset($this->tokens[$context->getCanonicalKey()]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function updateToken(TokenInterface $token, mixed $tokenUpdateClause = null)
+    public function clear(): void
     {
-        $this->token = $token;
-    }
-
-    /**
-     * remove token from storage
-     *
-     * @param TokenInterface $token
-     * @param null $tokenContext
-     *
-     */
-    public function removeToken(TokenInterface $token, $tokenContext = null)
-    {
-        $this->token = null;
+        $this->tokens = [];
     }
 }
