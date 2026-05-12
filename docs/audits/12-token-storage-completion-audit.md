@@ -2,7 +2,7 @@
 
 ## Status
 - **Date**: 2026-05-12
-- **Status**: Slice 12.6 Follow-up Completed
+- **Status**: Completed
 - **Step**: 12 (v1 Release)
 
 ## Step 12 Requirements Summary
@@ -111,8 +111,25 @@ Step 12 aims to finalize the passive token storage layer for the v1 release.
 ### Step 12.7 — Type-Safety, Docs, and Final Review
 - **Goal**: PHPStan fixes and documentation updates.
 - **Scope**: Final project review for Step 12.
+- **Status**: Completed (Slice 12.7)
 
-## Draft Implementation Prompt: Slice 12.1
+## Final Conclusions (Step 12 Completion)
+1. **Passive Storage Architecture**: Verified that `TokenStorageInterface` and its implementations (In-Memory, PDO) remain strictly passive. They handle persistence but do not initiate network calls or auth lifecycle operations.
+2. **Service Independence**: Confirmed that the `Service` layer is completely decoupled from token storage. Services receive tokens but do not know how they are stored or retrieved.
+3. **Client Orchestration**: `Client` now serves as the optional coordination point for loading, saving, and removing tokens from storage.
+4. **CLI Integration**: CLI commands now optionally integrate with token storage using `ConfigProvider` for DSN/credentials and supporting command-line overrides for context (User ID/Enterprise ID).
+5. **Security**: Redaction of sensitive fields in exceptions and logs is enforced.
+6. **Defereals**: 
+    - **Auth Lifecycle/Auth Provider extraction**: Deferred to Step 13+ as planned.
+    - **FilesystemTokenStorage**: Excluded from v1 core; PDO and In-Memory are deemed sufficient for initial v1 release.
+    - **JWT/S2S**: Deferred to Step 14/15.
+
+## Step 12.6 Verification Log
+- `AuthExchangeCommand` and `AuthRefreshCommand` correctly use `Client` storage hooks.
+- ConfigProvider correctly supplies `BOX_STORAGE_PDO_DSN`, `BOX_STORAGE_PDO_USER`, and `BOX_STORAGE_PDO_PASSWORD`.
+- CLI overrides take precedence over config.
+- No raw `$_ENV` usage in commands.
+- One-active-token-per-context behavior verified via PDO and In-Memory tests.
 
 ```markdown
 ### Task: Slice 12.1 — Storage Contract Finalization

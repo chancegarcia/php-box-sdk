@@ -1,20 +1,21 @@
 ### Summary
-- Completed the Slice 12.6 follow-up by centralizing CLI storage configuration within the SDK's config provider abstraction.
-- Removed direct `$_ENV` and `$_SERVER` access from command classes to improve maintainability and testability.
+- Completed Step 12: Token Storage Completion and Integration.
+- Verified that all token storage components are passive, context-aware, and properly integrated with the Client and CLI.
+- Updated project documentation to reflect the completion of Step 12.
 
 ### Changes
-- Updated `ConfigProviderInterface` to include `getStoragePdoDsn()`, `getStoragePdoUser()`, and `getStoragePdoPassword()`.
-- Implemented these new methods in `EnvConfigProvider` to handle environment-based PDO settings.
-- Refactored `AbstractBoxCommand` to use `ConfigProviderInterface` for resolving PDO storage settings, ensuring CLI options retain precedence.
-- Updated constructors of all child commands (`AuthExchangeCommand`, `AuthRefreshCommand`, `AuthUrlCommand`, `FileUploadCommand`) to inject the required `ConfigProviderInterface` into the base class.
-- Enhanced `tests/Command/AuthStorageIntegrationTest.php` with new test cases for PDO configuration resolution and precedence.
+- Updated `docs/audits/12-token-storage-completion-audit.md` to mark Step 12 and Slice 12.7 as completed and added final architectural conclusions.
+- Updated `docs/planning/10-v1-release-work.md` to mark Step 12 and Slice 12.7 as completed in the v1 roadmap.
+- Audited Step 12 code for type-safety and verified consistent use of `void` returns for setters and strict typing for storage interfaces.
+- Confirmed that token storage remains passive and services are storage-independent.
 
 ### Verification
-- Ran `composer test tests/Command` (22 tests, all passing, including new PDO integration tests).
-- Ran `composer test tests/ClientStorageIntegrationTest.php tests/Storage` (28 tests, all passing).
-- Validated codebase with `composer lint`, `composer cs:check`, and `composer analyse` (all clean).
+- Ran `composer review` which includes linting, static analysis (`phpstan`), and full test suite execution (`phpunit`).
+- All 266 tests passed successfully.
+- PHPStan reported no errors.
+- Verified specific storage behaviors (one-active-token-per-context, secret redaction, CLI config precedence) through existing Step 12 tests.
 
 ### Notes
-- Services remain completely storage-independent.
-- Token storage implementations remain passive persistence layers.
-- Slice 12.7 (Final Review) is the next scheduled task.
+- Auth Lifecycle/Auth Provider extraction is deferred to Step 13+ as planned.
+- JWT/S2S work remains not started, scheduled for Step 14/15.
+- Filesystem storage is excluded from the v1 core as PDO and In-Memory implementations are sufficient.

@@ -1,44 +1,54 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-12 02:25:00.000
+- **Timestamp**: 2026-05-12 04:04:00.000
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Current Status
-- **Step 12 — Token Storage Completion**: IMPLEMENTATION STARTED.
-- **Audit Document**: `docs/audits/12-token-storage-completion-audit.md` (Updated).
-- **Implementation Status**: Slice 12.1 COMPLETED. Slice 12.2 is the next action.
+- **Roadmap Position**: Step 12 COMPLETED; Step 13 is next.
+- **Audit Document**: `docs/audits/12-token-storage-completion-audit.md` (Updated/Completed).
+- **V1 Roadmap**: `docs/planning/10-v1-release-work.md` (Updated/Completed).
 
-## Key Outcomes from Step 12.1
-- **V1 Passive Token Storage Contract**: Finalized `Box\Storage\Token\TokenStorageInterface` with strict types and context-driven signatures.
-- **Context DTO**: Created `Box\Dto\TokenStorageContext` for formal identification of tokens in storage.
-- **Container Alignment**: `Box\Storage\Token\Container\TokenStorageContainer` updated to be fully context-aware.
-- **Exception Refinement**: `Box\Exception\TokenStorageException` updated for the new contract and redaction-safe context handling.
-- **Service Alignment**: `Box\Service\Service` and `ServiceInterface` minimally updated to support the new contract.
-- **PDO Alignment**: `Box\Storage\Token\Pdo\TokenStorage` minimally aligned for compilation; functional rewrite deferred to 12.3.
+## Completed Work (Step 12 Summary)
+- **12.1 — Token storage contract/context finalization**: Finalized `TokenStorageInterface` and `TokenStorageContext`.
+- **12.2 — In-memory storage hardening**: Completed `TokenStorageContainer` with full context-aware lifecycle support.
+- **12.3 — PDO storage implementation**: Implemented a robust PDO backend with SQLite-based integration tests.
+- **12.4 — Service storage-independence cleanup**: Decoupled the `Service` layer from storage persistence; services are now storage-independent.
+- **12.5 — Client integration hooks**: Added optional `loadTokenFromStorage()`, `saveTokenToStorage()`, and `removeTokenFromStorage()` orchestration to `Client`.
+- **12.6 — CLI/auth harness storage integration**: Integrated storage with CLI commands using `ConfigProvider` for DSN/credentials and supporting command-line context overrides.
+- **12.7 — Type-safety/docs/final review**: Completed final project audit for Step 12; updated docs and verified architectural boundaries.
 
-## Step 12 Implementation Plan (Summary)
-1. **12.1 — Storage Contract Finalization**: ✓ (Completed)
-2. **12.2 — In-Memory Storage Completion**: *Next* (Support full in-memory container lifecycle and edge cases)
-3. **12.3 — PDO Storage Implementation**: Pending (Functional PDO backend with SQLite tests)
-4. **12.4 — Service Storage-Independence Cleanup**: Pending (Decouple services from storage; address untyped properties)
-5. **12.5 — Client Integration Hooks**: Pending (Orchestration in `Client`)
-6. **12.6 — CLI/Auth Harness Storage Integration**: Pending (Optional CLI storage support)
-7. **12.7 — Final Review**: Pending (Type-safety and final validation)
+## Current Architecture Boundaries
+- **Passive Token Storage**: Storage implementations handle persistence only; they do not perform network calls, refreshes, or authorization-code exchanges.
+- **Service Independence**: Services receive tokens via `Client` but do not orchestrate storage or persistence themselves.
+- **Client Coordination**: `Client` is the optional coordination point for storage. Persistence of exchange/refresh is optional and requires configured storage.
+- **CLI Config**: CLI uses `ConfigProvider` for storage settings (e.g., `BOX_STORAGE_PDO_DSN`). No raw `$_ENV` usage in command classes.
 
-## Next Steps
-- **Review and Commit Slice 12.1**: Ensure 12.1 changes are reviewed and committed before starting Slice 12.2.
-- **Execute Slice 12.2**: Complete in-memory storage. Note: 12.2 should reuse the `TokenStorageContainer` and `TokenStorageContext` work from 12.1.
-- **Service type-safety follow-up**: `Box\Service\Service` still contains untyped properties and methods. Broader service storage-independence and type-safety cleanup remains deferred to Slice 12.4.
-- **Deferred JWT/S2S CLI configuration note**: When JWT/S2S auth is implemented, evaluate separate env-variable groups or named auth profiles for OAuth2 vs JWT credentials.
-- **Auth Lifecycle Extraction**: This remains future work following Step 12.
+## Validation (Step 12 Final)
+- `composer review`: PASSED
+  - **Syntax Check**: All files valid.
+  - **Static Analysis**: PHPStan Level 0 (no errors).
+  - **Test Suite**: 266 tests, 100% passing.
+- Specific verification of Step 12 features: context isolation, secret redaction, and CLI config precedence.
 
-## Validation (Slice 12.1)
-- `composer test tests/Storage/TokenStorageContractTest.php`: PASSED
-- `composer lint`: PASSED
-- `composer cs:check`: PASSED (`composer cs:fix` was run)
-- `composer analyse`: PASSED (Baseline cleaned)
+## Next Task: Step 13 — API Fixture Realism and Contract Alignment
+- **Goal**: Improve API fixture realism and ensure contract alignment across resources.
+- **Startup Recommendation**:
+  - Begin with a tracker/plan review (`docs/planning/10-v1-release-work.md`).
+  - Inspect Step 13 section and any existing tests/fixtures.
+  - Refine a Step 13 prompt before implementation.
+
+## Deferred Work / Non-Goals
+- **Auth Provider Extraction**: Extraction of Auth Lifecycle/Auth Provider is post-Step-12 and not yet started.
+- **JWT/S2S**: Scheduled for Step 14/15; not yet started.
+- **Storage Expansion**: `FilesystemTokenStorage` is excluded from v1 core.
 
 ## Security
-- Source files were updated in Slice 12.1.
-- No secrets introduced.
-- Redaction requirements remain in force; exceptions and logs must not leak token secrets.
+- No real tokens, secrets, or account IDs are present in the codebase or docs.
+- Redaction of sensitive fields in exceptions and logs is enforced by the SDK.
+
+## Suggested Context for New Chat
+- `docs/ai/current-handoff-summary.md`
+- `docs/ai/current-task-summary.md`
+- `docs/planning/10-v1-release-work.md`
+- `docs/audits/12-token-storage-completion-audit.md`
+- `src/Client.php` (for storage hooks reference)
