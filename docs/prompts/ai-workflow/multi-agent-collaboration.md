@@ -276,18 +276,19 @@ Best for:
 
 ## Handoff Rules
 
-When moving between tools or chat sessions:
+When moving between tools or chat sessions, provide a concise **New-Chat Startup Package**:
 
-1. Summarize current state.
-2. Identify what is authoritative and what is advisory.
-3. Include only necessary context.
-4. Avoid secrets.
-5. Avoid unnecessary proprietary implementation details.
-6. List decisions made.
-7. List open questions.
-8. List approval gates.
-9. List next recommended action.
-10. State whether the next tool should plan, inspect, implement, validate, or review.
+1. **Context attachments to include**: list the summaries, trackers, workflow docs, and task-relevant files the user should attach.
+2. **Files to open first**: list the project files the next assistant should inspect immediately (implementation, tests, status docs).
+3. **Suggested opening message**: provide a short, ready-to-paste prompt for the next chat stating status, next intended action, and constraints.
+4. **First verification steps**: include checking working tree status, recent commits, current tracker state, and relevant tests.
+5. **Scope and Safety**: identify what is next, what is deferred, avoid secrets, and treat summaries as subordinate to repository state.
+
+General Handoff Principles:
+- Summarize current state and identify what is authoritative vs. advisory.
+- Include only necessary context; avoid secrets and proprietary details.
+- List decisions made, open questions, and approval gates.
+- State whether the next tool should plan, inspect, implement, validate, or review.
 
 ## Secret and Sensitive Context Handling
 

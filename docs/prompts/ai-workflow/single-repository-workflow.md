@@ -60,6 +60,7 @@ During long-running initiatives or before ending a session, the AI produces a co
     - Whenever task state, roadmap state, future-agent context, or actionable deferred follow-ups change.
     - Whenever the user asks for one.
 - **Content**: Use the [Handoff Summary Template](handoff-summary-template.md). Include project name, current goal, completed/pending slices, active decisions, constraints, validation rules, and "gotchas".
+- **New-Chat Startup Guidance**: When a session is ending or the user is starting a new chat, provide a concise startup package (see template) including recommended context attachments, files to open first, a suggested opening prompt, and first verification steps for the next assistant.
 - **Actionable Follow-ups**: Actionable items discovered during review (e.g., from human-reviewer notes) should be refined and persisted into the handoff summary or relevant planning docs.
 - **Storage**:
     - Paste directly into the chat.

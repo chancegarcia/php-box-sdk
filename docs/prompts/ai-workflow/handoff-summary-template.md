@@ -42,3 +42,12 @@
 
 ## Suggested Next Prompt
 -
+
+## New-Chat Startup Guidance
+Before starting the next chat, provide this startup package:
+
+- **Context attachments to include**:
+- **Files to open first**:
+- **Suggested opening message**:
+- **First verification steps**:
+- **Scope reminders**:
