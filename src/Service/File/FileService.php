@@ -99,7 +99,7 @@ class FileService extends Service implements FileServiceInterface
     public function uploadFile(string|FileStream $file, string|int $parentId): array
     {
         $uri = self::UPLOAD_ENDPOINT;
-        $response = $this->getAuthorizedConnection()->postFile($uri, $file, $parentId);
+        $response = $this->getConnection()->postFile($uri, $file, $parentId);
 
         return $this->handleBoxResponse($response, 'flat');
     }

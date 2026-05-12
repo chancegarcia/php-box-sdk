@@ -155,36 +155,34 @@ Remaining `Client` responsibilities:
 - **Interface Segregation**: Introduced `OAuth2ProviderInterface` to separate OAuth2-specific config from generic `AuthProviderInterface`.
 - **Config Boundary Cleanup**: Resolved `BoxClientFactory` type mismatch by mapping `ConfigProviderInterface` to `ClientConfig`, ensuring a narrow configuration boundary for `Client`.
 
-### 13.6 — Client Facade and Legacy Surface Review
+### 13.6 — Client Facade and Legacy Surface Review (COMPLETED)
 - Final audit of `Client` surface and auth-adjacent APIs.
-- Perform Semantic Naming and Human-Readable API Clarity Review.
-- Audit `Connection::getAuthorizationHeader()`.
-- Audit service `connection` vs `authorizedConnection` split.
-- Audit getter-time normalization and semantic masking (deferred to Step 17 modernization gate).
-- Remove remaining auth-header helpers.
-- Verify **v1 Release Readiness (Step 17)** gate is ready.
+- Performed Semantic Naming and Human-Readable API Clarity Review.
+- Collapsed `Service::$connection` and `Service::$authorizedConnection` into a single `connection` property.
+- Removed legacy auth shims: `ConnectionInterface::getAuthorizationHeader()`, `ServiceInterface::getAuthorizedConnection()`, `ServiceInterface::setAuthorizedConnection()`, `ServiceInterface::getConnectionHeaders()`.
+- Removed legacy token lifecycle methods from `ServiceInterface` and `Service`: `refreshToken()`, `setTokenData()`, `destroyToken()`.
+- Removed legacy `Client` shims: `getAuthorizationHeader()`, `setTokenData()`, `setConnectionAuthHeader()`, `auth()`, `buildAuthQuery()`.
+- Verified dynamic OAuth2 `state` handling in `OAuth2Provider` and `Client`.
+- Verified token storage boundaries remain intact.
+- Auth Lifecycle/Auth Provider Extraction (Step 13) is complete.
+- Updated tests to cover connection state collapse, facade changes, and dynamic state.
 
 ## 10. v1 Release Readiness (Step 17) Modernization Gate
 
 Add to Step 17 checklist:
-- [ ] No `curl_` or `CURLOPT_` usage in core SDK or `Connection`.
-- [ ] No `curl`-specific public SDK methods remain in `ConnectionInterface` or `Client`.
-- [ ] `AuthProvider` owns all auth lifecycle mechanics (exchange, refresh, revoke).
-- [ ] `Client` does not manually build or push auth headers to `Connection`.
-- [ ] `ConnectionInterface` is clean of transport-specific methods.
-- [ ] All auth-related services are storage-independent and lifecycle-independent.
-- [ ] `Client` is a facade/composition root, not a god object.
-- [ ] Token storage remains strictly passive.
-- [ ] Migration docs cover all planned v1 breaking removals (especially curl-specific paths).
-- [ ] `composer review` passes.
+- [x] No `curl_` or `CURLOPT_` usage in core SDK or `Connection`.
+- [x] No `curl`-specific public SDK methods remain in `ConnectionInterface` or `Client`.
+- [x] `AuthProvider` owns all auth lifecycle mechanics (exchange, refresh, revoke).
+- [x] `Client` does not manually build or push auth headers to `Connection`.
+- [x] `ConnectionInterface` is clean of transport-specific methods.
+- [x] All auth-related services are storage-independent and lifecycle-independent.
+- [x] `Client` is a facade/composition root, not a god object.
+- [x] Token storage remains strictly passive.
+- [x] Migration docs cover all planned v1 breaking removals (especially curl-specific paths).
+- [x] `composer review` passes.
+- [x] Complete v1 removal of all legacy Step 13 shims and deprecated lifecycle methods.
 
-## 11. Risks and Open Questions
+## 11. Step 13 Completion Status
+**Auth Lifecycle/Auth Provider Extraction (Step 13)** is COMPLETED. All acceptance criteria for the initiative have been satisfied. The SDK now has a modern, decoupled auth lifecycle architecture with a clear separation of concerns between `Client` (facade), `AuthProvider` (lifecycle), `Connection` (execution), and `TokenStorage` (persistence).
 
-- **Upload Behavior**: Ensure Guzzle multipart handling is fully compatible with Box's expectations (filename, mime-type).
-- **Client compatibility**: Many users might call `exchangeAuthorizationCodeForToken` directly. Keeping it as a facade is critical.
-
-## 12. Validation Strategy
-
-- `composer review` at each slice.
-- Specific check on `FileUploadCommand` and `PostFile` behavior.
-- Ensure no regression in Token Storage integration from Step 12.
+Next initiative: **JWT/S2S Feasibility and Dependency Review (Step 14)**.

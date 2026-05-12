@@ -41,7 +41,6 @@ use Box\Connection\Token\TokenInterface;
 use Box\Connection\Connection;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\Token;
-use RuntimeException;
 use BadMethodCallException;
 use stdClass;
 
@@ -70,18 +69,6 @@ interface ServiceInterface
      * @return void
      */
     public function setConnection($connection = null);
-
-    /**
-     * @return Connection|ConnectionInterface
-     * @throws RuntimeException
-     */
-    public function getAuthorizedConnection();
-
-    /**
-     * @param Connection|ConnectionInterface $authorizedConnection
-     * @return void
-     */
-    public function setAuthorizedConnection($authorizedConnection = null);
 
     /**
      * @return Token|TokenInterface
@@ -140,28 +127,6 @@ interface ServiceInterface
 
     /**
      * used to throw exceptions that need to contain error information returned from Box
-     *
-     * @param array $data containing error and error_description keys
-     * @param string|null $message
-     * @param BoxResponseInterface|null $boxResponse
-     *
-     */
-    public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null): void;
-
-    /**
-     * @deprecated since v0.11.0, will be removed in v1.0.0. Use Connection::getAuthorizationHeader() via connection.
-     * @return string
-     */
-    public function getAuthorizationHeader();
-
-    /**
-     * @deprecated since v0.11.0, will be removed in v1.0.0. Connection now automatically applies auth headers when an access token is set.
-     * @return array
-     */
-    public function getConnectionHeaders();
-
-    /**
-     * Handle BoxResponse by throwing an exception on error or returning the JSON return content
      *
      * @param BoxResponseInterface $response
      * @param string $returnType valid types are:
@@ -239,26 +204,4 @@ interface ServiceInterface
      * @throws \Exception
      */
     public function sendUpdateToBox($uri = null, $params = [], $type = 'original', ?object $class = null);
-
-    /**
-     * refreshes the token and returns new token; it is up to the application to persist the new token data
-     *
-     * @return Token|TokenInterface
-     */
-    public function refreshToken();
-
-    /**
-     * @param $token TokenInterface|Token
-     * @param $data  array|stdClass data must be a flat result or stdClass
-     *
-     * @return TokenInterface|Token
-     */
-    public function setTokenData(TokenInterface $token, $data);
-
-    /**
-     * @param $token TokenInterface|Token
-     *
-     * @return mixed
-     */
-    public function destroyToken(TokenInterface $token);
 }

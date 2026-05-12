@@ -1,25 +1,17 @@
 ### Summary
-- Finalized AuthProvider extraction for OAuth2 by removing reflection-based mutation and cleaning up the `Connection` credential surface.
-- Refined the auth boundary interfaces to support future JWT/S2S authentication.
-- Normalized `ClientConfig` internal state to improve type safety and remove legacy getter-time normalization.
+- Completed **Final Step 13 Handoff Documentation Update**, persisting reviewer lessons and reconciling roadmap status.
+- Documented Service Base Modernization follow-up and Test Preservation rules for v1 refactors.
 
 ### Changes
-- Refined `AuthProviderInterface` to be strategy-neutral by moving OAuth2-specific methods to `OAuth2ProviderInterface`.
-- Replaced reflection-based `AuthProvider` updates in `Client` with explicit interface-based configuration checks (`instanceof OAuth2ProviderInterface`).
-- Updated `ClientConfig` to store `clientId` and `clientSecret` as non-nullable strings (default `''`), normalizing `null` on write.
-- Updated `BoxClientFactory` to map `ConfigProviderInterface` to `ClientConfig`, resolving a type mismatch and narrowing the `Client` configuration boundary.
-- Updated `OAuth2Provider` to implement `OAuth2ProviderInterface`.
-- Removed OAuth2-specific credentials (`clientId`, `clientSecret`, `redirectUri`) from `ConnectionInterface` and `Connection` in previous pass (Step 13.5 follow-up).
-- Documented follow-ups for **Client Facade and Legacy Surface Review (Step 13.6)** and **v1 Release Readiness (Step 17)** regarding semantic masking and service connection state.
+- **Service Base Modernization**: Added follow-up task to `docs/ai/current-handoff-summary.md` and `docs/planning/v1-release-roadmap.md` (under Step 15.1 and 17) to review legacy state and helpers in `Service`.
+- **Test Preservation Rule**: Added new core principle to `docs/prompts/ai-workflow/single-repository-workflow.md` and documented it in `docs/ai/current-handoff-summary.md` regarding the non-authoritative nature of pre-v1 tests.
+- **Status Reconciliation**: Updated `docs/planning/v1-release-roadmap.md` strategic status to **Step 14** and ensured all docs reflect **Step 13** completion.
 
 ### Verification
-- Full validation via `composer review` (linting, 262 tests passed, PSR-12 formatting, and PHPStan analysis).
-- Added `Box\Tests\Service\BoxClientFactoryTest` to ensure correct configuration mapping and type safety.
-- Added `Box\Tests\Auth\OAuth2ProviderTest` (previous pass) and updated `ClientTest` to ensure clean configuration propagation.
-- Verified that existing integration tests still pass with the new boundary.
+- Manual documentation inspection.
+- No source code changes were made.
 
 ### Notes
-- A detailed summary was written to `docs/ai/current-task-summary.md`.
-- **Client Facade and Legacy Surface Review (Step 13.6)** is next.
-- Step 13.6 will audit `Connection::getAuthorizationHeader()`, service connection state, and perform a broad semantic naming review.
-- Broad getter-time normalization cleanup is deferred to the Step 17 modernization gate.
+- **Auth Lifecycle/Auth Provider Extraction (Step 13)** is now fully closed.
+- **JWT/S2S Feasibility and Dependency Review (Step 14)** is the next planned step.
+- Detailed task summary written to `docs/ai/current-task-summary.md`.

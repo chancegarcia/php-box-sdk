@@ -105,6 +105,4 @@ interface ConnectionInterface extends LoggerAwareInterface
     public function setTransportName(string $transportName): void;
 
     public function getTransportName(): string;
-
-    public function getAuthorizationHeader(): ?string;
 }

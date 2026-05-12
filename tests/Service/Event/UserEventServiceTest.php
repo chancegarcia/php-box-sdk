@@ -209,7 +209,7 @@ class UserEventServiceTest extends TestCase
             ->with($this->service->getEventsUri())
             ->willReturn($response);
 
-        $this->service->setAuthorizedConnection($connection);
+        $this->service->setConnection($connection);
         $this->service->setToken($this->createMock(TokenInterface::class));
 
         $result = $this->service->getEvents();

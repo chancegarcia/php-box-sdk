@@ -96,32 +96,26 @@ class ClientTest extends TestCase
         new ClientConfig(['invalid_key' => 'value']);
     }
 
-    public function testBuildAuthQuery()
+    public function testBuildAuthorizationUrl()
     {
-        $url = $this->client->buildAuthQuery();
+        $url = $this->client->buildAuthorizationUrl();
         $this->assertStringContainsString('response_type=code', $url);
         $this->assertStringContainsString('client_id=test_client_id', $url);
 
         $this->client->setState('test_state');
-        $url = $this->client->buildAuthQuery();
+        $url = $this->client->buildAuthorizationUrl();
         $this->assertStringContainsString('state=test_state', $url);
 
+        // Dynamic state should override client state
+        $url = $this->client->buildAuthorizationUrl(['state' => 'dynamic_state']);
+        $this->assertStringContainsString('state=dynamic_state', $url);
+        $this->assertStringNotContainsString('state=test_state', $url);
+
         $this->client->setRedirectUri('https://example.com/callback');
-        $url = $this->client->buildAuthQuery();
+        $url = $this->client->buildAuthorizationUrl();
         $this->assertStringContainsString('redirect_uri=' . urlencode('https://example.com/callback'), $url);
     }
 
-    public function testAuth()
-    {
-        $connection = $this->createMock(ConnectionInterface::class);
-        $connection->expects($this->once())
-            ->method('query')
-            ->with($this->client->buildAuthQuery())
-            ->willReturn($this->createMock(BoxResponseInterface::class));
-
-        $this->client->setConnection($connection);
-        $this->client->auth();
-    }
 
     /**
      * @throws JsonException
@@ -186,33 +180,6 @@ class ClientTest extends TestCase
         $this->assertEquals('new_access', $resultToken->getAccessToken());
     }
 
-    public function testGetAuthorizationHeader()
-    {
-        $token = $this->createMock(TokenInterface::class);
-        $token->method('getAccessToken')->willReturn('test_token');
-        $this->client->setToken($token);
-
-        $header = $this->client->getAuthorizationHeader();
-        $this->assertEquals('Authorization: Bearer test_token', $header);
-    }
-
-    public function testSetConnectionAuthHeader()
-    {
-        $token = $this->createMock(TokenInterface::class);
-        $token->method('getAccessToken')->willReturn('test_token');
-        $this->client->setToken($token);
-
-        $connection = $this->createMock(ConnectionInterface::class);
-        $connection->expects($this->once())
-            ->method('setAccessToken')
-            ->with('test_token');
-
-        $connection->expects($this->exactly(1))
-            ->method('addHeader')
-            ->with('X-Extra', 'foo');
-
-        $this->client->setConnectionAuthHeader($connection, ['X-Extra' => 'foo']);
-    }
 
     public function testDestroyToken()
     {

@@ -559,30 +559,6 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @return string
-     * @deprecated since v0.11.0, will be removed in v1.0.0. Use Connection::getAuthorizationHeader() if needed.
-     */
-    public function getAuthorizationHeader(): string
-    {
-        $token = $this->getToken();
-
-        return "Authorization: Bearer " . $token->getAccessToken();
-    }
-
-    /**
-     * @param TokenInterface $token
-     * @param array $data
-     * @deprecated since v0.11.0, will be removed in v1.0.0. Use TokenFactory or Hydrator.
-     */
-    public function setTokenData(TokenInterface $token, array $data): void
-    {
-        $token->setAccessToken($data['access_token']);
-        $token->setExpiresIn($data['expires_in']);
-        $token->setTokenType($data['token_type']);
-        $token->setRefreshToken($data['refresh_token']);
-    }
-
-    /**
      * @param TokenInterface $token
      *
      * @return array
@@ -595,64 +571,14 @@ class Client implements LoggerAwareInterface
         return ['success' => true];
     }
 
-    public function auth(): void
+    public function buildAuthorizationUrl(array $options = []): string
     {
-        // build get query to auth uri
-        $query = $this->buildAuthQuery();
-
-        // send get query to auth uri (auth uri will redirect to app redirect uri)
-        $connection = $this->getConnection();
-
-        // can't get return data b/c of redirect
-        $connection->query($query);
-    }
-
-    public function buildAuthQuery(): string
-    {
-        $options = [];
         $state = $this->getState();
-        if (null !== $state) {
+        if (null !== $state && !isset($options['state'])) {
             $options['state'] = $state;
         }
 
         return $this->getAuthProvider()->buildAuthorizationUrl($options);
-    }
-
-    /**
-     * @param ConnectionInterface $connection
-     * @param null|array $additionalHeaders
-     *
-     * @throws BoxException
-     * @deprecated since v0.11.0, will be removed in v1.0.0. Connection now automatically applies auth headers when an access token is set.
-     */
-    public function setConnectionAuthHeader(ConnectionInterface $connection, ?array $additionalHeaders = null): void
-    {
-        $token = $this->getToken();
-        $accessToken = $token->getAccessToken();
-        if (null === $accessToken || "" === $accessToken) {
-             throw new BoxException('BOX_ACCESS_TOKEN is required for upload.', BoxException::INVALID_INPUT);
-        }
-
-        // SYNC: ensure connection has the access token
-        $connection->setAccessToken($accessToken);
-
-        if (null !== $additionalHeaders && !is_array($additionalHeaders)) {
-            throw new BoxException('additional headers must be in array format', BoxException::INVALID_INPUT);
-        }
-
-        if (is_array($additionalHeaders)) {
-            foreach ($additionalHeaders as $name => $value) {
-                if (is_int($name)) {
-                    // if it's "Name: Value" string
-                    $parts = explode(':', $value, 2);
-                    if (count($parts) === 2) {
-                        $connection->addHeader(trim($parts[0]), trim($parts[1]));
-                    }
-                } else {
-                    $connection->addHeader($name, $value);
-                }
-            }
-        }
     }
 
     /**
@@ -1036,7 +962,6 @@ class Client implements LoggerAwareInterface
     protected function configureService(ServiceInterface $service): ServiceInterface
     {
         $service->setConnection($this->getConnection());
-        $service->setAuthorizedConnection($this->getConnection());
         $service->setClientId($this->getClientId());
         $service->setClientSecret($this->getClientSecret());
         $service->setDeviceId($this->getDeviceId());

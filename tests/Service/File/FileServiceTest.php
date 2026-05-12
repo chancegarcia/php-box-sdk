@@ -18,7 +18,7 @@ class FileServiceTest extends TestCase
     private function createService(ConnectionInterface $connection): FileService
     {
         $service = new FileService();
-        $service->setAuthorizedConnection($connection);
+        $service->setConnection($connection);
         $service->setToken($this->createMock(TokenInterface::class));
         return $service;
     }

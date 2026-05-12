@@ -38,7 +38,7 @@ class UserServiceTest extends TestCase
             ->willReturn($response);
 
         $service = new UserService();
-        $service->setAuthorizedConnection($connection);
+        $service->setConnection($connection);
         $service->setToken($this->createMock(TokenInterface::class));
 
         $user = $service->getCurrentUser();
@@ -72,7 +72,7 @@ class UserServiceTest extends TestCase
             ->willReturn($response);
 
         $service = new UserService();
-        $service->setAuthorizedConnection($connection);
+        $service->setConnection($connection);
         $service->setToken($this->createMock(TokenInterface::class));
 
         $user = $service->getUser($userId);
@@ -108,7 +108,7 @@ class UserServiceTest extends TestCase
         $connection->method('query')->willReturn($response);
 
         $service = new UserService();
-        $service->setAuthorizedConnection($connection);
+        $service->setConnection($connection);
         $service->setToken($this->createMock(TokenInterface::class));
 
         $user = $service->getUser($userId);
@@ -137,7 +137,7 @@ class UserServiceTest extends TestCase
         $connection->method('query')->willReturn($response);
 
         $service = new UserService();
-        $service->setAuthorizedConnection($connection);
+        $service->setConnection($connection);
         $service->setToken($this->createMock(TokenInterface::class));
 
         $this->expectException(BoxResponseException::class);

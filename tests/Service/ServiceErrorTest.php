@@ -6,7 +6,6 @@ namespace Box\Tests\Service;
 
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
-use Box\Exception\BoxException;
 use Box\Exception\BoxResponseException;
 use Box\Exception\TransportException;
 use Box\Http\Response\BoxResponseInterface;
@@ -26,7 +25,7 @@ class ServiceErrorTest extends TestCase
         $this->connection = $this->createMock(ConnectionInterface::class);
         $this->token = $this->createMock(TokenInterface::class);
 
-        $this->service->setAuthorizedConnection($this->connection);
+        $this->service->setConnection($this->connection);
         $this->service->setToken($this->token);
     }
 
@@ -86,107 +85,20 @@ class ServiceErrorTest extends TestCase
         $this->service->getFromBox('some/uri');
     }
 
-    public function test401RefreshRetryFlow(): void
-    {
-        $response401 = $this->createMock(BoxResponseInterface::class);
-        $response401->method('isSuccessful')->willReturn(false);
-        $response401->method('getStatusCode')->willReturn(401);
-
-        $response200 = $this->createMock(BoxResponseInterface::class);
-        $response200->method('isSuccessful')->willReturn(true);
-        $response200->method('getContent')->willReturn(json_encode(['id' => '123']));
-        $response200->method('json')->willReturn(['id' => '123']);
-
-        $this->connection->expects($this->exactly(2))
-            ->method('query')
-            ->willReturnOnConsecutiveCalls($response401, $response200);
-
-        $newToken = $this->createMock(TokenInterface::class);
-
-        // Mock refreshToken by creating a partial mock of Service
-        $service = $this->getMockBuilder(Service::class)
-            ->onlyMethods(['refreshToken'])
-            ->getMock();
-        $service->setAuthorizedConnection($this->connection);
-        $service->setToken($this->token);
-
-        $service->expects($this->once())
-            ->method('refreshToken')
-            ->willReturn($newToken);
-
-        $result = $service->getFromBox('some/uri', 'decoded');
-        $this->assertEquals(['id' => '123'], $result);
-        $this->assertSame($newToken, $service->getToken());
-    }
-
-    public function test401RefreshRetryFlowForSendUpdateToBox(): void
-    {
-        $response401 = $this->createMock(BoxResponseInterface::class);
-        $response401->method('isSuccessful')->willReturn(false);
-        $response401->method('getStatusCode')->willReturn(401);
-        $response401->method('getHeaderLine')->with('WWW-Authenticate')->willReturn('');
-
-        $response200 = $this->createMock(BoxResponseInterface::class);
-        $response200->method('isSuccessful')->willReturn(true);
-        $response200->method('getContent')->willReturn(json_encode(['id' => '123']));
-        $response200->method('json')->willReturn(['id' => '123']);
-
-        $this->connection->expects($this->exactly(2))
-            ->method('put')
-            ->willReturnOnConsecutiveCalls($response401, $response200);
-
-        $newToken = $this->createMock(TokenInterface::class);
-
-        $service = $this->getMockBuilder(Service::class)
-            ->onlyMethods(['refreshToken'])
-            ->getMock();
-        $service->setAuthorizedConnection($this->connection);
-        $service->setToken($this->token);
-
-        $service->expects($this->once())
-            ->method('refreshToken')
-            ->willReturn($newToken);
-
-        $result = $service->sendUpdateToBox('some/uri', ['name' => 'new name'], 'decoded');
-        $this->assertEquals(['id' => '123'], $result);
-        $this->assertSame($newToken, $service->getToken());
-    }
-
-    public function testRefreshFailurePreservesContext(): void
+    public function test401ThrowsExceptionWithoutRetry(): void
     {
         $response401 = $this->createMock(BoxResponseInterface::class);
         $response401->method('isSuccessful')->willReturn(false);
         $response401->method('getStatusCode')->willReturn(401);
         $response401->method('getContent')->willReturn(json_encode(['code' => 'unauthorized']));
 
-        $this->connection->method('query')->willReturn($response401);
+        $this->connection->expects($this->once())
+            ->method('query')
+            ->willReturn($response401);
 
-        $service = $this->getMockBuilder(Service::class)
-            ->onlyMethods(['refreshToken'])
-            ->getMock();
-        $service->setAuthorizedConnection($this->connection);
-        $service->setToken($this->token);
+        $this->expectException(BoxResponseException::class);
+        $this->expectExceptionCode(401);
 
-        $refreshException = new BoxException('Refresh failed');
-        $service->method('refreshToken')->willThrowException($refreshException);
-
-        try {
-            $service->getFromBox('some/uri');
-        } catch (BoxException $e) {
-            $this->assertStringContainsString('encountered exception during refresh token attempt: Refresh failed', $e->getMessage());
-            $this->assertContains($refreshException, $e->getContext());
-            // It should also contain the original BoxResponseException
-            $foundBRE = false;
-            foreach ($e->getContext() as $ctx) {
-                if ($ctx instanceof BoxResponseException && $ctx->getCode() === 401) {
-                    $foundBRE = true;
-                    break;
-                }
-            }
-            $this->assertTrue($foundBRE, 'Original BoxResponseException not found in context');
-            return;
-        }
-
-        $this->fail('BoxException was not thrown');
+        $this->service->getFromBox('some/uri', 'decoded');
     }
 }

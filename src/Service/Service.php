@@ -39,7 +39,6 @@ namespace Box\Service;
 use Box\Exception\BoxResponseException;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Exception\BoxException;
-use Box\Connection\Connection;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\Token;
 use Box\Connection\Token\TokenInterface;
@@ -60,19 +59,12 @@ class Service implements ServiceInterface, LoggerAwareInterface
     use BoxLoggerTrait;
 
     /**
-     * basic connection used in initial authorization to execute token refresh for authorized connection
-     * @var Connection|ConnectionInterface
+     * @var ConnectionInterface|null
      */
     protected $connection;
 
     /**
-     * separate connection object that contains the token and has set the auth headers {@see ConnectionFactory}
-     * @var Connection|ConnectionInterface
-     */
-    protected $authorizedConnection;
-
-    /**
-     * @var Token|TokenInterface
+     * @var TokenInterface|null
      */
     protected $token;
 
@@ -91,41 +83,24 @@ class Service implements ServiceInterface, LoggerAwareInterface
         'array',
     ];
 
-    public function getAuthorizedConnection(): ConnectionInterface
-    {
-        if (!$this->authorizedConnection instanceof ConnectionInterface) {
-            throw new RuntimeException("ConnectionInterface not found");
-        }
-
-        $token = $this->getToken();
-        $this->authorizedConnection->setAccessToken($token->getAccessToken());
-
-        return $this->authorizedConnection;
-    }
-
-    /**
-     * @param Connection|ConnectionInterface $authorizedConnection
-     * @return void
-     */
-    public function setAuthorizedConnection($authorizedConnection = null)
-    {
-        $this->authorizedConnection = $authorizedConnection;
-    }
-
     /**
      * {@inheritdoc}
+     * @return ConnectionInterface
      */
     public function getConnection()
     {
         if (!$this->connection instanceof ConnectionInterface) {
-            throw new \RuntimeException("ConnectionInterface not found");
+            throw new RuntimeException("ConnectionInterface not found");
         }
+
+        $token = $this->getToken();
+        $this->connection->setAccessToken($token->getAccessToken());
 
         return $this->connection;
     }
 
     /**
-     * @param Connection|ConnectionInterface $connection
+     * @param ConnectionInterface|null $connection
      * @return void
      */
     public function setConnection($connection = null)
@@ -287,7 +262,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
             $params = json_encode($params);
         }
 
-        $response = $this->getAuthorizedConnection()->put($uri, $params);
+        $response = $this->getConnection()->put($uri, $params);
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug(
                 'raw return: ' . $response,
@@ -313,7 +288,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
             throw new BadMethodCallException("please provide a URI");
         }
 
-        $connection = $this->getAuthorizedConnection();
+        $connection = $this->getConnection();
 
         $response = $connection->query($uri);
         if ($this->getLogger() instanceof LoggerInterface) {
@@ -494,195 +469,12 @@ class Service implements ServiceInterface, LoggerAwareInterface
     }
 
     /**
-     * @deprecated since v0.11.0, will be removed in v1.0.0. Connection now automatically applies auth headers when an access token is set.
-     * {@inheritdoc}
-     */
-    public function getConnectionHeaders()
-    {
-        return [$this->getAuthorizationHeader()];
-    }
-
-    /**
-     * @deprecated since v0.11.0, will be removed in v1.0.0. Use Connection::getAuthorizationHeader() via connection.
-     * {@inheritdoc}
-     */
-    public function getAuthorizationHeader()
-    {
-        $token = $this->getToken();
-
-        $header = "Authorization: Bearer " . $token->getAccessToken();
-
-        return $header;
-    }
-
-    /**
      * this does not update the token storage with the refreshed token; that action is handled by user or a wrapped
      * method
      * {@inheritdoc}
      *
      * @throws BoxException
      */
-    public function refreshToken(): TokenInterface
-    {
-        $token = $this->getToken();
-
-        $params = [];
-        $params['refresh_token'] = $token->getRefreshToken();
-        $params['client_id'] = $this->getClientId();
-        $params['client_secret'] = $this->getClientSecret();
-        $params['grant_type'] = 'refresh_token';
-
-        $deviceId = $this->getDeviceId();
-        if (null !== $deviceId) {
-            $params['device_id'] = $deviceId;
-        }
-
-        $deviceName = $this->getDeviceName();
-        if (null !== $deviceName) {
-            $params['device_name'] = $deviceName;
-        }
-
-        $connection = $this->getConnection();
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $redactedParams = $this->getRedactor()->redactArray($params);
-            $this->getLogger()->debug(
-                'refresh token params: ' . var_export($redactedParams, true),
-                [
-                    __METHOD__ . ":" . __LINE__,
-                ]
-            );
-        }
-
-        $response = $connection->post(self::TOKEN_URI, $params);
-        $json = $response->getContent();
-
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $redactedJson = $this->getRedactor()->redactString($json);
-            $this->getLogger()->debug(
-                'raw refresh return: ' . var_export($redactedJson, true),
-                [
-                    __METHOD__ . ":" . __LINE__,
-                ]
-            );
-        }
-
-        if (!$response->isSuccessful()) {
-            throw new BoxResponseException('Token refresh failed', $response->getStatusCode(), null, $response);
-        }
-
-        try {
-            $decoded = $response->json(false);
-            $flat = $response->json(true);
-        } catch (BoxException $e) {
-            $errorCheck = [];
-            $errorCheck['error'] = "sdk_json_decode";
-            $errorCheck['error_description'] = "unable to decode: " . $e->getMessage();
-            $this->error($errorCheck, null, $response);
-        }
-
-        if (is_array($flat) && array_key_exists('error', $flat)) {
-            $this->error($flat, null, $response);
-        }
-
-        $this->setTokenData($token, $decoded);
-
-        $this->setToken($token);
-
-        return $token;
-    }
-
-    /**
-     * @param TokenInterface $token
-     * @param mixed $data
-     * @return TokenInterface
-     */
-    public function setTokenData(TokenInterface $token, $data): TokenInterface
-    {
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $redactedData = $this->getRedactor()->redactArray((array)$data);
-            $this->getLogger()->debug(
-                'token data: ' . var_export($redactedData, true),
-                [
-                    __METHOD__ . ":" . __LINE__,
-                ]
-            );
-        }
-
-        if (is_array($data)) {
-            $token->setAccessToken($data['access_token']);
-            $token->setExpiresIn($data['expires_in']);
-            $token->setTokenType($data['token_type']);
-            $token->setRefreshToken($data['refresh_token']);
-        } else {
-            if ($data instanceof stdClass) {
-                $token->setAccessToken($data->access_token);
-                $token->setRefreshToken($data->refresh_token);
-                $token->setExpiresIn($data->expires_in);
-                $token->setTokenType($data->token_type);
-            } else {
-                throw new RuntimeException('unexpected token data. unable to set. given ('
-                    . var_export($data, true)
-                    . ')');
-            }
-        }
-
-        return $token;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function destroyToken(TokenInterface $token, $returnType = 'decoded')
-    {
-        $this->validateReturnType($returnType);
-        $params['client_id'] = $this->getClientId();
-        $params['client_secret'] = $this->getClientSecret();
-        // The access_token or refresh_token to be destroyed. Only one is required, though both will be destroyed.
-        $params['token'] = $token->getAccessToken();
-
-        $connection = $this->getConnection();
-
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $redactedParams = $this->getRedactor()->redactArray($params);
-            $this->getLogger()->debug(
-                'destroy token params: ' . var_export($redactedParams, true),
-                [
-                    __METHOD__ . ":" . __LINE__,
-                ]
-            );
-        }
-
-        $response = $connection->post(self::REVOKE_URI, $params);
-
-        if (!$response->isSuccessful()) {
-            throw new BoxResponseException('Token destruction failed', $response->getStatusCode(), null, $response);
-        }
-
-        $json = $response->getContent();
-        // @todo add error handling for null data
-
-        try {
-            $decoded = $response->json();
-            $flat = $response->json(true);
-        } catch (\JsonException $e) {
-            // Revoke often returns empty body on success, so we might need to handle that
-            $decoded = new stdClass();
-            $flat = [];
-        }
-
-        $data = match ($returnType) {
-            'decoded' => $decoded,
-            'flat', 'array' => $flat,
-            'original' => $json,
-            default => throw new OutOfBoundsException($returnType . " is not a valid result type."),
-        };
-
-        // remove token from storage
-        // (De-coupled in 12.4: storage removal is deferred to orchestration layer)
-
-        return $data;
-    }
-
     /**
      * @param string $type
      * @return void
@@ -753,58 +545,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
      */
     public function refreshConnection($callback, $params, $be = null)
     {
-        $currentToken = clone $this->getToken();
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug(
-                'currentToken: ' . var_export($currentToken, true),
-                [
-                    __METHOD__ . ":" . __LINE__,
-                    $be->getTraceAsString(),
-                    $be->getBoxCode(),
-                ]
-            );
-        }
-
-        try {
-            $refreshedToken = $this->refreshToken();
-
-            // (De-coupled in 12.4: storage update is deferred to orchestration layer)
-            $this->setToken($refreshedToken);
-
-            // retry query
-            $boxData = call_user_func_array($callback, $params);
-            //            $boxData = $this->putIntoBox($uri, $params, $type);
-
-            if ($this->getLogger() instanceof LoggerInterface) {
-                $this->getLogger()->debug(
-                    'retry put return: ' . var_export($boxData, true),
-                    [
-                        __METHOD__ . ":" . __LINE__,
-                    ]
-                );
-            }
-        } catch (BoxException $refreshException) {
-            $refreshMessage = "encountered exception during refresh token attempt: " . $refreshException->getMessage();
-            $finalException = new BoxException($refreshMessage, $refreshException->getCode(), $be);
-            $finalException->addContext($refreshException);
-            $finalException->addContext($be);
-            if ($this->getLogger() instanceof LoggerInterface) {
-                $this->getLogger()->error(
-                    $refreshMessage,
-                    [
-                        __METHOD__ . ":" . __LINE__,
-                        $finalException->getTraceAsString(),
-                        $refreshException->getBoxCode(),
-                        $refreshException->getError(),
-                        $refreshException->getErrorDescription(),
-                        implode("\n", $refreshException->getContext()),
-                    ]
-                );
-            }
-            throw $finalException;
-        }
-
-        return $boxData;
+        throw $be;
     }
 
     /**

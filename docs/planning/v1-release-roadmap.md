@@ -1,6 +1,6 @@
 # v1 Release Roadmap
 
-**Strategic Status: Client Facade and Legacy Surface Review (Step 13.6)**
+**Strategic Status: JWT/S2S Feasibility and Dependency Review (Step 14)**
 
 Roadmap reference: v1 Steps 10–17
 
@@ -56,14 +56,15 @@ This work assumes the completion of:
 | 11.8 | Documentation, Migration, and Planning Drift Cleanup | ✓ |
 | 11.9 | Final Integration Review, Code/Plan Conformance, and New-Chat Handoff | ✓ |
 | 12 | [Token Storage Completion and Integration](#step-12--token-storage-completion-and-integration) | ✓ |
-| 13 | [Auth Lifecycle/Auth Provider Extraction](#step-13--auth-lifecycleauth-provider-extraction) | In Progress |
+| 13 | [Auth Lifecycle/Auth Provider Extraction](#step-13--auth-lifecycleauth-provider-extraction) | ✓ |
 | 13.0 | [Auth Lifecycle/Auth Provider Extraction Discovery](docs/audits/13-auth-lifecycle-provider-extraction-audit.md) | ✓ |
 | 13.1 | [Roadmap Step Naming and Documentation Drift Cleanup](#step-131--roadmap-step-naming-and-documentation-drift-cleanup) | ✓ |
 | 13.2 | [Guzzle Default Transport Cleanup](#step-132--guzzle-default-transport-cleanup) | ✓ |
 | 13.3 | [Connection Interface Modernization (Step 13.3)](#step-133--connection-interface-modernization-step-133) | ✓ |
 | 13.4 | [Authenticated Request Boundary Cleanup](#step-134--authenticated-request-boundary-cleanup) | ✓ |
 | 13.5 | [AuthProvider Extraction (OAuth2)](#step-135--authprovider-extraction-oauth2) | ✓ |
-| 13.6 | [Client Facade and Legacy Surface Review](#step-136--client-facade-and-legacy-surface-review) | Next |
+| 13.6 | [Client Facade and Legacy Surface Review](#step-136--client-facade-and-legacy-surface-review) | ✓ |
+| 14 | [JWT/S2S Feasibility and Dependency Review](#step-14--jwts2s-feasibility-and-dependency-review) | Not Started |
 | 15 | [JWT/S2S Implementation](#step-15--jwts2s-implementation) | Not Started |
 | 15.1 | [Box API Coverage Alignment](#step-151--box-api-coverage-alignment) | Not Started |
 | 15.2 | [API Fixture Realism and Contract Alignment](#step-152--api-fixture-realism-and-contract-alignment) | Not Started |
@@ -263,7 +264,7 @@ Audit and finalize token storage behavior for v1. This ensures the SDK provides 
 
 ---
 
-## Step 13 — Auth Lifecycle/Auth Provider Extraction [In Progress]
+## Step 13 — Auth Lifecycle/Auth Provider Extraction [✓]
 
 ### Purpose
 Move auth lifecycle responsibilities out of `Client` into a dedicated provider/boundary to prepare for JWT/S2S work.
@@ -278,17 +279,19 @@ Move auth lifecycle responsibilities out of `Client` into a dedicated provider/b
 | 13.3 | [Connection Interface Modernization (Step 13.3)](#step-133--connection-interface-modernization-step-133) | ✓ |
 | 13.4 | [Authenticated Request Boundary Cleanup](#step-134--authenticated-request-boundary-cleanup) | ✓ |
 | 13.5 | [AuthProvider Extraction (OAuth2) (Step 13.5)](#step-135--authprovider-extraction-oauth2-step-135) | ✓ |
-| 13.6 | [Client Facade and Legacy Surface Review](#step-136--client-facade-and-legacy-surface-review) | Next |
+| 13.6 | [Client Facade and Legacy Surface Review](#step-136--client-facade-and-legacy-surface-review) | ✓ |
 - Final audit of `Client` surface and auth-adjacent APIs.
-- Perform Semantic Naming and Human-Readable API Clarity Review.
-- Audit `Connection::getAuthorizationHeader()`.
-- Audit service `connection` vs `authorizedConnection` split.
-- Audit getter-time normalization and semantic masking (deferred to Step 17 modernization gate).
-- Ensure all public method/property names are accurate and avoid misleading getter-like names for network/mutation operations.
-- Remove remaining auth-header helpers if any.
-- Verify **v1 Release Readiness (Step 17)** gate is ready.
+- Performed Semantic Naming and Human-Readable API Clarity Review.
+- Collapsed `Service::$connection` and `Service::$authorizedConnection` into a single `connection` property.
+- Removed legacy auth shims: `ConnectionInterface::getAuthorizationHeader()`, `ServiceInterface::getAuthorizedConnection()`, `ServiceInterface::getConnectionHeaders()`.
+- Removed legacy auth shims: `Client::getAuthorizationHeader()`, `Client::setTokenData()`, `Client::setConnectionAuthHeader()`, `Client::auth()`, `Client::buildAuthQuery()`.
+- Verified token storage boundaries remain intact.
+- Auth Lifecycle/Auth Provider Extraction (Step 13) is complete.
+- Legacy service `authorizedConnection` and token-lifecycle methods were removed, not merely deprecated.
+- OAuth2 dynamic `state` support was verified and tested.
+- Updated tests to cover connection state collapse and facade changes.
 - **Guzzle Default Transport**: Make Guzzle the default and only bundled transport path.
-- **Connection Boundary**: Clean up `ConnectionInterface` to remove transport-specific (curl) leakage.
+- **Connection Boundary**: Cleaned up `ConnectionInterface` to remove transport-specific (curl) leakage.
 
 ### Non-Goals
 - Do not implement JWT/S2S in this step (Step 14/15).
@@ -361,6 +364,7 @@ Audit the current SDK against current Box API documentation to ensure core resou
 1. **Audit**:
     - Compare current `FileService`, `FolderService`, `UserService`, `GroupService`, `CollaborationService`, and `EventService` against current Box API docs.
     - Identify missing common/basic CRUD operations or important fields.
+    - **Service Base Modernization**: Perform a modernization review of the `Service` base class. Address obsolete state (`clientId`, `clientSecret`, `deviceId`, `deviceName`), legacy response return-mode helpers, broad base-service request helpers (`queryBox`, etc.), `refreshConnection()` residue, and hydration/response handling mixed into the base service. Verify if services are focused API-operation classes with clear typed returns and if tests preserve obsolete behavior.
 2. **Prioritization**:
     - **Required for v1 baseline**: Files, Folders, Users, Groups, Collaborations, Shared Links, Search, Events.
     - **Evaluate for v1 if feasible**: Comments, Tasks, Metadata, Webhooks, Collections.
@@ -419,6 +423,7 @@ Implement Box webhook signature verification and evaluate whether a full `Webhoo
 Final polish and validation before tagging v1.0.0.
 
 ### Scope
+- **Service Base Modernization Gate**: Final verification that `Service` base modernization and cleanup of legacy response/request helpers is complete.
 - Final documentation pass (README, migration docs).
 - Final changelog pass.
 - Full validation (`composer review`).
@@ -435,7 +440,7 @@ Final polish and validation before tagging v1.0.0.
 - Step 10 Resource Namespace and Interface Rationalization complete. ✓
 - Step 11 Factory Modernization and Service Boundaries complete. ✓
 - Step 12 Token Storage Completion and Integration complete. ✓
-- Step 13 Auth Lifecycle/Auth Provider Extraction complete.
+- Step 13 Auth Lifecycle/Auth Provider Extraction complete. ✓
 - Step 14 JWT/S2S feasibility complete.
 - Step 15 JWT/S2S implementation complete.
 - Step 15.1 API Coverage Alignment complete.

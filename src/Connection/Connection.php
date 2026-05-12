@@ -355,11 +355,6 @@ class Connection implements ConnectionInterface
         return $this->accessToken;
     }
 
-    public function getAuthorizationHeader(): ?string
-    {
-        return $this->getAccessToken() ? 'Bearer ' . $this->getAccessToken() : null;
-    }
-
     public function setHeaders(array $headers = []): void
     {
         $this->headers = $headers;

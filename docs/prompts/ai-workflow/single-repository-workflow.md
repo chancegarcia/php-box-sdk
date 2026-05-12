@@ -10,6 +10,7 @@ This workflow is designed for AI-assisted, slice-based software development with
 - **Inspect Before Editing**: Always examine existing code, tests, and documentation before proposing or making changes.
 - **Preserve Public API**: Do not change public signatures or behavior unless the task explicitly requires a breaking change.
 - **Planned Cutovers**: For major-version transitions, breaking removals are permitted when explicitly planned, tested, and documented.
+- **Test Preservation During V1 Modernization**: Existing pre-v1 tests are not automatically authoritative. During v1 refactors, tests should be classified (true behavior contract, characterization test, legacy shim test, implementation-coupled test, or stale/incorrect test). If a test preserves intentionally removed legacy behavior, it should be updated or removed as part of the slice.
 - **Separate Planning from Implementation**: Use an initial planning phase to define the approach before writing code.
 - **Atomic Slices**: Break large tasks into small, manageable implementation slices.
 - **Review and Commit**: Review every slice's output and commit completed work before starting the next slice.
@@ -160,8 +161,17 @@ The documentation must consistently state:
 - The parent step or initiative status is accurate.
 - Strategic status points to the next slice.
 - No contradictory status entries remain across roadmap, audit, handoff, and task summary.
+- Validation counts in task summary and handoff match the latest validation run.
+- Deprecated “will remove in v1” notices are not acceptable during v1 cleanup if the current work is the planned removal.
 
 The final response should include a brief documentation/status reconciliation item.
+
+## Workflow Guardrails: Crash and Reviewer Recovery
+
+If an AI session crashes, loses context, or is restarted due to reviewer follow-up:
+- **Working Tree Verification**: The assistant must first inspect the current working tree status and diffs to confirm the actual implementation state.
+- **Status Document Reconciliation**: The assistant must re-verify roadmap, audit, and summary files against the actual files present in the repository before continuing.
+- **Handoff Accuracy**: Handoff must always reflect the actual latest completed slice and next slice.
 
 ## Validation
 

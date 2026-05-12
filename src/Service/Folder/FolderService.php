@@ -19,7 +19,9 @@ class FolderService extends Service implements FolderServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * @param string|int $id
+     * @return Folder
+     * @throws \Box\Exception\BoxException
      */
     public function getFolder(string|int $id): Folder
     {
@@ -34,9 +36,8 @@ class FolderService extends Service implements FolderServiceInterface
     public function getFolderBySharedUri(string $sharedUri): Folder|false
     {
         $uri = self::SHARED_ITEM_ENDPOINT;
-        $sharedLinkHeader = "BoxApi: shared_link=" . $sharedUri;
 
-        $connection = $this->getAuthorizedConnection();
+        $connection = $this->getConnection();
         $connection->addHeader('BoxApi', "shared_link=" . $sharedUri);
 
         $response = $connection->query($uri);
@@ -77,7 +78,7 @@ class FolderService extends Service implements FolderServiceInterface
 
         $uri = self::ENDPOINT;
 
-        $response = $this->getAuthorizedConnection()->post($uri, $params, true);
+        $response = $this->getConnection()->post($uri, $params, true);
 
         $data = $this->handleBoxResponse($response, 'flat');
 
@@ -126,7 +127,7 @@ class FolderService extends Service implements FolderServiceInterface
         }
 
         if (is_string($ifMatch) && !empty($ifMatch)) {
-            $connection = $this->getAuthorizedConnection();
+            $connection = $this->getConnection();
             $connection->addHeader('If-Match', $ifMatch);
             $response = $connection->put($uri, $params, true);
             return $this->handleBoxResponse($response, 'flat');
@@ -175,7 +176,7 @@ class FolderService extends Service implements FolderServiceInterface
             $params['name'] = $name;
         }
 
-        $response = $this->getAuthorizedConnection()->post($uri, $params, true);
+        $response = $this->getConnection()->post($uri, $params, true);
 
         $data = $this->handleBoxResponse($response, 'flat');
 

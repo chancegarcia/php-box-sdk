@@ -90,7 +90,7 @@ class FileUploadCommand extends AbstractBoxCommand
             $this->logger->info('Uploading file', ['path' => $filePath, 'folder_id' => $folderId]);
 
             $connection = $client->getConnection();
-            $client->setConnectionAuthHeader($connection);
+            $connection->setAccessToken($accessToken);
 
             $response = $connection->postFile(FileService::UPLOAD_ENDPOINT, $filePath, (int)$folderId);
             $result = $client->parseResponse($response);
