@@ -74,10 +74,11 @@ class ConnectionTest extends TestCase
     {
         $response = $this->createMock(BoxResponseInterface::class);
         $connection = $this->getMockBuilder(Connection::class)
-            ->onlyMethods(['getCurlData'])
+            ->onlyMethods(['request'])
             ->getMock();
         $connection->expects($this->once())
-            ->method('getCurlData')
+            ->method('request')
+            ->with('GET', 'http://example.com')
             ->willReturn($response);
 
         $result = $connection->query('http://example.com');
@@ -88,10 +89,13 @@ class ConnectionTest extends TestCase
     {
         $response = $this->createMock(BoxResponseInterface::class);
         $connection = $this->getMockBuilder(Connection::class)
-            ->onlyMethods(['getCurlData'])
+            ->onlyMethods(['request'])
             ->getMock();
         $connection->expects($this->once())
-            ->method('getCurlData')
+            ->method('request')
+            ->with('POST', 'http://example.com', $this->callback(function ($options) {
+                return $options['body'] === 'foo=bar';
+            }))
             ->willReturn($response);
 
         $result = $connection->post('http://example.com', ['foo' => 'bar']);
@@ -102,10 +106,13 @@ class ConnectionTest extends TestCase
     {
         $response = $this->createMock(BoxResponseInterface::class);
         $connection = $this->getMockBuilder(Connection::class)
-            ->onlyMethods(['getCurlData'])
+            ->onlyMethods(['request'])
             ->getMock();
         $connection->expects($this->once())
-            ->method('getCurlData')
+            ->method('request')
+            ->with('PUT', 'http://example.com', $this->callback(function ($options) {
+                return $options['body'] === 'foo=bar';
+            }))
             ->willReturn($response);
 
         $result = $connection->put('http://example.com', ['foo' => 'bar']);
@@ -116,27 +123,16 @@ class ConnectionTest extends TestCase
     {
         $response = $this->createMock(BoxResponseInterface::class);
         $connection = $this->getMockBuilder(Connection::class)
-            ->onlyMethods(['getCurlData', 'getMimeType', 'initCurl', 'initCurlOpts', 'initAdditionalCurlOpts'])
+            ->onlyMethods(['request'])
             ->getMock();
 
-        $ch = curl_init();
-        $connection->method('initCurl')
-            ->willReturn($ch);
-
-        $connection->method('initCurlOpts')
-            ->willReturn($ch);
-
-        $connection->method('initAdditionalCurlOpts')
-            ->willReturn($ch);
-
-        $connection->method('getMimeType')
-            ->willReturn('text/plain');
-
         $connection->expects($this->once())
-            ->method('getCurlData')
+            ->method('request')
+            ->with('POST', 'http://example.com', $this->callback(function ($options) {
+                return count($options['multipart']) === 2;
+            }))
             ->willReturn($response);
 
-        // Use a real file path and real CURLFile (implicitly via postFile calling createCurlFile)
         $result = $connection->postFile('http://example.com', __FILE__, 0);
         $this->assertSame($response, $result);
     }

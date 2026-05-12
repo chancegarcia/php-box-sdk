@@ -47,11 +47,9 @@ use Box\Exception\UnauthorizedException;
 use Box\Http\FileStream;
 use Box\Http\Response\BoxResponse;
 use Box\Http\Response\BoxResponseInterface;
-use Box\Http\Transport\CurlTransport;
 use Box\Http\Transport\GuzzleTransport;
 use Box\Http\Transport\TransportInterface;
 use Box\Mapper\Hydrator;
-use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxLoggerTrait;
 use CURLFile;
@@ -66,7 +64,7 @@ use CurlHandle;
  * @todo v1: make transport selection the primary way to configure HTTP execution
  * @todo v1: remove client credential synchronization and make Connection the source of truth
  */
-class Connection implements ConnectionInterface, LoggerAwareInterface
+class Connection implements ConnectionInterface
 {
     use LoggerAwareTrait;
     use BoxLoggerTrait;
@@ -83,7 +81,7 @@ class Connection implements ConnectionInterface, LoggerAwareInterface
 
     protected ?string $accessToken = null;
     protected array $headers = [];
-    protected string $transportName = self::TRANSPORT_CURL;
+    protected string $transportName = self::TRANSPORT_GUZZLE;
     protected ?TransportInterface $transport = null;
     protected array $guzzleOptions = [];
 
@@ -622,11 +620,7 @@ class Connection implements ConnectionInterface, LoggerAwareInterface
     public function getTransport(): TransportInterface
     {
         if (null === $this->transport) {
-            if (self::TRANSPORT_GUZZLE === $this->getTransportName()) {
-                $this->transport = new GuzzleTransport();
-            } else {
-                $this->transport = new CurlTransport($this);
-            }
+            $this->transport = new GuzzleTransport();
         }
         return $this->transport;
     }

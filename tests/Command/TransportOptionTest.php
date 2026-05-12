@@ -54,18 +54,8 @@ class TransportOptionTest extends TestCase
         $this->assertTrue($command->getDefinition()->hasOption('transport'));
     }
 
-    public function testApplyCurlTransport(): void
+    public function testApplyCurlTransportFails(): void
     {
-        $this->configProvider->method('getRefreshToken')->willReturn('some-token');
-
-        $token = $this->createMock(TokenInterface::class);
-        $token->method('toArray')->willReturn([]);
-        $this->client->method('refreshToken')->willReturn($token);
-
-        $this->connection->expects($this->once())
-            ->method('setTransportName')
-            ->with(Connection::TRANSPORT_CURL);
-
         $application = new Application();
         $application->add(new AuthRefreshCommand(
             $this->clientFactory,
@@ -77,8 +67,10 @@ class TransportOptionTest extends TestCase
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);
 
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid transport "curl". Allowed transports: guzzle.');
+
         $commandTester->execute(['--transport' => 'curl']);
-        $this->assertEquals(0, $commandTester->getStatusCode());
     }
 
     public function testApplyGuzzleTransport(): void
@@ -122,7 +114,7 @@ class TransportOptionTest extends TestCase
         $commandTester = new CommandTester($command);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid transport "foo". Allowed transports: curl, guzzle.');
+        $this->expectExceptionMessage('Invalid transport "foo". Allowed transports: guzzle.');
 
         $commandTester->execute(['--transport' => 'foo']);
     }

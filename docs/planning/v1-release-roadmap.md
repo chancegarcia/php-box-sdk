@@ -1,6 +1,6 @@
 # v1 Release Roadmap
 
-**Strategic Status: Guzzle Default Transport Cleanup (Step 13.2)**
+**Strategic Status: Connection Interface Modernization (Step 13.3)**
 
 Roadmap reference: v1 Steps 10–17
 
@@ -59,7 +59,8 @@ This work assumes the completion of:
 | 13 | [Auth Lifecycle/Auth Provider Extraction](#step-13--auth-lifecycleauth-provider-extraction) | In Progress |
 | 13.0 | [Auth Lifecycle/Auth Provider Extraction Discovery](docs/audits/13-auth-lifecycle-provider-extraction-audit.md) | ✓ |
 | 13.1 | [Roadmap Step Naming and Documentation Drift Cleanup](#step-131--roadmap-step-naming-and-documentation-drift-cleanup) | ✓ |
-| 13.2 | [Guzzle Default Transport Cleanup](#step-132--guzzle-default-transport-cleanup) | Not Started |
+| 13.2 | [Guzzle Default Transport Cleanup](#step-132--guzzle-default-transport-cleanup) | ✓ |
+| 13.3 | Connection Interface Modernization (Curl Removal) | Next |
 | 14 | [JWT/S2S Feasibility and Dependency Review](#step-14--jwts2s-feasibility-and-dependency-review) | Not Started |
 | 15 | [JWT/S2S Implementation](#step-15--jwts2s-implementation) | Not Started |
 | 15.1 | [Box API Coverage Alignment](#step-151--box-api-coverage-alignment) | Not Started |
@@ -260,15 +261,26 @@ Audit and finalize token storage behavior for v1. This ensures the SDK provides 
 
 ---
 
-## Step 13 — Auth Lifecycle/Auth Provider Extraction
+## Step 13 — Auth Lifecycle/Auth Provider Extraction [In Progress]
 
 ### Purpose
 Move auth lifecycle responsibilities out of `Client` into a dedicated provider/boundary to prepare for JWT/S2S work.
+
+### Status Table
+
+| Slice | Title | Status |
+| :--- | :--- | :--- |
+| 13.0 | Auth Lifecycle/Auth Provider Extraction Discovery | ✓ |
+| 13.1 | Roadmap Step Naming and Documentation Drift Cleanup | ✓ |
+| 13.2 | Guzzle Default Transport Cleanup | ✓ |
+| 13.3 | Connection Interface Modernization (Curl Removal) | Next |
 
 ### Scope
 - Move authorization-code exchange, refresh, and revoke/destroy orchestration behind an `AuthProviderInterface`.
 - Preserve `Client` as a facade while reducing direct auth orchestration inside it.
 - Maintain compatibility for current OAuth2 usage via a default provider.
+- **Guzzle Default Transport**: Make Guzzle the default and only bundled transport path.
+- **Connection Boundary**: Clean up `ConnectionInterface` to remove transport-specific (curl) leakage.
 
 ### Non-Goals
 - Do not implement JWT/S2S in this step (Step 14/15).

@@ -10,7 +10,6 @@ use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Http\Transport\TransportInterface;
 use PHPUnit\Framework\TestCase;
-use CURLFile;
 
 class ConnectionUploadCompatibilityTest extends TestCase
 {
@@ -108,41 +107,6 @@ class ConnectionUploadCompatibilityTest extends TestCase
                     return $filePart['name'] === 'file' &&
                            is_resource($filePart['contents']) &&
                            $filePart['filename'] === $filename;
-                })
-            )
-            ->willReturn($response);
-
-        $result = $connection->postFile('http://example.com', $stream, 0);
-        $this->assertSame($response, $result);
-
-        fclose($stream->getResource());
-    }
-
-    public function testPostFileWithCurlTransportAndFileStreamCreatesTempFile(): void
-    {
-        $transport = $this->createMock(TransportInterface::class);
-        $response = $this->createMockResponse();
-
-        $connection = new Connection();
-        $connection->setTransportName(Connection::TRANSPORT_CURL);
-        $connection->setTransport($transport);
-
-        $content = "test content for curl";
-        $filename = "curl_test.txt";
-        $stream = FileStream::fromString($content, $filename, "text/plain");
-
-        $transport->expects($this->once())
-            ->method('request')
-            ->with(
-                'POST',
-                'http://example.com',
-                $this->callback(function ($options) use ($filename) {
-                    $multipart = $options['multipart'];
-                    $filePart = $multipart[0];
-
-                    return $filePart['name'] === 'file' &&
-                           $filePart['contents'] instanceof CURLFile &&
-                           $filePart['contents']->getPostFilename() === $filename;
                 })
             )
             ->willReturn($response);

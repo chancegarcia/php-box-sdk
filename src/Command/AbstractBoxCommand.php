@@ -56,7 +56,7 @@ abstract class AbstractBoxCommand extends Command
             'transport',
             null,
             InputOption::VALUE_REQUIRED,
-            sprintf('The HTTP transport to use. Allowed values: %s, %s', Connection::TRANSPORT_CURL, Connection::TRANSPORT_GUZZLE)
+            sprintf('The HTTP transport to use. Allowed values: %s', Connection::TRANSPORT_GUZZLE)
         );
     }
 
@@ -67,7 +67,7 @@ abstract class AbstractBoxCommand extends Command
             return;
         }
 
-        $allowedTransports = [Connection::TRANSPORT_CURL, Connection::TRANSPORT_GUZZLE];
+        $allowedTransports = [Connection::TRANSPORT_GUZZLE];
         if (!in_array($transport, $allowedTransports, true)) {
             throw new InvalidArgumentException(
                 sprintf('Invalid transport "%s". Allowed transports: %s.', $transport, implode(', ', $allowedTransports))

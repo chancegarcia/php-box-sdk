@@ -5,7 +5,9 @@
 - **Working tree**: Clean.
 - **Latest commit**: `a5d3328a1603bb312482eb7b273104f5dd98840d` (Roadmap reconciliation).
 - **Step 12 Status**: COMPLETED. Token storage is passive, context-aware, and decoupled from services.
-- **Step 13 Status**: NOT STARTED.
+- **Step 13 Status**: IN PROGRESS.
+
+> **Note on Audit Context**: This section (Section 1) reflects the initial startup snapshot for **Auth Lifecycle/Auth Provider Extraction (Step 13)**. For current slice status, refer to Section 9.
 
 ## 2. Step Naming / Documentation Drift Notes
 
@@ -128,12 +130,12 @@ Remaining `Client` responsibilities:
 - Standardize step references to `Step Title (Step N)`.
 - Fix drift in roadmap and audits.
 
-### 13.2 — Guzzle Default Transport Cleanup (NEXT)
+### 13.2 — Guzzle Default Transport Cleanup (COMPLETED)
 - Default to `TRANSPORT_GUZZLE`.
 - Remove curl transport and selection path.
 - Update tests to rely on Guzzle.
 
-### 13.3 — Connection Interface Modernization (Curl Removal)
+### 13.3 — Connection Interface Modernization (Curl Removal) (NEXT)
 - Remove curl-specific methods from `ConnectionInterface`.
 - Flatten `Connection` implementation.
 - Update file upload to use Guzzle-native multipart.
