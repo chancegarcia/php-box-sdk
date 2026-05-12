@@ -3,6 +3,22 @@
 ## Unreleased
 
 ### Summary
+- Hardened the in-memory token storage implementation by verifying full lifecycle behavior, context isolation, and edge-case conformance.
+- Expanded the token storage contract tests to ensure predictable behavior for empty stores, token updates, and safe removal of missing contexts.
+- Confirmed that equivalent context objects correctly resolve to the same stored token, supporting robust multi-user and multi-enterprise SDK usage.
+
+### Developer Details
+- **Token Storage Hardening**:
+    - Verified that `TokenStorageContainer` returns `null` when retrieving from an empty store or for a missing context.
+    - Enforced one-active-token-per-context behavior: storing or updating a token for an existing context replaces the previous value.
+    - Verified that updating a missing context in `TokenStorageContainer` is treated as a store operation, ensuring no tokens are lost.
+    - Confirmed that `removeToken` is safe and idempotent when called for a missing context.
+    - Verified full isolation between distinct contexts (varying by user, enterprise, or client identifiers).
+    - Added comprehensive unit tests in `TokenStorageContractTest` covering these lifecycle and edge cases.
+
+## v0.11.5
+
+### Summary
 - Finalized Step 10 by migrating all primary resources to the `Box\Resource` namespace and removing redundant mirror interfaces.
 - Standardized endpoint constant ownership by moving API URI constants from removed resource interfaces to their respective concrete services.
 - Improved internal type safety for events by updating the `EventResponse` DTO to use the final `Box\Resource\Event` type.
