@@ -52,6 +52,21 @@ class EnvConfigProvider implements ConfigProviderInterface
         return $_ENV['BOX_ACCESS_TOKEN'] ?? $_SERVER['BOX_ACCESS_TOKEN'] ?? null;
     }
 
+    public function getStoragePdoDsn(): ?string
+    {
+        return $_ENV['BOX_STORAGE_PDO_DSN'] ?? $_SERVER['BOX_STORAGE_PDO_DSN'] ?? null;
+    }
+
+    public function getStoragePdoUser(): ?string
+    {
+        return $_ENV['BOX_STORAGE_PDO_USER'] ?? $_SERVER['BOX_STORAGE_PDO_USER'] ?? null;
+    }
+
+    public function getStoragePdoPassword(): ?string
+    {
+        return $_ENV['BOX_STORAGE_PDO_PASS'] ?? $_SERVER['BOX_STORAGE_PDO_PASS'] ?? null;
+    }
+
     public function getJsonFormatterClass(): ?string
     {
         return $_ENV['BOX_JSON_FORMATTER'] ?? $_SERVER['BOX_JSON_FORMATTER'] ?? null;

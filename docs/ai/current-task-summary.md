@@ -1,24 +1,20 @@
 ### Summary
-- Completed Slice 12.5 by adding token storage integration hooks to the Client.
-- This enables the Client to coordinate passive token storage operations (load, save, remove) and automatically persist tokens after successful exchanges or refreshes.
+- Completed the Slice 12.6 follow-up by centralizing CLI storage configuration within the SDK's config provider abstraction.
+- Removed direct `$_ENV` and `$_SERVER` access from command classes to improve maintainability and testability.
 
 ### Changes
-- Updated Box\Client with optional $tokenStorage and $tokenStorageContext properties and their respective getters/setters.
-- Added explicit helper methods to Box\Client: loadTokenFromStorage(), saveTokenToStorage(), and removeTokenFromStorage().
-- Enhanced Client::getAccessToken() and Client::refreshToken() to automatically call saveTokenToStorage() if a storage and context are configured.
-- Added Box\Tests\ClientStorageIntegrationTest to verify all new storage-related functionality in the Client.
-- Updated docs/audits/12-token-storage-completion-audit.md and docs/planning/10-v1-release-work.md to reflect the completion of slices 12.2 through 12.5.
+- Updated `ConfigProviderInterface` to include `getStoragePdoDsn()`, `getStoragePdoUser()`, and `getStoragePdoPassword()`.
+- Implemented these new methods in `EnvConfigProvider` to handle environment-based PDO settings.
+- Refactored `AbstractBoxCommand` to use `ConfigProviderInterface` for resolving PDO storage settings, ensuring CLI options retain precedence.
+- Updated constructors of all child commands (`AuthExchangeCommand`, `AuthRefreshCommand`, `AuthUrlCommand`, `FileUploadCommand`) to inject the required `ConfigProviderInterface` into the base class.
+- Enhanced `tests/Command/AuthStorageIntegrationTest.php` with new test cases for PDO configuration resolution and precedence.
 
 ### Verification
-- Ran composer test tests/ClientStorageIntegrationTest.php - All 10 tests passed.
-- Ran project-wide validation: composer test, composer lint, composer cs:check, and composer analyse. All passed.
-- Verified that existing behavior without storage remains compatible.
+- Ran `composer test tests/Command` (22 tests, all passing, including new PDO integration tests).
+- Ran `composer test tests/ClientStorageIntegrationTest.php tests/Storage` (28 tests, all passing).
+- Validated codebase with `composer lint`, `composer cs:check`, and `composer analyse` (all clean).
 
 ### Notes
-- Services remain completely storage-independent, as verified in Slice 12.4.
-- CLI/auth harness integration is deferred to Slice 12.6.
-
-### Follow-ups
-- 12.5 Client integration hooks for token storage.
-- 12.6 CLI/auth harness storage integration.
-- Post-Step-12: Dedicated Auth Lifecycle/Auth Provider extraction.
+- Services remain completely storage-independent.
+- Token storage implementations remain passive persistence layers.
+- Slice 12.7 (Final Review) is the next scheduled task.

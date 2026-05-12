@@ -21,11 +21,11 @@ class AuthExchangeCommand extends AbstractBoxCommand
 
     public function __construct(
         BoxClientFactoryInterface $clientFactory,
-        private ConfigProviderInterface $configProvider,
+        ConfigProviderInterface $configProvider,
         private ConsoleOutputFormatter $outputFormatter,
         LoggerFactory $loggerFactory
     ) {
-        parent::__construct($clientFactory, $loggerFactory);
+        parent::__construct($clientFactory, $loggerFactory, $configProvider);
     }
 
     protected function configure(): void
@@ -47,6 +47,7 @@ class AuthExchangeCommand extends AbstractBoxCommand
 
         $client = $this->clientFactory->createClient();
         $this->applyTransportOption($input, $client);
+        $this->applyStorageOption($input, $client);
 
         $code = $input->getArgument('code') ?? $this->configProvider->getAuthCode();
 

@@ -13,4 +13,19 @@ interface ConfigProviderInterface
     public function getUploadFilePath(): ?string;
     public function getUploadFolderId(): string;
     public function getAccessToken(): ?string;
+
+    /**
+     * @return string|null
+     */
+    public function getStoragePdoDsn(): ?string;
+
+    /**
+     * @return string|null
+     */
+    public function getStoragePdoUser(): ?string;
+
+    /**
+     * @return string|null
+     */
+    public function getStoragePdoPassword(): ?string;
 }

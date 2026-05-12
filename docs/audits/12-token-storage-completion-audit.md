@@ -2,7 +2,7 @@
 
 ## Status
 - **Date**: 2026-05-12
-- **Status**: Slice 12.4 Completed
+- **Status**: Slice 12.6 Follow-up Completed
 - **Step**: 12 (v1 Release)
 
 ## Step 12 Requirements Summary
@@ -106,6 +106,7 @@ Step 12 aims to finalize the passive token storage layer for the v1 release.
 - **Goal**: Allow CLI commands to use storage.
 - **Scope**: Update auth-related commands.
 - **Files**: `src/Command/*.php`.
+- **Status**: Completed (Slice 12.6)
 
 ### Step 12.7 — Type-Safety, Docs, and Final Review
 - **Goal**: PHPStan fixes and documentation updates.

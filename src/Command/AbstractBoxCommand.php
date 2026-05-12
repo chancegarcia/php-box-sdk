@@ -11,9 +11,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Psr\Log\LoggerInterface;
 use Box\Logger\LoggerFactory;
+use Box\Dto\TokenStorageContext;
+use Box\Storage\Token\Container\TokenStorageContainer;
+use Box\Storage\Token\Pdo\TokenStorage as PdoTokenStorage;
 use Exception;
 use InvalidArgumentException;
 use Box\Contract\BoxClientFactoryInterface;
+use Box\Contract\ConfigProviderInterface;
 
 abstract class AbstractBoxCommand extends Command
 {
@@ -22,7 +26,8 @@ abstract class AbstractBoxCommand extends Command
 
     public function __construct(
         protected BoxClientFactoryInterface $clientFactory,
-        protected LoggerFactory $loggerFactory
+        protected LoggerFactory $loggerFactory,
+        protected ConfigProviderInterface $configProvider
     ) {
         parent::__construct();
     }
@@ -33,7 +38,14 @@ abstract class AbstractBoxCommand extends Command
             ->addOption('log-config', null, InputOption::VALUE_REQUIRED, 'Path to a different log config file')
             ->addOption('log-dir', null, InputOption::VALUE_REQUIRED, 'Different log directory')
             ->addOption('log-file', null, InputOption::VALUE_REQUIRED, 'Different base log file name (contains all levels)')
-            ->addOption('json', null, InputOption::VALUE_NONE, 'Output result as JSON to console');
+            ->addOption('json', null, InputOption::VALUE_NONE, 'Output result as JSON to console')
+            ->addOption('use-storage', null, InputOption::VALUE_NONE, 'Enable token storage')
+            ->addOption('storage-type', null, InputOption::VALUE_REQUIRED, 'Storage type: memory (default) or pdo')
+            ->addOption('user-id', null, InputOption::VALUE_REQUIRED, 'User ID for storage context')
+            ->addOption('enterprise-id', null, InputOption::VALUE_REQUIRED, 'Enterprise ID for storage context')
+            ->addOption('pdo-dsn', null, InputOption::VALUE_REQUIRED, 'PDO DSN for storage (required if storage-type is pdo)')
+            ->addOption('pdo-user', null, InputOption::VALUE_REQUIRED, 'PDO username')
+            ->addOption('pdo-pass', null, InputOption::VALUE_REQUIRED, 'PDO password');
 
         $this->configureTransportOption();
     }
@@ -63,6 +75,51 @@ abstract class AbstractBoxCommand extends Command
         }
 
         $client->getConnection()->setTransportName($transport);
+    }
+
+    protected function applyStorageOption(InputInterface $input, Client $client): void
+    {
+        if (!$input->getOption('use-storage')) {
+            return;
+        }
+
+        $storageType = $input->getOption('storage-type') ?? 'memory';
+        $userId = $input->getOption('user-id');
+        $enterpriseId = $input->getOption('enterprise-id');
+        $clientId = $client->getClientId();
+
+        if (null === $userId && null === $enterpriseId) {
+            $this->logger->warning('Storage enabled but no user-id or enterprise-id provided. Storage may not function correctly if context is required.');
+        }
+
+        $context = new TokenStorageContext(
+            userId: $userId,
+            enterpriseId: $enterpriseId,
+            clientId: $clientId
+        );
+
+        $client->setTokenStorageContext($context);
+
+        if ('pdo' === $storageType) {
+            $dsn = $input->getOption('pdo-dsn') ?? $this->configProvider->getStoragePdoDsn();
+            if (null === $dsn) {
+                throw new InvalidArgumentException('PDO DSN is required when storage-type is pdo. Use --pdo-dsn or BOX_STORAGE_PDO_DSN env.');
+            }
+            $user = $input->getOption('pdo-user') ?? $this->configProvider->getStoragePdoUser();
+            $pass = $input->getOption('pdo-pass') ?? $this->configProvider->getStoragePdoPassword();
+
+            $storage = new PdoTokenStorage($dsn, $user, $pass);
+            $client->setTokenStorage($storage);
+        } else {
+            $client->setTokenStorage(new TokenStorageContainer());
+        }
+
+        $this->logger->info('Token storage configured for command', [
+            'type' => $storageType,
+            'user_id' => $userId,
+            'enterprise_id' => $enterpriseId,
+            'client_id' => $clientId
+        ]);
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output): void

@@ -21,11 +21,11 @@ class AuthRefreshCommand extends AbstractBoxCommand
 
     public function __construct(
         BoxClientFactoryInterface $clientFactory,
-        private ConfigProviderInterface $configProvider,
+        ConfigProviderInterface $configProvider,
         private ConsoleOutputFormatter $outputFormatter,
         LoggerFactory $loggerFactory
     ) {
-        parent::__construct($clientFactory, $loggerFactory);
+        parent::__construct($clientFactory, $loggerFactory, $configProvider);
     }
 
     protected function configure(): void
@@ -46,11 +46,21 @@ class AuthRefreshCommand extends AbstractBoxCommand
 
         $client = $this->clientFactory->createClient();
         $this->applyTransportOption($input, $client);
+        $this->applyStorageOption($input, $client);
 
         $refreshTokenValue = $this->configProvider->getRefreshToken();
 
+        if (!$refreshTokenValue && $input->getOption('use-storage')) {
+            $io->comment('Attempting to load token from storage...');
+            $storedToken = $client->loadTokenFromStorage();
+            if ($storedToken) {
+                $refreshTokenValue = $storedToken->getRefreshToken();
+                $io->note('Loaded refresh token from storage.');
+            }
+        }
+
         if (!$refreshTokenValue) {
-            $io->error('Refresh token is required. Set BOX_REFRESH_TOKEN env.');
+            $io->error('Refresh token is required. Set BOX_REFRESH_TOKEN env or enable storage with a stored token.');
             $this->logger->error('Refresh token is missing');
             return Command::FAILURE;
         }

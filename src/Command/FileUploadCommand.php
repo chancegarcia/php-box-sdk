@@ -23,11 +23,11 @@ class FileUploadCommand extends AbstractBoxCommand
 
     public function __construct(
         BoxClientFactoryInterface $clientFactory,
-        private ConfigProviderInterface $configProvider,
+        ConfigProviderInterface $configProvider,
         private ConsoleOutputFormatter $outputFormatter,
         LoggerFactory $loggerFactory
     ) {
-        parent::__construct($clientFactory, $loggerFactory);
+        parent::__construct($clientFactory, $loggerFactory, $configProvider);
     }
 
     protected function configure(): void
