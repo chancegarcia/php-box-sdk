@@ -30,7 +30,8 @@ class ConnectionFactory implements ConnectionFactoryInterface
         $token = $options['token'];
 
         unset($options['token']);
-        if (!is_string($token->getAccessToken())) {
+        $accessToken = $token->getAccessToken();
+        if (!is_string($accessToken)) {
             throw new BoxException('TokenInterface::getAccessToken() does not contain a string access token');
         }
 
@@ -43,17 +44,19 @@ class ConnectionFactory implements ConnectionFactoryInterface
             }
         }
 
-        $headers = ["Authorization: Bearer " . $token->getAccessToken()];
+        $connection = $this->createConnection($options);
+        $connection->setAccessToken($accessToken);
 
         if (is_array($additionalHeaders)) {
-            $headers = array_merge($headers, $additionalHeaders);
-        }
-
-        $connection = $this->createConnection($options);
-        foreach ($headers as $header) {
-            if (str_contains($header, ': ')) {
-                [$name, $value] = explode(': ', $header, 2);
-                $connection->addHeader($name, $value);
+            foreach ($additionalHeaders as $name => $value) {
+                if (is_int($name)) {
+                    if (str_contains($value, ': ')) {
+                        [$headerName, $headerValue] = explode(': ', $value, 2);
+                        $connection->addHeader($headerName, $headerValue);
+                    }
+                } else {
+                    $connection->addHeader($name, $value);
+                }
             }
         }
 

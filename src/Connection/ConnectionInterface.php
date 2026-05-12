@@ -110,4 +110,5 @@ interface ConnectionInterface extends LoggerAwareInterface
     public function setClientSecret(mixed $clientSecret = null): void;
 
     public function setRedirectUri(mixed $redirectUri = null): void;
+    public function getAuthorizationHeader(): ?string;
 }

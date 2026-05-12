@@ -1,6 +1,6 @@
 # v1 Release Roadmap
 
-**Strategic Status: Authenticated Request Boundary Cleanup (Step 13.4)**
+**Strategic Status: AuthProvider Extraction (OAuth2) (Step 13.5)**
 
 Roadmap reference: v1 Steps 10–17
 
@@ -61,7 +61,9 @@ This work assumes the completion of:
 | 13.1 | [Roadmap Step Naming and Documentation Drift Cleanup](#step-131--roadmap-step-naming-and-documentation-drift-cleanup) | ✓ |
 | 13.2 | [Guzzle Default Transport Cleanup](#step-132--guzzle-default-transport-cleanup) | ✓ |
 | 13.3 | [Connection Interface Modernization (Step 13.3)](#step-133--connection-interface-modernization-step-133) | ✓ |
-| 13.4 | Authenticated Request Boundary Cleanup | Next |
+| 13.4 | [Authenticated Request Boundary Cleanup](#step-134--authenticated-request-boundary-cleanup) | ✓ |
+| 13.5 | [AuthProvider Extraction (OAuth2)](#step-135--authprovider-extraction-oauth2) | Next |
+| 13.6 | [Client Facade and Legacy Surface Review](#step-136--client-facade-and-legacy-surface-review) | Not Started |
 | 15 | [JWT/S2S Implementation](#step-15--jwts2s-implementation) | Not Started |
 | 15.1 | [Box API Coverage Alignment](#step-151--box-api-coverage-alignment) | Not Started |
 | 15.2 | [API Fixture Realism and Contract Alignment](#step-152--api-fixture-realism-and-contract-alignment) | Not Started |
@@ -274,10 +276,19 @@ Move auth lifecycle responsibilities out of `Client` into a dedicated provider/b
 | 13.1 | Roadmap Step Naming and Documentation Drift Cleanup | ✓ |
 | 13.2 | Guzzle Default Transport Cleanup | ✓ |
 | 13.3 | [Connection Interface Modernization (Step 13.3)](#step-133--connection-interface-modernization-step-133) | ✓ |
-| 13.4 | Authenticated Request Boundary Cleanup | Next |
+| 13.4 | [Authenticated Request Boundary Cleanup](#step-134--authenticated-request-boundary-cleanup) | ✓ |
+| 13.5 | AuthProvider Extraction (OAuth2) | Next |
 - Move authorization-code exchange, refresh, and revoke/destroy orchestration behind an `AuthProviderInterface`.
 - Preserve `Client` as a facade while reducing direct auth orchestration inside it.
 - Maintain compatibility for current OAuth2 usage via a default provider.
+- **Breaking Removal**: `Client::getAccessToken()` will be removed; replaced by `Client::exchangeAuthorizationCodeForToken()` as the canonical exchange facade.
+
+| 13.6 | Client Facade and Legacy Surface Review | Not Started |
+- Final audit of `Client` surface and auth-adjacent APIs.
+- Perform Semantic Naming and Human-Readable API Clarity Review.
+- Ensure all public method/property names are accurate and avoid misleading getter-like names for network/mutation operations.
+- Remove remaining auth-header helpers if any.
+- Verify **v1 Release Readiness (Step 17)** gate is ready.
 - **Guzzle Default Transport**: Make Guzzle the default and only bundled transport path.
 - **Connection Boundary**: Clean up `ConnectionInterface` to remove transport-specific (curl) leakage.
 

@@ -430,7 +430,6 @@ class Client implements LoggerAwareInterface
 
         // can be refactored a bit more but the json encode works in the connection class
         $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
 
         $response = $connection->post($uri, $params, true);
 
@@ -576,6 +575,10 @@ class Client implements LoggerAwareInterface
         return $token;
     }
 
+    /**
+     * @return string
+     * @deprecated since v0.11.0, will be removed in v1.0.0. Use Connection::getAuthorizationHeader() if needed.
+     */
     public function getAuthorizationHeader(): string
     {
         $token = $this->getToken();
@@ -656,10 +659,11 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @param      $connection Connection
+     * @param ConnectionInterface $connection
      * @param null|array $additionalHeaders
      *
      * @throws BoxException
+     * @deprecated since v0.11.0, will be removed in v1.0.0. Connection now automatically applies auth headers when an access token is set.
      */
     public function setConnectionAuthHeader(ConnectionInterface $connection, ?array $additionalHeaders = null): void
     {
@@ -1017,7 +1021,6 @@ class Client implements LoggerAwareInterface
     public function query(string $uri): array
     {
         $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
 
         $response = $connection->query($uri);
 

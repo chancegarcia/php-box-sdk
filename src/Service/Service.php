@@ -71,8 +71,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
      */
     protected $authorizedConnection;
 
-    protected $additionalConnectionHeaders = [];
-
     /**
      * @var Token|TokenInterface
      */
@@ -93,20 +91,14 @@ class Service implements ServiceInterface, LoggerAwareInterface
         'array',
     ];
 
-    public function getAuthorizedConnection()
+    public function getAuthorizedConnection(): ConnectionInterface
     {
         if (!$this->authorizedConnection instanceof ConnectionInterface) {
             throw new RuntimeException("ConnectionInterface not found");
         }
 
-        $headers = $this->getConnectionHeaders();
-
-        foreach ($headers as $header) {
-            if (str_contains($header, ': ')) {
-                [$name, $value] = explode(': ', $header, 2);
-                $this->authorizedConnection->addHeader($name, $value);
-            }
-        }
+        $token = $this->getToken();
+        $this->authorizedConnection->setAccessToken($token->getAccessToken());
 
         return $this->authorizedConnection;
     }
@@ -139,23 +131,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
     public function setConnection($connection = null)
     {
         $this->connection = $connection;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAdditionalConnectionHeaders()
-    {
-        return $this->additionalConnectionHeaders;
-    }
-
-    /**
-     * @param array $additionalConnectionHeaders
-     * @return void
-     */
-    public function setAdditionalConnectionHeaders($additionalConnectionHeaders = null)
-    {
-        $this->additionalConnectionHeaders = $additionalConnectionHeaders;
     }
 
     /**
@@ -519,36 +494,16 @@ class Service implements ServiceInterface, LoggerAwareInterface
     }
 
     /**
+     * @deprecated since v0.11.0, will be removed in v1.0.0. Connection now automatically applies auth headers when an access token is set.
      * {@inheritdoc}
-     * @throws BoxException
      */
     public function getConnectionHeaders()
     {
-        $headers = [$this->getAuthorizationHeader()];
-
-        $additionalConnectionHeaders = $this->getAdditionalConnectionHeaders();
-
-        if (null !== $additionalConnectionHeaders && !is_array($additionalConnectionHeaders)) {
-            throw new BoxException('additional headers must be in array format', BoxException::INVALID_INPUT);
-        }
-
-        if (is_array($additionalConnectionHeaders)) {
-            $headers = array_merge($headers, $additionalConnectionHeaders);
-        }
-
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug(
-                'connection headers: ' . var_export($headers, true),
-                [
-                    __METHOD__ . ":" . __LINE__,
-                ]
-            );
-        }
-
-        return $headers;
+        return [$this->getAuthorizationHeader()];
     }
 
     /**
+     * @deprecated since v0.11.0, will be removed in v1.0.0. Use Connection::getAuthorizationHeader() via connection.
      * {@inheritdoc}
      */
     public function getAuthorizationHeader()

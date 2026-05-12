@@ -324,15 +324,8 @@ class ClientTest extends TestCase
 
         $connection->method('addHeader')
             ->willReturnCallback(function ($name, $value) {
-                static $calls = 0;
-                $calls++;
-                if ($calls === 1) {
-                    $this->assertEquals('Authorization', $name);
-                    $this->assertEquals('Bearer foo', $value);
-                } elseif ($calls === 2) {
-                    $this->assertEquals('If-Match', $name);
-                    $this->assertEquals('etag123', $value);
-                }
+                $this->assertEquals('If-Match', $name);
+                $this->assertEquals('etag123', $value);
             });
 
         $this->client->setConnection($connection);

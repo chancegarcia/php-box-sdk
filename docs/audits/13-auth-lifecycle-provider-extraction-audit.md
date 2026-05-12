@@ -140,19 +140,22 @@ Remaining `Client` responsibilities:
 - Flatten `Connection` implementation and remove `curl_*` usage.
 - Update file upload to use Guzzle-native multipart via `request` options.
 
-### 13.4 — Authenticated Request Boundary Cleanup (NEXT)
+### 13.4 — Authenticated Request Boundary Cleanup (COMPLETED)
 - Centralize bearer token application in `Connection`.
 - Remove manual header pushing from `Client` and `Service`.
+- Deprecate legacy auth header helpers.
 
 ### 13.5 — AuthProvider Extraction (OAuth2)
 - Implement `AuthProviderInterface` and `OAuth2Provider`.
 - Move URL building, exchange, refresh, and revoke.
 - Update `Client` to delegate.
+- **Breaking Removal**: `Client::getAccessToken()` removal (replaced by `Client::exchangeAuthorizationCodeForToken()`).
 
 ### 13.6 — Client Facade and Legacy Surface Review
-- Final audit of `Client` surface.
+- Final audit of `Client` surface and auth-adjacent APIs.
+- Perform Semantic Naming and Human-Readable API Clarity Review.
 - Remove remaining auth-header helpers.
-- Ensure **v1 Release Readiness (Step 17)** gate is ready.
+- Verify **v1 Release Readiness (Step 17)** gate is ready.
 
 ## 10. v1 Release Readiness (Step 17) Modernization Gate
 

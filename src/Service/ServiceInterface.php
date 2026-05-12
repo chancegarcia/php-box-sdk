@@ -84,17 +84,6 @@ interface ServiceInterface
     public function setAuthorizedConnection($authorizedConnection = null);
 
     /**
-     * @return array
-     */
-    public function getAdditionalConnectionHeaders();
-
-    /**
-     * @param array $additionalConnectionHeaders
-     * @return void
-     */
-    public function setAdditionalConnectionHeaders($additionalConnectionHeaders = null);
-
-    /**
      * @return Token|TokenInterface
      */
     public function getToken();
@@ -160,11 +149,13 @@ interface ServiceInterface
     public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null): void;
 
     /**
+     * @deprecated since v0.11.0, will be removed in v1.0.0. Use Connection::getAuthorizationHeader() via connection.
      * @return string
      */
     public function getAuthorizationHeader();
 
     /**
+     * @deprecated since v0.11.0, will be removed in v1.0.0. Connection now automatically applies auth headers when an access token is set.
      * @return array
      */
     public function getConnectionHeaders();

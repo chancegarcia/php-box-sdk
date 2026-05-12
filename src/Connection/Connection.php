@@ -130,7 +130,7 @@ class Connection implements ConnectionInterface
         $headers = array_merge($this->getHeaders(), $options['headers'] ?? []);
 
         if ($this->getAccessToken()) {
-            $headers['Authorization'] = $this->getAuthorizationHeader();
+            $headers['Authorization'] = 'Bearer ' . $this->getAccessToken();
         }
 
         $options['headers'] = $headers;
