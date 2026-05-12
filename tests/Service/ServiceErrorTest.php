@@ -6,13 +6,11 @@ namespace Box\Tests\Service;
 
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
-use Box\Dto\TokenStorageContext;
 use Box\Exception\BoxException;
 use Box\Exception\BoxResponseException;
 use Box\Exception\TransportException;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Service\Service;
-use Box\Storage\Token\TokenStorageInterface;
 use PHPUnit\Framework\TestCase;
 
 class ServiceErrorTest extends TestCase
@@ -112,16 +110,9 @@ class ServiceErrorTest extends TestCase
         $service->setAuthorizedConnection($this->connection);
         $service->setToken($this->token);
 
-        $tokenStorage = $this->createMock(TokenStorageInterface::class);
-        $service->setTokenStorage($tokenStorage);
-
         $service->expects($this->once())
             ->method('refreshToken')
             ->willReturn($newToken);
-
-        $tokenStorage->expects($this->once())
-            ->method('updateToken')
-            ->with($newToken, $this->isInstanceOf(TokenStorageContext::class));
 
         $result = $service->getFromBox('some/uri', 'decoded');
         $this->assertEquals(['id' => '123'], $result);
@@ -151,7 +142,6 @@ class ServiceErrorTest extends TestCase
             ->getMock();
         $service->setAuthorizedConnection($this->connection);
         $service->setToken($this->token);
-        $service->setTokenStorage($this->createMock(TokenStorageInterface::class));
 
         $service->expects($this->once())
             ->method('refreshToken')
@@ -176,7 +166,6 @@ class ServiceErrorTest extends TestCase
             ->getMock();
         $service->setAuthorizedConnection($this->connection);
         $service->setToken($this->token);
-        $service->setTokenStorage($this->createMock(TokenStorageInterface::class));
 
         $refreshException = new BoxException('Refresh failed');
         $service->method('refreshToken')->willThrowException($refreshException);

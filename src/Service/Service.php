@@ -37,15 +37,12 @@
 namespace Box\Service;
 
 use Box\Exception\BoxResponseException;
-use Box\Exception\TokenStorageException;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Exception\BoxException;
 use Box\Connection\Connection;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\Token;
 use Box\Connection\Token\TokenInterface;
-use Box\Dto\TokenStorageContext;
-use Box\Storage\Token\TokenStorageInterface;
 use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxLoggerTrait;
@@ -80,16 +77,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
      * @var Token|TokenInterface
      */
     protected $token;
-
-    /**
-     * @var TokenStorageInterface|null
-     */
-    protected $tokenStorage;
-
-    /**
-     * @var TokenStorageContext|null
-     */
-    protected $tokenStorageContext;
 
     protected $clientId;
     protected $clientSecret;
@@ -253,41 +240,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
     public function setDeviceName($deviceName = null)
     {
         $this->deviceName = $deviceName;
-    }
-
-    /**
-     *{@inheritdoc}
-     */
-    public function getTokenStorage()
-    {
-        return $this->tokenStorage;
-    }
-
-    /**
-     * @param TokenStorageInterface|null $tokenStorage
-     *
-     * @return void
-     */
-    public function setTokenStorage(?TokenStorageInterface $tokenStorage = null): void
-    {
-        $this->tokenStorage = $tokenStorage;
-    }
-
-    /**
-     * @return TokenStorageContext|null
-     */
-    public function getTokenStorageContext()
-    {
-        return $this->tokenStorageContext;
-    }
-
-    /**
-     * @param TokenStorageContext|null $tokenStorageContext
-     * @return void
-     */
-    public function setTokenStorageContext(?TokenStorageContext $tokenStorageContext = null): void
-    {
-        $this->tokenStorageContext = $tokenStorageContext;
     }
 
     /**
@@ -486,12 +438,8 @@ class Service implements ServiceInterface, LoggerAwareInterface
     }
 
     /**
-     * this will attempt to retrieve from box and refresh the token if necessary then update the token storage
-     *
      * {@inheritdoc}
-     * @throws BoxException|TokenStorageException for TokenStorageException, we will set
-     *     previous token information here if it isn't set already from the TokenStorageException. then rethrow; Token
-     *     storage is expected to set all other context values for information.
+     * @throws BoxException
      */
     final public function getFromBox($uri = null, $type = 'original', ?object $class = null)
     {
@@ -770,9 +718,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
         };
 
         // remove token from storage
-        if ($this->getTokenStorage() instanceof TokenStorageInterface && $this->getTokenStorageContext() instanceof TokenStorageContext) {
-            $this->getTokenStorage()->removeToken($this->getTokenStorageContext());
-        }
+        // (De-coupled in 12.4: storage removal is deferred to orchestration layer)
 
         return $data;
     }
@@ -844,7 +790,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
      * @param BoxResponseException|BoxException $be
      * @return array|mixed|stdClass|string
      * @throws BoxException
-     * @throws TokenStorageException
      */
     public function refreshConnection($callback, $params, $be = null)
     {
@@ -862,20 +807,8 @@ class Service implements ServiceInterface, LoggerAwareInterface
 
         try {
             $refreshedToken = $this->refreshToken();
-            $tokenStorageContext = $this->getTokenStorageContext();
 
-            if ($this->getLogger() instanceof LoggerInterface) {
-                $this->getLogger()->debug(
-                    'token storage context: ' . var_export($tokenStorageContext, true),
-                    [
-                        __METHOD__ . ":" . __LINE__,
-                    ]
-                );
-            }
-
-            if ($this->getTokenStorage() instanceof TokenStorageInterface) {
-                $this->getTokenStorage()->updateToken($refreshedToken, $tokenStorageContext ?? new TokenStorageContext());
-            }
+            // (De-coupled in 12.4: storage update is deferred to orchestration layer)
             $this->setToken($refreshedToken);
 
             // retry query
@@ -909,19 +842,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
                 );
             }
             throw $finalException;
-        } catch (TokenStorageException $tse) {
-            if ($this->getLogger() instanceof LoggerInterface) {
-                $this->getLogger()->error(
-                    "token storage exception: " . $tse->getMessage(),
-                    [
-                        __METHOD__ . ":" . __LINE__,
-                        $tse->getTraceAsString(),
-                        var_export($tse, true),
-                    ]
-                );
-            }
-
-            throw $tse;
         }
 
         return $boxData;
