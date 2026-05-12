@@ -34,6 +34,7 @@ namespace Box;
 
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
+use Box\Dto\TokenStorageContext;
 use Box\Exception\BoxException;
 use Box\Resource\Collaboration;
 use Box\Resource\File;
@@ -45,6 +46,7 @@ use Box\Service\AuthenticatedServiceInterface;
 use Box\Service\ClientServiceRegistry;
 use Box\Service\ClientServiceRegistryInterface;
 use Box\Service\ServiceInterface;
+use Box\Storage\Token\TokenStorageInterface;
 use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Mapper\Hydrator;
@@ -98,6 +100,9 @@ class Client implements LoggerAwareInterface
 
     protected ?string $deviceId = null;
     protected ?string $deviceName = null;
+
+    protected ?TokenStorageInterface $tokenStorage = null;
+    protected ?TokenStorageContext $tokenStorageContext = null;
 
     protected ClientServiceRegistryInterface $serviceRegistry;
 
@@ -528,6 +533,8 @@ class Client implements LoggerAwareInterface
         $token = $this->getToken();
         $this->setTokenData($token, $data);
 
+        $this->saveTokenToStorage($token);
+
         return $token;
     }
 
@@ -563,6 +570,8 @@ class Client implements LoggerAwareInterface
         $this->setTokenData($token, $data);
 
         $this->setToken($token);
+
+        $this->saveTokenToStorage($token);
 
         return $token;
     }
@@ -910,6 +919,89 @@ class Client implements LoggerAwareInterface
     public function getState(): ?string
     {
         return $this->state;
+    }
+
+    public function setTokenStorage(?TokenStorageInterface $tokenStorage = null): void
+    {
+        $this->tokenStorage = $tokenStorage;
+    }
+
+    public function getTokenStorage(): ?TokenStorageInterface
+    {
+        return $this->tokenStorage;
+    }
+
+    public function setTokenStorageContext(?TokenStorageContext $tokenStorageContext = null): void
+    {
+        $this->tokenStorageContext = $tokenStorageContext;
+    }
+
+    public function getTokenStorageContext(): ?TokenStorageContext
+    {
+        return $this->tokenStorageContext;
+    }
+
+    /**
+     * Load token from configured storage using provided or configured context.
+     * If successful, the loaded token is set on the Client.
+     *
+     * @param TokenStorageContext|null $context
+     * @return TokenInterface|null
+     */
+    public function loadTokenFromStorage(?TokenStorageContext $context = null): ?TokenInterface
+    {
+        $storage = $this->getTokenStorage();
+        $context = $context ?? $this->getTokenStorageContext();
+
+        if (null === $storage || null === $context) {
+            return null;
+        }
+
+        $token = $storage->retrieveToken($context);
+
+        if (null !== $token) {
+            $this->setToken($token);
+        }
+
+        return $token;
+    }
+
+    /**
+     * Save token to configured storage using provided or configured context.
+     *
+     * @param TokenInterface|null $token If null, the current Client token is used.
+     * @param TokenStorageContext|null $context If null, the configured Client context is used.
+     * @return void
+     */
+    public function saveTokenToStorage(?TokenInterface $token = null, ?TokenStorageContext $context = null): void
+    {
+        $storage = $this->getTokenStorage();
+        $context = $context ?? $this->getTokenStorageContext();
+        $token = $token ?? $this->token;
+
+        if (null === $storage || null === $context || null === $token) {
+            return;
+        }
+
+        $storage->storeToken($token, $context);
+    }
+
+    /**
+     * Remove token from configured storage using provided or configured context.
+     *
+     * @param TokenStorageContext|null $context If null, the configured Client context is used.
+     * @return void
+     */
+    public function removeTokenFromStorage(?TokenStorageContext $context = null): void
+    {
+        $storage = $this->getTokenStorage();
+        $context = $context ?? $this->getTokenStorageContext();
+
+        if (null === $storage || null === $context) {
+            return;
+        }
+
+        $storage->removeToken($context);
     }
 
     /**

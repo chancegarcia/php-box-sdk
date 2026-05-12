@@ -2,7 +2,7 @@
 
 ## Status
 - **Date**: 2026-05-12
-- **Status**: Slice 12.1 Completed
+- **Status**: Slice 12.4 Completed
 - **Step**: 12 (v1 Release)
 
 ## Step 12 Requirements Summary
@@ -36,16 +36,16 @@ Step 12 aims to finalize the passive token storage layer for the v1 release.
 - `Box\Client`: Manages internal token state but lacks formal `TokenStorageInterface` orchestration hooks.
 
 ### Services
-- `Box\Service\Service`: **Critical Gap**. Currently depends on `BaseTokenStorageInterface` and attempts to persist refreshed tokens. This violates the passive-storage boundary and service-independence rule.
+- `Box\Service\Service`: **Rationalized**. Storage references were removed in Slice 12.4. Services are now completely storage-independent.
 
 ### CLI / Commands
 - `src/Command/AuthExchangeCommand`, `src/Command/AuthRefreshCommand`: Manually write secrets to files via `ConfigProvider`. Should be updated to optionally use the formal storage layer.
 
 ## Architecture Gap Analysis
-1. **Service Dependency**: Services are too "active" regarding storage. Orchestration must move to `Client` or a future `AuthProvider`.
-2. **Context DTO**: Lack of a formal `TokenStorageContext` DTO. Lookups are currently implicit or missing.
-3. **PDO Implementation Debt**: The existing PDO storage is non-functional and requires a complete rewrite.
-4. **Redaction**: No explicit enforcement of secret redaction in storage-level exceptions or logs.
+1. **Service Dependency**: Resolved in 12.4. Orchestration moved to `Client` (12.5).
+2. **Context DTO**: Resolved in 12.1.
+3. **PDO Implementation Debt**: Resolved in 12.3.
+4. **Redaction**: Resolved across all storage layers and exceptions.
 
 ## Risk Assessment
 - **BC Risks**: Changing `BaseTokenStorageInterface` to `TokenStorageInterface` is a breaking change (planned for v1).
@@ -82,21 +82,25 @@ Step 12 aims to finalize the passive token storage layer for the v1 release.
 - **Goal**: Support context-aware storage in `TokenStorageContainer`.
 - **Scope**: Update `TokenStorageContainer` implementation.
 - **Files**: `src/Storage/Token/Container/TokenStorageContainer.php`.
+- **Status**: Completed (Slice 12.2)
 
 ### Step 12.3 — PDO Storage Implementation
 - **Goal**: Full rewrite of `Pdo\TokenStorage` with parameterized queries.
 - **Scope**: Implementation and SQLite-based unit tests.
 - **Files**: `src/Storage/Token/Pdo/TokenStorage.php`.
+- **Status**: Completed (Slice 12.3)
 
 ### Step 12.4 — Service Storage-Independence Cleanup
 - **Goal**: Remove storage references from `Box\Service\Service`.
 - **Scope**: Refactor service base class to be storage-agnostic. Address untyped properties and methods (Service type-safety follow-up).
 - **Files**: `src/Service/Service.php`.
+- **Status**: Completed (Slice 12.4)
 
 ### Step 12.5 — Client Integration Hooks
 - **Goal**: Add minimal storage configuration to `Client`.
 - **Scope**: Update `Client` to accept storage and provide load/save hooks.
 - **Files**: `src/Client.php`.
+- **Status**: Completed (Slice 12.5)
 
 ### Step 12.6 — CLI/Auth Harness Storage Integration
 - **Goal**: Allow CLI commands to use storage.
