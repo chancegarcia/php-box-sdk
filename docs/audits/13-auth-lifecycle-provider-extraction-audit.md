@@ -145,15 +145,22 @@ Remaining `Client` responsibilities:
 - Remove manual header pushing from `Client` and `Service`.
 - Deprecate legacy auth header helpers.
 
-### 13.5 — AuthProvider Extraction (OAuth2)
+### 13.5 — AuthProvider Extraction (OAuth2) (COMPLETED)
 - Implement `AuthProviderInterface` and `OAuth2Provider`.
 - Move URL building, exchange, refresh, and revoke.
 - Update `Client` to delegate.
 - **Breaking Removal**: `Client::getAccessToken()` removal (replaced by `Client::exchangeAuthorizationCodeForToken()`).
+- **Refinement**: Removed reflection-based provider mutation and cleaned up `Connection` credential surface.
+- **Config Normalization**: `ClientConfig` now normalizes `clientId` and `clientSecret` to `string` (default `''`).
+- **Interface Segregation**: Introduced `OAuth2ProviderInterface` to separate OAuth2-specific config from generic `AuthProviderInterface`.
+- **Config Boundary Cleanup**: Resolved `BoxClientFactory` type mismatch by mapping `ConfigProviderInterface` to `ClientConfig`, ensuring a narrow configuration boundary for `Client`.
 
 ### 13.6 — Client Facade and Legacy Surface Review
 - Final audit of `Client` surface and auth-adjacent APIs.
 - Perform Semantic Naming and Human-Readable API Clarity Review.
+- Audit `Connection::getAuthorizationHeader()`.
+- Audit service `connection` vs `authorizedConnection` split.
+- Audit getter-time normalization and semantic masking (deferred to Step 17 modernization gate).
 - Remove remaining auth-header helpers.
 - Verify **v1 Release Readiness (Step 17)** gate is ready.
 

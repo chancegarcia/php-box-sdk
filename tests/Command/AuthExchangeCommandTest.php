@@ -40,11 +40,7 @@ class AuthExchangeCommandTest extends TestCase
         $token->setAccessToken('test_access_token');
 
         $this->client->expects($this->once())
-            ->method('setAuthorizationCode')
-            ->with($code);
-
-        $this->client->expects($this->once())
-            ->method('getAccessToken')
+            ->method('exchangeAuthorizationCodeForToken')
             ->willReturn($token);
 
         $application = new Application();
@@ -68,11 +64,7 @@ class AuthExchangeCommandTest extends TestCase
         $this->configProvider->method('getAuthCode')->willReturn($code);
 
         $this->client->expects($this->once())
-            ->method('setAuthorizationCode')
-            ->with($code);
-
-        $this->client->expects($this->once())
-            ->method('getAccessToken')
+            ->method('exchangeAuthorizationCodeForToken')
             ->willReturn($token);
 
         $application = new Application();

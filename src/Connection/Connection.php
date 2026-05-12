@@ -65,9 +65,6 @@ class Connection implements ConnectionInterface
     public const TRANSPORT_GUZZLE = 'guzzle';
 
     protected mixed $responseType = "code";
-    protected mixed $clientId = null;
-    protected mixed $clientSecret = null;
-    protected mixed $redirectUri = null;
     protected mixed $state = null;
     protected string $requestType = "GET";
 
@@ -289,45 +286,6 @@ class Connection implements ConnectionInterface
                 ]
             ]
         ]);
-    }
-
-    /**
-     * @param mixed $clientId
-     */
-    public function setClientId(mixed $clientId = null): void
-    {
-        $this->clientId = $clientId;
-    }
-
-    public function getClientId(): mixed
-    {
-        return $this->clientId;
-    }
-
-    /**
-     * @param mixed $clientSecret
-     */
-    public function setClientSecret(mixed $clientSecret = null): void
-    {
-        $this->clientSecret = $clientSecret;
-    }
-
-    public function getClientSecret(): mixed
-    {
-        return $this->clientSecret;
-    }
-
-    /**
-     * @param mixed $redirectUri
-     */
-    public function setRedirectUri(mixed $redirectUri = null): void
-    {
-        $this->redirectUri = $redirectUri;
-    }
-
-    public function getRedirectUri(): mixed
-    {
-        return $this->redirectUri;
     }
 
     /**

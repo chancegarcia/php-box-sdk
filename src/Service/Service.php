@@ -166,7 +166,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
      * @param string|null $clientId
      * @return void
      */
-    public function setClientId($clientId = null)
+    public function setClientId($clientId = null): void
     {
         $this->clientId = $clientId;
     }
@@ -175,7 +175,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
      * @param string|null $clientSecret
      * @return void
      */
-    public function setClientSecret($clientSecret = null)
+    public function setClientSecret($clientSecret = null): void
     {
         $this->clientSecret = $clientSecret;
     }
@@ -200,7 +200,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
      * @param string|null $deviceId
      * @return void
      */
-    public function setDeviceId($deviceId = null)
+    public function setDeviceId($deviceId = null): void
     {
         $this->deviceId = $deviceId;
     }
@@ -217,7 +217,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
      * @param string|null $deviceName
      * @return void
      */
-    public function setDeviceName($deviceName = null)
+    public function setDeviceName($deviceName = null): void
     {
         $this->deviceName = $deviceName;
     }

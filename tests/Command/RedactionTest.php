@@ -71,7 +71,7 @@ class RedactionTest extends TestCase
         $newToken->setRefreshToken('new_real_refresh_token_12345');
 
         $this->configProvider->method('getAuthCode')->willReturn($code);
-        $this->client->method('getAccessToken')->willReturn($newToken);
+        $this->client->method('exchangeAuthorizationCodeForToken')->willReturn($newToken);
 
         $application = new Application();
         $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));

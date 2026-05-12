@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Box;
 
 use Box\Exception\BoxException;
+use Box\Contract\ConfigProviderInterface;
 
-class ClientConfig
+class ClientConfig implements ConfigProviderInterface
 {
-    protected ?string $clientId = null;
-    protected ?string $clientSecret = null;
+    protected string $clientId = '';
+    protected string $clientSecret = '';
     protected ?string $redirectUri = null;
     protected ?string $authorizationCode = null;
     protected ?string $deviceId = null;
@@ -33,22 +34,22 @@ class ClientConfig
         return new self($options);
     }
 
-    public function getClientId(): ?string
+    public function getClientId(): string
     {
         return $this->clientId;
     }
 
-    public function setClientId(?string $clientId): void
+    public function setClientId(string $clientId = ''): void
     {
         $this->clientId = $clientId;
     }
 
-    public function getClientSecret(): ?string
+    public function getClientSecret(): string
     {
         return $this->clientSecret;
     }
 
-    public function setClientSecret(?string $clientSecret): void
+    public function setClientSecret(string $clientSecret = ''): void
     {
         $this->clientSecret = $clientSecret;
     }
@@ -64,6 +65,11 @@ class ClientConfig
     }
 
     public function getAuthorizationCode(): ?string
+    {
+        return $this->authorizationCode;
+    }
+
+    public function getAuthCode(): ?string
     {
         return $this->authorizationCode;
     }
@@ -101,5 +107,40 @@ class ClientConfig
     public function setState(?string $state): void
     {
         $this->state = $state;
+    }
+
+    public function getRefreshToken(): ?string
+    {
+        return null;
+    }
+
+    public function getUploadFilePath(): ?string
+    {
+        return null;
+    }
+
+    public function getUploadFolderId(): string
+    {
+        return '0';
+    }
+
+    public function getAccessToken(): ?string
+    {
+        return null;
+    }
+
+    public function getStoragePdoDsn(): ?string
+    {
+        return null;
+    }
+
+    public function getStoragePdoUser(): ?string
+    {
+        return null;
+    }
+
+    public function getStoragePdoPassword(): ?string
+    {
+        return null;
     }
 }

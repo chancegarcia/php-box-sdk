@@ -32,6 +32,9 @@
 
 namespace Box;
 
+use Box\Auth\AuthProviderInterface;
+use Box\Auth\OAuth2Provider;
+use Box\Auth\OAuth2ProviderInterface;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
 use Box\Dto\TokenStorageContext;
@@ -53,6 +56,8 @@ use Box\Mapper\Hydrator;
 use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxLoggerTrait;
+use Box\Factory\TokenFactory;
+use Box\Factory\TokenFactoryInterface;
 
 /**
  * Class Client
@@ -63,9 +68,6 @@ class Client implements LoggerAwareInterface
     use LoggerAwareTrait;
     use BoxLoggerTrait;
 
-    public const AUTH_URI = "https://account.box.com/api/oauth2/authorize";
-    public const TOKEN_URI = "https://www.box.com/api/oauth2/token";
-    public const REVOKE_URI = "https://www.box.com/api/oauth2/revoke";
     public const SEARCH_URI = "https://api.box.com/2.0/search";
 
     protected ?string $state = null;
@@ -106,11 +108,15 @@ class Client implements LoggerAwareInterface
 
     protected ClientServiceRegistryInterface $serviceRegistry;
 
+    protected ?AuthProviderInterface $authProvider = null;
+
+    protected ?TokenFactoryInterface $tokenFactory = null;
+
     public function __construct(
         ?ClientConfig $config = null,
         ?ClientServiceRegistryInterface $serviceRegistry = null
     ) {
-        if ($config instanceof ClientConfig) {
+        if (null !== $config) {
             $this->applyConfig($config);
         }
         $this->serviceRegistry = $serviceRegistry ?? new ClientServiceRegistry();
@@ -513,25 +519,14 @@ class Client implements LoggerAwareInterface
 
     public function exchangeAuthorizationCodeForToken(): TokenInterface
     {
-        return $this->getAccessToken();
-    }
+        $code = $this->getAuthorizationCode();
+        if (null === $code) {
+            throw new BoxException('Authorization code is required for exchange.', BoxException::INVALID_INPUT);
+        }
 
-    public function getAccessToken(): TokenInterface
-    {
-        $connection = $this->getConnection();
-        $params['grant_type'] = 'authorization_code';
-        $params['code'] = $this->getAuthorizationCode();
-        $params['client_id'] = $this->getClientId();
-        $params['client_secret'] = $this->getClientSecret();
+        $token = $this->getAuthProvider()->exchangeAuthorizationCode($code);
 
-        $redirectUri = $this->getRedirectUri();
-
-        $response = $connection->post(self::TOKEN_URI, $params);
-        $data = $this->parseResponse($response);
-
-        $token = $this->getToken();
-        $this->setTokenData($token, $data);
-
+        $this->setToken($token);
         $this->saveTokenToStorage($token);
 
         return $token;
@@ -542,37 +537,25 @@ class Client implements LoggerAwareInterface
      */
     public function refreshToken(): TokenInterface
     {
-        // outside script will set token via getAccessToken
         $token = $this->getToken();
 
-        $params['refresh_token'] = $token->getRefreshToken();
-        $params['client_id'] = $this->getClientId();
-        $params['client_secret'] = $this->getClientSecret();
-        $params['grant_type'] = 'refresh_token';
-
+        $options = [];
         $deviceId = $this->getDeviceId();
         if (null !== $deviceId) {
-            $params['device_id'] = $deviceId;
+            $options['device_id'] = $deviceId;
         }
 
         $deviceName = $this->getDeviceName();
         if (null !== $deviceName) {
-            $params['device_name'] = $deviceName;
+            $options['device_name'] = $deviceName;
         }
 
-        $connection = $this->getConnection();
+        $newToken = $this->getAuthProvider()->refreshToken($token, $options);
 
-        $response = $connection->post(self::TOKEN_URI, $params);
+        $this->setToken($newToken);
+        $this->saveTokenToStorage($newToken);
 
-        $data = $this->parseResponse($response);
-
-        $this->setTokenData($token, $data);
-
-        $this->setToken($token);
-
-        $this->saveTokenToStorage($token);
-
-        return $token;
+        return $newToken;
     }
 
     /**
@@ -589,6 +572,7 @@ class Client implements LoggerAwareInterface
     /**
      * @param TokenInterface $token
      * @param array $data
+     * @deprecated since v0.11.0, will be removed in v1.0.0. Use TokenFactory or Hydrator.
      */
     public function setTokenData(TokenInterface $token, array $data): void
     {
@@ -606,16 +590,9 @@ class Client implements LoggerAwareInterface
      */
     public function destroyToken(TokenInterface $token): array
     {
-        $params['client_id'] = $this->getClientId();
-        $params['client_secret'] = $this->getClientSecret();
-        // The access_token or refresh_token to be destroyed. Only one is required, though both will be destroyed.
-        $params['token'] = $token->getAccessToken();
+        $this->getAuthProvider()->revokeToken($token);
 
-        $connection = $this->getConnection();
-
-        $response = $connection->post(self::REVOKE_URI, $params);
-
-        return $this->parseResponse($response);
+        return ['success' => true];
     }
 
     public function auth(): void
@@ -632,30 +609,13 @@ class Client implements LoggerAwareInterface
 
     public function buildAuthQuery(): string
     {
-        $uri = self::AUTH_URI . '?';
-        $params = [];
-
-        $params['response_type'] = "code";
-
-        $clientId = $this->getClientId();
-        $params['client_id'] = $clientId;
-
+        $options = [];
         $state = $this->getState();
         if (null !== $state) {
-            $params['state'] = $state;
+            $options['state'] = $state;
         }
 
-        $query = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
-        $uri .= $query;
-
-        $redirectUri = $this->getRedirectUri();
-
-        if (null !== $redirectUri) {
-            $redirectUri = urlencode($redirectUri);
-            $uri .= "&redirect_uri=" . $redirectUri;
-        }
-
-        return $uri;
+        return $this->getAuthProvider()->buildAuthorizationUrl($options);
     }
 
     /**
@@ -699,11 +659,11 @@ class Client implements LoggerAwareInterface
      * @param string|null $clientId
      * @return void
      */
-    public function setClientId(?string $clientId = null): void
+    public function setClientId(string $clientId = ''): void
     {
         $this->clientId = $clientId;
-        if ($this->connection instanceof ConnectionInterface) {
-            $this->connection->setClientId($clientId);
+        if ($this->authProvider instanceof OAuth2ProviderInterface) {
+            $this->authProvider->setClientId($clientId);
         }
     }
 
@@ -717,11 +677,11 @@ class Client implements LoggerAwareInterface
      *
      * @return void
      */
-    public function setClientSecret(?string $clientSecret = null): void
+    public function setClientSecret(string $clientSecret = ''): void
     {
         $this->clientSecret = $clientSecret;
-        if ($this->connection instanceof ConnectionInterface) {
-            $this->connection->setClientSecret($clientSecret);
+        if ($this->authProvider instanceof OAuth2ProviderInterface) {
+            $this->authProvider->setClientSecret($clientSecret);
         }
     }
 
@@ -738,8 +698,8 @@ class Client implements LoggerAwareInterface
     public function setRedirectUri(?string $redirectUri = null): void
     {
         $this->redirectUri = $redirectUri;
-        if ($this->connection instanceof ConnectionInterface) {
-            $this->connection->setRedirectUri($redirectUri);
+        if ($this->authProvider instanceof OAuth2ProviderInterface) {
+            $this->authProvider->setRedirectUri($redirectUri);
         }
     }
 
@@ -771,13 +731,47 @@ class Client implements LoggerAwareInterface
     public function getToken(): TokenInterface
     {
         if (null === $this->token) {
-            $this->token = $this->serviceRegistry->getTokenFactory()->createToken();
+            $this->token = $this->getTokenFactory()->createToken();
             if ($this->logger && method_exists($this->token, 'setLogger')) {
                 $this->token->setLogger($this->logger);
             }
         }
 
         return $this->token;
+    }
+
+    public function setTokenFactory(TokenFactoryInterface $tokenFactory): void
+    {
+        $this->tokenFactory = $tokenFactory;
+    }
+
+    public function getTokenFactory(): TokenFactoryInterface
+    {
+        if (null === $this->tokenFactory) {
+            $this->tokenFactory = new TokenFactory();
+        }
+
+        return $this->tokenFactory;
+    }
+
+    public function setAuthProvider(AuthProviderInterface $authProvider): void
+    {
+        $this->authProvider = $authProvider;
+    }
+
+    public function getAuthProvider(): AuthProviderInterface
+    {
+        if (null === $this->authProvider) {
+            $this->authProvider = new OAuth2Provider(
+                $this->getConnection(),
+                $this->getTokenFactory(),
+                $this->getClientId(),
+                $this->getClientSecret(),
+                $this->getRedirectUri()
+            );
+        }
+
+        return $this->authProvider;
     }
 
     /**
@@ -828,9 +822,6 @@ class Client implements LoggerAwareInterface
             if ($this->logger) {
                 $this->connection->setLogger($this->logger);
             }
-            $this->connection->setClientId($this->getClientId());
-            $this->connection->setClientSecret($this->getClientSecret());
-            $this->connection->setRedirectUri($this->getRedirectUri());
             if ($this->token) {
                 $this->connection->setAccessToken($this->token->getAccessToken());
             }

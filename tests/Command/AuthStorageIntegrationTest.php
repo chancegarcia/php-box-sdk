@@ -58,7 +58,7 @@ class AuthStorageIntegrationTest extends TestCase
             }));
 
         $this->client->expects($this->once())
-            ->method('getAccessToken')
+            ->method('exchangeAuthorizationCodeForToken')
             ->willReturn($token);
 
         $application = new Application();

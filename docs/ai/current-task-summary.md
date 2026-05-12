@@ -1,30 +1,25 @@
 ### Summary
-- Completed **Authenticated Request Boundary Cleanup (Step 13.4)**, including reviewer follow-up.
-- Centralized bearer token application in `Connection`, removing manual auth header management from `Client` and `Service`.
-- Removed ambient `additionalConnectionHeaders` state from base `Service` to prevent side-effect-heavy connection mutation.
+- Finalized AuthProvider extraction for OAuth2 by removing reflection-based mutation and cleaning up the `Connection` credential surface.
+- Refined the auth boundary interfaces to support future JWT/S2S authentication.
+- Normalized `ClientConfig` internal state to improve type safety and remove legacy getter-time normalization.
 
 ### Changes
-- **Connection**: Updated `request()` to automatically apply the `Authorization: Bearer <token>` header when an access token is available. Added `getAuthorizationHeader()` to `ConnectionInterface`.
-- **Client**: Removed manual calls to `setConnectionAuthHeader()` in `query()` and `addCollaboration()`; deprecated legacy auth header helper methods.
-- **Service**: 
-    - Removed `additionalConnectionHeaders` property and associated `get/set` methods from `Service` and `ServiceInterface`.
-    - Cleaned up `getAuthorizedConnection()` to only synchronize the access token, removing all arbitrary header mutation logic.
-    - Updated `getConnectionHeaders()` to return only the bearer header, as ambient additional headers are no longer supported at the service level.
-- **ConnectionFactory**: Refactored `createAuthorizedConnection()` to leverage `Connection` auth capabilities.
-- **Roadmap**: 
-    - Documented planned removal of `Client::getAccessToken()` in **AuthProvider Extraction (OAuth2) (Step 13.5)**.
-    - Added a **Semantic Naming and Human-Readable API Clarity Review** to **Client Facade and Legacy Surface Review (Step 13.6)**.
+- Refined `AuthProviderInterface` to be strategy-neutral by moving OAuth2-specific methods to `OAuth2ProviderInterface`.
+- Replaced reflection-based `AuthProvider` updates in `Client` with explicit interface-based configuration checks (`instanceof OAuth2ProviderInterface`).
+- Updated `ClientConfig` to store `clientId` and `clientSecret` as non-nullable strings (default `''`), normalizing `null` on write.
+- Updated `BoxClientFactory` to map `ConfigProviderInterface` to `ClientConfig`, resolving a type mismatch and narrowing the `Client` configuration boundary.
+- Updated `OAuth2Provider` to implement `OAuth2ProviderInterface`.
+- Removed OAuth2-specific credentials (`clientId`, `clientSecret`, `redirectUri`) from `ConnectionInterface` and `Connection` in previous pass (Step 13.5 follow-up).
+- Documented follow-ups for **Client Facade and Legacy Surface Review (Step 13.6)** and **v1 Release Readiness (Step 17)** regarding semantic masking and service connection state.
 
 ### Verification
-- Ran `composer review` (lint, test, cs:check, analyse).
-- All 259 tests passed (686 assertions).
-- Verified that `Authorization` headers are correctly applied by the connection layer.
-- Confirmed that `Service` no longer mutates connection headers from ambient state.
+- Full validation via `composer review` (linting, 262 tests passed, PSR-12 formatting, and PHPStan analysis).
+- Added `Box\Tests\Service\BoxClientFactoryTest` to ensure correct configuration mapping and type safety.
+- Added `Box\Tests\Auth\OAuth2ProviderTest` (previous pass) and updated `ClientTest` to ensure clean configuration propagation.
+- Verified that existing integration tests still pass with the new boundary.
 
-### Token Storage Boundary Verification
-- Token storage remains passive persistence only.
-- Services remain storage-independent and auth-lifecycle-independent.
-
-### Follow-ups
-- **AuthProvider Extraction (OAuth2) (Step 13.5)**: Extract OAuth2 lifecycle (exchange, refresh, revoke) into a dedicated `AuthProvider`.
-- **Client Facade and Legacy Surface Review (Step 13.6)**: Perform semantic naming review and final facade cleanup.
+### Notes
+- A detailed summary was written to `docs/ai/current-task-summary.md`.
+- **Client Facade and Legacy Surface Review (Step 13.6)** is next.
+- Step 13.6 will audit `Connection::getAuthorizationHeader()`, service connection state, and perform a broad semantic naming review.
+- Broad getter-time normalization cleanup is deferred to the Step 17 modernization gate.

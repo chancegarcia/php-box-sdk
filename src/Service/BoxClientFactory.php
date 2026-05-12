@@ -3,6 +3,7 @@
 namespace Box\Service;
 
 use Box\Client;
+use Box\ClientConfig;
 use Box\Contract\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Psr\Log\LoggerInterface;
@@ -23,21 +24,16 @@ class BoxClientFactory implements BoxClientFactoryInterface
 
     public function createClient(): Client
     {
-        $client = new Client();
+        $config = new ClientConfig();
+        $config->setClientId($this->configProvider->getClientId());
+        $config->setClientSecret($this->configProvider->getClientSecret());
+        $config->setRedirectUri($this->configProvider->getRedirectUri());
+        $config->setAuthorizationCode($this->configProvider->getAuthCode());
+        $config->setState($this->configProvider->getState());
+
+        $client = new Client($config);
         if ($this->logger) {
             $client->setLogger($this->logger);
-        }
-        $client->setClientId($this->configProvider->getClientId());
-        $client->setClientSecret($this->configProvider->getClientSecret());
-
-        $redirectUri = $this->configProvider->getRedirectUri();
-        if (null !== $redirectUri) {
-            $client->setRedirectUri($redirectUri);
-        }
-
-        $state = $this->configProvider->getState();
-        if (null !== $state) {
-            $client->setState($state);
         }
 
         return $client;

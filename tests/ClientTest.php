@@ -127,7 +127,7 @@ class ClientTest extends TestCase
      * @throws JsonException
      * @throws BoxException
      */
-    public function testGetAccessTokenSuccess()
+    public function testExchangeAuthorizationCodeForTokenSuccess()
     {
         $response = $this->createMock(BoxResponseInterface::class);
         $response->method('json')->with(true)->willReturn([
@@ -156,11 +156,13 @@ class ClientTest extends TestCase
     {
         $token = $this->createMock(TokenInterface::class);
         $token->method('getRefreshToken')->willReturn('old_refresh');
-        // Configure token to allow updates
-        $token->expects($this->once())->method('setAccessToken')->with('new_access');
-        $token->expects($this->once())->method('setRefreshToken')->with('new_refresh');
-        $token->expects($this->once())->method('setExpiresIn')->with(3600);
-        $token->expects($this->once())->method('setTokenType')->with('Bearer');
+
+        $newToken = new Token([
+            'access_token' => 'new_access',
+            'refresh_token' => 'new_refresh',
+            'expires_in' => 3600,
+            'token_type' => 'Bearer'
+        ]);
 
         $this->client->setToken($token);
 
@@ -179,8 +181,9 @@ class ClientTest extends TestCase
 
         $this->client->setConnection($connection);
 
-        $newToken = $this->client->refreshToken();
-        $this->assertSame($token, $newToken);
+        $resultToken = $this->client->refreshToken();
+        $this->assertNotSame($token, $resultToken);
+        $this->assertEquals('new_access', $resultToken->getAccessToken());
     }
 
     public function testGetAuthorizationHeader()
@@ -217,7 +220,7 @@ class ClientTest extends TestCase
         $token->setAccessToken('test_token');
 
         $response = $this->createMock(BoxResponseInterface::class);
-        $response->method('json')->with(true)->willReturn(['status' => 'success']);
+        $response->method('json')->willReturn(['status' => 'success']);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
@@ -227,7 +230,7 @@ class ClientTest extends TestCase
         $this->client->setConnection($connection);
 
         $result = $this->client->destroyToken($token);
-        $this->assertEquals(['status' => 'success'], $result);
+        $this->assertEquals(['success' => true], $result);
     }
 
     protected function createMockResponse(array $data, bool $success = true)

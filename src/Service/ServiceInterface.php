@@ -103,13 +103,13 @@ interface ServiceInterface
      * @param string|null $clientId
      * @return void
      */
-    public function setClientId($clientId = null);
+    public function setClientId($clientId = null): void;
 
     /**
      * @param string|null $clientSecret
      * @return void
      */
-    public function setClientSecret($clientSecret = null);
+    public function setClientSecret($clientSecret = null): void;
 
     /**
      * @return string|null
@@ -125,7 +125,7 @@ interface ServiceInterface
      * @param string|null $deviceId
      * @return void
      */
-    public function setDeviceId($deviceId = null);
+    public function setDeviceId($deviceId = null): void;
 
     /**
      * @return string|null
@@ -136,7 +136,7 @@ interface ServiceInterface
      * @param string|null $deviceName
      * @return void
      */
-    public function setDeviceName($deviceName = null);
+    public function setDeviceName($deviceName = null): void;
 
     /**
      * used to throw exceptions that need to contain error information returned from Box

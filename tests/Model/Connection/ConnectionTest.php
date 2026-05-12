@@ -20,24 +20,6 @@ class ConnectionTest extends TestCase
         $this->connection = new Connection();
     }
 
-    public function testGetSetClientId()
-    {
-        $this->connection->setClientId('foo');
-        $this->assertEquals('foo', $this->connection->getClientId());
-    }
-
-    public function testGetSetClientSecret()
-    {
-        $this->connection->setClientSecret('bar');
-        $this->assertEquals('bar', $this->connection->getClientSecret());
-    }
-
-    public function testGetSetRedirectUri()
-    {
-        $this->connection->setRedirectUri('http://localhost');
-        $this->assertEquals('http://localhost', $this->connection->getRedirectUri());
-    }
-
     public function testQuery()
     {
         $response = $this->createMock(BoxResponseInterface::class);

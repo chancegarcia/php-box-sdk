@@ -116,7 +116,7 @@ class ClientStorageIntegrationTest extends TestCase
         $this->assertNull($this->storage->retrieveToken($this->context));
     }
 
-    public function testGetAccessTokenPersistsToStorageWhenConfigured(): void
+    public function testExchangeAuthorizationCodeForTokenPersistsToStorageWhenConfigured(): void
     {
         $mockResponse = $this->createMock(BoxResponseInterface::class);
         $mockResponse->method('json')->willReturn([
@@ -135,7 +135,7 @@ class ClientStorageIntegrationTest extends TestCase
         $this->client->setTokenStorageContext($this->context);
         $this->client->setAuthorizationCode('some-code');
 
-        $this->client->getAccessToken();
+        $this->client->exchangeAuthorizationCodeForToken();
 
         $stored = $this->storage->retrieveToken($this->context);
         $this->assertNotNull($stored);
