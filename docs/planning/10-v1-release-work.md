@@ -55,7 +55,7 @@ This work assumes the completion of:
 | 11.7.3 | Mixed Type Reduction and Client Factory Convenience Review | ✓ |
 | 11.8 | Documentation, Migration, and Planning Drift Cleanup | ✓ |
 | 11.9 | Final Integration Review, Code/Plan Conformance, and New-Chat Handoff | ✓ |
-| 12 | [Token Storage Completion and Integration](#step-12--token-storage-completion-and-integration) | Not Started |
+| 12 | [Token Storage Completion and Integration](#step-12--token-storage-completion-and-integration) | In Progress |
 | 13 | [API Fixture Realism and Contract Alignment](#step-13--api-fixture-realism-and-contract-alignment) | Not Started |
 | 14 | [JWT/S2S Feasibility and Dependency Review](#step-14--jwts2s-feasibility-and-dependency-review) | Not Started |
 | 15 | [JWT/S2S Implementation](#step-15--jwts2s-implementation) | Not Started |
@@ -192,8 +192,21 @@ Audit and modernize factory patterns and service boundaries after interface rati
 
 #### Status
 - **Required for v1 release**
-- Implementation has **NOT** started.
-- Earlier prompts for Step 12 are **STALE** and must be revised based on current alignment.
+- **In Progress**: Planning and Audit completed.
+- See [Step 12 Audit and Plan](docs/audits/12-token-storage-completion-audit.md) for detailed requirements and slices.
+
+#### Slices
+
+| Slice | Title | Status |
+| :--- | :--- | :--- |
+| 12.0 | [Token Storage Audit and Planning](docs/audits/12-token-storage-completion-audit.md) | ✓ |
+| 12.1 | Storage Contract Finalization | Not Started |
+| 12.2 | In-Memory Storage Completion | Not Started |
+| 12.3 | PDO Storage Implementation | Not Started |
+| 12.4 | Service Storage-Independence Cleanup | Not Started |
+| 12.5 | Client Integration Hooks | Not Started |
+| 12.6 | CLI/Auth Harness Storage Integration | Not Started |
+| 12.7 | Type-Safety, Docs, and Final Review | Not Started |
 
 #### Purpose
 Audit and finalize token storage behavior for v1. This ensures the SDK provides reliable, out-of-the-box token management for persistent integrations (PDO) and ephemeral usage (In-Memory), while ensuring storage is properly integrated with the Client configuration and CLI/harness flows.
