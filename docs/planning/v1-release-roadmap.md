@@ -1,8 +1,8 @@
 # v1 Release Roadmap
 
-**Strategic Status: Step 13 Auth Provider Audit/Planning**
+**Strategic Status: Guzzle Default Transport Cleanup (Step 13.2)**
 
-Roadmap reference: v1 Steps 10–16
+Roadmap reference: v1 Steps 10–17
 
 ## Purpose
 This tracker covers the remaining work required before the v1.0.0 release of the `box-api-v2-sdk`. Having completed the core foundation refactoring, service layer hardening, and legacy architecture removal, this phase focuses on rationalizing interfaces, modernizing factories, aligning with API contracts through realistic fixtures, and implementing key missing features like JWT/S2S authentication.
@@ -56,7 +56,10 @@ This work assumes the completion of:
 | 11.8 | Documentation, Migration, and Planning Drift Cleanup | ✓ |
 | 11.9 | Final Integration Review, Code/Plan Conformance, and New-Chat Handoff | ✓ |
 | 12 | [Token Storage Completion and Integration](#step-12--token-storage-completion-and-integration) | ✓ |
-| 13 | [Auth Lifecycle/Auth Provider Extraction](#step-13--auth-lifecycleauth-provider-extraction) | Not Started |
+| 13 | [Auth Lifecycle/Auth Provider Extraction](#step-13--auth-lifecycleauth-provider-extraction) | In Progress |
+| 13.0 | [Auth Lifecycle/Auth Provider Extraction Discovery](docs/audits/13-auth-lifecycle-provider-extraction-audit.md) | ✓ |
+| 13.1 | [Roadmap Step Naming and Documentation Drift Cleanup](#step-131--roadmap-step-naming-and-documentation-drift-cleanup) | ✓ |
+| 13.2 | [Guzzle Default Transport Cleanup](#step-132--guzzle-default-transport-cleanup) | Not Started |
 | 14 | [JWT/S2S Feasibility and Dependency Review](#step-14--jwts2s-feasibility-and-dependency-review) | Not Started |
 | 15 | [JWT/S2S Implementation](#step-15--jwts2s-implementation) | Not Started |
 | 15.1 | [Box API Coverage Alignment](#step-151--box-api-coverage-alignment) | Not Started |

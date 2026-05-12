@@ -120,34 +120,34 @@ Remaining `Client` responsibilities:
 
 ## 9. Final Recommended Step 13 Slice Plan
 
-### 9.0 — Discovery / Inventory / Persisted Audit (COMPLETED)
+### 13.0 — Auth Lifecycle/Auth Provider Extraction Discovery (COMPLETED)
 - Inventory of auth and transport coupling.
 - Persisted in `docs/audits/13-auth-lifecycle-provider-extraction-audit.md`.
 
-### 9.1 — Roadmap Step Naming and Documentation Drift Cleanup (NEW)
+### 13.1 — Roadmap Step Naming and Documentation Drift Cleanup (COMPLETED)
 - Standardize step references to `Step Title (Step N)`.
 - Fix drift in roadmap and audits.
 
-### 9.2 — Guzzle Default Transport Cleanup
+### 13.2 — Guzzle Default Transport Cleanup (NEXT)
 - Default to `TRANSPORT_GUZZLE`.
 - Remove curl transport and selection path.
 - Update tests to rely on Guzzle.
 
-### 9.3 — Connection Interface Modernization (Curl Removal)
+### 13.3 — Connection Interface Modernization (Curl Removal)
 - Remove curl-specific methods from `ConnectionInterface`.
 - Flatten `Connection` implementation.
 - Update file upload to use Guzzle-native multipart.
 
-### 9.4 — Auth Header and Connection Auth Hardening
+### 13.4 — Authenticated Request Boundary Cleanup
 - Centralize bearer token application in `Connection`.
 - Remove manual header pushing from `Client` and `Service`.
 
-### 9.5 — AuthProvider Extraction (OAuth2)
+### 13.5 — AuthProvider Extraction (OAuth2)
 - Implement `AuthProviderInterface` and `OAuth2Provider`.
 - Move URL building, exchange, refresh, and revoke.
 - Update `Client` to delegate.
 
-### 9.6 — Client Facade and Legacy Surface Review
+### 13.6 — Client Facade and Legacy Surface Review
 - Final audit of `Client` surface.
 - Remove remaining auth-header helpers.
 - Ensure **v1 Release Readiness (Step 17)** gate is ready.
@@ -156,10 +156,15 @@ Remaining `Client` responsibilities:
 
 Add to Step 17 checklist:
 - [ ] No `curl_` or `CURLOPT_` usage in core SDK or `Connection`.
-- [ ] `AuthProvider` owns all auth lifecycle mechanics.
-- [ ] `Client` does not manually build or push auth headers.
+- [ ] No `curl`-specific public SDK methods remain in `ConnectionInterface` or `Client`.
+- [ ] `AuthProvider` owns all auth lifecycle mechanics (exchange, refresh, revoke).
+- [ ] `Client` does not manually build or push auth headers to `Connection`.
 - [ ] `ConnectionInterface` is clean of transport-specific methods.
-- [ ] Migration notes cover all removed curl-specific methods and constants.
+- [ ] All auth-related services are storage-independent and lifecycle-independent.
+- [ ] `Client` is a facade/composition root, not a god object.
+- [ ] Token storage remains strictly passive.
+- [ ] Migration docs cover all planned v1 breaking removals (especially curl-specific paths).
+- [ ] `composer review` passes.
 
 ## 11. Risks and Open Questions
 

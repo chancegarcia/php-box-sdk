@@ -1,34 +1,36 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-12 15:30:00.000
+- **Timestamp**: 2026-05-12 15:45:00.000
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Current Status
-- **Roadmap Position**: Step 12 COMPLETED; Step 13.0 (Discovery) COMPLETED.
-- **Audit Document**: `docs/audits/13-auth-lifecycle-provider-extraction-audit.md` (NEW).
-- **V1 Roadmap**: `docs/planning/v1-release-roadmap.md` (Reconciled).
+- **Roadmap Position**: Token Storage Completion and Integration (Step 12) COMPLETED; Roadmap Step Naming and Documentation Drift Cleanup (Step 13.1) COMPLETED.
+- **Audit Document**: `docs/audits/13-auth-lifecycle-provider-extraction-audit.md` (Updated).
+- **V1 Roadmap**: `docs/planning/v1-release-roadmap.md` (Updated).
 
-## Discovery Findings (Step 13.0)
-- **Curl Coupling**: High. `ConnectionInterface` contains 7+ curl-specific methods. `Client` manually pushes `CURLOPT_HTTPHEADER`.
-- **Auth Lifecycle**: Scattered. Exchange, refresh, and revoke are directly in `Client`.
-- **Guzzle Status**: Present but secondary. `TRANSPORT_CURL` is still the default.
-- **Client Surface**: Identified 11+ major responsibilities; 5 are auth/transport candidates for delegation or removal.
+## Cleanup Accomplished: Roadmap Step Naming and Documentation Drift Cleanup (Step 13.1)
+- **Standardized Naming**: All Auth Lifecycle/Auth Provider Extraction (Step 13) references now follow `Step Title (Step N)` format.
+- **Slice Alignment**: Corrected legacy `9.x` numbering in Step 13 audit to `13.x`.
+- **Roadmap Reconciliation**: Added `Step 13.0`, `Step 13.1`, and `Step 13.2` to the roadmap status table.
+- **Modernization Gate**: Beefed up v1 Release Readiness (Step 17) requirements in `docs/audits/13-auth-lifecycle-provider-extraction-audit.md` to include specific legacy curl/auth removal targets.
 
-## Next Task: Step 13.1 — Roadmap Step Naming and Documentation Drift Cleanup
-- **Goal**: Standardize roadmap and audit references to `Step Title (Step N)` format and fix minor drift.
-- **Startup Recommendation**:
-  - Review `docs/audits/13-auth-lifecycle-provider-extraction-audit.md`.
-  - Perform the documentation cleanup pass.
-  - Proceed to Step 13.2 (Guzzle Defaulting) after cleanup.
+## Next Task: Step 13.2 — Guzzle Default Transport Cleanup
+- **Goal**: Make Guzzle the default transport and remove the legacy `CurlTransport`.
+- **Key Actions**:
+  - Update `Connection::$transportName` default.
+  - Remove the legacy CurlTransport implementation wherever it currently resides, likely under src/Http/Transport/.
+  - Update tests to ensure they no longer rely on curl transport discovery.
+  - Review `PostFile` and `FileUploadCommand` for transport-specific assumptions.
 
-## Implementation Plan (Step 13 Refined)
-1. **13.1 — Roadmap Step Naming and Documentation Drift Cleanup**
-2. **13.2 — Guzzle Default Transport Cleanup** (Remove `CurlTransport`)
-3. **13.3 — Connection Interface Modernization** (Remove curl-specific methods)
-4. **13.4 — Authenticated Request Boundary Cleanup** (Centralize bearer application)
-5. **13.5 — AuthProvider Extraction (OAuth2)** (Move lifecycle out of `Client`)
-6. **13.6 — Client Facade and Legacy Surface Review** (Final v1 modernization check)
+## Implementation Plan: Auth Lifecycle/Auth Provider Extraction (Step 13)
+1. **Auth Lifecycle/Auth Provider Extraction Discovery (Step 13.0)** ✓
+2. **Roadmap Step Naming and Documentation Drift Cleanup (Step 13.1)** ✓
+3. **Guzzle Default Transport Cleanup (Step 13.2)** (NEXT)
+4. **Connection Interface Modernization (Step 13.3)** (Remove curl-specific methods)
+5. **Authenticated Request Boundary Cleanup (Step 13.4)** (Centralize bearer application)
+6. **AuthProvider Extraction (OAuth2) (Step 13.5)** (Move lifecycle out of `Client`)
+7. **Client Facade and Legacy Surface Review (Step 13.6)** (Final v1 modernization check)
 
 ## Validation
-- `docs/audits/13-auth-lifecycle-provider-extraction-audit.md` contains the full inventory and risk analysis.
-- No source changes were made in 13.0.
+- Docs-only pass; verified Markdown consistency and links.
+- No source changes made.

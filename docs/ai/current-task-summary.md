@@ -1,20 +1,24 @@
 ### Summary
-- Completed discovery and inventory for **Auth Lifecycle/Auth Provider Extraction (Step 13)**.
-- Identified significant legacy coupling to curl-specific behavior in `Connection` and `Client`.
-- Verified that Token Storage (Step 12) boundaries remain intact and passive.
-- Produced a detailed audit and refined implementation plan in `docs/audits/13-auth-lifecycle-provider-extraction-audit.md`.
+- Completed **Roadmap Step Naming and Documentation Drift Cleanup (Step 13.1)**.
+- Standardized all Step 13 references to the `Step Title (Step N)` format.
+- Reconciled slice numbering in Step 13 audit and roadmap docs (switched from `9.x` to `13.x`).
+- Strengthened the **v1 Release Readiness (Step 17)** modernization gate requirements.
 
 ### Changes
-- Created `docs/audits/13-auth-lifecycle-provider-extraction-audit.md` with detailed inventory of auth lifecycle, connection auth, and transport coupling.
-- Classified `Client` responsibilities to prepare for god-object reduction.
-- Proposed a 7-slice implementation plan for Step 13, including a dedicated documentation cleanup pass.
-- Recommended strengthening the **v1 Release Readiness (Step 17)** modernization gate.
+- Updated `docs/audits/13-auth-lifecycle-provider-extraction-audit.md`:
+    - Renamed slices from `9.x` to `13.x`.
+    - Marked Auth Lifecycle/Auth Provider Extraction Discovery (Step 13.0) as completed, Roadmap Step Naming and Documentation Drift Cleanup (Step 13.1) as completed, and Guzzle Default Transport Cleanup (Step 13.2) as next.
+    - Expanded v1 Release Readiness (Step 17) modernization gate checklist with specific legacy removal targets.
+- Updated `docs/planning/v1-release-roadmap.md`:
+    - Updated Strategic Status and roadmap reference range.
+    - Added explicit slice entries for Step 13.0, Step 13.1, and Step 13.2 in the status table.
+    - Marked Auth Lifecycle/Auth Provider Extraction (Step 13) as `In Progress`.
 
 ### Verification
-- Documentation inspection of `Client.php`, `Connection.php`, and `ConnectionInterface.php`.
-- Verified working tree is clean and roadmap is reconciled.
-- Search-based inventory of `CURLOPT_`, `Authorization: Bearer`, and auth-lifecycle methods.
+- Manual inspection of all modified Markdown files.
+- Verified all internal links and step references are consistent.
+- No source code was modified; no functional validation required.
 
 ### Follow-ups
-- Perform **Roadmap Step Naming and Documentation Drift Cleanup (Step 13.1)**.
-- Proceed to Step 13.2: Guzzle Default Transport Cleanup.
+- Proceed to **Guzzle Default Transport Cleanup (Step 13.2)**.
+- Detailed task summary and handoff persisted in `docs/ai/`.
