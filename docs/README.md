@@ -16,7 +16,7 @@ Welcome to the documentation for the Box PHP SDK.
 - [Release Task Lists](planning/release-task-lists.md): Specific tasks for upcoming releases.
 
 ### [v1.0 Tracking](planning/v1/)
-- **[Main v1 Release Tracker](planning/10-v1-release-work.md) (Strategic)**: Current progress tracker for Steps 10-17.
+- **[Main v1 Release Tracker](planning/v1-release-roadmap.md) (Strategic)**: Current progress tracker for Steps 10-17.
 - **[v1.0 Implementation Checklist](planning/v1/implementation-checklist.md) (Operational)**: Detailed task-level progress.
 - **[Decision Index](planning/v1/decision-index.md)**: Central log of architectural decisions.
 

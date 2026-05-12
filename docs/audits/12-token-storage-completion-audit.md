@@ -120,7 +120,7 @@ Step 12 aims to finalize the passive token storage layer for the v1 release.
 4. **CLI Integration**: CLI commands now optionally integrate with token storage using `ConfigProvider` for DSN/credentials and supporting command-line overrides for context (User ID/Enterprise ID).
 5. **Security**: Redaction of sensitive fields in exceptions and logs is enforced.
 6. **Defereals**: 
-    - **Auth Lifecycle/Auth Provider extraction**: Deferred to Step 13+ as planned.
+    - **Auth Lifecycle/Auth Provider extraction**: Step 13. Next step after Step 12.
     - **FilesystemTokenStorage**: Excluded from v1 core; PDO and In-Memory are deemed sufficient for initial v1 release.
     - **JWT/S2S**: Deferred to Step 14/15.
 

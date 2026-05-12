@@ -4,7 +4,7 @@ This directory contains trackers, roadmaps, and architectural plans for the Box 
 
 ## Current Progress
 
-- **[Main v1 Release Tracker](10-v1-release-work.md)**: Strategic progress for Steps 10-17.
+- **[Main v1 Release Tracker](v1-release-roadmap.md)**: Strategic progress for Steps 10-17.
 - **[v1.0 Implementation Checklist](v1/implementation-checklist.md)**: Operational checklist for v1.0 architecture.
 - **[Roadmap](roadmap.md)**: High-level vision and release strategy.
 - **[Release Task Lists](release-task-lists.md)**: Specific tasks for the v1.0 release.
@@ -25,15 +25,16 @@ These documents track completed steps of the v1.0 foundation work:
 - [Step 8: Service Layer Hardening](08-service-layer-hardening.md)
 - [Step 9: Legacy Architecture Removal](09-legacy-architecture-removal.md)
 - [Step 10: Resource Namespace and Interface Rationalization](10-resource-namespace-interface-rationalization.md)
-- [Step 11: Factory Modernization and Service Boundaries](10-v1-release-work.md#step-11--factory-modernization-and-service-boundaries) (Tracked within main tracker)
+- [Step 11: Factory Modernization and Service Boundaries](v1-release-roadmap.md#step-11--factory-modernization-and-service-boundaries) (Tracked within main tracker)
 
 ## Upcoming Work
 
-- **Step 12: Token Storage Completion and Integration** (Ready for implementation)
-- **Step 13: API Fixture Realism** (Required)
+- **Step 12: Token Storage Completion and Integration** (✓ Completed)
+- **Step 13: Auth Lifecycle/Auth Provider Extraction** (Next)
 - **Step 14: JWT/S2S Feasibility** (Required)
 - **Step 15: JWT/S2S Implementation** (Required)
 - **Step 15.1: Box API Coverage Alignment** (Required)
+- **Step 15.2: API Fixture Realism** (Required)
 - **Step 16: Webhook Verification and Evaluation** (Required/Evaluation)
 
 ## Historical and Superseded

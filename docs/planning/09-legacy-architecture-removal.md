@@ -490,7 +490,7 @@ Audit resource interfaces for legacy overengineering.
 - Remove one-class mirror interfaces if they are legacy overengineering.
 - Document public API breaks in migration docs if removed.
 
-### API Fixture Realism and Contract Alignment
+### API Fixture Realism and Contract Alignment (Deferred to Step 15.2)
 
 Before final v1 release, a later pass should:
 

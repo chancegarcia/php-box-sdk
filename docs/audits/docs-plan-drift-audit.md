@@ -20,14 +20,14 @@ When conflicts exist, the following sources should be treated as canonical:
 
 | Topic | Canonical Source |
 | :--- | :--- |
-| **Current Progress** | `docs/planning/v1/implementation-checklist.md` (Operational) / `10-v1-release-work.md` (Strategic) |
+| **Current Progress** | `docs/planning/v1/implementation-checklist.md` (Operational) / `v1-release-roadmap.md` (Strategic) |
 | **Architecture Rules** | `docs/planning/v1/architecture-rules.md` |
 | **Technical Strategy** | `docs/planning/v1/strategy-and-contracts.md` |
 | **Decisions** | `docs/planning/v1/decision-index.md` |
 | **Migration Guidance** | `docs/migration/upgrading-0.11-to-1.0.md` |
 | **Step Details** | Individual step trackers (e.g., `docs/planning/10-resource-namespace-interface-rationalization.md`) |
 
-*Correction*: Step 11 details were largely managed within `docs/planning/10-v1-release-work.md`. Step 10 has its own detailed tracker `docs/planning/10-resource-namespace-interface-rationalization.md`.
+*Correction*: Step 11 details were largely managed within `docs/planning/v1-release-roadmap.md`. Step 10 has its own detailed tracker `docs/planning/10-resource-namespace-interface-rationalization.md`.
 
 ## Drift Findings
 
@@ -80,7 +80,7 @@ Collected from Step 11 completion and audits:
 ## Recommended Cleanup Slices
 
 ### Slice A: Planning Document Synchronization [✓]
-- Update `docs/planning/v1/implementation-checklist.md` to match `10-v1-release-work.md`. [✓]
+- Update `docs/planning/v1/implementation-checklist.md` to match `v1-release-roadmap.md`. [✓]
 - Update `docs/roadmap.md` and `docs/planning/release-task-lists.md` to reflect completed v1 work. [✓]
 - Update `docs/README.md` status section. [✓]
 - Sync `docs/planning/v1/overview.md` (remove completed "Remaining items"). [✓]

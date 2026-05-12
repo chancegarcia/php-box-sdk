@@ -1,6 +1,6 @@
-# v1 Release Work Tracker
+# v1 Release Roadmap
 
-**Strategic Status: Step 12 Ready for Review**
+**Strategic Status: Step 13 Auth Provider Audit/Planning**
 
 Roadmap reference: v1 Steps 10–16
 
@@ -56,10 +56,11 @@ This work assumes the completion of:
 | 11.8 | Documentation, Migration, and Planning Drift Cleanup | ✓ |
 | 11.9 | Final Integration Review, Code/Plan Conformance, and New-Chat Handoff | ✓ |
 | 12 | [Token Storage Completion and Integration](#step-12--token-storage-completion-and-integration) | ✓ |
-| 13 | [API Fixture Realism and Contract Alignment](#step-13--api-fixture-realism-and-contract-alignment) | Not Started |
+| 13 | [Auth Lifecycle/Auth Provider Extraction](#step-13--auth-lifecycleauth-provider-extraction) | Not Started |
 | 14 | [JWT/S2S Feasibility and Dependency Review](#step-14--jwts2s-feasibility-and-dependency-review) | Not Started |
 | 15 | [JWT/S2S Implementation](#step-15--jwts2s-implementation) | Not Started |
 | 15.1 | [Box API Coverage Alignment](#step-151--box-api-coverage-alignment) | Not Started |
+| 15.2 | [API Fixture Realism and Contract Alignment](#step-152--api-fixture-realism-and-contract-alignment) | Not Started |
 | 16 | [Webhook Verification and Evaluation](#step-16--webhook-verification-and-evaluation) | Not Started |
 | 17 | [v1 Release Readiness](#step-17--v1-release-readiness) | Not Started |
 
@@ -69,9 +70,9 @@ This work assumes the completion of:
 |---:|---|---|---|---|
 | 1 | **Token Storage Completion** | Required | Step 11 | Passive storage (PDO/In-Memory); Client orchestration; Service independence. |
 | 2 | **Auth Lifecycle Extraction** | Required | Step 12 | Dedicated `AuthProvider` component; Client coordinates auth+storage. |
-| 3 | **JWT / Server-to-Server Auth** | Required | Step 12 (Auth boundary) | RSA-4096 signing; Enterprise/App User support; Config/Tests/Docs. |
-| 4 | **API Fixture Realism** | Required | Step 11 | Realistic fixtures for core resources (File, Folder, User, Group). |
-| 5 | **API Coverage Alignment** | Required | Step 15 | Audit SDK vs Box API; Prioritize core resource value; Matrix produced. |
+| 3 | **JWT / Server-to-Server Auth** | Required | Step 13 (Auth boundary) | RSA-4096 signing; Enterprise/App User support; Config/Tests/Docs. |
+| 4 | **API Coverage Alignment** | Required | Step 15 | Audit SDK vs Box API; Prioritize core resource value; Matrix produced. |
+| 5 | **API Fixture Realism** | Required | Step 11 | Realistic fixtures for core resources (File, Folder, User, Group). |
 | 6 | **Webhook Evaluation** | Evaluation | Step 15.1 | Verification implementation; Decision to include/defer full service. |
 | 7 | **Release Readiness** | Required | Step 16 | Final docs, changelog, security scan, `composer review`. |
 
@@ -256,23 +257,24 @@ Audit and finalize token storage behavior for v1. This ensures the SDK provides 
 
 ---
 
-## Step 13 — API Fixture Realism and Contract Alignment
+## Step 13 — Auth Lifecycle/Auth Provider Extraction
 
 ### Purpose
-Ensure service and resource tests reflect actual Box API behavior by using realistic fixtures.
+Move auth lifecycle responsibilities out of `Client` into a dedicated provider/boundary to prepare for JWT/S2S work.
 
 ### Scope
-- Review high-value service/resource tests against official Box API examples.
-- Replace overly artificial mocked payloads where accuracy matters.
-- Centralize reusable Box API-shaped fixtures in `tests/Fixtures/`.
+- Move authorization-code exchange, refresh, and revoke/destroy orchestration behind an `AuthProviderInterface`.
+- Preserve `Client` as a facade while reducing direct auth orchestration inside it.
+- Maintain compatibility for current OAuth2 usage via a default provider.
 
 ### Non-Goals
-- Do not create network integration tests.
-- Do not chase low-value fixtures that don't affect release confidence.
+- Do not implement JWT/S2S in this step (Step 14/15).
+- Do not change token storage persistence contracts.
 
 ### Acceptance Criteria
-- At least one realistic fixture for each major resource (File, Folder, User, Group).
-- Tests for core services (FileService, UserService, etc.) use these fixtures.
+- `AuthProviderInterface` defined.
+- `Client` delegates auth lifecycle operations to an auth provider.
+- All existing auth tests pass with the new boundary.
 
 ---
 
@@ -352,6 +354,26 @@ Audit the current SDK against current Box API documentation to ensure core resou
 
 ---
 
+## Step 15.2 — API Fixture Realism and Contract Alignment
+
+### Purpose
+Ensure service and resource tests reflect actual Box API behavior by using realistic fixtures.
+
+### Scope
+- Review high-value service/resource tests against official Box API examples.
+- Replace overly artificial mocked payloads where accuracy matters.
+- Centralize reusable Box API-shaped fixtures in `tests/Fixtures/`.
+
+### Non-Goals
+- Do not create network integration tests.
+- Do not chase low-value fixtures that don't affect release confidence.
+
+### Acceptance Criteria
+- At least one realistic fixture for each major resource (File, Folder, User, Group).
+- Tests for core services (FileService, UserService, etc.) use these fixtures.
+
+---
+
 ## Step 16 — Webhook Verification and Evaluation
 
 ### Purpose
@@ -389,10 +411,12 @@ Final polish and validation before tagging v1.0.0.
 ## Release Blockers
 - Step 10 Resource Namespace and Interface Rationalization complete. ✓
 - Step 11 Factory Modernization and Service Boundaries complete. ✓
-- Step 12 Token Storage Completion and Integration complete.
-- Step 13 API Fixture Realism complete enough for release confidence.
+- Step 12 Token Storage Completion and Integration complete. ✓
+- Step 13 Auth Lifecycle/Auth Provider Extraction complete.
 - Step 14 JWT/S2S feasibility complete.
 - Step 15 JWT/S2S implementation complete.
+- Step 15.1 API Coverage Alignment complete.
+- Step 15.2 API Fixture Realism complete enough for release confidence.
 - Step 16 Webhook Verification decision and implementation complete.
 - Step 17 final release readiness complete.
 - `composer review` passes.

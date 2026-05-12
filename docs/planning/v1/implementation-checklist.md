@@ -245,7 +245,7 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 - Validation: `composer test`, `composer analyse`.
 - Documentation updates: Architecture rules, strategy, and user docs.
 - Test updates: Focused storage and orchestration tests.
-- Completion notes: Corresponds to Step 12 in `10-v1-release-work.md`.
+- Completion notes: Corresponds to Step 12 in `v1-release-roadmap.md`.
 
 ## 18.1 Auth Lifecycle Extraction
 
@@ -267,7 +267,7 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
 - Validation: `composer test`, `composer analyse`.
 - Documentation updates: JWT usage guide and migration notes.
 - Test updates: Signing and exchange tests with placeholder fixtures.
-- Completion notes: Required for v1 release. Corresponds to Steps 14-15 in `10-v1-release-work.md`.
+- Completion notes: Required for v1 release. Corresponds to Steps 14-15 in `v1-release-roadmap.md`.
 
 ## 19. Box API Coverage Alignment
 
@@ -278,7 +278,7 @@ Do not use ad hoc `vendor/bin/phpcs --standard=PSR12 ...` commands as a replacem
     - Align with basic Box API CRUD operations.
     - Produce coverage matrix.
 - Dependencies: 18.2.
-- Completion notes: Corresponds to Step 15.1 in `10-v1-release-work.md`.
+- Completion notes: Corresponds to Step 15.1 in `v1-release-roadmap.md`.
 
 ## 20. Evaluation Phase: Missing Resources and Webhooks
 

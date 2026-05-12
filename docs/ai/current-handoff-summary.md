@@ -6,7 +6,7 @@
 ## Current Status
 - **Roadmap Position**: Step 12 COMPLETED; Step 13 is next.
 - **Audit Document**: `docs/audits/12-token-storage-completion-audit.md` (Updated/Completed).
-- **V1 Roadmap**: `docs/planning/10-v1-release-work.md` (Updated/Completed).
+- **V1 Roadmap**: `docs/planning/v1-release-roadmap.md` (Updated/Completed).
 
 ## Completed Work (Step 12 Summary)
 - **12.1 — Token storage contract/context finalization**: Finalized `TokenStorageInterface` and `TokenStorageContext`.
@@ -30,15 +30,16 @@
   - **Test Suite**: 266 tests, 100% passing.
 - Specific verification of Step 12 features: context isolation, secret redaction, and CLI config precedence.
 
-## Next Task: Step 13 — API Fixture Realism and Contract Alignment
-- **Goal**: Improve API fixture realism and ensure contract alignment across resources.
+## Next Task: Step 13 — Auth Lifecycle/Auth Provider Extraction
+- **Goal**: Move auth lifecycle responsibilities out of `Client` into a dedicated provider/boundary.
 - **Startup Recommendation**:
-  - Begin with a tracker/plan review (`docs/planning/10-v1-release-work.md`).
-  - Inspect Step 13 section and any existing tests/fixtures.
+  - Begin with a tracker/plan review (`docs/planning/v1-release-roadmap.md`).
+  - Inspect Step 13 section in the roadmap.
+  - Perform an audit of current auth responsibilities in `Client` and `Connection`.
   - Refine a Step 13 prompt before implementation.
 
 ## Deferred Work / Non-Goals
-- **Auth Provider Extraction**: Extraction of Auth Lifecycle/Auth Provider is post-Step-12 and not yet started.
+- **API Fixture Realism**: Deferred to Step 15.2 to prioritize Auth Provider extraction.
 - **JWT/S2S**: Scheduled for Step 14/15; not yet started.
 - **Storage Expansion**: `FilesystemTokenStorage` is excluded from v1 core.
 
@@ -49,6 +50,6 @@
 ## Suggested Context for New Chat
 - `docs/ai/current-handoff-summary.md`
 - `docs/ai/current-task-summary.md`
-- `docs/planning/10-v1-release-work.md`
+- `docs/planning/v1-release-roadmap.md`
 - `docs/audits/12-token-storage-completion-audit.md`
 - `src/Client.php` (for storage hooks reference)

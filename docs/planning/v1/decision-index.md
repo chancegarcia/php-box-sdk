@@ -10,10 +10,10 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 | Service-first architecture | **Decided** | `v1-strategy-and-contracts.md` | None |
 | Resource vs DTO distinction | **Decided** | `v1-strategy-and-contracts.md` | None |
 | Passive typed Resources | **Decided** | `v1-architecture-rules.md` | None |
-| Resource getters must not mutate state | **Decided** | `10-v1-release-work.md` | None |
-| Factories hydrate user arrays | **Decided** | `10-v1-release-work.md` | None |
-| Services hydrate API responses | **Decided** | `10-v1-release-work.md` | None |
-| Services own URI construction | **Decided** | `10-v1-release-work.md` | None |
+| Resource getters must not mutate state | **Decided** | `v1-release-roadmap.md` | None |
+| Factories hydrate user arrays | **Decided** | `v1-release-roadmap.md` | None |
+| Services hydrate API responses | **Decided** | `v1-release-roadmap.md` | None |
+| Services own URI construction | **Decided** | `v1-release-roadmap.md` | None |
 | Authenticated service boundary | **Decided** | `11-v1-service-coverage-auth-boundary-audit.md` | None |
 | Public direct transport API | **Decided** | `v1-strategy-and-contracts.md` | None |
 | Guzzle 7 as default PSR-18 client | **Decided** | `v1-strategy-and-contracts.md` | None |
@@ -36,12 +36,12 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 | Documentation Gap Inventory | **Active** | `v1-documentation-gap-inventory.md` | Tracks ongoing P2/P3 items |
 | SDK Response Wrapper | **Decided** | `v1-strategy-and-contracts.md` | Implementation: Replace with thin PSR-7 wrapper |
 | Response Strategy Alignment | **Decided** | `v1-strategy-and-contracts.md` | None |
-| JWT/S2S Auth Required | **Decided** | `10-v1-release-work.md` | Required for v1 release |
-| Token Storage Integration Review | **Decided** | `10-v1-release-work.md` | Client and CLI integration required |
-| API Coverage Depth vs Parity | **Decided** | `10-v1-release-work.md` | Prioritize core resource value for v1 |
-| Webhook Verification Required | **Decided** | `10-v1-release-work.md` | Security requirement for v1 |
-| Webhook Management (CRUD) | **Evaluation** | `10-v1-release-work.md` | Evaluate for v1 or defer |
-| Comments / Tasks / Metadata | **Evaluation** | `10-v1-release-work.md` | Evaluate for v1 or defer |
+| JWT/S2S Auth Required | **Decided** | `v1-release-roadmap.md` | Required for v1 release |
+| Token Storage Integration Review | **Decided** | `v1-release-roadmap.md` | Client and CLI integration required |
+| API Coverage Depth vs Parity | **Decided** | `v1-release-roadmap.md` | Prioritize core resource value for v1 |
+| Webhook Verification Required | **Decided** | `v1-release-roadmap.md` | Security requirement for v1 |
+| Webhook Management (CRUD) | **Evaluation** | `v1-release-roadmap.md` | Evaluate for v1 or defer |
+| Comments / Tasks / Metadata | **Evaluation** | `v1-release-roadmap.md` | Evaluate for v1 or defer |
 | CLI Persistence | **Decided** | `strategy-and-contracts.md` | Optional/Configurable; Resolution order defined |
 | Sign Requests | **Deferred** | `v1-strategy-and-contracts.md` | v1.1.0 priority |
 | Auto-pagination | **Deferred** | `v1-strategy-and-contracts.md` | v1.x candidate |

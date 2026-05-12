@@ -1,21 +1,20 @@
 ### Summary
-- Completed Step 12: Token Storage Completion and Integration.
-- Verified that all token storage components are passive, context-aware, and properly integrated with the Client and CLI.
-- Updated project documentation to reflect the completion of Step 12.
+- Reconciled roadmap and documentation drift following Step 12 completion.
+- Renamed the main v1 tracker to `docs/planning/v1-release-roadmap.md`.
+- Updated Step 13 to be **Auth Lifecycle/Auth Provider Extraction** and deferred API Fixture Realism to Step 15.2.
 
 ### Changes
-- Updated `docs/audits/12-token-storage-completion-audit.md` to mark Step 12 and Slice 12.7 as completed and added final architectural conclusions.
-- Updated `docs/planning/10-v1-release-work.md` to mark Step 12 and Slice 12.7 as completed in the v1 roadmap.
-- Audited Step 12 code for type-safety and verified consistent use of `void` returns for setters and strict typing for storage interfaces.
-- Confirmed that token storage remains passive and services are storage-independent.
+- Renamed `docs/planning/10-v1-release-work.md` to `docs/planning/v1-release-roadmap.md` via `git mv`.
+- Updated all internal documentation links and references to point to the new canonical roadmap filename.
+- Corrected Step 13 definition in the roadmap and handoff summary to prioritize Auth Provider extraction.
+- Realigned the remaining v1 sequence to reflect that JWT/S2S implementation depends on the new Auth Provider boundary.
+- Updated `docs/planning/README.md` and `docs/README.md` to reflect the new roadmap filename and current Step 13 focus.
+- Adjusted previous audit documents and task summaries to maintain internal consistency regarding Step 13 reordering.
 
 ### Verification
-- Ran `composer review` which includes linting, static analysis (`phpstan`), and full test suite execution (`phpunit`).
-- All 266 tests passed successfully.
-- PHPStan reported no errors.
-- Verified specific storage behaviors (one-active-token-per-context, secret redaction, CLI config precedence) through existing Step 12 tests.
+- Verified all documentation links via project-wide search.
+- Confirmed Step 12 remains marked complete and Step 13 is marked as not started.
+- Verified that the handoff summary correctly points the next chat to Auth Provider audit and planning.
 
-### Notes
-- Auth Lifecycle/Auth Provider extraction is deferred to Step 13+ as planned.
-- JWT/S2S work remains not started, scheduled for Step 14/15.
-- Filesystem storage is excluded from the v1 core as PDO and In-Memory implementations are sufficient.
+### Follow-ups
+- Start Step 13: Auth Lifecycle/Auth Provider Extraction audit and planning.
