@@ -1,55 +1,34 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-12 04:04:00.000
+- **Timestamp**: 2026-05-12 15:30:00.000
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Current Status
-- **Roadmap Position**: Step 12 COMPLETED; Step 13 is next.
-- **Audit Document**: `docs/audits/12-token-storage-completion-audit.md` (Updated/Completed).
-- **V1 Roadmap**: `docs/planning/v1-release-roadmap.md` (Updated/Completed).
+- **Roadmap Position**: Step 12 COMPLETED; Step 13.0 (Discovery) COMPLETED.
+- **Audit Document**: `docs/audits/13-auth-lifecycle-provider-extraction-audit.md` (NEW).
+- **V1 Roadmap**: `docs/planning/v1-release-roadmap.md` (Reconciled).
 
-## Completed Work (Step 12 Summary)
-- **12.1 — Token storage contract/context finalization**: Finalized `TokenStorageInterface` and `TokenStorageContext`.
-- **12.2 — In-memory storage hardening**: Completed `TokenStorageContainer` with full context-aware lifecycle support.
-- **12.3 — PDO storage implementation**: Implemented a robust PDO backend with SQLite-based integration tests.
-- **12.4 — Service storage-independence cleanup**: Decoupled the `Service` layer from storage persistence; services are now storage-independent.
-- **12.5 — Client integration hooks**: Added optional `loadTokenFromStorage()`, `saveTokenToStorage()`, and `removeTokenFromStorage()` orchestration to `Client`.
-- **12.6 — CLI/auth harness storage integration**: Integrated storage with CLI commands using `ConfigProvider` for DSN/credentials and supporting command-line context overrides.
-- **12.7 — Type-safety/docs/final review**: Completed final project audit for Step 12; updated docs and verified architectural boundaries.
+## Discovery Findings (Step 13.0)
+- **Curl Coupling**: High. `ConnectionInterface` contains 7+ curl-specific methods. `Client` manually pushes `CURLOPT_HTTPHEADER`.
+- **Auth Lifecycle**: Scattered. Exchange, refresh, and revoke are directly in `Client`.
+- **Guzzle Status**: Present but secondary. `TRANSPORT_CURL` is still the default.
+- **Client Surface**: Identified 11+ major responsibilities; 5 are auth/transport candidates for delegation or removal.
 
-## Current Architecture Boundaries
-- **Passive Token Storage**: Storage implementations handle persistence only; they do not perform network calls, refreshes, or authorization-code exchanges.
-- **Service Independence**: Services receive tokens via `Client` but do not orchestrate storage or persistence themselves.
-- **Client Coordination**: `Client` is the optional coordination point for storage. Persistence of exchange/refresh is optional and requires configured storage.
-- **CLI Config**: CLI uses `ConfigProvider` for storage settings (e.g., `BOX_STORAGE_PDO_DSN`). No raw `$_ENV` usage in command classes.
-
-## Validation (Step 12 Final)
-- `composer review`: PASSED
-  - **Syntax Check**: All files valid.
-  - **Static Analysis**: PHPStan Level 0 (no errors).
-  - **Test Suite**: 266 tests, 100% passing.
-- Specific verification of Step 12 features: context isolation, secret redaction, and CLI config precedence.
-
-## Next Task: Step 13 — Auth Lifecycle/Auth Provider Extraction
-- **Goal**: Move auth lifecycle responsibilities out of `Client` into a dedicated provider/boundary.
+## Next Task: Step 13.1 — Roadmap Step Naming and Documentation Drift Cleanup
+- **Goal**: Standardize roadmap and audit references to `Step Title (Step N)` format and fix minor drift.
 - **Startup Recommendation**:
-  - Begin with a tracker/plan review (`docs/planning/v1-release-roadmap.md`).
-  - Inspect Step 13 section in the roadmap.
-  - Perform an audit of current auth responsibilities in `Client` and `Connection`.
-  - Refine a Step 13 prompt before implementation.
+  - Review `docs/audits/13-auth-lifecycle-provider-extraction-audit.md`.
+  - Perform the documentation cleanup pass.
+  - Proceed to Step 13.2 (Guzzle Defaulting) after cleanup.
 
-## Deferred Work / Non-Goals
-- **API Fixture Realism**: Deferred to Step 15.2 to prioritize Auth Provider extraction.
-- **JWT/S2S**: Scheduled for Step 14/15; not yet started.
-- **Storage Expansion**: `FilesystemTokenStorage` is excluded from v1 core.
+## Implementation Plan (Step 13 Refined)
+1. **13.1 — Roadmap Step Naming and Documentation Drift Cleanup**
+2. **13.2 — Guzzle Default Transport Cleanup** (Remove `CurlTransport`)
+3. **13.3 — Connection Interface Modernization** (Remove curl-specific methods)
+4. **13.4 — Authenticated Request Boundary Cleanup** (Centralize bearer application)
+5. **13.5 — AuthProvider Extraction (OAuth2)** (Move lifecycle out of `Client`)
+6. **13.6 — Client Facade and Legacy Surface Review** (Final v1 modernization check)
 
-## Security
-- No real tokens, secrets, or account IDs are present in the codebase or docs.
-- Redaction of sensitive fields in exceptions and logs is enforced by the SDK.
-
-## Suggested Context for New Chat
-- `docs/ai/current-handoff-summary.md`
-- `docs/ai/current-task-summary.md`
-- `docs/planning/v1-release-roadmap.md`
-- `docs/audits/12-token-storage-completion-audit.md`
-- `src/Client.php` (for storage hooks reference)
+## Validation
+- `docs/audits/13-auth-lifecycle-provider-extraction-audit.md` contains the full inventory and risk analysis.
+- No source changes were made in 13.0.
