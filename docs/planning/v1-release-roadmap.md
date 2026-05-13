@@ -1,6 +1,6 @@
 # v1 Release Roadmap
 
-**Strategic Status: JWT/S2S Feasibility and Dependency Review (Step 14)**
+**Strategic Status: JWT/S2S Implementation (Step 15)**
 
 Roadmap reference: v1 Steps 10–17
 
@@ -64,10 +64,14 @@ This work assumes the completion of:
 | 13.4 | [Authenticated Request Boundary Cleanup](#step-134--authenticated-request-boundary-cleanup) | ✓ |
 | 13.5 | [AuthProvider Extraction (OAuth2)](#step-135--authprovider-extraction-oauth2) | ✓ |
 | 13.6 | [Client Facade and Legacy Surface Review](#step-136--client-facade-and-legacy-surface-review) | ✓ |
-| 14 | [JWT/S2S Feasibility and Dependency Review](#step-14--jwts2s-feasibility-and-dependency-review) | Not Started |
+| 14 | [JWT/S2S Feasibility and Dependency Review](#step-14--jwts2s-feasibility-and-dependency-review) | ✓ |
 | 15 | [JWT/S2S Implementation](#step-15--jwts2s-implementation) | Not Started |
-| 15.1 | [Box API Coverage Alignment](#step-151--box-api-coverage-alignment) | Not Started |
-| 15.2 | [API Fixture Realism and Contract Alignment](#step-152--api-fixture-realism-and-contract-alignment) | Not Started |
+| 15.1 | [Dependency and Core JWT Support](#step-151--dependency-and-core-jwt-support) | Not Started |
+| 15.2 | [JwtProvider Implementation](#step-152--jwtprovider-implementation) | Not Started |
+| 15.3 | [Factory and Client Integration](#step-153--factory-and-client-integration) | Not Started |
+| 15.4 | [CLI Support](#step-154--cli-support) | Not Started |
+| 15.5 | [Box API Coverage Alignment](#step-155--box-api-coverage-alignment) | Not Started |
+| 15.6 | [API Fixture Realism and Contract Alignment](#step-156--api-fixture-realism-and-contract-alignment) | Not Started |
 | 16 | [Webhook Verification and Evaluation](#step-16--webhook-verification-and-evaluation) | Not Started |
 | 17 | [v1 Release Readiness](#step-17--v1-release-readiness) | Not Started |
 

@@ -4,6 +4,7 @@
 - Repository:
 - Primary language/tooling:
 - Current branch/context:
+- Next Step Status: Pending Approval | Approved | Blocked (Default: Pending Approval. AI must not proceed until Approved)
 
 ## Current Goal
 -

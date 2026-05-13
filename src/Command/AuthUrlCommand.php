@@ -43,17 +43,18 @@ class AuthUrlCommand extends AbstractBoxCommand
 
         $client = $this->clientFactory->createClient();
 
+        $options = [];
         $redirectUri = $input->getOption('redirect-uri') ?? $this->configProvider->getRedirectUri();
         if ($redirectUri) {
-            $client->setRedirectUri($redirectUri);
+            $options['redirect_uri'] = $redirectUri;
         }
 
         $state = $input->getOption('state') ?? $this->configProvider->getState();
         if ($state) {
-            $client->setState($state);
+            $options['state'] = $state;
         }
 
-        $url = $client->buildAuthQuery();
+        $url = $client->buildAuthorizationUrl($options);
 
         if ($input->getOption('json')) {
             $this->outputFormatter->formatMasked($io, [

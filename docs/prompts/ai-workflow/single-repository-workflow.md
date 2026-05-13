@@ -79,6 +79,7 @@ During long-running initiatives or before ending a session, the AI produces a co
 7. **Cleanup/Refinement**: Run follow-up prompts if the slice requires minor fixes.
 8. **Commit**: Commit the completed, verified slice.
 9. **Progression**: Move to the next slice only after the previous one is committed.
+10. **Step Transition Approval**: Completing a step and updating its documentation does not constitute approval to begin the next step. The human reviewer must explicitly confirm before any next step or slice begins. AI assistants must surface this requirement at each step close — specifically, the handoff summary must show `Next Step Status: Pending Approval` and the AI must not proceed until the reviewer changes it to `Approved`. This rule applies equally to Junie and any other AI assistant working in this repository.
 
 ## Tracker Structure Template
 

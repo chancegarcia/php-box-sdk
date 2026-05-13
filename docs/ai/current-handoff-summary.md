@@ -1,43 +1,53 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-12 18:40:00.000
+- **Timestamp**: 2026-05-12 22:45:00.000
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
-## Current Status
-- **Roadmap Position**: Auth Lifecycle/Auth Provider Extraction (Step 13) COMPLETED.
-- **Audit Document**: `docs/audits/13-auth-lifecycle-provider-extraction-audit.md` (Updated).
+## Status
+- **Next Step Status**: Approved
+- **Roadmap Position**: JWT/S2S Feasibility and Dependency Review (Step 14) COMPLETED.
+- **Audit Document**: `docs/audits/14-jwt-s2s-feasibility-audit.md` (New).
 - **V1 Roadmap**: `docs/planning/v1-release-roadmap.md` (Updated).
 
-## Key Implementation Outcomes: Auth Lifecycle/Auth Provider Extraction (Step 13)
-- **AuthProvider Extraction**: Decoupled OAuth2 lifecycle mechanics from `Client` and `Connection` into a dedicated `OAuth2Provider`.
-- **Service Lifecycle Cleanup**: Removed legacy `refreshToken()`, `setTokenData()`, and `destroyToken()` from `ServiceInterface` and `Service`.
-- **Service Connection Consolidation**: Collapsed redundant `Service::$connection` and `Service::$authorizedConnection` into a single `connection` property.
-- **Legacy Shim Removal**: Removed all remaining Step 13 "will remove in v1" auth shims from `Client`, `Service`, and `Connection`.
-- **Bearer Auth Ownership**: `Connection` now internally prepares and applies bearer-token headers.
-- **Client Facade Rationalization**: `Client` acts as a composition root and public delegation facade.
-- **Dynamic OAuth2 State**: Verified and tested dynamic `state` support in authorization URL building.
-- **Workflow Guardrails**: Updated `single-repository-workflow.md` with persistence and reconciliation rules.
+## Reviewer Concerns and Resolutions (Step 14)
+- **Client Cleanup**: `Client::getState/setState/getRedirectUri/setRedirectUri` confirmed as vestigial; will be removed in Step 15 Slice 15.3.
+- **App User Focus**: App User tokens are the primary JWT v1 use case; enterprise is explicit opt-in.
+- **Extensibility**: `JwtAssertionGeneratorInterface` introduced as a user-replaceable extension point.
+- **Env Var Namespacing**: OAuth2 env vars renamed to `BOX_OAUTH_*` prefix; JWT vars use `BOX_JWT_*`; auth mode via `BOX_AUTH_MODE`.
+- **Refresh Logic**: `JwtProvider::refreshToken()` re-asserts — must never call `$token->getRefreshToken()`.
+- **Client Refresh Guard**: `Client::refreshToken()` must be audited for null refresh token guard in Step 15 Slice 15.3.
+- **Workflow Governance**: Step transition approval gap identified and corrected via workflow doc updates (Step 14 Follow-up).
 
-## Implementation Plan: Auth Lifecycle/Auth Provider Extraction (Step 13)
-1. **Auth Lifecycle/Auth Provider Extraction Discovery (Step 13.0)** ✓
-2. **Roadmap Step Naming and Documentation Drift Cleanup (Step 13.1)** ✓
-3. **Guzzle Default Transport Cleanup (Step 13.2)** ✓
-4. **Connection Interface Modernization (Step 13.3)** ✓
-5. **Authenticated Request Boundary Cleanup (Step 13.4)** ✓
-6. **AuthProvider Extraction (OAuth2) (Step 13.5)** ✓
-7. **Client Facade and Legacy Surface Review (Step 13.6)** ✓
+## Key Implementation Outcomes: JWT/S2S Feasibility (Step 14)
+- **Step 13 Escape Fix**: Fixed `src/Command/AuthUrlCommand.php` where it was calling a removed shim `buildAuthQuery()`. It now correctly uses `Client::buildAuthorizationUrl()`.
+- **Feasibility Audit**: Completed technical analysis for JWT/S2S support.
+- **Crypto Decision**: Chose native PHP `ext-openssl` for RS256 signing to avoid heavy external dependencies.
+- **Config Design**: Planned `JwtAuthConfig` DTO and `BoxClientFactory` mode detection.
+- **Integration Plan**: Defined `JwtProvider` implementation and CLI command additions.
+- **Redaction**: Identified new sensitive fields (`privateKey`, `privateKeyPassphrase`, `jwtAssertion`) for CLI masking.
+
+## Implementation Plan: JWT/S2S Feasibility (Step 14)
+1. **Startup Verification and Fix Step 13 Escape** ✓
+2. **Research and Inventory Files for JWT/S2S Feasibility** ✓
+3. **Perform JWT/S2S Feasibility Study** ✓
+4. **Produce Feasibility Report and Update Roadmap** ✓
+5. **Finalize Step 14** ✓
 
 ## Next Step
-- **JWT/S2S Feasibility and Dependency Review (Step 14)**: Begin analysis for JWT/S2S authentication support.
+- **JWT/S2S Implementation (Step 15)**
+    - Slice 15.1: Dependency and Core JWT Support.
+    - Slice 15.2: `JwtProvider` Implementation.
+    - Slice 15.3: Factory and Client Integration.
+    - Slice 15.4: CLI Support and Redaction.
 
 ## Validation
-- Full validation via `composer test`, `composer analyse`, `composer cs:check`, and `composer lint`.
-- 254 tests passed, 684 assertions.
-- PHPStan Level 0 passed.
-- PSR-12 check passed.
+- Full validation via `composer review`:
+    - `composer lint`: Passed.
+    - `composer test`: 254 tests, 684 assertions passed.
+    - `composer analyse`: Passed (Level 0).
+    - `composer cs:check`: Passed.
 
 ## Follow-up Notes
-- **Token Storage**: Confirmed token storage boundaries remain intact (passive persistence only).
-- **Deprecation Cleanup**: No remaining "will remove in v1" shims exist for the Step 13 surface.
-- **Service Base Modernization**: `Service` still needs a later modernization review. This should cover obsolete `clientId`/`clientSecret`/`deviceId`/`deviceName` state, legacy response return-mode helpers (`decoded`, `flat`, `original`, `array`), broad base-service request helpers, `refreshConnection()` residue, and hydration/response handling mixed into base service.
-- **Test Preservation**: Existing pre-v1 tests are not automatically authoritative. During v1 refactors, tests should be classified (behavior contract, characterization, legacy shim, implementation-coupled, or stale). If a test preserves intentionally removed legacy behavior, it should be updated or removed as part of the slice.
+- **ext-openssl**: Must be added to `composer.json` in Step 15.1.
+- **Manual JWT**: Implementation in Step 15.1 must use Base64Url encoding correctly for Box compatibility.
+- **App User Support**: JWT assertion logic must support `box_sub_type` switching between `enterprise` and `user`.
