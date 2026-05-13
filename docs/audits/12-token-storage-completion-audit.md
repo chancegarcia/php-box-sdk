@@ -121,7 +121,7 @@ Step 12 aims to finalize the passive token storage layer for the v1 release.
 5. **Security**: Redaction of sensitive fields in exceptions and logs is enforced.
 6. **Defereals**: 
     - **Auth Lifecycle/Auth Provider extraction**: Step 13. Next step after Step 12.
-    - **FilesystemTokenStorage**: Excluded from v1 core; PDO and In-Memory are deemed sufficient for initial v1 release.
+    - **FilesystemTokenStorage**: Included in v1 as Slice 15.4.1. Original decision here was to exclude it, but re-evaluated during Step 15 CLI planning: PDO requires a running database (heavyweight for local dev), and in-memory storage is process-scoped and useless for multi-command CLI workflows. A JSON file on disk is the right lightweight persistent option for CLI use. See roadmap Step 15.4.1 for implementation scope.
     - **JWT/S2S**: Deferred to Step 14/15.
 
 ## Step 12.6 Verification Log

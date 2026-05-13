@@ -65,11 +65,13 @@ This work assumes the completion of:
 | 13.5 | [AuthProvider Extraction (OAuth2)](#step-135--authprovider-extraction-oauth2) | ✓ |
 | 13.6 | [Client Facade and Legacy Surface Review](#step-136--client-facade-and-legacy-surface-review) | ✓ |
 | 14 | [JWT/S2S Feasibility and Dependency Review](#step-14--jwts2s-feasibility-and-dependency-review) | ✓ |
-| 15 | [JWT/S2S Implementation](#step-15--jwts2s-implementation) | Not Started |
-| 15.1 | [Dependency and Core JWT Support](#step-151--dependency-and-core-jwt-support) | Not Started |
-| 15.2 | [JwtProvider Implementation](#step-152--jwtprovider-implementation) | Not Started |
-| 15.3 | [Factory and Client Integration](#step-153--factory-and-client-integration) | Not Started |
-| 15.4 | [CLI Support](#step-154--cli-support) | Not Started |
+| 15 | [JWT/S2S Implementation](#step-15--jwts2s-implementation) | In Progress |
+| 15.1 | [Dependency and Core JWT Support](#step-151--dependency-and-core-jwt-support) | ✓ |
+| 15.2 | [JwtProvider Implementation](#step-152--jwtprovider-implementation) | ✓ |
+| 15.3 | [Factory and Client Integration](#step-153--factory-and-client-integration) | ✓ |
+| 15.4 | [CLI Support and Env Var Alignment](#step-154--cli-support-and-env-var-alignment) | Not Started |
+| 15.4.1 | [FilesystemTokenStorage CLI Support](#step-1541--filesystemtokenstorage-cli-support) | Not Started |
+| 15.4.2 | [Dependency Audit and Cleanup](#step-1542--dependency-audit-and-cleanup) | Not Started |
 | 15.5 | [Box API Coverage Alignment](#step-155--box-api-coverage-alignment) | Not Started |
 | 15.6 | [API Fixture Realism and Contract Alignment](#step-156--api-fixture-realism-and-contract-alignment) | Not Started |
 | 16 | [Webhook Verification and Evaluation](#step-16--webhook-verification-and-evaluation) | Not Started |
@@ -334,28 +336,105 @@ Evaluate requirements and dependencies for implementing Box JWT/S2S authenticati
 
 #### Status
 - **Required for v1 release**
+- **In Progress** — Slices 15.1, 15.2, 15.3 complete. Slice 15.4 prompt ready.
+
+#### Slice Status
+
+| Slice | Title | Status |
+| :--- | :--- | :--- |
+| 15.1 | Dependency and Core JWT Support | ✓ |
+| 15.2 | JwtProvider Implementation | ✓ |
+| 15.3 | Factory and Client Integration | ✓ |
+| 15.4 | CLI Support and Env Var Alignment | Not Started |
+| 15.4.1 | FilesystemTokenStorage CLI Support | Not Started |
+| 15.4.2 | Dependency Audit and Cleanup | Not Started |
 
 #### Purpose
 Implement JWT/S2S authentication based on the feasibility study.
 
+#### Key Decisions Made
+- **Separate credential env vars**: `BOX_OAUTH_*` for OAuth2, `BOX_JWT_*` for JWT. No shared `BOX_CLIENT_ID` — avoids cross-contamination between Box app registrations.
+- **Private key file read**: `EnvConfigProvider` reads the PEM file at `BOX_JWT_PRIVATE_KEY_PATH` and returns content. `JwtAuthConfig::$privateKey` is always PEM, never a path. Keeps `JwtAssertionGeneratorInterface` extension point clean.
+- **Transport flag removed from CLI**: `--transport` option removed from `AbstractBoxCommand`. `ConnectionInterface::setTransportName/getTransportName` retained for programmatic consumer use.
+- **CLI storage**: `--storage-type` removed. `--use-storage` implies PDO. `FilesystemTokenStorage` added in Slice 15.4.1 as the second CLI-viable storage option (PDO requires a database; memory is process-scoped and useless for CLI).
+
 #### Scope
 - Implement JWT signing and token exchange.
 - Integrate with `AuthProvider` / `Connection` / `Client` flows.
-- **JWT Configuration**: Support JWT-specific config (Client ID/Secret, Enterprise ID, Public Key ID, Private Key, Passphrase).
-- **Service Account Support**: Support Enterprise and App User auth modes.
-- **CLI/Harness**: Evaluate or implement CLI support for JWT auth.
-    - **Deferred JWT/S2S CLI configuration note**: When JWT/S2S auth is implemented, evaluate whether the CLI/auth harness should support separate environment-variable groups or named auth profiles for OAuth2 versus JWT credentials. This would allow CLI testing of JWT and OAuth2 without manually swapping shared `BOX_CLIENT_ID` / `BOX_CLIENT_SECRET` values and reduce the risk of mismatched credential pairs or accidentally combining OAuth2 and JWT configuration. Do not implement this during Step 12 token storage unless a later approved plan explicitly includes CLI auth profile work.
-- **Security**: Redaction review for private keys, client secrets, assertions, and tokens.
-- **Tests**: Add tests using placeholder fixtures only.
+- **JWT Configuration**: Separate `BOX_JWT_*` env vars; `JwtAuthConfig` DTO.
+- **Service Account Support**: Enterprise and App User auth modes via `JwtProvider`.
+- **CLI**: `box:jwt:token` command; `BOX_AUTH_MODE` detection; env var alignment.
+- **Security**: Redact `private_key`, `private_key_passphrase`, `assertion` in CLI output.
+- **Tests**: All tests use placeholder fixtures only.
 
 #### Acceptance Criteria
 - Working JWT/S2S authentication flow.
 - Unit tests cover signing, response handling, and configuration.
-- Public docs and migration notes include JWT usage.
+- CLI supports JWT token exchange.
 
 ---
 
-## Step 15.1 — Box API Coverage Alignment
+## Step 15.4.1 — FilesystemTokenStorage CLI Support
+
+#### Status
+- **Required for v1** (revised from original "excluded" decision in Step 12 audit)
+- Implementation has **NOT** started.
+
+#### Purpose
+Implement `FilesystemTokenStorage` as a lightweight, database-free persistent token storage
+option. PDO is heavyweight for local development; in-memory storage is process-scoped and useless
+for CLI use across multiple commands. A JSON file on disk is the right middle ground.
+
+#### Scope
+- `src/Storage/FilesystemTokenStorage.php` — implements `TokenStorageInterface`.
+  Constructor accepts a file path. Tokens stored as a JSON map keyed by `TokenStorageContext`
+  identifier (or a default key when no context is provided). Operations: load, save, remove.
+- `AbstractBoxCommand` — add `--storage-path` option alongside `--use-storage`. When
+  `--use-storage` is provided and `--storage-path` is set, use `FilesystemTokenStorage`;
+  otherwise use PDO (requires `BOX_STORAGE_PDO_*` env vars).
+- Env var: `BOX_STORAGE_FILE_PATH` as fallback when `--storage-path` is not passed.
+- Tests for `FilesystemTokenStorage` and CLI option wiring.
+
+#### Non-Goals
+- Do not implement locking or concurrent-write safety (single-user CLI use case).
+- Do not implement encryption at rest.
+
+#### Acceptance Criteria
+- `FilesystemTokenStorage` implements `TokenStorageInterface` and passes all storage contract tests.
+- CLI `--storage-path` option selects filesystem storage.
+- `composer review` passes.
+
+---
+
+## Step 15.4.2 — Dependency Audit and Cleanup
+
+#### Status
+- **Required for v1**
+- Implementation has **NOT** started.
+
+#### Purpose
+Audit `composer.json` dependencies for correctness and remove anything no longer needed after
+the Step 13 transport cleanup and Step 7 foundation work.
+
+#### Scope
+1. **`ext-curl`**: `CurlTransport` was removed in Step 13.2. Grep `src/` for `curl_` function
+   calls. If none remain, remove `ext-curl` from `require`.
+2. **`symfony/http-foundation`**: Step 7 established that `BoxResponse` must not inherit from
+   `HttpFoundation\Response`. Grep `src/` for `use Symfony\Component\HttpFoundation`. If no
+   usages remain, remove from `require`.
+3. **PHP constraint**: Confirm `>=8.4` is correct. Verify no source code uses features
+   deprecated or removed in PHP 8.5.
+4. **Symfony constraint format**: Confirm all `symfony/*` packages use `^7.4|^8` consistently.
+5. **`ext-fileinfo`**: Verify it is still actively called in `src/`.
+
+#### Acceptance Criteria
+- `composer.json` requires only packages and extensions that are actually used.
+- PHP and Symfony version constraints reflect actual support intent.
+- `composer review` passes.
+
+---
+
+## Step 15.5 — Box API Coverage Alignment
 
 #### Status
 - **Required for v1 release**
