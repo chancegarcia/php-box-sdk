@@ -3,7 +3,6 @@
 namespace Box\Command;
 
 use Box\Client;
-use Box\Connection\Connection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -12,7 +11,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Psr\Log\LoggerInterface;
 use Box\Logger\LoggerFactory;
 use Box\Dto\TokenStorageContext;
-use Box\Storage\Token\Container\TokenStorageContainer;
 use Box\Storage\Token\Pdo\TokenStorage as PdoTokenStorage;
 use Exception;
 use InvalidArgumentException;
@@ -40,41 +38,11 @@ abstract class AbstractBoxCommand extends Command
             ->addOption('log-file', null, InputOption::VALUE_REQUIRED, 'Different base log file name (contains all levels)')
             ->addOption('json', null, InputOption::VALUE_NONE, 'Output result as JSON to console')
             ->addOption('use-storage', null, InputOption::VALUE_NONE, 'Enable token storage')
-            ->addOption('storage-type', null, InputOption::VALUE_REQUIRED, 'Storage type: memory (default) or pdo')
             ->addOption('user-id', null, InputOption::VALUE_REQUIRED, 'User ID for storage context')
             ->addOption('enterprise-id', null, InputOption::VALUE_REQUIRED, 'Enterprise ID for storage context')
-            ->addOption('pdo-dsn', null, InputOption::VALUE_REQUIRED, 'PDO DSN for storage (required if storage-type is pdo)')
+            ->addOption('pdo-dsn', null, InputOption::VALUE_REQUIRED, 'PDO DSN for storage')
             ->addOption('pdo-user', null, InputOption::VALUE_REQUIRED, 'PDO username')
             ->addOption('pdo-pass', null, InputOption::VALUE_REQUIRED, 'PDO password');
-
-        $this->configureTransportOption();
-    }
-
-    protected function configureTransportOption(): void
-    {
-        $this->addOption(
-            'transport',
-            null,
-            InputOption::VALUE_REQUIRED,
-            sprintf('The HTTP transport to use. Allowed values: %s', Connection::TRANSPORT_GUZZLE)
-        );
-    }
-
-    protected function applyTransportOption(InputInterface $input, Client $client): void
-    {
-        $transport = $input->getOption('transport');
-        if (null === $transport) {
-            return;
-        }
-
-        $allowedTransports = [Connection::TRANSPORT_GUZZLE];
-        if (!in_array($transport, $allowedTransports, true)) {
-            throw new InvalidArgumentException(
-                sprintf('Invalid transport "%s". Allowed transports: %s.', $transport, implode(', ', $allowedTransports))
-            );
-        }
-
-        $client->getConnection()->setTransportName($transport);
     }
 
     protected function applyStorageOption(InputInterface $input, Client $client): void
@@ -83,7 +51,6 @@ abstract class AbstractBoxCommand extends Command
             return;
         }
 
-        $storageType = $input->getOption('storage-type') ?? 'memory';
         $userId = $input->getOption('user-id');
         $enterpriseId = $input->getOption('enterprise-id');
         $clientId = $client->getClientId();
@@ -100,22 +67,18 @@ abstract class AbstractBoxCommand extends Command
 
         $client->setTokenStorageContext($context);
 
-        if ('pdo' === $storageType) {
-            $dsn = $input->getOption('pdo-dsn') ?? $this->configProvider->getStoragePdoDsn();
-            if (null === $dsn) {
-                throw new InvalidArgumentException('PDO DSN is required when storage-type is pdo. Use --pdo-dsn or BOX_STORAGE_PDO_DSN env.');
-            }
-            $user = $input->getOption('pdo-user') ?? $this->configProvider->getStoragePdoUser();
-            $pass = $input->getOption('pdo-pass') ?? $this->configProvider->getStoragePdoPassword();
-
-            $storage = new PdoTokenStorage($dsn, $user, $pass);
-            $client->setTokenStorage($storage);
-        } else {
-            $client->setTokenStorage(new TokenStorageContainer());
+        $dsn = $input->getOption('pdo-dsn') ?? $this->configProvider->getStoragePdoDsn();
+        if (null === $dsn) {
+            throw new InvalidArgumentException('PDO DSN is required when storage is enabled. Use --pdo-dsn or BOX_STORAGE_PDO_DSN env.');
         }
+        $user = $input->getOption('pdo-user') ?? $this->configProvider->getStoragePdoUser();
+        $pass = $input->getOption('pdo-pass') ?? $this->configProvider->getStoragePdoPassword();
+
+        $storage = new PdoTokenStorage($dsn, $user, $pass);
+        $client->setTokenStorage($storage);
 
         $this->logger->info('Token storage configured for command', [
-            'type' => $storageType,
+            'type' => 'pdo',
             'user_id' => $userId,
             'enterprise_id' => $enterpriseId,
             'client_id' => $clientId

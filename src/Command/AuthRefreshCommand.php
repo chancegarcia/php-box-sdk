@@ -45,7 +45,6 @@ class AuthRefreshCommand extends AbstractBoxCommand
         $this->logger->info('Starting token refresh command');
 
         $client = $this->clientFactory->createClient();
-        $this->applyTransportOption($input, $client);
         $this->applyStorageOption($input, $client);
 
         $refreshTokenValue = $this->configProvider->getRefreshToken();

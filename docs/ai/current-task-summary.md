@@ -1,29 +1,24 @@
 ### Summary
-- Integrated JWT authentication into `BoxClientFactory` and cleaned up `Client` by removing vestigial OAuth2-specific methods.
-- Added a safety guard to `Client::refreshToken()` to prevent invalid refresh attempts without a refresh token for OAuth2.
+- Added CLI support for JWT token exchange and aligned environment variable names with the new prefix system.
+- Simplified CLI options by removing the redundant transport option and consolidating token storage to use PDO exclusively.
+- Improved security by adding redaction for JWT-sensitive fields in console output.
 
 ### Changes
-- `src/Client.php`:
-    - Removed vestigial `getRedirectUri()`, `setRedirectUri()`, `getState()`, and `setState()` methods.
-    - Added a null refresh token guard in `refreshToken()` specifically for `OAuth2ProviderInterface` instances.
-    - Updated `getAuthProvider()` and `buildAuthorizationUrl()` to use `ClientConfig` instead of the removed methods.
-    - Added `$config` property to `Client` to allow persistent access to configuration.
-- `src/Service/BoxClientFactory.php`:
-    - Added `createJwtClient(JwtAuthConfig $config)` method to simplify JWT client instantiation.
-- `src/Command/AuthUrlCommand.php`:
-    - Updated to use local variables and `ConfigProviderInterface` instead of removed `Client` accessors for `redirect_uri` and `state`.
-- `tests/Client/ClientRefreshTokenGuardTest.php`:
-    - Created new test suite to verify the refresh token guard behavior for both OAuth2 and JWT.
-- `tests/ClientTest.php` and `tests/Service/BoxClientFactoryTest.php`:
-    - Refactored tests to remove dependency on vestigial `Client` methods.
-    - Added `testCreateJwtClientReturnsClientWithJwtProvider` to `BoxClientFactoryTest`.
+- **src/Contract/ConfigProviderInterface.php**: Added `getAuthMode()` and JWT-specific getters.
+- **src/Service/EnvConfigProvider.php**: Renamed OAuth2 environment variables to `BOX_OAUTH_*` prefix and implemented new JWT getters.
+- **src/Service/BoxClientFactory.php**: Implemented `createClientForCurrentMode()` to automatically handle OAuth2 vs JWT client creation.
+- **src/Command/AbstractBoxCommand.php**: Removed `--transport` and `--storage-type` options; simplified `applyStorageOption()` to use PDO when storage is enabled.
+- **src/Command/JwtTokenCommand.php**: New command `box:jwt:token` for JWT assertions exchange.
+- **src/Service/ConsoleOutputFormatter.php**: Added masking for `assertion` and `jwt_assertion`, and full redaction for `private_key` fields.
+- **.env.dist / .env**: Updated with new prefixed keys and JWT placeholders.
+- **src/ClientConfig.php**: Implemented new interface methods to maintain compatibility.
 
 ### Verification
-- Run `composer test`: 275 tests passed, 736 assertions.
-- Run `composer analyse`: No errors.
-- Run `composer cs:check`: No style violations.
-- Verified `box:auth:url` command manually with `composer lint` (syntax check).
+- Ran `composer test`: 279 tests, 739 assertions passed (including new `JwtTokenCommandTest` and updated `EnvConfigProviderTest`).
+- Ran `composer analyse`: No errors.
+- Ran `composer cs:check`: All files follow PSR-12 and project style rules.
+- Verified `.env` file contains no real credentials.
 
 ### Notes
-- The removal of `getState/setState/getRedirectUri/setRedirectUri` from `Client` is a breaking change for any consumers relying on these on the `Client` object, but they were already extracted to `ClientConfig` and `AuthProvider`.
-- Detailed summary written to `docs/ai/current-task-summary.md`.
+- The `--storage-type` option was removed because in-memory storage is not persistent across CLI runs; PDO is now the default and only persistent option for CLI.
+- The `--transport` option was removed as it was vestigial for the current CLI surface.

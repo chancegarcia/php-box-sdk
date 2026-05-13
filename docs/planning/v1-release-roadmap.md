@@ -72,6 +72,8 @@ This work assumes the completion of:
 | 15.4 | [CLI Support and Env Var Alignment](#step-154--cli-support-and-env-var-alignment) | Not Started |
 | 15.4.1 | [FilesystemTokenStorage CLI Support](#step-1541--filesystemtokenstorage-cli-support) | Not Started |
 | 15.4.2 | [Dependency Audit and Cleanup](#step-1542--dependency-audit-and-cleanup) | Not Started |
+| 15.4.3 | [Symfony Invoke-Style Command Refactor](#step-1543--symfony-invoke-style-command-refactor) | Not Started |
+| 15.4.4 | [ClientConfig Architectural Cleanup](#step-1544--clientconfig-architectural-cleanup) | Not Started |
 | 15.5 | [Box API Coverage Alignment](#step-155--box-api-coverage-alignment) | Not Started |
 | 15.6 | [API Fixture Realism and Contract Alignment](#step-156--api-fixture-realism-and-contract-alignment) | Not Started |
 | 16 | [Webhook Verification and Evaluation](#step-16--webhook-verification-and-evaluation) | Not Started |
@@ -356,7 +358,9 @@ Implement JWT/S2S authentication based on the feasibility study.
 - **Separate credential env vars**: `BOX_OAUTH_*` for OAuth2, `BOX_JWT_*` for JWT. No shared `BOX_CLIENT_ID` — avoids cross-contamination between Box app registrations.
 - **Private key file read**: `EnvConfigProvider` reads the PEM file at `BOX_JWT_PRIVATE_KEY_PATH` and returns content. `JwtAuthConfig::$privateKey` is always PEM, never a path. Keeps `JwtAssertionGeneratorInterface` extension point clean.
 - **Transport flag removed from CLI**: `--transport` option removed from `AbstractBoxCommand`. `ConnectionInterface::setTransportName/getTransportName` retained for programmatic consumer use.
-- **CLI storage**: `--storage-type` removed. `--use-storage` implies PDO. `FilesystemTokenStorage` added in Slice 15.4.1 as the second CLI-viable storage option (PDO requires a database; memory is process-scoped and useless for CLI).
+- **CLI storage**: `--storage-type memory` removed; `--storage-type` flag kept with only `pdo` valid in Slice 15.4. `FilesystemTokenStorage` and `--storage-type filesystem` (plus `--storage-path`) added in Slice 15.4.1 (PDO requires a database; memory is process-scoped and useless across CLI invocations).
+- **OAuth2 method rename**: `ConfigProviderInterface`, `EnvConfigProvider`, and `ClientConfig` getters renamed from `getClientId()` to `getOAuth2ClientId()` etc. for symmetry with `getJwtClientId()`. All callers updated in Slice 15.4.
+- **Symfony invoke-style commands**: All CLI commands to be refactored to `#[AsCommand]` + `__invoke()` style (Symfony 7.4+ preferred). Added as Slice 15.4.3.
 
 #### Scope
 - Implement JWT signing and token exchange.
@@ -430,6 +434,74 @@ the Step 13 transport cleanup and Step 7 foundation work.
 #### Acceptance Criteria
 - `composer.json` requires only packages and extensions that are actually used.
 - PHP and Symfony version constraints reflect actual support intent.
+- `composer review` passes.
+
+---
+
+## Step 15.4.3 — Symfony Invoke-Style Command Refactor
+
+#### Status
+- **Required for v1**
+- Implementation has **NOT** started.
+
+#### Purpose
+Update all CLI commands to use the Symfony 7.4+ preferred invokable command style:
+`#[AsCommand]` attribute on the class and `__invoke()` instead of `execute()`. This was not
+found in docs (possibly remembered from another project) but is the correct v1 goal given the
+Symfony `^7.4|^8` dependency.
+
+#### Scope
+- Add `#[AsCommand(name: 'box:...', description: '...')]` attribute to each command class.
+- Replace `configure()` + `execute()` with `__invoke(InputInterface $input, OutputInterface $output): int`.
+- Update `AbstractBoxCommand` if it requires changes to support the new style in subclasses.
+- Update all command tests to work with the refactored style.
+
+#### Non-Goals
+- Do not introduce a DI container or service locator. Commands are still wired manually in
+  `bin/box-sdk`.
+
+#### Acceptance Criteria
+- All commands use `#[AsCommand]` attribute and `__invoke()`.
+- `bin/box-sdk` still wires them manually (no framework container).
+- `composer review` passes.
+
+---
+
+## Step 15.4.4 — ClientConfig Architectural Cleanup
+
+#### Status
+- **Required for v1**
+- Implementation has **NOT** started.
+
+#### Purpose
+`ClientConfig` currently implements `ConfigProviderInterface`, which is architecturally wrong:
+a DTO should not implement a service interface. This forces `ClientConfig` to stub out methods
+it doesn't own (upload paths, PDO DSN, JWT credentials, etc.) and creates misleading empty-string
+returns where callers would expect exceptions. Discovered during Slice 15.4 review.
+
+#### Scope
+- Remove `implements ConfigProviderInterface` from `ClientConfig`. Make it a plain DTO.
+- Remove stub methods that only exist to satisfy the interface:
+  `getRefreshToken()`, `getAccessToken()`, `getUploadFilePath()`, `getUploadFolderId()`,
+  `getStoragePdoDsn()`, `getStoragePdoUser()`, `getStoragePdoPassword()`,
+  `getAuthMode()`, `getJwtClientId()`, `getJwtClientSecret()`, `getJwtEnterpriseId()`,
+  `getJwtPublicKeyId()`, `getJwtPrivateKey()`, `getJwtPrivateKeyPassphrase()`.
+- Remove legacy mobile-API fields: `getDeviceId()`, `getDeviceName()`, `setDeviceId()`,
+  `setDeviceName()`.
+- Resolve alias inconsistency: remove `getAuthorizationCode()` (keep `getOAuth2AuthCode()`).
+- Evaluate the magic array-hydration constructor: replace with explicit named parameters or
+  keep with strict key validation — decision required.
+- Update `Client` and any other callers that currently type-hint `ConfigProviderInterface`
+  where they actually only need `ClientConfig`. Narrow type hints accordingly.
+- Update all affected tests.
+
+#### Non-Goals
+- Do not change `EnvConfigProvider` in this slice (it already correctly implements the interface).
+- Do not merge `ClientConfig` and `EnvConfigProvider`.
+
+#### Acceptance Criteria
+- `ClientConfig` is a pure OAuth2 DTO with no interface stubs.
+- No caller passes `ClientConfig` where `ConfigProviderInterface` is required.
 - `composer review` passes.
 
 ---

@@ -129,6 +129,41 @@ class ClientConfig implements ConfigProviderInterface
         return null;
     }
 
+    public function getAuthMode(): string
+    {
+        return 'oauth2';
+    }
+
+    public function getJwtClientId(): string
+    {
+        return '';
+    }
+
+    public function getJwtClientSecret(): string
+    {
+        return '';
+    }
+
+    public function getJwtEnterpriseId(): string
+    {
+        return '';
+    }
+
+    public function getJwtPublicKeyId(): string
+    {
+        return '';
+    }
+
+    public function getJwtPrivateKey(): string
+    {
+        return '';
+    }
+
+    public function getJwtPrivateKeyPassphrase(): ?string
+    {
+        return null;
+    }
+
     public function getStoragePdoDsn(): ?string
     {
         return null;

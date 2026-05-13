@@ -3,38 +3,39 @@
 namespace Box\Service;
 
 use Box\Contract\ConfigProviderInterface;
+use Box\Exception\BoxException;
 use RuntimeException;
 
 class EnvConfigProvider implements ConfigProviderInterface
 {
     public function getClientId(): string
     {
-        return $this->getRequiredEnv('BOX_CLIENT_ID');
+        return $this->getRequiredEnv('BOX_OAUTH_CLIENT_ID');
     }
 
     public function getClientSecret(): string
     {
-        return $this->getRequiredEnv('BOX_CLIENT_SECRET');
+        return $this->getRequiredEnv('BOX_OAUTH_CLIENT_SECRET');
     }
 
     public function getRedirectUri(): ?string
     {
-        return $_ENV['BOX_REDIRECT_URI'] ?? $_SERVER['BOX_REDIRECT_URI'] ?? null;
+        return $_ENV['BOX_OAUTH_REDIRECT_URI'] ?? $_SERVER['BOX_OAUTH_REDIRECT_URI'] ?? null;
     }
 
     public function getState(): ?string
     {
-        return $_ENV['BOX_STATE'] ?? $_SERVER['BOX_STATE'] ?? null;
+        return $_ENV['BOX_OAUTH_STATE'] ?? $_SERVER['BOX_OAUTH_STATE'] ?? null;
     }
 
     public function getAuthCode(): ?string
     {
-        return $_ENV['BOX_AUTH_CODE'] ?? $_SERVER['BOX_AUTH_CODE'] ?? null;
+        return $_ENV['BOX_OAUTH_AUTH_CODE'] ?? $_SERVER['BOX_OAUTH_AUTH_CODE'] ?? null;
     }
 
     public function getRefreshToken(): ?string
     {
-        return $_ENV['BOX_REFRESH_TOKEN'] ?? $_SERVER['BOX_REFRESH_TOKEN'] ?? null;
+        return $_ENV['BOX_OAUTH_REFRESH_TOKEN'] ?? $_SERVER['BOX_OAUTH_REFRESH_TOKEN'] ?? null;
     }
 
     public function getUploadFilePath(): ?string
@@ -49,7 +50,7 @@ class EnvConfigProvider implements ConfigProviderInterface
 
     public function getAccessToken(): ?string
     {
-        return $_ENV['BOX_ACCESS_TOKEN'] ?? $_SERVER['BOX_ACCESS_TOKEN'] ?? null;
+        return $_ENV['BOX_OAUTH_ACCESS_TOKEN'] ?? $_SERVER['BOX_OAUTH_ACCESS_TOKEN'] ?? null;
     }
 
     public function getStoragePdoDsn(): ?string
@@ -70,6 +71,64 @@ class EnvConfigProvider implements ConfigProviderInterface
     public function getJsonFormatterClass(): ?string
     {
         return $_ENV['BOX_JSON_FORMATTER'] ?? $_SERVER['BOX_JSON_FORMATTER'] ?? null;
+    }
+
+    public function getAuthMode(): string
+    {
+        $mode = $_ENV['BOX_AUTH_MODE'] ?? $_SERVER['BOX_AUTH_MODE'] ?? 'oauth2';
+        return '' !== $mode ? $mode : 'oauth2';
+    }
+
+    public function getJwtClientId(): string
+    {
+        return $this->getRequiredJwtEnv('BOX_JWT_CLIENT_ID');
+    }
+
+    public function getJwtClientSecret(): string
+    {
+        return $this->getRequiredJwtEnv('BOX_JWT_CLIENT_SECRET');
+    }
+
+    public function getJwtEnterpriseId(): string
+    {
+        return $this->getRequiredJwtEnv('BOX_JWT_ENTERPRISE_ID');
+    }
+
+    public function getJwtPublicKeyId(): string
+    {
+        return $this->getRequiredJwtEnv('BOX_JWT_PUBLIC_KEY_ID');
+    }
+
+    public function getJwtPrivateKey(): string
+    {
+        $path = $this->getRequiredJwtEnv('BOX_JWT_PRIVATE_KEY_PATH');
+
+        if (!file_exists($path) || !is_readable($path)) {
+            throw new BoxException(sprintf('JWT private key file "%s" does not exist or is not readable', $path));
+        }
+
+        $content = file_get_contents($path);
+        if (false === $content) {
+            throw new BoxException(sprintf('Failed to read JWT private key file "%s"', $path));
+        }
+
+        return $content;
+    }
+
+    public function getJwtPrivateKeyPassphrase(): ?string
+    {
+        $passphrase = $_ENV['BOX_JWT_PRIVATE_KEY_PASSPHRASE'] ?? $_SERVER['BOX_JWT_PRIVATE_KEY_PASSPHRASE'] ?? null;
+        return (null === $passphrase || '' === $passphrase) ? null : (string) $passphrase;
+    }
+
+    private function getRequiredJwtEnv(string $key): string
+    {
+        $value = $_ENV[$key] ?? $_SERVER[$key] ?? null;
+        if (null === $value || '' === $value) {
+            throw new BoxException(sprintf('Environment variable "%s" is required for JWT auth mode', $key));
+        }
+
+        return (string) $value;
     }
 
     private function getRequiredEnv(string $key): string

@@ -69,6 +69,7 @@ class AuthStorageIntegrationTest extends TestCase
         $commandTester->execute([
             'code' => $code,
             '--use-storage' => true,
+            '--pdo-dsn' => 'sqlite::memory:',
             '--user-id' => 'user123',
             '--enterprise-id' => 'ent456'
         ]);
@@ -105,6 +106,7 @@ class AuthStorageIntegrationTest extends TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             '--use-storage' => true,
+            '--pdo-dsn' => 'sqlite::memory:',
             '--user-id' => 'user123'
         ]);
 
@@ -137,6 +139,7 @@ class AuthStorageIntegrationTest extends TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             '--use-storage' => true,
+            '--pdo-dsn' => 'sqlite::memory:',
             '--user-id' => 'user123'
         ]);
 
@@ -166,8 +169,7 @@ class AuthStorageIntegrationTest extends TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'code' => 'test_code',
-            '--use-storage' => true,
-            '--storage-type' => 'pdo'
+            '--use-storage' => true
         ]);
 
         $this->assertEquals(0, $commandTester->getStatusCode());
@@ -194,7 +196,6 @@ class AuthStorageIntegrationTest extends TestCase
         $commandTester->execute([
             'code' => 'test_code',
             '--use-storage' => true,
-            '--storage-type' => 'pdo',
             '--pdo-dsn' => 'sqlite::memory:'
         ]);
 

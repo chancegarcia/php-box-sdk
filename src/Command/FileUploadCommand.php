@@ -56,7 +56,6 @@ class FileUploadCommand extends AbstractBoxCommand
         $this->logger->info('Starting file upload command');
 
         $client = $this->clientFactory->createClient();
-        $this->applyTransportOption($input, $client);
 
         $filePath = $input->getArgument('file-path') ?? $this->configProvider->getUploadFilePath();
 

@@ -34,6 +34,7 @@ $loggerFactory = new \Box\Logger\LoggerFactory($configNormalizer);
 $application->addCommand(new \Box\Command\AuthUrlCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
 $application->addCommand(new \Box\Command\AuthExchangeCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
 $application->addCommand(new \Box\Command\AuthRefreshCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->addCommand(new \Box\Command\JwtTokenCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
 $application->addCommand(new \Box\Command\FileUploadCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
 
 $application->run();

@@ -23,8 +23,10 @@
 - **Separate credential env vars**: `BOX_OAUTH_*` for OAuth2, `BOX_JWT_*` for JWT. No shared `BOX_CLIENT_ID`. Avoids cross-contamination between separately registered Box apps.
 - **Private key handling**: `EnvConfigProvider` reads the file at `BOX_JWT_PRIVATE_KEY_PATH` and returns PEM content. `JwtAuthConfig::$privateKey` is always PEM, never a path. Keeps `JwtAssertionGeneratorInterface` extension point unambiguous.
 - **Transport flag removed from CLI**: `--transport` option removed from `AbstractBoxCommand` and all call sites. `ConnectionInterface::setTransportName/getTransportName` retained for programmatic consumer extensibility.
-- **CLI storage simplified**: `--storage-type` removed. `--use-storage` implies PDO. Filesystem storage was excluded in Step 12 but re-included as Slice 15.4.1 (PDO requires a DB; memory is process-scoped; a JSON file on disk is the right CLI lightweight option).
-- **FilesystemTokenStorage re-included for v1**: Implemented in Slice 15.4.1. CLI `--storage-path` option selects it. `BOX_STORAGE_FILE_PATH` env var as fallback.
+- **CLI storage**: `--storage-type memory` removed. `--storage-type` flag kept; only `pdo` valid in 15.4. Slice 15.4.1 adds `filesystem` as a valid type with a `--storage-path` option.
+- **FilesystemTokenStorage re-included for v1**: Slice 15.4.1. Originally excluded in Step 12 audit; re-evaluated because PDO requires a DB and memory is useless across CLI process boundaries.
+- **OAuth2 method rename**: `ConfigProviderInterface`, `EnvConfigProvider`, `ClientConfig` getters renamed to `getOAuth2ClientId()` etc. for symmetry with `getJwtClientId()`. All callers updated in 15.4.
+- **Symfony invoke-style commands**: `#[AsCommand]` + `__invoke()` added as v1 goal (Slice 15.4.3). Not in prior docs — likely remembered from a different project but correct v1 target.
 - **Dependency audit**: Slice 15.4.2. Check `ext-curl` (may be removable — CurlTransport removed in Step 13.2), `symfony/http-foundation` (may be removable — BoxResponse was decoupled in Step 7), PHP 8.4/8.5 constraints, Symfony `^7.4|^8` consistency.
 - **Command wiring**: `bin/box-sdk` script (not a DI container). New commands added as `$application->addCommand(new \Box\Command\...)`.
 
@@ -49,6 +51,7 @@ Summary:
 | :--- | :--- | :--- |
 | 15.4.1 | FilesystemTokenStorage CLI Support | Not Started |
 | 15.4.2 | Dependency Audit and Cleanup | Not Started |
+| 15.4.3 | Symfony Invoke-Style Command Refactor | Not Started |
 | 15.5 | Box API Coverage Alignment | Not Started |
 | 15.6 | API Fixture Realism and Contract Alignment | Not Started |
 | 16 | Webhook Verification and Evaluation | Not Started |

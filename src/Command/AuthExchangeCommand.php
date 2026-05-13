@@ -46,7 +46,6 @@ class AuthExchangeCommand extends AbstractBoxCommand
         $this->logger->info('Starting token exchange command');
 
         $client = $this->clientFactory->createClient();
-        $this->applyTransportOption($input, $client);
         $this->applyStorageOption($input, $client);
 
         $code = $input->getArgument('code') ?? $this->configProvider->getAuthCode();

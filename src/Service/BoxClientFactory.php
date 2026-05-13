@@ -61,4 +61,22 @@ class BoxClientFactory implements BoxClientFactoryInterface
 
         return $client;
     }
+
+    public function createClientForCurrentMode(): Client
+    {
+        if ('jwt' === $this->configProvider->getAuthMode()) {
+            $config = new JwtAuthConfig(
+                clientId:             $this->configProvider->getJwtClientId(),
+                clientSecret:         $this->configProvider->getJwtClientSecret(),
+                enterpriseId:         $this->configProvider->getJwtEnterpriseId(),
+                publicKeyId:          $this->configProvider->getJwtPublicKeyId(),
+                privateKey:           $this->configProvider->getJwtPrivateKey(),
+                privateKeyPassphrase: $this->configProvider->getJwtPrivateKeyPassphrase(),
+            );
+
+            return $this->createJwtClient($config);
+        }
+
+        return $this->createClient();
+    }
 }

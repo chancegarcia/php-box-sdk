@@ -1,0 +1,51 @@
+# CLAUDE.md — box-api-v2-sdk
+
+## Project
+PHP 8.4+ SDK for the Box API v2. Repository: `chancegarcia/box-api-v2-sdk`.
+Currently working toward the **v1.0.0 release** on branch `release-v1.0.0`.
+
+## Workflow
+This project uses a **three-party workflow**: Claude (prompt generator + doc writer), Junie
+(JetBrains AI — code executor), and a human reviewer who commits all changes.
+
+- **Claude's role**: Generate Junie execution prompts, write/update documentation directly,
+  review Junie output, answer architectural questions.
+- **Claude does NOT execute code changes** — generate prompts for Junie instead.
+- **All commits** are made by the human reviewer, never by Claude or Junie.
+- Step transition requires explicit human approval — do not begin a new step or slice without it.
+
+## Key Docs to Read First
+- `docs/ai/current-handoff-summary.md` — current state and active slice
+- `docs/planning/v1-release-roadmap.md` — step and slice tracker with decisions
+- `docs/prompts/ai-workflow/single-repository-workflow.md` — workflow rules
+
+## Validation Commands
+```
+composer test          # PHPUnit
+composer analyse       # PHPStan (level 0)
+composer cs:check      # PHP_CodeSniffer
+composer lint          # PHP syntax check
+composer review        # all of the above
+```
+Always run `composer review` after any implementation slice before confirming completion.
+
+## Timestamps
+Use `America/Indiana/Indianapolis` local time for all doc timestamps.
+```bash
+TZ="America/Indiana/Indianapolis" date "+%Y-%m-%d %H:%M:%S"
+```
+
+## Current Status (as of 2026-05-13)
+- **Slices complete**: 15.1, 15.2, 15.3
+- **Next slice**: 15.4 — prompt at `docs/prompts/step-15/slice-15-4-cli-support.md`
+- **Upcoming**: 15.4.1 (FilesystemTokenStorage), 15.4.2 (Dependency Audit), 15.4.3 (Symfony invoke-style commands), 15.5, 15.6, 16, 17
+
+## Key Architectural Decisions
+- **Auth providers**: `OAuth2Provider` and `JwtProvider` both implement `AuthProviderInterface`.
+- **Env vars**: `BOX_OAUTH_*` for OAuth2, `BOX_JWT_*` for JWT, `BOX_AUTH_MODE` for mode selection.
+- **Config provider methods**: Named with provider prefix — `getOAuth2ClientId()`, `getJwtClientId()`, etc.
+- **Private key handling**: `EnvConfigProvider` reads the PEM file; `JwtAuthConfig::$privateKey` is always PEM content, never a path.
+- **CLI transport**: `--transport` option removed (Guzzle is the only transport). `ConnectionInterface` transport methods retained for programmatic use.
+- **CLI storage**: `--storage-type pdo` or (after 15.4.1) `--storage-type filesystem` with `--storage-path`. `memory` removed from CLI.
+- **No DI container**: Commands wired manually in `bin/box-sdk`.
+- **No plan mode**: Use default mode for all tasks.
