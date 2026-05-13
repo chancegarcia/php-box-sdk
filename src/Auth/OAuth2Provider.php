@@ -9,9 +9,7 @@ use Box\Exception\BoxException;
 
 class OAuth2Provider implements OAuth2ProviderInterface
 {
-    public const TOKEN_URI = 'https://api.box.com/oauth2/token';
     public const AUTH_URI = 'https://account.box.com/api/oauth2/authorize';
-    public const REVOKE_URI = 'https://api.box.com/oauth2/revoke';
 
     public function __construct(
         protected ConnectionInterface $connection,

@@ -1,24 +1,20 @@
 ### Summary
-- Implemented core JWT/S2S authentication support (Slice 15.1).
-- Added `ext-openssl` dependency to `composer.json`.
-- Created `JwtAuthConfig` DTO for JWT configuration.
-- Created `JwtAssertionGeneratorInterface` and its default implementation `JwtAssertionGenerator` using `ext-openssl`.
-- Added unit tests for configuration and assertion generation.
+- Implemented `JwtProvider` and `JwtProviderInterface` for JWT-based authentication (Slice 15.2).
+- Centralized common OAuth2/JWT endpoint constants in `AuthProviderInterface`.
 
 ### Changes
-- `composer.json`: Added `ext-openssl: *` to `require`.
-- `src/Auth/Jwt/JwtAuthConfig.php`: Created DTO with validation.
-- `src/Auth/Jwt/JwtAssertionGeneratorInterface.php`: Created interface for JWT generation.
-- `src/Auth/Jwt/JwtAssertionGenerator.php`: Implemented default JWT assertion generation using `openssl` functions.
-- `tests/Auth/Jwt/JwtAuthConfigTest.php`: Added tests for configuration validation.
-- `tests/Auth/Jwt/JwtAssertionGeneratorTest.php`: Added tests for JWT structure and signature verification.
+- `src/Auth/AuthProviderInterface.php`: Added `TOKEN_URI` and `REVOKE_URI` constants.
+- `src/Auth/OAuth2Provider.php`: Removed redundant `TOKEN_URI` and `REVOKE_URI` constants.
+- `src/Auth/Jwt/JwtProviderInterface.php`: Created interface extending `AuthProviderInterface` with enterprise and app user exchange methods.
+- `src/Auth/Jwt/JwtProvider.php`: Implemented JWT authentication logic, including state management for re-assertion (refresh).
+- `tests/Auth/Jwt/JwtProviderTest.php`: Added comprehensive unit tests for `JwtProvider`.
 
 ### Verification
-- Run `composer test`: All 263 tests passed (including 9 new tests).
-- Run `composer analyse`: No errors found.
-- Run `composer cs:check`: No style violations found.
+- Run `composer test`: 272 tests passed (including 9 new tests for `JwtProvider`).
+- Run `composer analyse`: No errors.
+- Run `composer cs:check`: No style violations.
 
 ### Notes
-- Used RS256 algorithm and SHA256 for signing as required by Box API.
-- Implemented a custom Base64Url encoder to avoid third-party dependencies.
+- JWT "refresh" is implemented as a full re-assertion using the last used subject ID and type.
+- Constants are resolved via `self::` or class names, maintaining backward compatibility for `OAuth2Provider` constants through interface inheritance.
 - Detailed summary written to `docs/ai/current-task-summary.md`.
