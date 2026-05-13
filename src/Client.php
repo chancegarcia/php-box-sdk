@@ -70,8 +70,6 @@ class Client implements LoggerAwareInterface
 
     public const SEARCH_URI = "https://api.box.com/2.0/search";
 
-    protected ?string $state = null;
-
     /**
      * @var ConnectionInterface|null
      */
@@ -98,7 +96,6 @@ class Client implements LoggerAwareInterface
     protected ?string $authorizationCode = null;
     protected ?string $clientId = null;
     protected ?string $clientSecret = null;
-    protected ?string $redirectUri = null;
 
     protected ?string $deviceId = null;
     protected ?string $deviceName = null;
@@ -112,10 +109,13 @@ class Client implements LoggerAwareInterface
 
     protected ?TokenFactoryInterface $tokenFactory = null;
 
+    protected ?ClientConfig $config = null;
+
     public function __construct(
         ?ClientConfig $config = null,
         ?ClientServiceRegistryInterface $serviceRegistry = null
     ) {
+        $this->config = $config;
         if (null !== $config) {
             $this->applyConfig($config);
         }
@@ -126,11 +126,9 @@ class Client implements LoggerAwareInterface
     {
         $this->clientId = $config->getClientId();
         $this->clientSecret = $config->getClientSecret();
-        $this->redirectUri = $config->getRedirectUri();
         $this->authorizationCode = $config->getAuthorizationCode();
         $this->deviceId = $config->getDeviceId();
         $this->deviceName = $config->getDeviceName();
-        $this->state = $config->getState();
     }
 
     /**
@@ -539,6 +537,15 @@ class Client implements LoggerAwareInterface
     {
         $token = $this->getToken();
 
+        if (
+            $this->getAuthProvider() instanceof OAuth2ProviderInterface
+            && null === $token->getRefreshToken()
+        ) {
+            throw new BoxException(
+                'Cannot refresh token: no refresh token available. OAuth2 requires a refresh token to renew access.'
+            );
+        }
+
         $options = [];
         $deviceId = $this->getDeviceId();
         if (null !== $deviceId) {
@@ -573,7 +580,7 @@ class Client implements LoggerAwareInterface
 
     public function buildAuthorizationUrl(array $options = []): string
     {
-        $state = $this->getState();
+        $state = $this->config?->getState();
         if (null !== $state && !isset($options['state'])) {
             $options['state'] = $state;
         }
@@ -615,25 +622,6 @@ class Client implements LoggerAwareInterface
     {
         return $this->clientSecret;
     }
-
-    /**
-     * @param string|null $redirectUri
-     *
-     * @return void
-     */
-    public function setRedirectUri(?string $redirectUri = null): void
-    {
-        $this->redirectUri = $redirectUri;
-        if ($this->authProvider instanceof OAuth2ProviderInterface) {
-            $this->authProvider->setRedirectUri($redirectUri);
-        }
-    }
-
-    public function getRedirectUri(): ?string
-    {
-        return $this->redirectUri;
-    }
-
 
     /**
      * @param string|null $authorizationCode
@@ -693,7 +681,7 @@ class Client implements LoggerAwareInterface
                 $this->getTokenFactory(),
                 $this->getClientId(),
                 $this->getClientSecret(),
-                $this->getRedirectUri()
+                $this->config?->getRedirectUri()
             );
         }
 
@@ -817,16 +805,6 @@ class Client implements LoggerAwareInterface
     public function getDeviceName(): ?string
     {
         return $this->deviceName;
-    }
-
-    public function setState(?string $state = null): void
-    {
-        $this->state = $state;
-    }
-
-    public function getState(): ?string
-    {
-        return $this->state;
     }
 
     public function setTokenStorage(?TokenStorageInterface $tokenStorage = null): void

@@ -1,20 +1,29 @@
 ### Summary
-- Implemented `JwtProvider` and `JwtProviderInterface` for JWT-based authentication (Slice 15.2).
-- Centralized common OAuth2/JWT endpoint constants in `AuthProviderInterface`.
+- Integrated JWT authentication into `BoxClientFactory` and cleaned up `Client` by removing vestigial OAuth2-specific methods.
+- Added a safety guard to `Client::refreshToken()` to prevent invalid refresh attempts without a refresh token for OAuth2.
 
 ### Changes
-- `src/Auth/AuthProviderInterface.php`: Added `TOKEN_URI` and `REVOKE_URI` constants.
-- `src/Auth/OAuth2Provider.php`: Removed redundant `TOKEN_URI` and `REVOKE_URI` constants.
-- `src/Auth/Jwt/JwtProviderInterface.php`: Created interface extending `AuthProviderInterface` with enterprise and app user exchange methods.
-- `src/Auth/Jwt/JwtProvider.php`: Implemented JWT authentication logic, including state management for re-assertion (refresh).
-- `tests/Auth/Jwt/JwtProviderTest.php`: Added comprehensive unit tests for `JwtProvider`.
+- `src/Client.php`:
+    - Removed vestigial `getRedirectUri()`, `setRedirectUri()`, `getState()`, and `setState()` methods.
+    - Added a null refresh token guard in `refreshToken()` specifically for `OAuth2ProviderInterface` instances.
+    - Updated `getAuthProvider()` and `buildAuthorizationUrl()` to use `ClientConfig` instead of the removed methods.
+    - Added `$config` property to `Client` to allow persistent access to configuration.
+- `src/Service/BoxClientFactory.php`:
+    - Added `createJwtClient(JwtAuthConfig $config)` method to simplify JWT client instantiation.
+- `src/Command/AuthUrlCommand.php`:
+    - Updated to use local variables and `ConfigProviderInterface` instead of removed `Client` accessors for `redirect_uri` and `state`.
+- `tests/Client/ClientRefreshTokenGuardTest.php`:
+    - Created new test suite to verify the refresh token guard behavior for both OAuth2 and JWT.
+- `tests/ClientTest.php` and `tests/Service/BoxClientFactoryTest.php`:
+    - Refactored tests to remove dependency on vestigial `Client` methods.
+    - Added `testCreateJwtClientReturnsClientWithJwtProvider` to `BoxClientFactoryTest`.
 
 ### Verification
-- Run `composer test`: 272 tests passed (including 9 new tests for `JwtProvider`).
+- Run `composer test`: 275 tests passed, 736 assertions.
 - Run `composer analyse`: No errors.
 - Run `composer cs:check`: No style violations.
+- Verified `box:auth:url` command manually with `composer lint` (syntax check).
 
 ### Notes
-- JWT "refresh" is implemented as a full re-assertion using the last used subject ID and type.
-- Constants are resolved via `self::` or class names, maintaining backward compatibility for `OAuth2Provider` constants through interface inheritance.
+- The removal of `getState/setState/getRedirectUri/setRedirectUri` from `Client` is a breaking change for any consumers relying on these on the `Client` object, but they were already extracted to `ClientConfig` and `AuthProvider`.
 - Detailed summary written to `docs/ai/current-task-summary.md`.

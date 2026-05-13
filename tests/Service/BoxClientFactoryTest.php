@@ -2,6 +2,8 @@
 
 namespace Box\Tests\Service;
 
+use Box\Auth\Jwt\JwtAuthConfig;
+use Box\Auth\Jwt\JwtProviderInterface;
 use Box\Client;
 use Box\Contract\ConfigProviderInterface;
 use Box\Service\BoxClientFactory;
@@ -25,9 +27,7 @@ class BoxClientFactoryTest extends TestCase
         $this->assertInstanceOf(Client::class, $client);
         $this->assertEquals('test-client-id', $client->getClientId());
         $this->assertEquals('test-client-secret', $client->getClientSecret());
-        $this->assertEquals('https://redirect', $client->getRedirectUri());
         $this->assertEquals('test-auth-code', $client->getAuthorizationCode());
-        $this->assertEquals('test-state', $client->getState());
     }
 
     public function testCreateClientWithLogger(): void
@@ -40,5 +40,24 @@ class BoxClientFactoryTest extends TestCase
         $client = $factory->createClient();
 
         $this->assertInstanceOf(Client::class, $client);
+    }
+
+    public function testCreateJwtClientReturnsClientWithJwtProvider(): void
+    {
+        $configProvider = $this->createMock(ConfigProviderInterface::class);
+        $factory = new BoxClientFactory($configProvider);
+
+        $config = new JwtAuthConfig(
+            clientId: 'test_client_id',
+            clientSecret: 'test_client_secret',
+            enterpriseId: 'test_enterprise_id',
+            publicKeyId: 'test_key_id',
+            privateKey: 'placeholder-private-key',
+        );
+
+        $client = $factory->createJwtClient($config);
+
+        $this->assertInstanceOf(Client::class, $client);
+        $this->assertInstanceOf(JwtProviderInterface::class, $client->getAuthProvider());
     }
 }

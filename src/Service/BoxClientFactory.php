@@ -2,6 +2,9 @@
 
 namespace Box\Service;
 
+use Box\Auth\Jwt\JwtAuthConfig;
+use Box\Auth\Jwt\JwtAssertionGenerator;
+use Box\Auth\Jwt\JwtProvider;
 use Box\Client;
 use Box\ClientConfig;
 use Box\Contract\BoxClientFactoryInterface;
@@ -32,6 +35,26 @@ class BoxClientFactory implements BoxClientFactoryInterface
         $config->setState($this->configProvider->getState());
 
         $client = new Client($config);
+        if ($this->logger) {
+            $client->setLogger($this->logger);
+        }
+
+        return $client;
+    }
+
+    public function createJwtClient(JwtAuthConfig $config): Client
+    {
+        $client = new Client();
+        $assertionGenerator = new JwtAssertionGenerator();
+        $provider = new JwtProvider(
+            $client->getConnection(),
+            $client->getTokenFactory(),
+            $config,
+            $assertionGenerator
+        );
+
+        $client->setAuthProvider($provider);
+
         if ($this->logger) {
             $client->setLogger($this->logger);
         }

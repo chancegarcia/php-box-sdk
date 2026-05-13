@@ -64,8 +64,8 @@ class AuthUrlCommand extends AbstractBoxCommand
                 'data' => [
                     'url' => $url,
                     'client_id' => $client->getClientId(),
-                    'redirect_uri' => $client->getRedirectUri(),
-                    'state' => $client->getState(),
+                    'redirect_uri' => $redirectUri,
+                    'state' => $state,
                 ],
             ], true);
         } else {
@@ -77,8 +77,8 @@ class AuthUrlCommand extends AbstractBoxCommand
             $io->section('Resolved Configuration');
             $this->outputFormatter->formatMasked($io, [
                 'client_id' => $client->getClientId(),
-                'redirect_uri' => $client->getRedirectUri(),
-                'state' => $client->getState(),
+                'redirect_uri' => $redirectUri,
+                'state' => $state,
             ]);
         }
 
