@@ -4,15 +4,15 @@ namespace Box\Contract;
 
 interface ConfigProviderInterface
 {
-    public function getClientId(): string;
-    public function getClientSecret(): string;
-    public function getRedirectUri(): ?string;
-    public function getState(): ?string;
-    public function getAuthCode(): ?string;
-    public function getRefreshToken(): ?string;
+    public function getOAuth2ClientId(): string;
+    public function getOAuth2ClientSecret(): string;
+    public function getOAuth2RedirectUri(): ?string;
+    public function getOAuth2State(): ?string;
+    public function getOAuth2AuthCode(): ?string;
+    public function getOAuth2RefreshToken(): ?string;
     public function getUploadFilePath(): ?string;
     public function getUploadFolderId(): string;
-    public function getAccessToken(): ?string;
+    public function getOAuth2AccessToken(): ?string;
 
     // Returns 'oauth2' (default) or 'jwt'
     public function getAuthMode(): string;

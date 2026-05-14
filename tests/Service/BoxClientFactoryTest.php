@@ -16,11 +16,11 @@ class BoxClientFactoryTest extends TestCase
     public function testCreateClientWithGenericConfigProvider(): void
     {
         $configProvider = $this->createMock(ConfigProviderInterface::class);
-        $configProvider->method('getClientId')->willReturn('test-client-id');
-        $configProvider->method('getClientSecret')->willReturn('test-client-secret');
-        $configProvider->method('getRedirectUri')->willReturn('https://redirect');
-        $configProvider->method('getState')->willReturn('test-state');
-        $configProvider->method('getAuthCode')->willReturn('test-auth-code');
+        $configProvider->method('getOAuth2ClientId')->willReturn('test-client-id');
+        $configProvider->method('getOAuth2ClientSecret')->willReturn('test-client-secret');
+        $configProvider->method('getOAuth2RedirectUri')->willReturn('https://redirect');
+        $configProvider->method('getOAuth2State')->willReturn('test-state');
+        $configProvider->method('getOAuth2AuthCode')->willReturn('test-auth-code');
 
         $factory = new BoxClientFactory($configProvider);
         $client = $factory->createClient();
@@ -66,8 +66,8 @@ class BoxClientFactoryTest extends TestCase
     {
         $configProvider = $this->createMock(ConfigProviderInterface::class);
         $configProvider->method('getAuthMode')->willReturn('oauth2');
-        $configProvider->method('getClientId')->willReturn('test-id');
-        $configProvider->method('getClientSecret')->willReturn('test-secret');
+        $configProvider->method('getOAuth2ClientId')->willReturn('test-id');
+        $configProvider->method('getOAuth2ClientSecret')->willReturn('test-secret');
 
         $factory = new BoxClientFactory($configProvider);
         $client = $factory->createClientForCurrentMode();

@@ -52,7 +52,7 @@ class FileUploadCommandTest extends TestCase
 
     public function testUploadFailsWhenTokenIsMissing(): void
     {
-        $this->configProvider->method('getAccessToken')->willReturn(null);
+        $this->configProvider->method('getOAuth2AccessToken')->willReturn(null);
 
         $application = new Application();
         $application->add(new FileUploadCommand(
@@ -78,7 +78,7 @@ class FileUploadCommandTest extends TestCase
 
     public function testUploadFailsWhenTokenIsEmpty(): void
     {
-        $this->configProvider->method('getAccessToken')->willReturn('');
+        $this->configProvider->method('getOAuth2AccessToken')->willReturn('');
 
         $application = new Application();
         $application->add(new FileUploadCommand(
@@ -103,7 +103,7 @@ class FileUploadCommandTest extends TestCase
 
     public function testUploadFailsWhenTokenIsWhitespace(): void
     {
-        $this->configProvider->method('getAccessToken')->willReturn('   ');
+        $this->configProvider->method('getOAuth2AccessToken')->willReturn('   ');
 
         $application = new Application();
         $application->add(new FileUploadCommand(
@@ -128,7 +128,7 @@ class FileUploadCommandTest extends TestCase
 
     public function testUploadSucceedsWhenTokenIsPresent(): void
     {
-        $this->configProvider->method('getAccessToken')->willReturn('valid_token');
+        $this->configProvider->method('getOAuth2AccessToken')->willReturn('valid_token');
 
         $response = $this->createMock(BoxResponseInterface::class);
         $response->method('getContent')->willReturn(json_encode([

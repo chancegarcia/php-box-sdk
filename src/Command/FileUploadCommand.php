@@ -72,7 +72,7 @@ class FileUploadCommand extends AbstractBoxCommand
         }
 
         $folderId = $input->getOption('folder-id') ?? $this->configProvider->getUploadFolderId() ?? '0';
-        $accessToken = $this->configProvider->getAccessToken();
+        $accessToken = $this->configProvider->getOAuth2AccessToken();
 
         if (empty($accessToken) || trim($accessToken) === '') {
             $io->error('BOX_ACCESS_TOKEN is required for upload.');

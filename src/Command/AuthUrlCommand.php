@@ -44,12 +44,12 @@ class AuthUrlCommand extends AbstractBoxCommand
         $client = $this->clientFactory->createClient();
 
         $options = [];
-        $redirectUri = $input->getOption('redirect-uri') ?? $this->configProvider->getRedirectUri();
+        $redirectUri = $input->getOption('redirect-uri') ?? $this->configProvider->getOAuth2RedirectUri();
         if ($redirectUri) {
             $options['redirect_uri'] = $redirectUri;
         }
 
-        $state = $input->getOption('state') ?? $this->configProvider->getState();
+        $state = $input->getOption('state') ?? $this->configProvider->getOAuth2State();
         if ($state) {
             $options['state'] = $state;
         }

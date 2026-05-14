@@ -47,7 +47,7 @@ class AuthRefreshCommand extends AbstractBoxCommand
         $client = $this->clientFactory->createClient();
         $this->applyStorageOption($input, $client);
 
-        $refreshTokenValue = $this->configProvider->getRefreshToken();
+        $refreshTokenValue = $this->configProvider->getOAuth2RefreshToken();
 
         if (!$refreshTokenValue && $input->getOption('use-storage')) {
             $io->comment('Attempting to load token from storage...');

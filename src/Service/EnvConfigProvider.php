@@ -8,32 +8,32 @@ use RuntimeException;
 
 class EnvConfigProvider implements ConfigProviderInterface
 {
-    public function getClientId(): string
+    public function getOAuth2ClientId(): string
     {
         return $this->getRequiredEnv('BOX_OAUTH_CLIENT_ID');
     }
 
-    public function getClientSecret(): string
+    public function getOAuth2ClientSecret(): string
     {
         return $this->getRequiredEnv('BOX_OAUTH_CLIENT_SECRET');
     }
 
-    public function getRedirectUri(): ?string
+    public function getOAuth2RedirectUri(): ?string
     {
         return $_ENV['BOX_OAUTH_REDIRECT_URI'] ?? $_SERVER['BOX_OAUTH_REDIRECT_URI'] ?? null;
     }
 
-    public function getState(): ?string
+    public function getOAuth2State(): ?string
     {
         return $_ENV['BOX_OAUTH_STATE'] ?? $_SERVER['BOX_OAUTH_STATE'] ?? null;
     }
 
-    public function getAuthCode(): ?string
+    public function getOAuth2AuthCode(): ?string
     {
         return $_ENV['BOX_OAUTH_AUTH_CODE'] ?? $_SERVER['BOX_OAUTH_AUTH_CODE'] ?? null;
     }
 
-    public function getRefreshToken(): ?string
+    public function getOAuth2RefreshToken(): ?string
     {
         return $_ENV['BOX_OAUTH_REFRESH_TOKEN'] ?? $_SERVER['BOX_OAUTH_REFRESH_TOKEN'] ?? null;
     }
@@ -48,7 +48,7 @@ class EnvConfigProvider implements ConfigProviderInterface
         return $_ENV['BOX_UPLOAD_FOLDER_ID'] ?? $_SERVER['BOX_UPLOAD_FOLDER_ID'] ?? '0';
     }
 
-    public function getAccessToken(): ?string
+    public function getOAuth2AccessToken(): ?string
     {
         return $_ENV['BOX_OAUTH_ACCESS_TOKEN'] ?? $_SERVER['BOX_OAUTH_ACCESS_TOKEN'] ?? null;
     }

@@ -61,7 +61,7 @@ class AuthExchangeCommandTest extends TestCase
         $token = new Token();
         $token->setAccessToken('test_access_token');
 
-        $this->configProvider->method('getAuthCode')->willReturn($code);
+        $this->configProvider->method('getOAuth2AuthCode')->willReturn($code);
 
         $this->client->expects($this->once())
             ->method('exchangeAuthorizationCodeForToken')
@@ -81,7 +81,7 @@ class AuthExchangeCommandTest extends TestCase
 
     public function testExecuteFailsWhenCodeIsMissing(): void
     {
-        $this->configProvider->method('getAuthCode')->willReturn(null);
+        $this->configProvider->method('getOAuth2AuthCode')->willReturn(null);
 
         $application = new Application();
         $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));

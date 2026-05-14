@@ -9,13 +9,13 @@ use Box\Contract\ConfigProviderInterface;
 
 class ClientConfig implements ConfigProviderInterface
 {
-    protected string $clientId = '';
-    protected string $clientSecret = '';
-    protected ?string $redirectUri = null;
-    protected ?string $authorizationCode = null;
+    protected string $oAuth2ClientId = '';
+    protected string $oAuth2ClientSecret = '';
+    protected ?string $oAuth2RedirectUri = null;
+    protected ?string $oAuth2AuthCode = null;
     protected ?string $deviceId = null;
     protected ?string $deviceName = null;
-    protected ?string $state = null;
+    protected ?string $oAuth2State = null;
 
     public function __construct(array $options = [])
     {
@@ -34,49 +34,44 @@ class ClientConfig implements ConfigProviderInterface
         return new self($options);
     }
 
-    public function getClientId(): string
+    public function getOAuth2ClientId(): string
     {
-        return $this->clientId;
+        return $this->oAuth2ClientId;
     }
 
-    public function setClientId(string $clientId = ''): void
+    public function setOAuth2ClientId(string $oAuth2ClientId = ''): void
     {
-        $this->clientId = $clientId;
+        $this->oAuth2ClientId = $oAuth2ClientId;
     }
 
-    public function getClientSecret(): string
+    public function getOAuth2ClientSecret(): string
     {
-        return $this->clientSecret;
+        return $this->oAuth2ClientSecret;
     }
 
-    public function setClientSecret(string $clientSecret = ''): void
+    public function setOAuth2ClientSecret(string $oAuth2Secret = ''): void
     {
-        $this->clientSecret = $clientSecret;
+        $this->oAuth2ClientSecret = $oAuth2Secret;
     }
 
-    public function getRedirectUri(): ?string
+    public function getOAuth2RedirectUri(): ?string
     {
-        return $this->redirectUri;
+        return $this->oAuth2RedirectUri;
     }
 
-    public function setRedirectUri(?string $redirectUri): void
+    public function setOAuth2RedirectUri(?string $oAuth2RedirectUri): void
     {
-        $this->redirectUri = $redirectUri;
+        $this->oAuth2RedirectUri = $oAuth2RedirectUri;
     }
 
-    public function getAuthorizationCode(): ?string
+    public function getOAuth2AuthCode(): ?string
     {
-        return $this->authorizationCode;
+        return $this->oAuth2AuthCode;
     }
 
-    public function getAuthCode(): ?string
+    public function setoAuth2AuthCode(?string $oAuth2AuthCode): void
     {
-        return $this->authorizationCode;
-    }
-
-    public function setAuthorizationCode(?string $authorizationCode): void
-    {
-        $this->authorizationCode = $authorizationCode;
+        $this->oAuth2AuthCode = $oAuth2AuthCode;
     }
 
     public function getDeviceId(): ?string
@@ -99,17 +94,17 @@ class ClientConfig implements ConfigProviderInterface
         $this->deviceName = $deviceName;
     }
 
-    public function getState(): ?string
+    public function getOAuth2State(): ?string
     {
-        return $this->state;
+        return $this->oAuth2State;
     }
 
-    public function setState(?string $state): void
+    public function setOAuth2State(?string $state): void
     {
-        $this->state = $state;
+        $this->oAuth2State = $state;
     }
 
-    public function getRefreshToken(): ?string
+    public function getOAuth2RefreshToken(): ?string
     {
         return null;
     }
@@ -124,7 +119,7 @@ class ClientConfig implements ConfigProviderInterface
         return '0';
     }
 
-    public function getAccessToken(): ?string
+    public function getOAuth2AccessToken(): ?string
     {
         return null;
     }

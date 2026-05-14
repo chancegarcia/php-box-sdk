@@ -29,21 +29,21 @@ class EnvConfigProviderTest extends TestCase
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Environment variable "BOX_OAUTH_CLIENT_ID" is required');
-        $provider->getClientId();
+        $provider->getOAuth2ClientId();
     }
 
     public function testGetClientIdFromEnv(): void
     {
         $_ENV['BOX_OAUTH_CLIENT_ID'] = 'env_id';
         $provider = new EnvConfigProvider();
-        $this->assertEquals('env_id', $provider->getClientId());
+        $this->assertEquals('env_id', $provider->getOAuth2ClientId());
     }
 
     public function testGetClientSecretFromEnv(): void
     {
         $_ENV['BOX_OAUTH_CLIENT_SECRET'] = 'env_secret';
         $provider = new EnvConfigProvider();
-        $this->assertEquals('env_secret', $provider->getClientSecret());
+        $this->assertEquals('env_secret', $provider->getOAuth2ClientSecret());
     }
 
     public function testGetClientSecretThrowsExceptionWhenMissing(): void
@@ -53,28 +53,28 @@ class EnvConfigProviderTest extends TestCase
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Environment variable "BOX_OAUTH_CLIENT_SECRET" is required');
-        $provider->getClientSecret();
+        $provider->getOAuth2ClientSecret();
     }
 
     public function testGetRedirectUriFromEnv(): void
     {
         $_ENV['BOX_OAUTH_REDIRECT_URI'] = 'https://redirect.example.com';
         $provider = new EnvConfigProvider();
-        $this->assertEquals('https://redirect.example.com', $provider->getRedirectUri());
+        $this->assertEquals('https://redirect.example.com', $provider->getOAuth2RedirectUri());
     }
 
     public function testGetAccessTokenFromEnv(): void
     {
         $_ENV['BOX_OAUTH_ACCESS_TOKEN'] = 'test_token';
         $provider = new EnvConfigProvider();
-        $this->assertEquals('test_token', $provider->getAccessToken());
+        $this->assertEquals('test_token', $provider->getOAuth2AccessToken());
     }
 
     public function testGetAccessTokenReturnsNullWhenMissing(): void
     {
         unset($_ENV['BOX_OAUTH_ACCESS_TOKEN'], $_SERVER['BOX_OAUTH_ACCESS_TOKEN']);
         $provider = new EnvConfigProvider();
-        $this->assertNull($provider->getAccessToken());
+        $this->assertNull($provider->getOAuth2AccessToken());
     }
 
     public function testGetAuthModeDefaultsToOauth2(): void

@@ -28,11 +28,11 @@ class BoxClientFactory implements BoxClientFactoryInterface
     public function createClient(): Client
     {
         $config = new ClientConfig();
-        $config->setClientId($this->configProvider->getClientId());
-        $config->setClientSecret($this->configProvider->getClientSecret());
-        $config->setRedirectUri($this->configProvider->getRedirectUri());
-        $config->setAuthorizationCode($this->configProvider->getAuthCode());
-        $config->setState($this->configProvider->getState());
+        $config->setOAuth2ClientId($this->configProvider->getOAuth2ClientId());
+        $config->setOAuth2ClientSecret($this->configProvider->getOAuth2ClientSecret());
+        $config->setOAuth2RedirectUri($this->configProvider->getOAuth2RedirectUri());
+        $config->setoAuth2AuthCode($this->configProvider->getOAuth2AuthCode());
+        $config->setOAuth2State($this->configProvider->getOAuth2State());
 
         $client = new Client($config);
         if ($this->logger) {

@@ -38,6 +38,7 @@ abstract class AbstractBoxCommand extends Command
             ->addOption('log-file', null, InputOption::VALUE_REQUIRED, 'Different base log file name (contains all levels)')
             ->addOption('json', null, InputOption::VALUE_NONE, 'Output result as JSON to console')
             ->addOption('use-storage', null, InputOption::VALUE_NONE, 'Enable token storage')
+            ->addOption('storage-type', null, InputOption::VALUE_REQUIRED, 'Type of storage (pdo)', 'pdo')
             ->addOption('user-id', null, InputOption::VALUE_REQUIRED, 'User ID for storage context')
             ->addOption('enterprise-id', null, InputOption::VALUE_REQUIRED, 'Enterprise ID for storage context')
             ->addOption('pdo-dsn', null, InputOption::VALUE_REQUIRED, 'PDO DSN for storage')
@@ -66,6 +67,11 @@ abstract class AbstractBoxCommand extends Command
         );
 
         $client->setTokenStorageContext($context);
+
+        $storageType = $input->getOption('storage-type');
+        if ('pdo' !== $storageType) {
+            throw new InvalidArgumentException(sprintf('Unsupported storage type "%s". Currently only "pdo" is supported.', $storageType));
+        }
 
         $dsn = $input->getOption('pdo-dsn') ?? $this->configProvider->getStoragePdoDsn();
         if (null === $dsn) {

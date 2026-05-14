@@ -43,7 +43,7 @@ class RedactionTest extends TestCase
         $newToken->setAccessToken('real_access_token_12345');
         $newToken->setRefreshToken('new_real_refresh_token_12345');
 
-        $this->configProvider->method('getRefreshToken')->willReturn($refreshToken);
+        $this->configProvider->method('getOAuth2RefreshToken')->willReturn($refreshToken);
         $this->client->method('refreshToken')->willReturn($newToken);
 
         $application = new Application();
@@ -70,7 +70,7 @@ class RedactionTest extends TestCase
         $newToken->setAccessToken('real_access_token_12345');
         $newToken->setRefreshToken('new_real_refresh_token_12345');
 
-        $this->configProvider->method('getAuthCode')->willReturn($code);
+        $this->configProvider->method('getOAuth2AuthCode')->willReturn($code);
         $this->client->method('exchangeAuthorizationCodeForToken')->willReturn($newToken);
 
         $application = new Application();

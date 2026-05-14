@@ -59,7 +59,7 @@ class ReproIssueTest extends TestCase
 
         $clientFactory->method('createClient')->willReturn($client);
         $client->method('getConnection')->willReturn($connection);
-        $configProvider->method('getAccessToken')->willReturn('fake_token');
+        $configProvider->method('getOAuth2AccessToken')->willReturn('fake_token');
 
         $response = $this->createMock(BoxResponseInterface::class);
         $response->method('getContent')->willReturn('');

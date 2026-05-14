@@ -124,9 +124,9 @@ class Client implements LoggerAwareInterface
 
     protected function applyConfig(ClientConfig $config): void
     {
-        $this->clientId = $config->getClientId();
-        $this->clientSecret = $config->getClientSecret();
-        $this->authorizationCode = $config->getAuthorizationCode();
+        $this->clientId = $config->getOAuth2ClientId();
+        $this->clientSecret = $config->getOAuth2ClientSecret();
+        $this->authorizationCode = $config->getOAuth2AuthCode();
         $this->deviceId = $config->getDeviceId();
         $this->deviceName = $config->getDeviceName();
     }
@@ -580,7 +580,7 @@ class Client implements LoggerAwareInterface
 
     public function buildAuthorizationUrl(array $options = []): string
     {
-        $state = $this->config?->getState();
+        $state = $this->config?->getOAuth2State();
         if (null !== $state && !isset($options['state'])) {
             $options['state'] = $state;
         }
@@ -681,7 +681,7 @@ class Client implements LoggerAwareInterface
                 $this->getTokenFactory(),
                 $this->getClientId(),
                 $this->getClientSecret(),
-                $this->config?->getRedirectUri()
+                $this->config?->getOAuth2RedirectUri()
             );
         }
 

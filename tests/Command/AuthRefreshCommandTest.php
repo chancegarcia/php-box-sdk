@@ -48,7 +48,7 @@ class AuthRefreshCommandTest extends TestCase
         $newToken = new Token();
         $newToken->setAccessToken('new_access_token');
 
-        $this->configProvider->method('getRefreshToken')->willReturn($refreshToken);
+        $this->configProvider->method('getOAuth2RefreshToken')->willReturn($refreshToken);
 
         $this->client->expects($this->once())
             ->method('setToken')
@@ -74,7 +74,7 @@ class AuthRefreshCommandTest extends TestCase
 
     public function testExecuteFailsWhenRefreshTokenIsMissingInConfig(): void
     {
-        $this->configProvider->method('getRefreshToken')->willReturn(null);
+        $this->configProvider->method('getOAuth2RefreshToken')->willReturn(null);
 
         $application = new Application();
         $application->add(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));

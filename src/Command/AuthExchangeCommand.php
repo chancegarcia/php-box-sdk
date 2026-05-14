@@ -48,7 +48,7 @@ class AuthExchangeCommand extends AbstractBoxCommand
         $client = $this->clientFactory->createClient();
         $this->applyStorageOption($input, $client);
 
-        $code = $input->getArgument('code') ?? $this->configProvider->getAuthCode();
+        $code = $input->getArgument('code') ?? $this->configProvider->getOAuth2AuthCode();
 
         if (!$code) {
             $io->error('Authorization code is required. Provide it as an argument or set BOX_AUTH_CODE env.');

@@ -89,7 +89,7 @@ class AuthStorageIntegrationTest extends TestCase
         $this->client->method('getClientId')->willReturn('test_client_id');
 
         // Should load token from storage since no env refresh token
-        $this->configProvider->method('getRefreshToken')->willReturn(null);
+        $this->configProvider->method('getOAuth2RefreshToken')->willReturn(null);
 
         $this->client->expects($this->once())
             ->method('loadTokenFromStorage')
@@ -122,7 +122,7 @@ class AuthStorageIntegrationTest extends TestCase
         $newToken->setAccessToken('new_access_token');
 
         $this->client->method('getClientId')->willReturn('test_client_id');
-        $this->configProvider->method('getRefreshToken')->willReturn($explicitRefreshToken);
+        $this->configProvider->method('getOAuth2RefreshToken')->willReturn($explicitRefreshToken);
 
         // Should NOT load token from storage if explicit token exists
         $this->client->expects($this->never())

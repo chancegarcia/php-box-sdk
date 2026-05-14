@@ -65,8 +65,8 @@ class ClientTest extends TestCase
     public function testConstructionWithConfig(): void
     {
         $config = new ClientConfig([
-            'clientId' => 'conf_id',
-            'clientSecret' => 'conf_secret',
+            'OAuth2ClientId' => 'conf_id',
+            'OAuth2ClientSecret' => 'conf_secret',
             'deviceName' => 'conf_device'
         ]);
 
