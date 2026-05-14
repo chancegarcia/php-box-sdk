@@ -9,9 +9,10 @@ use Box\Connection\Token\TokenInterface;
 use Box\Dto\File\Request\CreateSharedLinkRequest;
 use Box\Resource\File;
 use Box\Http\Response\BoxResponseInterface;
-use Box\Service\File\FileService;
-use PHPUnit\Framework\TestCase;
 use Box\Resource\SharedLink;
+use Box\Service\File\FileService;
+use Box\Tests\Fixtures\BoxApiFixtures;
+use PHPUnit\Framework\TestCase;
 
 class FileServiceTest extends TestCase
 {
@@ -28,144 +29,14 @@ class FileServiceTest extends TestCase
         $response = $this->createMock(BoxResponseInterface::class);
         $response->method('getContent')->willReturn(json_encode($data));
         $response->method('isSuccessful')->willReturn(true);
-        $response->method('json')->willReturnCallback(function (bool $assoc) use ($data) {
-            return $assoc ? $data : (object)$data;
-        });
+        $response->method('json')->willReturnCallback(fn(bool $assoc) => $assoc ? $data : (object)$data);
         return $response;
-    }
-
-    public function testCreateSharedLinkWithRequestDto(): void
-    {
-        $fileId = '12345';
-        $file = new File();
-        $file->setId($fileId);
-
-        $request = (new CreateSharedLinkRequest())->withAccess('open');
-
-        $responseData = [
-            'type' => 'file',
-            'id' => $fileId,
-            'shared_link' => [
-                'url' => 'https://box.com/s/abcdef',
-                'access' => 'open'
-            ]
-        ];
-
-        $connection = $this->createMock(ConnectionInterface::class);
-        $connection->expects($this->once())
-            ->method('put')
-            ->with(
-                FileService::ENDPOINT . '/' . $fileId,
-                json_encode(['shared_link' => ['access' => 'open']])
-            )
-            ->willReturn($this->createMockResponse($responseData));
-
-        $service = $this->createService($connection);
-        $result = $service->createSharedLink($file, $request);
-
-        $this->assertInstanceOf(File::class, $result);
-        $this->assertSame($fileId, $result->getId());
-        $sharedLink = $result->getSharedLink();
-        // Depending on hydration, this might be an array or object.
-        // File::getSharedLink() says @return SharedLink|array|null
-        $this->assertNotNull($sharedLink);
-    }
-
-    public function testCreateSharedLinkWithArray(): void
-    {
-        $fileId = '67890';
-        $file = new File();
-        $file->setId($fileId);
-
-        $requestArray = ['access' => 'collaborators'];
-
-        $responseData = [
-            'type' => 'file',
-            'id' => $fileId,
-            'shared_link' => [
-                'access' => 'collaborators'
-            ]
-        ];
-
-        $connection = $this->createMock(ConnectionInterface::class);
-        $connection->expects($this->once())
-            ->method('put')
-            ->with(
-                FileService::ENDPOINT . '/' . $fileId,
-                json_encode(['shared_link' => ['access' => 'collaborators']])
-            )
-            ->willReturn($this->createMockResponse($responseData));
-
-        $service = $this->createService($connection);
-        $result = $service->createSharedLink($file, $requestArray);
-
-        $this->assertInstanceOf(File::class, $result);
-        $this->assertSame($fileId, $result->getId());
-    }
-
-    public function testCreateSharedLinkWithLegacySharedLink(): void
-    {
-        $fileId = '112233';
-        $file = new File();
-        $file->setId($fileId);
-
-        $legacySharedLink = $this->getMockBuilder(SharedLink::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['toArray'])
-            ->getMock();
-        $legacySharedLink->method('toArray')->willReturn(['access' => 'company']);
-
-        $responseData = [
-            'type' => 'file',
-            'id' => $fileId,
-            'shared_link' => [
-                'access' => 'company'
-            ]
-        ];
-
-        $connection = $this->createMock(ConnectionInterface::class);
-        $connection->expects($this->once())
-            ->method('put')
-            ->willReturn($this->createMockResponse($responseData));
-
-        $service = $this->createService($connection);
-        $result = $service->createSharedLink($file, $legacySharedLink);
-
-        $this->assertInstanceOf(File::class, $result);
-    }
-
-    public function testCreateSharedLinkWithNullSharedLink(): void
-    {
-        $fileId = '998877';
-        $file = new File();
-        $file->setId($fileId);
-
-        $responseData = [
-            'type' => 'file',
-            'id' => $fileId,
-            'shared_link' => null
-        ];
-
-        $connection = $this->createMock(ConnectionInterface::class);
-        $connection->expects($this->once())
-            ->method('put')
-            ->with(
-                FileService::ENDPOINT . '/' . $fileId,
-                json_encode(['shared_link' => []])
-            )
-            ->willReturn($this->createMockResponse($responseData));
-
-        $service = $this->createService($connection);
-        $result = $service->createSharedLink($file, null);
-
-        $this->assertInstanceOf(File::class, $result);
-        $this->assertSame($fileId, $result->getId());
     }
 
     public function testGetFileReturnsFileResource(): void
     {
-        $fileId = '111222';
-        $responseData = ['type' => 'file', 'id' => $fileId, 'name' => 'test.txt'];
+        $fileId = '817696835';
+        $responseData = BoxApiFixtures::fileResponse(['id' => $fileId]);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
@@ -173,41 +44,46 @@ class FileServiceTest extends TestCase
             ->with(FileService::ENDPOINT . '/' . $fileId)
             ->willReturn($this->createMockResponse($responseData));
 
-        $service = $this->createService($connection);
-        $result = $service->getFile($fileId);
+        $result = $this->createService($connection)->getFile($fileId);
 
         $this->assertInstanceOf(File::class, $result);
         $this->assertSame($fileId, $result->getId());
+        $this->assertSame('tigers.jpeg', $result->getName());
+        $this->assertSame('134b65991ed521fcfe4724b7d814ab8ded5185dc', $result->getSha1());
+        $this->assertSame('3', $result->getEtag());
+        $this->assertSame('active', $result->getItemStatus());
+        $this->assertSame(629644, $result->getSize());
     }
 
     public function testUpdateFileCallsPutWithNameAndDescription(): void
     {
-        $fileId = '333444';
+        $fileId = '817696835';
         $file = new File();
         $file->setId($fileId);
-        $file->setName('updated.txt');
-        $file->setDescription('new desc');
+        $file->setName('updated-tigers.jpeg');
+        $file->setDescription('Updated description');
 
-        $responseData = ['type' => 'file', 'id' => $fileId, 'name' => 'updated.txt'];
+        $responseData = BoxApiFixtures::fileResponse(['id' => $fileId, 'name' => 'updated-tigers.jpeg', 'description' => 'Updated description']);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
             ->method('put')
             ->with(
                 FileService::ENDPOINT . '/' . $fileId,
-                $this->callback(fn($p) => str_contains($p, 'updated.txt'))
+                $this->callback(fn($p) => str_contains($p, 'updated-tigers.jpeg'))
             )
             ->willReturn($this->createMockResponse($responseData));
 
-        $service = $this->createService($connection);
-        $result = $service->updateFile($file);
+        $result = $this->createService($connection)->updateFile($file);
 
         $this->assertInstanceOf(File::class, $result);
+        $this->assertSame($fileId, $result->getId());
+        $this->assertSame('updated-tigers.jpeg', $result->getName());
     }
 
     public function testDeleteFileCallsDeleteOnConnection(): void
     {
-        $fileId = '555666';
+        $fileId = '817696835';
 
         $response = $this->createMock(BoxResponseInterface::class);
         $response->method('isSuccessful')->willReturn(true);
@@ -220,14 +96,13 @@ class FileServiceTest extends TestCase
             ->with(FileService::ENDPOINT . '/' . $fileId)
             ->willReturn($response);
 
-        $service = $this->createService($connection);
-        $service->deleteFile($fileId);
+        $this->createService($connection)->deleteFile($fileId);
         $this->addToAssertionCount(1);
     }
 
     public function testDownloadFileReturnsContent(): void
     {
-        $fileId = '777888';
+        $fileId = '817696835';
         $fileContent = 'binary file content here';
 
         $response = $this->createMock(BoxResponseInterface::class);
@@ -240,9 +115,125 @@ class FileServiceTest extends TestCase
             ->with(FileService::ENDPOINT . '/' . $fileId . '/content')
             ->willReturn($response);
 
-        $service = $this->createService($connection);
-        $result = $service->downloadFile($fileId);
+        $result = $this->createService($connection)->downloadFile($fileId);
 
         $this->assertSame($fileContent, $result);
+    }
+
+    public function testCreateSharedLinkWithRequestDto(): void
+    {
+        $fileId = '817696835';
+        $file = new File();
+        $file->setId($fileId);
+
+        $request = (new CreateSharedLinkRequest())->withAccess('open');
+
+        $responseData = BoxApiFixtures::fileResponse([
+            'id'          => $fileId,
+            'shared_link' => [
+                'url'                => 'https://app.box.com/s/abcdef',
+                'download_url'       => 'https://app.box.com/shared/static/abcdef.jpeg',
+                'vanity_url'         => null,
+                'is_password_enabled' => false,
+                'access'             => 'open',
+                'effective_access'   => 'open',
+                'effective_permission' => 'can_download',
+                'permissions'        => ['can_download' => true, 'can_preview' => true],
+            ],
+        ]);
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->expects($this->once())
+            ->method('put')
+            ->with(
+                FileService::ENDPOINT . '/' . $fileId,
+                json_encode(['shared_link' => ['access' => 'open']])
+            )
+            ->willReturn($this->createMockResponse($responseData));
+
+        $result = $this->createService($connection)->createSharedLink($file, $request);
+
+        $this->assertInstanceOf(File::class, $result);
+        $this->assertSame($fileId, $result->getId());
+        $this->assertNotNull($result->getSharedLink());
+        $this->assertInstanceOf(SharedLink::class, $result->getSharedLink());
+    }
+
+    public function testCreateSharedLinkWithArray(): void
+    {
+        $fileId = '817696835';
+        $file = new File();
+        $file->setId($fileId);
+
+        $responseData = BoxApiFixtures::fileResponse([
+            'id'          => $fileId,
+            'shared_link' => ['access' => 'collaborators'],
+        ]);
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->expects($this->once())
+            ->method('put')
+            ->with(
+                FileService::ENDPOINT . '/' . $fileId,
+                json_encode(['shared_link' => ['access' => 'collaborators']])
+            )
+            ->willReturn($this->createMockResponse($responseData));
+
+        $result = $this->createService($connection)->createSharedLink($file, ['access' => 'collaborators']);
+
+        $this->assertInstanceOf(File::class, $result);
+        $this->assertSame($fileId, $result->getId());
+    }
+
+    public function testCreateSharedLinkWithLegacySharedLink(): void
+    {
+        $fileId = '817696835';
+        $file = new File();
+        $file->setId($fileId);
+
+        $legacySharedLink = $this->getMockBuilder(SharedLink::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['toArray'])
+            ->getMock();
+        $legacySharedLink->method('toArray')->willReturn(['access' => 'company']);
+
+        $responseData = BoxApiFixtures::fileResponse([
+            'id'          => $fileId,
+            'shared_link' => ['access' => 'company'],
+        ]);
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->expects($this->once())
+            ->method('put')
+            ->willReturn($this->createMockResponse($responseData));
+
+        $result = $this->createService($connection)->createSharedLink($file, $legacySharedLink);
+
+        $this->assertInstanceOf(File::class, $result);
+        $this->assertSame($fileId, $result->getId());
+    }
+
+    public function testCreateSharedLinkWithNullSharedLink(): void
+    {
+        $fileId = '817696835';
+        $file = new File();
+        $file->setId($fileId);
+
+        $responseData = BoxApiFixtures::fileResponse(['id' => $fileId, 'shared_link' => null]);
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->expects($this->once())
+            ->method('put')
+            ->with(
+                FileService::ENDPOINT . '/' . $fileId,
+                json_encode(['shared_link' => []])
+            )
+            ->willReturn($this->createMockResponse($responseData));
+
+        $result = $this->createService($connection)->createSharedLink($file, null);
+
+        $this->assertInstanceOf(File::class, $result);
+        $this->assertSame($fileId, $result->getId());
+        $this->assertNull($result->getSharedLink());
     }
 }

@@ -11,6 +11,7 @@ use Box\Resource\Collaboration;
 use Box\Resource\File;
 use Box\Resource\Folder;
 use Box\Service\Collaboration\CollaborationService;
+use Box\Tests\Fixtures\BoxApiFixtures;
 use PHPUnit\Framework\TestCase;
 
 class CollaborationServiceTest extends TestCase
@@ -44,59 +45,68 @@ class CollaborationServiceTest extends TestCase
     public function testAddCollaborationWithFolderObject(): void
     {
         $folder = new Folder();
-        $folder->setId('folder-1');
+        $folder->setId('11446498');
 
-        $collabData = [
-            'type' => 'collaboration',
-            'id' => 'collab-1',
+        $collabData = BoxApiFixtures::collaborationResponse([
+            'id'   => 'collab-1',
             'role' => 'editor',
-        ];
+            'item' => ['type' => 'folder', 'id' => '11446498', 'name' => 'Pictures'],
+        ]);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
             ->method('put')
             ->with(
                 CollaborationService::ENDPOINT,
-                $this->callback(fn($b) => str_contains($b, 'folder') && str_contains($b, 'folder-1'))
+                $this->callback(fn($b) => str_contains($b, '"folder"') && str_contains($b, '11446498'))
             )
             ->willReturn($this->createMockResponse($collabData));
 
-        $result = $this->createService($connection)->addCollaboration($folder, ['id' => 'user-1', 'type' => 'user']);
+        $result = $this->createService($connection)->addCollaboration(
+            $folder,
+            ['id' => '755492', 'type' => 'user']
+        );
 
         $this->assertInstanceOf(Collaboration::class, $result);
         $this->assertSame('collab-1', $result->getId());
+        $this->assertSame('editor', $result->getRole());
     }
 
     public function testAddCollaborationWithFileObject(): void
     {
         $file = new File();
-        $file->setId('file-1');
+        $file->setId('817696835');
 
-        $collabData = [
-            'type' => 'collaboration',
-            'id' => 'collab-2',
+        $collabData = BoxApiFixtures::collaborationResponse([
+            'id'   => 'collab-2',
             'role' => 'viewer',
-        ];
+            'item' => ['type' => 'file', 'id' => '817696835', 'name' => 'tigers.jpeg'],
+        ]);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
             ->method('put')
             ->with(
                 CollaborationService::ENDPOINT,
-                $this->callback(fn($b) => str_contains($b, '"file"') && str_contains($b, 'file-1'))
+                $this->callback(fn($b) => str_contains($b, '"file"') && str_contains($b, '817696835'))
             )
             ->willReturn($this->createMockResponse($collabData));
 
-        $result = $this->createService($connection)->addCollaboration($file, ['id' => 'user-2', 'type' => 'user'], 'viewer');
+        $result = $this->createService($connection)->addCollaboration(
+            $file,
+            ['id' => '755492', 'type' => 'user'],
+            'viewer'
+        );
 
         $this->assertInstanceOf(Collaboration::class, $result);
         $this->assertSame('collab-2', $result->getId());
+        $this->assertSame('viewer', $result->getRole());
     }
 
     public function testGetCollaborationReturnsCollaborationResource(): void
     {
-        $collabId = 'collab-get-1';
-        $collabData = ['type' => 'collaboration', 'id' => $collabId, 'role' => 'editor'];
+        $collabId = '14176246';
+        $collabData = BoxApiFixtures::collaborationResponse(['id' => $collabId]);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
@@ -108,21 +118,23 @@ class CollaborationServiceTest extends TestCase
 
         $this->assertInstanceOf(Collaboration::class, $result);
         $this->assertSame($collabId, $result->getId());
+        $this->assertSame('editor', $result->getRole());
+        $this->assertSame('accepted', $result->getStatus());
     }
 
     public function testUpdateCollaborationCallsPut(): void
     {
         $collab = new Collaboration();
-        $collab->setId('collab-upd-1');
+        $collab->setId('14176246');
         $collab->setRole('viewer');
 
-        $collabData = ['type' => 'collaboration', 'id' => 'collab-upd-1', 'role' => 'viewer'];
+        $collabData = BoxApiFixtures::collaborationResponse(['id' => '14176246', 'role' => 'viewer']);
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
             ->method('put')
             ->with(
-                CollaborationService::ENDPOINT . '/collab-upd-1',
+                CollaborationService::ENDPOINT . '/14176246',
                 $this->callback(fn($b) => str_contains($b, 'viewer'))
             )
             ->willReturn($this->createMockResponse($collabData));
@@ -130,11 +142,13 @@ class CollaborationServiceTest extends TestCase
         $result = $this->createService($connection)->updateCollaboration($collab);
 
         $this->assertInstanceOf(Collaboration::class, $result);
+        $this->assertSame('14176246', $result->getId());
+        $this->assertSame('viewer', $result->getRole());
     }
 
     public function testDeleteCollaborationCallsDelete(): void
     {
-        $collabId = 'collab-del-1';
+        $collabId = '14176246';
 
         $connection = $this->createMock(ConnectionInterface::class);
         $connection->expects($this->once())
