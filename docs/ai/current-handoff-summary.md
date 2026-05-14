@@ -1,12 +1,12 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-14 02:10:21.000 (America/Indiana)
+- **Timestamp**: 2026-05-14 02:44:01 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
 - **Next Step Status**: In Progress
-- **Roadmap Position**: JWT/S2S Implementation (Step 15) — Slices 15.1–15.4 complete. Next: Slice 15.4.1.
-- **Test baseline**: 279 tests, 739 assertions (after Slice 15.4)
+- **Roadmap Position**: JWT/S2S Implementation (Step 15) — Slices 15.1–15.4.1 complete. Next: Slice 15.4.2.
+- **Test baseline**: 292 tests, 761 assertions (after Slice 15.4.1)
 
 ## Completed Slices (Step 15)
 
@@ -16,6 +16,16 @@
 | 15.2 | JwtProvider Implementation | ✓ |
 | 15.3 | Factory and Client Integration | ✓ |
 | 15.4 | CLI Support and Env Var Alignment | ✓ |
+| 15.4.1 | FilesystemTokenStorage CLI Support | ✓ |
+
+## What Slice 15.4.1 Delivered
+- `FilesystemTokenStorage`: implements `TokenStorageInterface`; stores tokens as a JSON map on disk keyed by `TokenStorageContext::getCanonicalKey()`.
+- `ConfigProviderInterface`: `getStorageFilePath(): ?string` added.
+- `EnvConfigProvider`: `getStorageFilePath()` reads `BOX_STORAGE_FILE_PATH`.
+- `ClientConfig`: stub `getStorageFilePath()` added (returns null; cleanup in 15.4.4).
+- `AbstractBoxCommand`: `--storage-path` option added; `--storage-type` now accepts `pdo` or `filesystem`; `applyStorageOption()` dispatches to `buildPdoStorage()` or `buildFilesystemStorage()`.
+- `.env.dist` / `.env`: `BOX_STORAGE_FILE_PATH=` added.
+- 13 new tests (10 unit + 2 env provider + 1 command integration). Total: 292 tests, 761 assertions.
 
 ## What Slice 15.4 Delivered
 - `ConfigProviderInterface` + `EnvConfigProvider`: OAuth2 methods renamed to `getOAuth2*`; JWT getters added; env vars aligned to `BOX_OAUTH_*` / `BOX_JWT_*` / `BOX_AUTH_MODE`.
@@ -34,7 +44,6 @@
 
 | Slice | Title | Notes |
 | :--- | :--- | :--- |
-| 15.4.1 | FilesystemTokenStorage CLI Support | `--storage-type filesystem` + `--storage-path`; `BOX_STORAGE_FILE_PATH` fallback |
 | 15.4.2 | Dependency Audit and Cleanup | ext-curl, http-foundation, PHP 8.4/8.5, Symfony constraints |
 | 15.4.3 | Symfony Invoke-Style Command Refactor | `#[AsCommand]` + `__invoke()` on all commands |
 | 15.4.4 | ClientConfig Architectural Cleanup | Decouple from interface, remove stubs/legacy fields, fix token loading |
@@ -49,9 +58,9 @@
 - Config provider methods: provider-prefixed — `getOAuth2ClientId()`, `getJwtClientId()`, etc.
 - Private key: `EnvConfigProvider` reads PEM file; `JwtAuthConfig::$privateKey` is always PEM content.
 - CLI transport: `--transport` removed; `ConnectionInterface` transport methods kept for programmatic use.
-- CLI storage: `--storage-type pdo` only until 15.4.1 adds `filesystem`.
+- CLI storage: `--storage-type pdo` or `--storage-type filesystem` (with `--storage-path` or `BOX_STORAGE_FILE_PATH`).
 - Command wiring: manual in `bin/box-sdk`, no DI container.
-- No plan mode. Claude writes prompts and docs; Junie executes code; human commits.
+- No plan mode. Claude Code CLI executes code directly; human reviews and commits.
 
 ## Transition Note
 Continuing in Claude Code CLI. CLAUDE.md exists at project root and will be loaded automatically.

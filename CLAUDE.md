@@ -5,13 +5,12 @@ PHP 8.4+ SDK for the Box API v2. Repository: `chancegarcia/box-api-v2-sdk`.
 Currently working toward the **v1.0.0 release** on branch `release-v1.0.0`.
 
 ## Workflow
-This project uses a **three-party workflow**: Claude (prompt generator + doc writer), Junie
-(JetBrains AI — code executor), and a human reviewer who commits all changes.
+This project uses **Claude Code CLI** for implementation. Claude executes code changes directly;
+the human reviewer reviews diffs and commits.
 
-- **Claude's role**: Generate Junie execution prompts, write/update documentation directly,
-  review Junie output, answer architectural questions.
-- **Claude does NOT execute code changes** — generate prompts for Junie instead.
-- **All commits** are made by the human reviewer, never by Claude or Junie.
+- **Claude's role**: Read source files, implement code changes directly, run validation, update docs.
+- **Human's role**: Review diffs, commit completed slices, approve step transitions.
+- **All commits** are made by the human reviewer, never by Claude.
 - Step transition requires explicit human approval — do not begin a new step or slice without it.
 
 ## Key Docs to Read First
@@ -36,10 +35,10 @@ TZ="America/Indiana/Indianapolis" date "+%Y-%m-%d %H:%M:%S"
 ```
 
 ## Current Status (as of 2026-05-14)
-- **Slices complete**: 15.1, 15.2, 15.3, 15.4
-- **Next slice**: 15.4.1 — FilesystemTokenStorage CLI Support
-- **Upcoming**: 15.4.2 (Dependency Audit), 15.4.3 (Symfony invoke-style commands), 15.4.4 (ClientConfig cleanup), 15.5, 15.6, 16, 17
-- **Test baseline**: 279 tests, 739 assertions
+- **Slices complete**: 15.1, 15.2, 15.3, 15.4, 15.4.1
+- **Next slice**: 15.4.2 — Dependency Audit and Cleanup
+- **Upcoming**: 15.4.3 (Symfony invoke-style commands), 15.4.4 (ClientConfig cleanup), 15.5, 15.6, 16, 17
+- **Test baseline**: 292 tests, 761 assertions
 
 ## Key Architectural Decisions
 - **Auth providers**: `OAuth2Provider` and `JwtProvider` both implement `AuthProviderInterface`.

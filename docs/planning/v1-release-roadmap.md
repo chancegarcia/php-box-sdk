@@ -70,7 +70,7 @@ This work assumes the completion of:
 | 15.2 | [JwtProvider Implementation](#step-152--jwtprovider-implementation) | ✓ |
 | 15.3 | [Factory and Client Integration](#step-153--factory-and-client-integration) | ✓ |
 | 15.4 | [CLI Support and Env Var Alignment](#step-154--cli-support-and-env-var-alignment) | ✓ |
-| 15.4.1 | [FilesystemTokenStorage CLI Support](#step-1541--filesystemtokenstorage-cli-support) | Not Started |
+| 15.4.1 | [FilesystemTokenStorage CLI Support](#step-1541--filesystemtokenstorage-cli-support) | ✓ |
 | 15.4.2 | [Dependency Audit and Cleanup](#step-1542--dependency-audit-and-cleanup) | Not Started |
 | 15.4.3 | [Symfony Invoke-Style Command Refactor](#step-1543--symfony-invoke-style-command-refactor) | Not Started |
 | 15.4.4 | [ClientConfig Architectural Cleanup](#step-1544--clientconfig-architectural-cleanup) | Not Started |
@@ -347,8 +347,8 @@ Evaluate requirements and dependencies for implementing Box JWT/S2S authenticati
 | 15.1 | Dependency and Core JWT Support | ✓ |
 | 15.2 | JwtProvider Implementation | ✓ |
 | 15.3 | Factory and Client Integration | ✓ |
-| 15.4 | CLI Support and Env Var Alignment | Not Started |
-| 15.4.1 | FilesystemTokenStorage CLI Support | Not Started |
+| 15.4 | CLI Support and Env Var Alignment | ✓ |
+| 15.4.1 | FilesystemTokenStorage CLI Support | Prompt Ready |
 | 15.4.2 | Dependency Audit and Cleanup | Not Started |
 
 #### Purpose

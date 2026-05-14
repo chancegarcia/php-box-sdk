@@ -1,26 +1,37 @@
 ### Summary
-- Added CLI support for JWT token exchange and aligned environment variable names with the new prefix system.
-- Simplified CLI options by removing the redundant transport option and consolidating token storage to use PDO exclusively.
-- Improved security by adding redaction for JWT-sensitive fields in console output.
+Implemented Slice 15.4.1: FilesystemTokenStorage CLI Support. Added a JSON-file-backed token
+storage class, wired it into `AbstractBoxCommand` as `--storage-type filesystem`, and extended
+`ConfigProviderInterface`/`EnvConfigProvider` with `getStorageFilePath()`.
 
 ### Changes
-- **src/Contract/ConfigProviderInterface.php**: Added `getAuthMode()` and JWT-specific getters.
-- **src/Service/EnvConfigProvider.php**: Renamed OAuth2 environment variables to `BOX_OAUTH_*` prefix and implemented new JWT getters.
-- **src/Service/BoxClientFactory.php**: Implemented `createClientForCurrentMode()` to automatically handle OAuth2 vs JWT client creation.
-- **src/Command/AbstractBoxCommand.php**: Removed `--transport` and `--storage-type` options; simplified `applyStorageOption()` to use PDO when storage is enabled.
-- **src/Command/JwtTokenCommand.php**: New command `box:jwt:token` for JWT assertions exchange.
-- **src/Service/ConsoleOutputFormatter.php**: Added masking for `assertion` and `jwt_assertion`, and full redaction for `private_key` fields.
-- **.env.dist / .env**: Updated with new prefixed keys and JWT placeholders.
-- **src/ClientConfig.php**: Implemented new interface methods to maintain compatibility.
+- **src/Storage/Token/Filesystem/FilesystemTokenStorage.php** (new): Implements
+  `TokenStorageInterface`. Stores tokens as a JSON map on disk keyed by
+  `TokenStorageContext::getCanonicalKey()`. Private `loadMap()`/`saveMap()` helpers; throws
+  `TokenStorageException` on bad JSON or write failure. No locking (single-user CLI use case).
+- **src/Contract/ConfigProviderInterface.php**: Added `getStorageFilePath(): ?string`.
+- **src/Service/EnvConfigProvider.php**: Implemented `getStorageFilePath()` reading
+  `BOX_STORAGE_FILE_PATH`.
+- **src/ClientConfig.php**: Added stub `getStorageFilePath()` returning null (cleanup in 15.4.4).
+- **src/Command/AbstractBoxCommand.php**: Added `--storage-path` option; updated
+  `--storage-type` description to list `pdo, filesystem`; replaced inline PDO block with
+  `match` dispatch to `buildPdoStorage()` / `buildFilesystemStorage()` private helpers.
+  Added `FilesystemTokenStorage` import.
+- **.env.dist** / **.env**: Added `BOX_STORAGE_FILE_PATH=`.
+- **tests/Storage/Filesystem/FilesystemTokenStorageTest.php** (new): 10 test methods covering
+  store, retrieve, update upsert, remove, clear, multi-context isolation, bad JSON, and
+  persistence across instances.
+- **tests/Service/EnvConfigProviderTest.php**: Added 2 tests for `getStorageFilePath()`.
+- **tests/Command/AuthStorageIntegrationTest.php**: Added 1 command integration test asserting
+  `FilesystemTokenStorage` is injected when `--storage-type filesystem` is passed.
 
 ### Verification
-- Ran `composer test`: 279 tests, 739 assertions passed (including new `JwtTokenCommandTest` and updated `EnvConfigProviderTest`).
-- Ran `composer analyse`: No errors.
-- Ran `composer cs:check`: All files follow PSR-12 and project style rules.
-- Verified `.env` file contains no real credentials.
+- `composer review` passed: 292 tests, 761 assertions (up from 279/739).
+- PHPStan level 0: no errors.
+- PHP_CodeSniffer: no errors.
+- PHP lint: no syntax errors.
 
 ### Notes
-- The `--storage-type` option was removed because in-memory storage is not persistent across CLI runs; PDO is now the default and only persistent option for CLI.
-- The `--transport` option was removed as it was vestigial for the current CLI surface.
-- `ClientConfig` still implements `ConfigProviderInterface` as a temporary bridge; `getOAuth2RefreshToken()` and `getOAuth2AccessToken()` are stubs returning null. Cleanup tracked in Slice 15.4.4.
-- `BoxClientFactory::createClient()` does not yet load pre-existing access/refresh tokens from env into a `TokenInterface`. Commands currently handle this at the command level with raw strings. Both gaps tracked in Slice 15.4.4 alongside the ClientConfig architectural cleanup.
+- `ClientConfig::getStorageFilePath()` is a stub returning null. It will be removed in Slice
+  15.4.4 when `ClientConfig` stops implementing `ConfigProviderInterface`.
+- No file locking is implemented; this is intentional for single-user CLI use.
+- Workflow change: Claude Code CLI now executes code directly. Junie is no longer used.

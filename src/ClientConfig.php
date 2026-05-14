@@ -173,4 +173,9 @@ class ClientConfig implements ConfigProviderInterface
     {
         return null;
     }
+
+    public function getStorageFilePath(): ?string
+    {
+        return null;
+    }
 }

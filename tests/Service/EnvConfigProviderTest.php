@@ -121,4 +121,18 @@ class EnvConfigProviderTest extends TestCase
         $provider = new EnvConfigProvider();
         $this->assertNull($provider->getJwtPrivateKeyPassphrase());
     }
+
+    public function testGetStorageFilePathFromEnv(): void
+    {
+        $_ENV['BOX_STORAGE_FILE_PATH'] = '/tmp/box_tokens.json';
+        $provider = new EnvConfigProvider();
+        $this->assertEquals('/tmp/box_tokens.json', $provider->getStorageFilePath());
+    }
+
+    public function testGetStorageFilePathReturnsNullWhenUnset(): void
+    {
+        unset($_ENV['BOX_STORAGE_FILE_PATH'], $_SERVER['BOX_STORAGE_FILE_PATH']);
+        $provider = new EnvConfigProvider();
+        $this->assertNull($provider->getStorageFilePath());
+    }
 }

@@ -68,6 +68,11 @@ class EnvConfigProvider implements ConfigProviderInterface
         return $_ENV['BOX_STORAGE_PDO_PASS'] ?? $_SERVER['BOX_STORAGE_PDO_PASS'] ?? null;
     }
 
+    public function getStorageFilePath(): ?string
+    {
+        return $_ENV['BOX_STORAGE_FILE_PATH'] ?? $_SERVER['BOX_STORAGE_FILE_PATH'] ?? null;
+    }
+
     public function getJsonFormatterClass(): ?string
     {
         return $_ENV['BOX_JSON_FORMATTER'] ?? $_SERVER['BOX_JSON_FORMATTER'] ?? null;

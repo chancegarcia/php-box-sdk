@@ -43,4 +43,9 @@ interface ConfigProviderInterface
      * @return string|null
      */
     public function getStoragePdoPassword(): ?string;
+
+    /**
+     * @return string|null
+     */
+    public function getStorageFilePath(): ?string;
 }

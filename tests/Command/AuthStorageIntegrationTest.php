@@ -12,6 +12,7 @@ use Box\Dto\TokenStorageContext;
 use Box\Logger\ConfigNormalizer;
 use Box\Logger\LoggerFactory;
 use Box\Service\ConsoleOutputFormatter;
+use Box\Storage\Token\Filesystem\FilesystemTokenStorage;
 use Box\Storage\Token\TokenStorageInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
@@ -170,6 +171,67 @@ class AuthStorageIntegrationTest extends TestCase
         $commandTester->execute([
             'code' => 'test_code',
             '--use-storage' => true
+        ]);
+
+        $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    public function testFilesystemStorageType(): void
+    {
+        $tempFile = tempnam(sys_get_temp_dir(), 'box_cmd_fs_');
+        @unlink($tempFile);
+
+        $token = new Token();
+        $token->setAccessToken('access_token_fs_test');
+
+        $this->client->method('getClientId')->willReturn('test_client_id');
+        $this->client->method('exchangeAuthorizationCodeForToken')->willReturn($token);
+
+        $this->client->expects($this->once())
+            ->method('setTokenStorage')
+            ->with($this->isInstanceOf(FilesystemTokenStorage::class));
+
+        $application = new Application();
+        $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+
+        $command = $application->find('box:auth:exchange-code');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([
+            'code' => 'test_code',
+            '--use-storage' => true,
+            '--storage-type' => 'filesystem',
+            '--storage-path' => $tempFile,
+            '--user-id' => 'user123',
+        ]);
+
+        @unlink($tempFile);
+        $this->assertEquals(0, $commandTester->getStatusCode());
+    }
+
+    public function testFilesystemStorageUsesDefaultPathWhenNoneProvided(): void
+    {
+        $token = new Token();
+        $token->setAccessToken('access_token_default_path');
+
+        $this->client->method('getClientId')->willReturn('test_client_id');
+        $this->client->method('exchangeAuthorizationCodeForToken')->willReturn($token);
+
+        // No --storage-path and no BOX_STORAGE_FILE_PATH — should fall back to ~/.box-sdk/tokens.json
+        $this->configProvider->method('getStorageFilePath')->willReturn(null);
+
+        $this->client->expects($this->once())
+            ->method('setTokenStorage')
+            ->with($this->isInstanceOf(FilesystemTokenStorage::class));
+
+        $application = new Application();
+        $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+
+        $command = $application->find('box:auth:exchange-code');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([
+            'code' => 'test_code',
+            '--use-storage' => true,
+            '--user-id' => 'user123',
         ]);
 
         $this->assertEquals(0, $commandTester->getStatusCode());

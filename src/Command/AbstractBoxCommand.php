@@ -11,6 +11,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Psr\Log\LoggerInterface;
 use Box\Logger\LoggerFactory;
 use Box\Dto\TokenStorageContext;
+use Box\Storage\Token\Filesystem\FilesystemTokenStorage;
 use Box\Storage\Token\Pdo\TokenStorage as PdoTokenStorage;
 use Exception;
 use InvalidArgumentException;
@@ -38,12 +39,13 @@ abstract class AbstractBoxCommand extends Command
             ->addOption('log-file', null, InputOption::VALUE_REQUIRED, 'Different base log file name (contains all levels)')
             ->addOption('json', null, InputOption::VALUE_NONE, 'Output result as JSON to console')
             ->addOption('use-storage', null, InputOption::VALUE_NONE, 'Enable token storage')
-            ->addOption('storage-type', null, InputOption::VALUE_REQUIRED, 'Type of storage (pdo)', 'pdo')
+            ->addOption('storage-type', null, InputOption::VALUE_REQUIRED, 'Type of storage (pdo, filesystem)', 'filesystem')
             ->addOption('user-id', null, InputOption::VALUE_REQUIRED, 'User ID for storage context')
             ->addOption('enterprise-id', null, InputOption::VALUE_REQUIRED, 'Enterprise ID for storage context')
             ->addOption('pdo-dsn', null, InputOption::VALUE_REQUIRED, 'PDO DSN for storage')
             ->addOption('pdo-user', null, InputOption::VALUE_REQUIRED, 'PDO username')
-            ->addOption('pdo-pass', null, InputOption::VALUE_REQUIRED, 'PDO password');
+            ->addOption('pdo-pass', null, InputOption::VALUE_REQUIRED, 'PDO password')
+            ->addOption('storage-path', null, InputOption::VALUE_REQUIRED, 'File path for filesystem token storage');
     }
 
     protected function applyStorageOption(InputInterface $input, Client $client): void
@@ -69,10 +71,27 @@ abstract class AbstractBoxCommand extends Command
         $client->setTokenStorageContext($context);
 
         $storageType = $input->getOption('storage-type');
-        if ('pdo' !== $storageType) {
-            throw new InvalidArgumentException(sprintf('Unsupported storage type "%s". Currently only "pdo" is supported.', $storageType));
-        }
 
+        $storage = match ($storageType) {
+            'pdo' => $this->buildPdoStorage($input),
+            'filesystem' => $this->buildFilesystemStorage($input),
+            default => throw new InvalidArgumentException(
+                sprintf('Unsupported storage type "%s". Valid types: pdo, filesystem.', $storageType)
+            ),
+        };
+
+        $client->setTokenStorage($storage);
+
+        $this->logger->info('Token storage configured for command', [
+            'type' => $storageType,
+            'user_id' => $userId,
+            'enterprise_id' => $enterpriseId,
+            'client_id' => $clientId
+        ]);
+    }
+
+    private function buildPdoStorage(InputInterface $input): PdoTokenStorage
+    {
         $dsn = $input->getOption('pdo-dsn') ?? $this->configProvider->getStoragePdoDsn();
         if (null === $dsn) {
             throw new InvalidArgumentException('PDO DSN is required when storage is enabled. Use --pdo-dsn or BOX_STORAGE_PDO_DSN env.');
@@ -80,15 +99,17 @@ abstract class AbstractBoxCommand extends Command
         $user = $input->getOption('pdo-user') ?? $this->configProvider->getStoragePdoUser();
         $pass = $input->getOption('pdo-pass') ?? $this->configProvider->getStoragePdoPassword();
 
-        $storage = new PdoTokenStorage($dsn, $user, $pass);
-        $client->setTokenStorage($storage);
+        return new PdoTokenStorage($dsn, $user, $pass);
+    }
 
-        $this->logger->info('Token storage configured for command', [
-            'type' => 'pdo',
-            'user_id' => $userId,
-            'enterprise_id' => $enterpriseId,
-            'client_id' => $clientId
-        ]);
+    private function buildFilesystemStorage(InputInterface $input): FilesystemTokenStorage
+    {
+        $home = rtrim((string) (getenv('HOME') ?: sys_get_temp_dir()), '/');
+        $defaultPath = $home . '/.box-sdk/tokens.json';
+
+        $path = $input->getOption('storage-path') ?? $this->configProvider->getStorageFilePath() ?? $defaultPath;
+
+        return new FilesystemTokenStorage($path);
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
