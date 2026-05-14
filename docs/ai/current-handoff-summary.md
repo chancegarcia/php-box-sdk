@@ -1,6 +1,6 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-14 17:37:13 (America/Indiana)
+- **Timestamp**: 2026-05-14 17:53:37 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
@@ -38,8 +38,25 @@
 ### Slice 17 — v1 Release Readiness
 
 #### Code Gate
-- Confirm `Service` base class legacy helper decision is recorded (deferred to v2 or cleaned) — verify, don't implement
-- `composer review` must pass 100%
+The Code Gate goal is to demonstrate modern PHP practices — this is the primary v1 quality intent, not just a checklist pass.
+
+**Step 1 — Legacy naming scan** (approved scan targets):
+- `BoxLoggerTrait` — renamed to `BoxApiErrorTrait`; any remaining references are stale
+- `setoAuth2AuthCode` — old typo form; correct is `setOAuth2AuthCode`
+- `queryBox`, `putIntoBox`, `getFromBox`, `sendUpdateToBox` — removed from `ServiceInterface`/`Service`
+- `TOKEN_URI`, `REVOKE_URI` — removed constants
+- `authorizedConnection` — collapsed into `connection`
+- `handleResponseContent` — inlined into `handleBoxResponse`; references are dead
+- `validateReturnType`, `allowedReturnTypes` — removed
+
+**Step 2 — Modern/best practices review** of anything the scan surfaces:
+- Yoda conditionals where appropriate (readability first)
+- Explicit types, early returns, no nested ternaries
+- See global style rules in memory: `feedback_code_style.md`
+
+**Step 3 — Verify** `Service` base class legacy helper decision is recorded (deferred to v2 or cleaned) — verify only, don't implement
+
+**Step 4 — `composer review`** must pass 100%
 
 #### Documentation Gate
 - `docs/README.md` — mark Steps 10–16 complete, Step 17 in progress; fix stale foundation status block
