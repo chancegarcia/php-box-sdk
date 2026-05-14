@@ -104,14 +104,6 @@ class Connection implements ConnectionInterface
         $this->authenticationResponseFactory = $authenticationResponseFactory ?? new AuthenticationResponseFactory();
     }
 
-    // relooking over auth flow, we have to assume app is already authorized externally.
-    // rewrite to use tokens for connection
-    // may need to store the tokens
-    public function connect(): mixed
-    {
-        throw new BoxException('method not yet implemented');
-    }
-
     /**
      * {@inheritdoc}
      */

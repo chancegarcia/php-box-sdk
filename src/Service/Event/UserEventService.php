@@ -157,7 +157,7 @@ class UserEventService extends Service implements UserEventServiceInterface
     {
         $uri = $this->getEventsUri();
 
-        $eventsData = $this->getFromBox($uri, 'decoded');
+        $eventsData = $this->handleBoxResponse($this->getConnection()->query($uri), 'decoded');
         if ($this->getLogger() instanceof LoggerInterface) {
             $this->getLogger()->debug(
                 'events data: ' . var_export($eventsData, true),

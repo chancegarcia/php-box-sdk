@@ -32,19 +32,12 @@
 
 namespace Box\Connection;
 
-use Box\Exception\BoxException;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Logger\LoggerAwareInterface;
 use Box\Http\FileStream;
 
 interface ConnectionInterface extends LoggerAwareInterface
 {
-    /**
-     * @return mixed
-     * @throws BoxException
-     */
-    public function connect(): mixed;
-
     /**
      * GET
      * @param string $uri
@@ -98,7 +91,7 @@ interface ConnectionInterface extends LoggerAwareInterface
         string $uri,
         string|FileStream $file,
         string|int $parentId = 0
-    ): array|BoxResponseInterface;
+    ): BoxResponseInterface;
 
     public function setAccessToken(?string $accessToken = null): void;
 

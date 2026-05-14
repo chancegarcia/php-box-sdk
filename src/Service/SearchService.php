@@ -34,6 +34,6 @@ class SearchService extends Service implements SearchServiceInterface
             $uri .= "&type=" . $type;
         }
 
-        return $this->queryBox($uri, 'flat');
+        return $this->handleBoxResponse($this->getConnection()->query($uri), 'flat');
     }
 }

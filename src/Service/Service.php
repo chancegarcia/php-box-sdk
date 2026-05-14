@@ -51,7 +51,6 @@ use RuntimeException;
 use InvalidArgumentException;
 use BadMethodCallException;
 use stdClass;
-use Psr\Log\LoggerInterface;
 
 class Service implements ServiceInterface, LoggerAwareInterface
 {
@@ -122,204 +121,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
     public function setToken($token = null)
     {
         $this->token = $token;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function putIntoBox($uri = null, $params = [], $returnType = 'decoded')
-    {
-        $this->validateReturnType($returnType);
-
-        if (false === is_string($uri)) {
-            throw new BadMethodCallException("please provide a URI");
-        }
-
-        if (!is_string($params)) {
-            $params = json_encode($params);
-        }
-
-        $response = $this->getConnection()->put($uri, $params);
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug(
-                'raw return: ' . $response,
-                [
-                    __METHOD__ . ":" . __LINE__,
-                    var_export($response, true),
-                ]
-            );
-        }
-
-        return $this->handleBoxResponse($response, $returnType);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @throws BadMethodCallException
-     */
-    final public function queryBox($uri = null, $returnType = 'decoded')
-    {
-        $this->validateReturnType($returnType);
-
-        if (false === is_string($uri)) {
-            throw new BadMethodCallException("please provide a URI");
-        }
-
-        $connection = $this->getConnection();
-
-        $response = $connection->query($uri);
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug(
-                'raw return: ' . $response,
-                [
-                    __METHOD__ . ":" . __LINE__,
-                    var_export($response, true),
-                ]
-            );
-        }
-
-        // refactor method below to work with Response class
-        return $this->handleBoxResponse($response, $returnType);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function sendUpdateToBox(
-        $uri = null,
-        $params = [],
-        $type = 'original',
-        ?object $class = null
-    ) {
-        $this->validateReturnType($type);
-        try {
-            $boxData = $this->putIntoBox($uri, $params, $type);
-        } catch (BoxResponseException $bre) {
-            if ($this->getLogger() instanceof LoggerInterface) {
-                $this->getLogger()->error(
-                    'box exception caught',
-                    [
-                        __METHOD__ . ":" . __LINE__,
-                        $bre->getTraceAsString(),
-                        $bre->getBoxCode(),
-                        $bre->getError(),
-                        $bre->getErrorDescription(),
-                        implode("\n", $bre->getContext()),
-                    ]
-                );
-            }
-
-            throw $bre;
-        } catch (BoxException $be) {
-            if ($this->getLogger() instanceof LoggerInterface) {
-                $this->getLogger()->error(
-                    'box exception caught',
-                    [
-                        __METHOD__ . ":" . __LINE__,
-                        $be->getTraceAsString(),
-                        $be->getBoxCode(),
-                        $be->getError(),
-                        $be->getErrorDescription(),
-                        implode("\n", $be->getContext()),
-                    ]
-                );
-            }
-
-            throw $be;
-        }
-
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug(
-                'final box data: ' . var_export($boxData, true),
-                [
-                    __METHOD__ . ":" . __LINE__,
-                ]
-            );
-        }
-
-        $returnData = null;
-        if (null !== $class) {
-            (new Hydrator())->hydrate($class, $boxData);
-            $returnData = $class;
-        } else {
-            $returnData = $boxData;
-        }
-
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug(
-                'return data: ' . var_export($returnData, true),
-                [
-                    __METHOD__ . ":" . __LINE__,
-                ]
-            );
-        }
-
-        return $returnData;
-    }
-
-    /**
-     * {@inheritdoc}
-     * @throws BoxException
-     */
-    final public function getFromBox($uri = null, $type = 'original', ?object $class = null)
-    {
-        $this->validateReturnType($type);
-
-        try {
-            $boxData = $this->queryBox($uri, $type);
-        } catch (BoxResponseException $bre) {
-            if ($this->getLogger() instanceof LoggerInterface) {
-                $this->getLogger()->error(
-                    'box exception caught',
-                    [
-                        __METHOD__ . ":" . __LINE__,
-                        $bre->getTraceAsString(),
-                        $bre->getBoxCode(),
-                        $bre->getError(),
-                        $bre->getErrorDescription(),
-                        implode("\n", $bre->getContext()),
-                    ]
-                );
-            }
-
-            throw $bre;
-        } catch (BoxException $be) {
-            if ($this->getLogger() instanceof LoggerInterface) {
-                $this->getLogger()->error(
-                    'box exception caught',
-                    [
-                        __METHOD__ . ":" . __LINE__,
-                        $be->getTraceAsString(),
-                        $be->getBoxCode(),
-                        $be->getError(),
-                        $be->getErrorDescription(),
-                        implode("\n", $be->getContext()),
-                    ]
-                );
-            }
-
-            throw $be;
-        }
-
-        $returnData = null;
-
-        if (null !== $class) {
-            (new Hydrator())->hydrate($class, $boxData);
-            $returnData = $class;
-        } else {
-            $returnData = $boxData;
-        }
-
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $this->getLogger()->debug(
-                'return data: ' . var_export($returnData, true),
-                [
-                    __METHOD__ . ":" . __LINE__,
-                ]
-            );
-        }
-
-        return $returnData;
     }
 
     /**
@@ -478,7 +279,8 @@ class Service implements ServiceInterface, LoggerAwareInterface
      */
     protected function getResourceFromBox(string $uri, string $resourceClass): object
     {
-        $data = $this->getFromBox($uri, 'decoded');
+        $response = $this->getConnection()->query($uri);
+        $data = $this->handleBoxResponse($response, 'decoded');
 
         return $this->hydrate($resourceClass, $data);
     }
@@ -495,7 +297,11 @@ class Service implements ServiceInterface, LoggerAwareInterface
      */
     protected function sendUpdateAndHydrate(string $uri, array|string $params, string $resourceClass): object
     {
-        $data = $this->sendUpdateToBox($uri, $params, 'decoded');
+        if (!is_string($params)) {
+            $params = json_encode($params);
+        }
+        $response = $this->getConnection()->put($uri, $params);
+        $data = $this->handleBoxResponse($response, 'decoded');
 
         return $this->hydrate($resourceClass, $data);
     }

@@ -22,7 +22,7 @@ class UserService extends Service implements UserServiceInterface
     {
         $uri = self::ENDPOINT . '?limit=' . $limit . '&offset=' . $offset;
 
-        return $this->queryBox($uri, 'flat');
+        return $this->handleBoxResponse($this->getConnection()->query($uri), 'flat');
     }
 
     /**

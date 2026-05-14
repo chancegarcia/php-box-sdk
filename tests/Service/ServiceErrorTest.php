@@ -21,6 +21,11 @@ class ServiceErrorTest extends TestCase
     protected function setUp(): void
     {
         $this->service = new class extends Service {
+            public function fetchDecoded(string $uri): mixed
+            {
+                $response = $this->getConnection()->query($uri);
+                return $this->handleBoxResponse($response, 'decoded');
+            }
         };
         $this->connection = $this->createMock(ConnectionInterface::class);
         $this->token = $this->createMock(TokenInterface::class);
@@ -42,7 +47,7 @@ class ServiceErrorTest extends TestCase
         $this->expectExceptionCode(404);
 
         try {
-            $this->service->getFromBox('some/uri');
+            $this->service->fetchDecoded('some/uri');
         } catch (BoxResponseException $e) {
             $this->assertSame($response, $e->getResponse());
             $this->assertSame('not_found', $e->getBoxCode());
@@ -65,7 +70,7 @@ class ServiceErrorTest extends TestCase
         $this->connection->method('query')->willReturn($response);
 
         try {
-            $this->service->getFromBox('some/uri');
+            $this->service->fetchDecoded('some/uri');
         } catch (BoxResponseException $e) {
             $this->assertSame(60, $e->getContext('retry_after_seconds'));
             $this->assertSame('60', $e->getContext('retry_after_header'));
@@ -82,7 +87,7 @@ class ServiceErrorTest extends TestCase
         $this->expectException(TransportException::class);
         $this->expectExceptionMessage('Network error');
 
-        $this->service->getFromBox('some/uri');
+        $this->service->fetchDecoded('some/uri');
     }
 
     public function test401ThrowsExceptionWithoutRetry(): void
@@ -99,6 +104,6 @@ class ServiceErrorTest extends TestCase
         $this->expectException(BoxResponseException::class);
         $this->expectExceptionCode(401);
 
-        $this->service->getFromBox('some/uri', 'decoded');
+        $this->service->fetchDecoded('some/uri');
     }
 }

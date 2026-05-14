@@ -37,127 +37,40 @@
 namespace Box\Service;
 
 use Box\Http\Response\BoxResponseInterface;
-use Box\Connection\Token\TokenInterface;
-use Box\Connection\Connection;
 use Box\Connection\ConnectionInterface;
-use Box\Connection\Token\Token;
+use Box\Connection\Token\TokenInterface;
 use BadMethodCallException;
-use stdClass;
 
-/**
- * basic service interface expects a valid authorized token;
- * it has the ability to refresh or revoke but not do the initial authorization.
- * see the authorize service for that ability
- *
- *
- *
- * Interface ServiceInterface
- * @package Box\Service
- */
 interface ServiceInterface
 {
-    public const TOKEN_URI = "https://www.box.com/api/oauth2/token";
-    public const REVOKE_URI = "https://www.box.com/api/oauth2/revoke";
-
     /**
-     * @return Connection|ConnectionInterface
+     * @return ConnectionInterface
      */
     public function getConnection();
 
     /**
-     * @param Connection|ConnectionInterface $connection
+     * @param ConnectionInterface|null $connection
      * @return void
      */
     public function setConnection($connection = null);
 
     /**
-     * @return Token|TokenInterface
+     * @return TokenInterface
      */
     public function getToken();
 
     /**
-     * @param Token|TokenInterface $token
+     * @param TokenInterface|null $token
      * @return void
      */
     public function setToken($token = null);
 
     /**
-     * used to throw exceptions that need to contain error information returned from Box
-     *
-     * @param BoxResponseInterface $response
-     * @param string $returnType valid types are:
-     *                           'original' (the return from the connection query {@see Connection::query()}),
-     *                           'decoded' (normal json decode of the connection query [json_decode(original)]),
-     *                           'flat' (associative array json decode of the connection query [json_decode(original,
-     *                           true)])
-     *
+     * @param BoxResponseInterface|null $response
+     * @param string $returnType 'decoded', 'flat', 'array', or 'original'
      * @return mixed
      * @throws \Box\Exception\BoxException
      * @throws BadMethodCallException
      */
     public function handleBoxResponse(?BoxResponseInterface $response = null, $returnType = 'decoded');
-
-
-    /**
-     * @param null $uri
-     * @param array $params name/value array pairs that will be json_encoded to send to box
-     * @param string $returnType valid types are:
-     *                           'original' (the return from the connection query {@see Connection::query()}),
-     *                           'decoded' (normal json decode of the connection query [json_decode(original)]),
-     *                           'flat' (associative array json decode of the connection query [json_decode(original,
-     *                           true)])
-     *
-     * @return string|array|stdClass
-     *
-     * @throws BadMethodCallException
-     */
-    public function putIntoBox($uri = null, $params = [], $returnType = 'decoded');
-
-    /**
-     *
-     * use box connection object to send a query to box
-     *
-     * @param string $uri
-     * @param string $returnType valid types are:
-     *                           'original' (the return from the connection query {@see Connection::query()}),
-     *                           'decoded' (normal json decode of the connection query [json_decode(original)]),
-     *                           'flat' (associative array json decode of the connection query [json_decode(original,
-     *                           true)])
-     *
-     * @return string|array|stdClass
-     *
-     * @throws BadMethodCallException
-     */
-    public function queryBox($uri = null, $returnType = 'decoded');
-
-    /**
-     * @param null $uri box uri to query
-     * @param string $type valid types are:
-     *                              'original' (the return from the connection query {@see Connection::query()}),
-     *                              'decoded' (normal json decode of the connection query [json_decode(original)]),
-     *                              'flat' (associative array json decode of the connection query [json_decode(original, true)])
-     *                              'mapped' map json data to provided ModelInterface
-     * @param object|string|null $class class to map the box data to, the mapped data is the decoded results of the the box
-     *                              query {@see queryBox()}; if none provided, the specified type will be returned
-     *
-     * @return object|stdClass|array|string
-     */
-    public function getFromBox($uri = null, $type = 'original', ?object $class = null);
-
-    /**
-     * @param null $uri box uri to query
-     * @param array $params array of params to be converted to json encoded string
-     * @param string $type valid types are:
-     *                              'original' (the return from the connection query {@see Connection::query()}),
-     *                              'decoded' (normal json decode of the connection query [json_decode(original)]),
-     *                              'flat' (associative array json decode of the connection query
-     *                              [json_decode(original, true)])
-     * @param object|null $class class to map the box data to, the mapped data is the decoded results of the the box
-     *                              query {@see queryBox()}; if none provided, the specified type will be returned
-     *
-     * @return object|stdClass|array|string
-     * @throws \Box\Exception\BoxException
-     * @throws \Exception
-     */
-    public function sendUpdateToBox($uri = null, $params = [], $type = 'original', ?object $class = null);
 }

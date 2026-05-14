@@ -251,12 +251,10 @@ class ClientTest extends TestCase
             ->method('post')
             ->with(
                 FolderService::ENDPOINT,
-                [
-                    'name' => 'New Folder',
-                    'parent' => ['id' => '123'],
-                    'description' => 'A description'
-                ],
-                true // reverted back to true
+                $this->callback(fn($p) => is_string($p)
+                    && str_contains($p, '"New Folder"')
+                    && str_contains($p, '"123"')
+                    && str_contains($p, 'A description'))
             )
             ->willReturn($response);
         $this->client->setConnection($connection);
@@ -415,8 +413,7 @@ class ClientTest extends TestCase
         $connection->method('post')
             ->with(
                 $this->anything(),
-                $this->anything(),
-                true // reverted back to true
+                $this->anything()
             )
             ->willReturn($response);
         $this->client->setConnection($connection);

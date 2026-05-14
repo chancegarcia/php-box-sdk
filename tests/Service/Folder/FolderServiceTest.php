@@ -81,7 +81,7 @@ class FolderServiceTest extends TestCase
             ->method('post')
             ->with(
                 FolderService::ENDPOINT,
-                $this->callback(fn($p) => is_array($p) && $p['name'] === 'New Folder')
+                $this->callback(fn($p) => is_string($p) && str_contains($p, '"New Folder"'))
             )
             ->willReturn($this->createMockResponse($responseData));
 
@@ -126,7 +126,7 @@ class FolderServiceTest extends TestCase
             ->method('post')
             ->with(
                 FolderService::ENDPOINT . '/' . $originalId . '/copy',
-                $this->callback(fn($p) => is_array($p) && isset($p['parent']['id']))
+                $this->callback(fn($p) => is_string($p) && str_contains($p, '"parent"'))
             )
             ->willReturn($this->createMockResponse($responseData));
 

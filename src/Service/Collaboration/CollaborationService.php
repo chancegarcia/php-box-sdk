@@ -18,7 +18,7 @@ class CollaborationService extends Service implements CollaborationServiceInterf
     {
         $uri = "https://api.box.com/2.0/folders/" . $folder->getId() . "/collaborations";
 
-        return $this->queryBox($uri, 'flat');
+        return $this->handleBoxResponse($this->getConnection()->query($uri), 'flat');
     }
 
     /**

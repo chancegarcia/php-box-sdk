@@ -14,7 +14,7 @@ class GroupService extends Service implements GroupServiceInterface
     {
         $uri = self::ENDPOINT . '?limit=' . $limit . '&offset=' . $offset;
 
-        return $this->queryBox($uri, 'flat');
+        return $this->handleBoxResponse($this->getConnection()->query($uri), 'flat');
     }
 
     public function createGroup(string $name, array $options = []): Group
@@ -45,7 +45,7 @@ class GroupService extends Service implements GroupServiceInterface
     {
         $uri = $this->getMembershipListUri($groupId, $limit, $offset);
 
-        return $this->queryBox($uri, 'flat');
+        return $this->handleBoxResponse($this->getConnection()->query($uri), 'flat');
     }
 
     /**

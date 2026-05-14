@@ -56,7 +56,7 @@ class FolderService extends Service implements FolderServiceInterface
     public function getFolderItems(string|int $id, int $limit = 100, int $offset = 0): Folder
     {
         $uri = $this->getFolderItemsUri($id, $limit, $offset);
-        $data = $this->queryBox($uri, 'flat');
+        $data = $this->handleBoxResponse($this->getConnection()->query($uri), 'flat');
 
         $folder = $this->getFolder($id);
         $folder->setItemCollection($data);
@@ -78,7 +78,7 @@ class FolderService extends Service implements FolderServiceInterface
 
         $uri = self::ENDPOINT;
 
-        $response = $this->getConnection()->post($uri, $params, true);
+        $response = $this->getConnection()->post($uri, json_encode($params));
 
         $data = $this->handleBoxResponse($response, 'flat');
 
@@ -156,7 +156,7 @@ class FolderService extends Service implements FolderServiceInterface
     {
         $uri = self::ENDPOINT . '/' . $folder->getId() . '/collaborations';
 
-        return $this->queryBox($uri, 'flat');
+        return $this->handleBoxResponse($this->getConnection()->query($uri), 'flat');
     }
 
     /**
@@ -189,7 +189,7 @@ class FolderService extends Service implements FolderServiceInterface
             $params['name'] = $name;
         }
 
-        $response = $this->getConnection()->post($uri, $params, true);
+        $response = $this->getConnection()->post($uri, json_encode($params));
 
         $data = $this->handleBoxResponse($response, 'flat');
 
