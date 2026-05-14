@@ -104,28 +104,6 @@ interface ServiceInterface
     public function getClientSecret();
 
     /**
-     * @return string|null
-     */
-    public function getDeviceId();
-
-    /**
-     * @param string|null $deviceId
-     * @return void
-     */
-    public function setDeviceId($deviceId = null): void;
-
-    /**
-     * @return string|null
-     */
-    public function getDeviceName();
-
-    /**
-     * @param string|null $deviceName
-     * @return void
-     */
-    public function setDeviceName($deviceName = null): void;
-
-    /**
      * used to throw exceptions that need to contain error information returned from Box
      *
      * @param BoxResponseInterface $response

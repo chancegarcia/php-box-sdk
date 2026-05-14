@@ -73,7 +73,7 @@ This work assumes the completion of:
 | 15.4.1 | [FilesystemTokenStorage CLI Support](#step-1541--filesystemtokenstorage-cli-support) | ✓ |
 | 15.4.2 | [Dependency Audit and Cleanup](#step-1542--dependency-audit-and-cleanup) | ✓ |
 | 15.4.3 | [Symfony Invoke-Style Command Refactor](#step-1543--symfony-invoke-style-command-refactor) | ✓ |
-| 15.4.4 | [ClientConfig Architectural Cleanup](#step-1544--clientconfig-architectural-cleanup) | Not Started |
+| 15.4.4 | [ClientConfig Architectural Cleanup](#step-1544--clientconfig-architectural-cleanup) | ✓ |
 | 15.5 | [Box API Coverage Alignment](#step-155--box-api-coverage-alignment) | Not Started |
 | 15.6 | [API Fixture Realism and Contract Alignment](#step-156--api-fixture-realism-and-contract-alignment) | Not Started |
 | 16 | [Webhook Verification and Evaluation](#step-16--webhook-verification-and-evaluation) | Not Started |
@@ -471,7 +471,7 @@ Symfony `^7.4|^8` dependency.
 
 #### Status
 - **Required for v1**
-- Implementation has **NOT** started.
+- **Complete** ✓
 
 #### Purpose
 `ClientConfig` currently implements `ConfigProviderInterface`, which is architecturally wrong:

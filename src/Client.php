@@ -97,9 +97,6 @@ class Client implements LoggerAwareInterface
     protected ?string $clientId = null;
     protected ?string $clientSecret = null;
 
-    protected ?string $deviceId = null;
-    protected ?string $deviceName = null;
-
     protected ?TokenStorageInterface $tokenStorage = null;
     protected ?TokenStorageContext $tokenStorageContext = null;
 
@@ -127,8 +124,6 @@ class Client implements LoggerAwareInterface
         $this->clientId = $config->getOAuth2ClientId();
         $this->clientSecret = $config->getOAuth2ClientSecret();
         $this->authorizationCode = $config->getOAuth2AuthCode();
-        $this->deviceId = $config->getDeviceId();
-        $this->deviceName = $config->getDeviceName();
     }
 
     /**
@@ -546,18 +541,7 @@ class Client implements LoggerAwareInterface
             );
         }
 
-        $options = [];
-        $deviceId = $this->getDeviceId();
-        if (null !== $deviceId) {
-            $options['device_id'] = $deviceId;
-        }
-
-        $deviceName = $this->getDeviceName();
-        if (null !== $deviceName) {
-            $options['device_name'] = $deviceName;
-        }
-
-        $newToken = $this->getAuthProvider()->refreshToken($token, $options);
+        $newToken = $this->getAuthProvider()->refreshToken($token, []);
 
         $this->setToken($newToken);
         $this->saveTokenToStorage($newToken);
@@ -787,26 +771,6 @@ class Client implements LoggerAwareInterface
         return $this->collaborations;
     }
 
-    public function setDeviceId(?string $deviceId = null): void
-    {
-        $this->deviceId = $deviceId;
-    }
-
-    public function getDeviceId(): ?string
-    {
-        return $this->deviceId;
-    }
-
-    public function setDeviceName(?string $deviceName = null): void
-    {
-        $this->deviceName = $deviceName;
-    }
-
-    public function getDeviceName(): ?string
-    {
-        return $this->deviceName;
-    }
-
     public function setTokenStorage(?TokenStorageInterface $tokenStorage = null): void
     {
         $this->tokenStorage = $tokenStorage;
@@ -942,8 +906,6 @@ class Client implements LoggerAwareInterface
         $service->setConnection($this->getConnection());
         $service->setClientId($this->getClientId());
         $service->setClientSecret($this->getClientSecret());
-        $service->setDeviceId($this->getDeviceId());
-        $service->setDeviceName($this->getDeviceName());
 
         if ($service instanceof AuthenticatedServiceInterface) {
             $token = $this->getToken();

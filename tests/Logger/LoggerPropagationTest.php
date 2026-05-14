@@ -4,7 +4,7 @@ namespace Box\Tests\Logger;
 
 use Box\Client;
 use Box\Contract\BoxClientFactoryInterface;
-use Box\ClientConfig;
+use Box\Contract\ConfigProviderInterface;
 use Box\Service\BoxClientFactory;
 use Box\Connection\ConnectionInterface;
 use Box\Resource\Folder;
@@ -22,7 +22,7 @@ class LoggerPropagationTest extends TestCase
     public function testLoggerPropagatesFromFactoryToClient(): void
     {
         $logger = $this->createMock(LoggerInterface::class);
-        $configProvider = $this->createMock(ClientConfig::class);
+        $configProvider = $this->createMock(ConfigProviderInterface::class);
 
         $factory = new BoxClientFactory($configProvider);
         $factory->setLogger($logger);
@@ -87,7 +87,7 @@ class LoggerPropagationTest extends TestCase
             ->method('setLogger')
             ->with($logger);
 
-        $configProvider = $this->createMock(ClientConfig::class);
+        $configProvider = $this->createMock(ConfigProviderInterface::class);
         $outputFormatter = $this->createMock(ConsoleOutputFormatter::class);
 
         $command = new FileUploadCommand($factory, $configProvider, $outputFormatter, $loggerFactory);

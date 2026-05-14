@@ -64,17 +64,15 @@ class ClientTest extends TestCase
 
     public function testConstructionWithConfig(): void
     {
-        $config = new ClientConfig([
-            'OAuth2ClientId' => 'conf_id',
-            'OAuth2ClientSecret' => 'conf_secret',
-            'deviceName' => 'conf_device'
-        ]);
+        $config = new ClientConfig(
+            oAuth2ClientId: 'conf_id',
+            oAuth2ClientSecret: 'conf_secret',
+        );
 
         $client = new Client($config);
 
         $this->assertEquals('conf_id', $client->getClientId());
         $this->assertEquals('conf_secret', $client->getClientSecret());
-        $this->assertEquals('conf_device', $client->getDeviceName());
     }
 
     public function testAuthenticatedServiceEnforcesToken(): void
@@ -93,7 +91,7 @@ class ClientTest extends TestCase
         $this->expectException(BoxException::class);
         $this->expectExceptionMessage('Unknown configuration option: invalid_key');
 
-        new ClientConfig(['invalid_key' => 'value']);
+        ClientConfig::fromArray(['invalid_key' => 'value']);
     }
 
     public function testBuildAuthorizationUrl()

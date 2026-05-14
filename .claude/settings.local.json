@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(composer review *)",
-      "Bash(composer cs:fix)"
+      "Bash(composer cs:fix)",
+      "WebFetch(domain:developer.box.com)"
     ]
   }
 }

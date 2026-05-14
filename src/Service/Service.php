@@ -70,8 +70,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
 
     protected $clientId;
     protected $clientSecret;
-    protected $deviceId = null;
-    protected $deviceName = null;
 
     /**
      * @var array
@@ -161,40 +159,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
     public function getClientSecret()
     {
         return $this->clientSecret;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDeviceId()
-    {
-        return $this->deviceId;
-    }
-
-    /**
-     * @param string|null $deviceId
-     * @return void
-     */
-    public function setDeviceId($deviceId = null): void
-    {
-        $this->deviceId = $deviceId;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDeviceName()
-    {
-        return $this->deviceName;
-    }
-
-    /**
-     * @param string|null $deviceName
-     * @return void
-     */
-    public function setDeviceName($deviceName = null): void
-    {
-        $this->deviceName = $deviceName;
     }
 
     /**

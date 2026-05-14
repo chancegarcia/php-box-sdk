@@ -1,12 +1,12 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-14 03:37:09 (America/Indiana)
+- **Timestamp**: 2026-05-14 03:51:54 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
 - **Next Step Status**: In Progress
-- **Roadmap Position**: JWT/S2S Implementation (Step 15) — Slices 15.1–15.4.3 complete. Next: Slice 15.4.4.
-- **Test baseline**: 293 tests, 763 assertions (after Slice 15.4.3)
+- **Roadmap Position**: JWT/S2S Implementation (Step 15) — Slices 15.1–15.4.4 complete. Next: Slice 15.5.
+- **Test baseline**: 293 tests, 762 assertions (after Slice 15.4.4)
 
 ## Completed Slices (Step 15)
 
@@ -19,44 +19,28 @@
 | 15.4.1 | FilesystemTokenStorage CLI Support | ✓ |
 | 15.4.2 | Dependency Audit and Cleanup | ✓ |
 | 15.4.3 | Symfony Invoke-Style Command Refactor | ✓ |
+| 15.4.4 | ClientConfig Architectural Cleanup | ✓ |
+
+## What Slice 15.4.4 Delivered
+- `ClientConfig`: removed `implements ConfigProviderInterface` — now a pure OAuth2 DTO.
+- Removed 15 interface-stub methods (all the null/empty-returning stubs for JWT, storage, upload, auth mode, etc.).
+- Removed legacy mobile-API fields: `$deviceId`, `$deviceName` and their four getters/setters.
+- Replaced magic `__construct(array $options = [])` with explicit named constructor parameters (`$oAuth2ClientId`, `$oAuth2ClientSecret`, `$oAuth2RedirectUri`, `$oAuth2AuthCode`, `$oAuth2State`). `fromArray()` retained with strict key validation.
+- `Client`, `Service`, `ServiceInterface`: removed `$deviceId`/`$deviceName` properties, all four getters/setters, and the call sites in `refreshToken()` and `configureService()`. Confirmed removed from Box API spec.
+- `LoggerPropagationTest`: fixed two mocks from `ClientConfig::class` → `ConfigProviderInterface::class` (ClientConfig no longer satisfies that interface).
+- `ClientTest`: updated `testConstructionWithConfig()` to named-parameter form and removed device field assertion; updated `testUnknownConfigOptionThrowsException()` to use `fromArray()`.
+
+## Known Gaps (Tracked, Not Regressions)
+- `BoxClientFactory::createClient()` does not load pre-existing access/refresh tokens from env into a `TokenInterface`. Commands use raw access token strings directly on the connection as a shortcut. → Deferred.
 
 ## What Slice 15.4.3 Delivered
 - `AbstractBoxCommand`: `abstract public function __invoke()` declared; `final public function execute()` bridges Symfony's call to `__invoke()`.
 - All 5 commands (`AuthExchangeCommand`, `AuthRefreshCommand`, `AuthUrlCommand`, `FileUploadCommand`, `JwtTokenCommand`): `#[AsCommand]` attribute added; `$defaultName` removed; `setName()`/`setDescription()` removed from `configure()`; `execute()` renamed to `public __invoke()`; `self::$defaultName` references replaced with `$this->getName()`.
-- Note: `#[Argument]`/`#[Option]` parameter attributes on `__invoke()` are not usable with this architecture (documented in roadmap deferred list).
-
-## What Slice 15.4.2 Delivered
-- `composer.json`: removed `ext-curl` (no usages since CurlTransport deleted) and `symfony/http-foundation` (no usages in src or tests); updated `symfony/dotenv` and `symfony/console` constraints from `^7.4` to `^7.4|^8`.
-
-## What Slice 15.4.1 Delivered
-- `FilesystemTokenStorage`: implements `TokenStorageInterface`; stores tokens as a JSON map on disk keyed by `TokenStorageContext::getCanonicalKey()`.
-- `ConfigProviderInterface`: `getStorageFilePath(): ?string` added.
-- `EnvConfigProvider`: `getStorageFilePath()` reads `BOX_STORAGE_FILE_PATH`.
-- `ClientConfig`: stub `getStorageFilePath()` added (returns null; cleanup in 15.4.4).
-- `AbstractBoxCommand`: `--storage-path` option added; `--storage-type` now accepts `pdo` or `filesystem`; `applyStorageOption()` dispatches to `buildPdoStorage()` or `buildFilesystemStorage()`.
-- `.env.dist` / `.env`: `BOX_STORAGE_FILE_PATH=` added.
-- 13 new tests (10 unit + 2 env provider + 1 command integration). Total: 292 tests, 761 assertions.
-
-## What Slice 15.4 Delivered
-- `ConfigProviderInterface` + `EnvConfigProvider`: OAuth2 methods renamed to `getOAuth2*`; JWT getters added; env vars aligned to `BOX_OAUTH_*` / `BOX_JWT_*` / `BOX_AUTH_MODE`.
-- `ClientConfig`: OAuth2 getters/setters with real data renamed to `getOAuth2*`. Stubs untouched (deferred to 15.4.4).
-- `BoxClientFactory`: `createClientForCurrentMode()` added (reads `BOX_AUTH_MODE`, creates OAuth2 or JWT client).
-- `AbstractBoxCommand`: `--transport` option removed; `--storage-type` restricted to `pdo` only.
-- `JwtTokenCommand` (`box:jwt:token`): enterprise/app-user token exchange via `--user-id` flag; wired in `bin/box-sdk`.
-- `ConsoleOutputFormatter`: full redaction for `private_key`/`private_key_passphrase`; partial mask for `assertion`/`jwt_assertion`.
-- `.env.dist` + `.env`: rewritten and renamed to new env var scheme.
-
-## Known Gaps (Tracked, Not Regressions)
-- `ClientConfig` implements `ConfigProviderInterface` (wrong abstraction). Stub methods `getOAuth2RefreshToken()` and `getOAuth2AccessToken()` return null. → Slice 15.4.4.
-- `BoxClientFactory::createClient()` does not load pre-existing access/refresh tokens from env into a `TokenInterface`. Commands use raw access token strings directly on the connection as a shortcut. → Slice 15.4.4.
 
 ## Upcoming Slices
 
 | Slice | Title | Notes |
 | :--- | :--- | :--- |
-| 15.4.4 | ClientConfig Architectural Cleanup | Remove `implements ConfigProviderInterface`, delete stubs, remove device/legacy fields, narrow type hints |
-| 15.4.3 | Symfony Invoke-Style Command Refactor | `#[AsCommand]` + `__invoke()` on all commands |
-| 15.4.4 | ClientConfig Architectural Cleanup | Decouple from interface, remove stubs/legacy fields, fix token loading |
 | 15.5 | Box API Coverage Alignment | Audit SDK vs Box API; endpoint matrix |
 | 15.6 | API Fixture Realism | Realistic fixtures for core resources |
 | 16 | Webhook Verification | Signature verification |
@@ -71,6 +55,7 @@
 - CLI storage: `--storage-type pdo` or `--storage-type filesystem` (with `--storage-path` or `BOX_STORAGE_FILE_PATH`).
 - Command wiring: manual in `bin/box-sdk`, no DI container.
 - No plan mode. Claude Code CLI executes code directly; human reviews and commits.
+- `ClientConfig` is a pure OAuth2 DTO — does not implement `ConfigProviderInterface`. Commands and factories type-hint `ConfigProviderInterface` and always receive `EnvConfigProvider`.
 
 ## Transition Note
 Continuing in Claude Code CLI. CLAUDE.md exists at project root and will be loaded automatically.

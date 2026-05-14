@@ -5,33 +5,34 @@ declare(strict_types=1);
 namespace Box;
 
 use Box\Exception\BoxException;
-use Box\Contract\ConfigProviderInterface;
 
-class ClientConfig implements ConfigProviderInterface
+class ClientConfig
 {
-    protected string $oAuth2ClientId = '';
-    protected string $oAuth2ClientSecret = '';
-    protected ?string $oAuth2RedirectUri = null;
-    protected ?string $oAuth2AuthCode = null;
-    protected ?string $deviceId = null;
-    protected ?string $deviceName = null;
-    protected ?string $oAuth2State = null;
-
-    public function __construct(array $options = [])
-    {
-        foreach ($options as $key => $value) {
-            $method = 'set' . ucfirst($key);
-            if (method_exists($this, $method)) {
-                $this->$method($value);
-            } else {
-                throw new BoxException(sprintf('Unknown configuration option: %s', $key));
-            }
-        }
+    public function __construct(
+        private string $oAuth2ClientId = '',
+        private string $oAuth2ClientSecret = '',
+        private ?string $oAuth2RedirectUri = null,
+        private ?string $oAuth2AuthCode = null,
+        private ?string $oAuth2State = null,
+    ) {
     }
 
     public static function fromArray(array $options): self
     {
-        return new self($options);
+        $allowed = ['oAuth2ClientId', 'oAuth2ClientSecret', 'oAuth2RedirectUri', 'oAuth2AuthCode', 'oAuth2State'];
+        foreach (array_keys($options) as $key) {
+            if (!in_array($key, $allowed, true)) {
+                throw new BoxException(sprintf('Unknown configuration option: %s', $key));
+            }
+        }
+
+        return new self(
+            oAuth2ClientId: $options['oAuth2ClientId'] ?? '',
+            oAuth2ClientSecret: $options['oAuth2ClientSecret'] ?? '',
+            oAuth2RedirectUri: $options['oAuth2RedirectUri'] ?? null,
+            oAuth2AuthCode: $options['oAuth2AuthCode'] ?? null,
+            oAuth2State: $options['oAuth2State'] ?? null,
+        );
     }
 
     public function getOAuth2ClientId(): string
@@ -74,26 +75,6 @@ class ClientConfig implements ConfigProviderInterface
         $this->oAuth2AuthCode = $oAuth2AuthCode;
     }
 
-    public function getDeviceId(): ?string
-    {
-        return $this->deviceId;
-    }
-
-    public function setDeviceId(?string $deviceId): void
-    {
-        $this->deviceId = $deviceId;
-    }
-
-    public function getDeviceName(): ?string
-    {
-        return $this->deviceName;
-    }
-
-    public function setDeviceName(?string $deviceName): void
-    {
-        $this->deviceName = $deviceName;
-    }
-
     public function getOAuth2State(): ?string
     {
         return $this->oAuth2State;
@@ -102,80 +83,5 @@ class ClientConfig implements ConfigProviderInterface
     public function setOAuth2State(?string $state): void
     {
         $this->oAuth2State = $state;
-    }
-
-    public function getOAuth2RefreshToken(): ?string
-    {
-        return null;
-    }
-
-    public function getUploadFilePath(): ?string
-    {
-        return null;
-    }
-
-    public function getUploadFolderId(): string
-    {
-        return '0';
-    }
-
-    public function getOAuth2AccessToken(): ?string
-    {
-        return null;
-    }
-
-    public function getAuthMode(): string
-    {
-        return 'oauth2';
-    }
-
-    public function getJwtClientId(): string
-    {
-        return '';
-    }
-
-    public function getJwtClientSecret(): string
-    {
-        return '';
-    }
-
-    public function getJwtEnterpriseId(): string
-    {
-        return '';
-    }
-
-    public function getJwtPublicKeyId(): string
-    {
-        return '';
-    }
-
-    public function getJwtPrivateKey(): string
-    {
-        return '';
-    }
-
-    public function getJwtPrivateKeyPassphrase(): ?string
-    {
-        return null;
-    }
-
-    public function getStoragePdoDsn(): ?string
-    {
-        return null;
-    }
-
-    public function getStoragePdoUser(): ?string
-    {
-        return null;
-    }
-
-    public function getStoragePdoPassword(): ?string
-    {
-        return null;
-    }
-
-    public function getStorageFilePath(): ?string
-    {
-        return null;
     }
 }
