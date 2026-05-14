@@ -76,7 +76,7 @@ This work assumes the completion of:
 | 15.4.4 | [ClientConfig Architectural Cleanup](#step-1544--clientconfig-architectural-cleanup) | ✓ |
 | 15.5 | [Box API Coverage Alignment](#step-155--box-api-coverage-alignment) | ✓ |
 | 15.6 | [API Fixture Realism and Contract Alignment](#step-156--api-fixture-realism-and-contract-alignment) | ✓ |
-| 16 | [Webhook Verification and Evaluation](#step-16--webhook-verification-and-evaluation) | Not Started |
+| 16 | [Webhook Verification and Evaluation](#step-16--webhook-verification-and-evaluation) | ✓ |
 | 17 | [v1 Release Readiness](#step-17--v1-release-readiness) | Not Started |
 
 ## Remaining v1 Sequence

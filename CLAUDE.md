@@ -35,10 +35,10 @@ TZ="America/Indiana/Indianapolis" date "+%Y-%m-%d %H:%M:%S"
 ```
 
 ## Current Status (as of 2026-05-14)
-- **Slices complete**: 15.1, 15.2, 15.3, 15.4, 15.4.1, 15.4.2, 15.4.3, 15.4.4, 15.5, 15.6
-- **Next slice**: 16 — Webhook Verification
-- **Upcoming**: 16, 17
-- **Test baseline**: 319 tests, 887 assertions
+- **Slices complete**: 15.1, 15.2, 15.3, 15.4, 15.4.1, 15.4.2, 15.4.3, 15.4.4, 15.5, 15.6, 16
+- **Next slice**: 17 — v1 Release Readiness
+- **Upcoming**: 17
+- **Test baseline**: 330 tests, 898 assertions
 
 ## Key Architectural Decisions
 - **Auth providers**: `OAuth2Provider` and `JwtProvider` both implement `AuthProviderInterface`.
@@ -49,3 +49,4 @@ TZ="America/Indiana/Indianapolis" date "+%Y-%m-%d %H:%M:%S"
 - **CLI storage**: `--storage-type pdo` or (after 15.4.1) `--storage-type filesystem` with `--storage-path`. `memory` removed from CLI.
 - **No DI container**: Commands wired manually in `bin/box-sdk`.
 - **No plan mode**: Use default mode for all tasks.
+- **Webhook verification**: `Box\Webhook\WebhookVerifier`; signing formula `base64(HMAC-SHA256(body + timestamp, key))`; webhook CRUD management deferred to post-v1.

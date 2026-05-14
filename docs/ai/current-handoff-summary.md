@@ -1,14 +1,14 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-14 05:05:59 (America/Indiana)
+- **Timestamp**: 2026-05-14 05:20:39 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
 - **Next Step Status**: In Progress
-- **Roadmap Position**: JWT/S2S Implementation (Step 15) — Slices 15.1–15.6 complete. Next: Slice 16.
-- **Test baseline**: 319 tests, 887 assertions (after Slice 15.6)
+- **Roadmap Position**: Webhook Verification (Step 16) — complete. Next: Step 17 (v1 Release Readiness).
+- **Test baseline**: 330 tests, 898 assertions (after Slice 16)
 
-## Completed Slices (Step 15)
+## Completed Slices (Steps 15–16)
 
 | Slice | Title | Status |
 | :--- | :--- | :--- |
@@ -22,31 +22,25 @@
 | 15.4.4 | ClientConfig Architectural Cleanup | ✓ |
 | 15.5 | Box API Coverage Alignment | ✓ |
 | 15.6 | API Fixture Realism | ✓ |
+| 16 | Webhook Verification and Evaluation | ✓ |
 
-## What Slice 15.6 Delivered
+## What Slice 16 Delivered
 
-**New file**: `tests/Fixtures/BoxApiFixtures.php` — centralized, Box API-shaped fixture provider.
+**New namespace**: `Box\Webhook`
 
-**Fixture methods:**
-- `fileResponse(array $overrides = []): array` — full GET `/files/{id}` response shape
-- `folderResponse(array $overrides = []): array` — full GET `/folders/{id}` response shape
-- `userResponse(array $overrides = []): array` — full GET `/users/me` or `/users/{id}` response shape
-- `groupResponse(array $overrides = []): array` — full GET `/groups/{id}` response shape
-- `collaborationResponse(array $overrides = []): array` — full GET `/collaborations/{id}` response shape
-- `groupMembershipResponse(array $overrides = []): array` — group membership shape
-- `userListResponse(?array $entries = null): array` — GET `/users` list envelope
-- `groupListResponse(?array $entries = null): array` — GET `/groups` list envelope
+**New files**:
+- `src/Webhook/WebhookVerifierInterface.php` — `verify(body, deliveryTimestamp, ?primarySignature, ?secondarySignature): bool`
+- `src/Webhook/WebhookVerifier.php` — HMAC-SHA256 signature verification using primary and/or secondary signing keys; constant-time comparison via `hash_equals`; configurable max-age window (default 10 minutes); RFC 3339 timestamp parsing with freshness guard.
+- `tests/Webhook/WebhookVerifierTest.php` — 9 tests covering valid primary, valid secondary, both-keys-configured (each branch), wrong signature, omitted signatures, stale timestamp, unparsable timestamp, constructor guard, and custom max-age.
 
-All methods accept an `$overrides` array so individual tests can vary specific fields without reimplementing the full payload.
+**Key behaviors**:
+- Constructor throws `\InvalidArgumentException` if both keys are null.
+- Timestamp freshness is checked before signatures to short-circuit stale replay attempts.
+- Box signing formula: `base64(HMAC-SHA256(body + deliveryTimestamp, key))`.
+- Either the primary or secondary signature passing is sufficient for `verify()` to return `true`.
 
-**Updated factory tests** — `FileFactoryTest`, `FolderFactoryTest`, `UserFactoryTest`, `GroupFactoryTest`: replaced minimal artificial arrays with `BoxApiFixtures` data; added assertions for realistic fields (`sha1`, `etag`, `item_status`, `language`, `timezone`, `space_amount`, `status` enum hydration, `created_at`/`modified_at`).
-
-**Updated service tests** — All core service tests now use `BoxApiFixtures` for mock response payloads:
-- `FileServiceTest` — realistic file response fixtures; added `sha1`, `etag`, `item_status`, `size` assertions; `createSharedLink` tests verify `SharedLink` object hydration.
-- `UserServiceTest` — realistic user fixture; added `language`, `timezone`, `space_amount`, `UserStatus::Active` assertions; `listUsers` uses `userListResponse`.
-- `GroupServiceTest` — realistic group fixture; `createGroup`/`getGroup` assert `created_at`/`modified_at`; `addGroupMember` uses `groupMembershipResponse`.
-- `CollaborationServiceTest` — realistic collaboration fixture; `getCollaboration` asserts `role` and `status`.
-- `FolderServiceTest` — extended with 4 new tests: `getFolder`, `createFolder`, `createSharedLink`, `copyFolder` — all using realistic folder fixtures.
+**Decision recorded** (`docs/planning/v1/decision-index.md`):
+- Webhook Management (CRUD) deferred to post-v1. Direct transport is the escape hatch.
 
 ## Known Gaps (Tracked, Not Regressions)
 - `BoxClientFactory::createClient()` does not load pre-existing access/refresh tokens from env into a `TokenInterface`. → Deferred.
@@ -57,8 +51,7 @@ All methods accept an `$overrides` array so individual tests can vary specific f
 
 | Slice | Title | Notes |
 | :--- | :--- | :--- |
-| 16 | Webhook Verification | Signature verification |
-| 17 | v1 Release Readiness | Final gate |
+| 17 | v1 Release Readiness | Final gate: docs, changelog, security scan, composer review |
 
 ## Key Architecture Decisions (Carry Forward)
 - Auth providers: `OAuth2Provider` and `JwtProvider` both implement `AuthProviderInterface`.
@@ -71,8 +64,9 @@ All methods accept an `$overrides` array so individual tests can vary specific f
 - No plan mode. Claude Code CLI executes code directly; human reviews and commits.
 - `ClientConfig` is a pure OAuth2 DTO — does not implement `ConfigProviderInterface`.
 - `Service::$clientId`/`$clientSecret` removed — credentials live on `Client` and `AuthProvider` only.
-- `ConnectionInterface::delete()` now formally declared (was implemented in `Connection` but missing from interface).
+- `ConnectionInterface::delete()` now formally declared.
 - Fixtures: `Box\Tests\Fixtures\BoxApiFixtures` is the canonical source for Box API-shaped test data.
+- Webhook signing: `Box\Webhook\WebhookVerifier`; formula is `base64(HMAC-SHA256(body + timestamp, key))`; management CRUD deferred.
 
 ## Transition Note
 Continuing in Claude Code CLI. CLAUDE.md exists at project root and will be loaded automatically.

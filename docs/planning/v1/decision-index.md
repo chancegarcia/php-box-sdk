@@ -40,7 +40,7 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 | Token Storage Integration Review | **Decided** | `v1-release-roadmap.md` | Client and CLI integration required |
 | API Coverage Depth vs Parity | **Decided** | `v1-release-roadmap.md` | Prioritize core resource value for v1 |
 | Webhook Verification Required | **Decided** | `v1-release-roadmap.md` | Security requirement for v1 |
-| Webhook Management (CRUD) | **Evaluation** | `v1-release-roadmap.md` | Evaluate for v1 or defer |
+| Webhook Management (CRUD) | **Decided** | `v1-release-roadmap.md` | Deferred to post-v1; direct transport is the escape hatch |
 | Comments / Tasks / Metadata | **Evaluation** | `v1-release-roadmap.md` | Evaluate for v1 or defer |
 | CLI Persistence | **Decided** | `strategy-and-contracts.md` | Optional/Configurable; Resolution order defined |
 | Sign Requests | **Deferred** | `v1-strategy-and-contracts.md` | v1.1.0 priority |
@@ -115,8 +115,10 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 - **CLI**: CLI/harness support must be evaluated or implemented during Step 15.
 
 ### Endpoint Priority (Sign Requests and Webhooks)
-- **Decision**: Sign Requests and Webhooks are v1.1.0 items.
-- **Fallback**: Direct transport may be used as the temporary escape hatch for these endpoints in v1.0.0.
+- **Decision**: Sign Requests are v1.1.0 items.
+- **Decision**: Webhook signature **verification** is implemented in v1.0.0 via `WebhookVerifier` (`src/Webhook/`).
+- **Decision**: Webhook **management** (create, list, delete webhooks via the Box API) is deferred to post-v1. Direct transport is the escape hatch for consumers who need it before then.
+- **Rationale**: Verification is a security requirement with well-defined scope. CRUD management adds a full service layer without clear v1 demand.
 
 ### Token Storage Context
 
