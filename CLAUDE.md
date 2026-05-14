@@ -35,10 +35,11 @@ Use `America/Indiana/Indianapolis` local time for all doc timestamps.
 TZ="America/Indiana/Indianapolis" date "+%Y-%m-%d %H:%M:%S"
 ```
 
-## Current Status (as of 2026-05-13)
-- **Slices complete**: 15.1, 15.2, 15.3
-- **Next slice**: 15.4 — prompt at `docs/prompts/step-15/slice-15-4-cli-support.md`
-- **Upcoming**: 15.4.1 (FilesystemTokenStorage), 15.4.2 (Dependency Audit), 15.4.3 (Symfony invoke-style commands), 15.5, 15.6, 16, 17
+## Current Status (as of 2026-05-14)
+- **Slices complete**: 15.1, 15.2, 15.3, 15.4
+- **Next slice**: 15.4.1 — FilesystemTokenStorage CLI Support
+- **Upcoming**: 15.4.2 (Dependency Audit), 15.4.3 (Symfony invoke-style commands), 15.4.4 (ClientConfig cleanup), 15.5, 15.6, 16, 17
+- **Test baseline**: 279 tests, 739 assertions
 
 ## Key Architectural Decisions
 - **Auth providers**: `OAuth2Provider` and `JwtProvider` both implement `AuthProviderInterface`.

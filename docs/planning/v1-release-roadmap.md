@@ -69,7 +69,7 @@ This work assumes the completion of:
 | 15.1 | [Dependency and Core JWT Support](#step-151--dependency-and-core-jwt-support) | ✓ |
 | 15.2 | [JwtProvider Implementation](#step-152--jwtprovider-implementation) | ✓ |
 | 15.3 | [Factory and Client Integration](#step-153--factory-and-client-integration) | ✓ |
-| 15.4 | [CLI Support and Env Var Alignment](#step-154--cli-support-and-env-var-alignment) | Not Started |
+| 15.4 | [CLI Support and Env Var Alignment](#step-154--cli-support-and-env-var-alignment) | ✓ |
 | 15.4.1 | [FilesystemTokenStorage CLI Support](#step-1541--filesystemtokenstorage-cli-support) | Not Started |
 | 15.4.2 | [Dependency Audit and Cleanup](#step-1542--dependency-audit-and-cleanup) | Not Started |
 | 15.4.3 | [Symfony Invoke-Style Command Refactor](#step-1543--symfony-invoke-style-command-refactor) | Not Started |

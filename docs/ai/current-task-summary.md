@@ -22,3 +22,5 @@
 ### Notes
 - The `--storage-type` option was removed because in-memory storage is not persistent across CLI runs; PDO is now the default and only persistent option for CLI.
 - The `--transport` option was removed as it was vestigial for the current CLI surface.
+- `ClientConfig` still implements `ConfigProviderInterface` as a temporary bridge; `getOAuth2RefreshToken()` and `getOAuth2AccessToken()` are stubs returning null. Cleanup tracked in Slice 15.4.4.
+- `BoxClientFactory::createClient()` does not yet load pre-existing access/refresh tokens from env into a `TokenInterface`. Commands currently handle this at the command level with raw strings. Both gaps tracked in Slice 15.4.4 alongside the ClientConfig architectural cleanup.

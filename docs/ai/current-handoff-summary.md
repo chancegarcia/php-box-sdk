@@ -1,69 +1,58 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-13 04:06:36.000 (America/Indiana)
+- **Timestamp**: 2026-05-14 02:10:21.000 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
 - **Next Step Status**: In Progress
-- **Roadmap Position**: JWT/S2S Implementation (Step 15) — Slices 15.1, 15.2, 15.3 complete. Slice 15.4 prompt written and ready for Junie.
-- **Prompts**: `docs/prompts/step-15/slice-15-4-cli-support.md` (ready)
+- **Roadmap Position**: JWT/S2S Implementation (Step 15) — Slices 15.1–15.4 complete. Next: Slice 15.4.1.
+- **Test baseline**: 279 tests, 739 assertions (after Slice 15.4)
 
-## Completed This Session
-
-### Slice 15.3 — Factory and Client Integration
-- `BoxClientFactory::createJwtClient(JwtAuthConfig $config): Client` added.
-- `BoxClientFactoryInterface` updated (if `createJwtClient` was missing).
-- `Client::getState/setState/getRedirectUri/setRedirectUri` removed (vestigial after Step 13 auth provider extraction).
-- `Client::getAuthProvider()` lazy-init updated to use `ClientConfig` directly instead of removed `getRedirectUri()`.
-- Null refresh token guard added to `Client::refreshToken()` for OAuth2 providers.
-- Tests added for factory JWT method and null-guard behavior.
-
-## Key Decisions Made This Session
-
-- **Separate credential env vars**: `BOX_OAUTH_*` for OAuth2, `BOX_JWT_*` for JWT. No shared `BOX_CLIENT_ID`. Avoids cross-contamination between separately registered Box apps.
-- **Private key handling**: `EnvConfigProvider` reads the file at `BOX_JWT_PRIVATE_KEY_PATH` and returns PEM content. `JwtAuthConfig::$privateKey` is always PEM, never a path. Keeps `JwtAssertionGeneratorInterface` extension point unambiguous.
-- **Transport flag removed from CLI**: `--transport` option removed from `AbstractBoxCommand` and all call sites. `ConnectionInterface::setTransportName/getTransportName` retained for programmatic consumer extensibility.
-- **CLI storage**: `--storage-type memory` removed. `--storage-type` flag kept; only `pdo` valid in 15.4. Slice 15.4.1 adds `filesystem` as a valid type with a `--storage-path` option.
-- **FilesystemTokenStorage re-included for v1**: Slice 15.4.1. Originally excluded in Step 12 audit; re-evaluated because PDO requires a DB and memory is useless across CLI process boundaries.
-- **OAuth2 method rename**: `ConfigProviderInterface`, `EnvConfigProvider`, `ClientConfig` getters renamed to `getOAuth2ClientId()` etc. for symmetry with `getJwtClientId()`. All callers updated in 15.4.
-- **Symfony invoke-style commands**: `#[AsCommand]` + `__invoke()` added as v1 goal (Slice 15.4.3). Not in prior docs — likely remembered from a different project but correct v1 target.
-- **Dependency audit**: Slice 15.4.2. Check `ext-curl` (may be removable — CurlTransport removed in Step 13.2), `symfony/http-foundation` (may be removable — BoxResponse was decoupled in Step 7), PHP 8.4/8.5 constraints, Symfony `^7.4|^8` consistency.
-- **Command wiring**: `bin/box-sdk` script (not a DI container). New commands added as `$application->addCommand(new \Box\Command\...)`.
-
-## Slice 15.4 Scope (Next for Junie)
-
-See full prompt: `docs/prompts/step-15/slice-15-4-cli-support.md`
-
-Summary:
-1. `ConfigProviderInterface` — add `getAuthMode()` + 6 JWT getters.
-2. `EnvConfigProvider` — rename `BOX_*` → `BOX_OAUTH_*` for OAuth2 methods; implement JWT getters (file read for private key).
-3. `BoxClientFactoryInterface` + `BoxClientFactory` — add `createClientForCurrentMode()`.
-4. `AbstractBoxCommand` — remove `--transport` option/method; remove `--storage-type` option (PDO implied by `--use-storage`).
-5. `JwtTokenCommand` — `box:jwt:token` with `--user-id` flag; wired in `bin/box-sdk`.
-6. `ConsoleOutputFormatter` — full redaction for `private_key`, `private_key_passphrase`; partial mask for `assertion`, `jwt_assertion`.
-7. `.env.dist` — rewritten with `BOX_AUTH_MODE`, `BOX_OAUTH_*`, `BOX_JWT_*` groups.
-8. `.env` — rename existing OAuth2 keys; add JWT keys with empty values.
-9. Tests for all of the above; update tests broken by env var renames and removed CLI options.
-
-## Upcoming Slices
+## Completed Slices (Step 15)
 
 | Slice | Title | Status |
 | :--- | :--- | :--- |
-| 15.4.1 | FilesystemTokenStorage CLI Support | Not Started |
-| 15.4.2 | Dependency Audit and Cleanup | Not Started |
-| 15.4.3 | Symfony Invoke-Style Command Refactor | Not Started |
-| 15.5 | Box API Coverage Alignment | Not Started |
-| 15.6 | API Fixture Realism and Contract Alignment | Not Started |
-| 16 | Webhook Verification and Evaluation | Not Started |
-| 17 | v1 Release Readiness | Not Started |
+| 15.1 | Dependency and Core JWT Support | ✓ |
+| 15.2 | JwtProvider Implementation | ✓ |
+| 15.3 | Factory and Client Integration | ✓ |
+| 15.4 | CLI Support and Env Var Alignment | ✓ |
 
-## Validation Baseline (After Slice 15.2)
-- `composer test`: 272 tests passed
-- `composer analyse`: No errors
-- `composer cs:check`: No violations
+## What Slice 15.4 Delivered
+- `ConfigProviderInterface` + `EnvConfigProvider`: OAuth2 methods renamed to `getOAuth2*`; JWT getters added; env vars aligned to `BOX_OAUTH_*` / `BOX_JWT_*` / `BOX_AUTH_MODE`.
+- `ClientConfig`: OAuth2 getters/setters with real data renamed to `getOAuth2*`. Stubs untouched (deferred to 15.4.4).
+- `BoxClientFactory`: `createClientForCurrentMode()` added (reads `BOX_AUTH_MODE`, creates OAuth2 or JWT client).
+- `AbstractBoxCommand`: `--transport` option removed; `--storage-type` restricted to `pdo` only.
+- `JwtTokenCommand` (`box:jwt:token`): enterprise/app-user token exchange via `--user-id` flag; wired in `bin/box-sdk`.
+- `ConsoleOutputFormatter`: full redaction for `private_key`/`private_key_passphrase`; partial mask for `assertion`/`jwt_assertion`.
+- `.env.dist` + `.env`: rewritten and renamed to new env var scheme.
 
-## Follow-up Notes
-- **`ext-curl`**: Likely removable — grep `src/` for `curl_` calls. Address in Slice 15.4.2.
-- **`symfony/http-foundation`**: May be removable — Step 7 docs say `BoxResponse` must not inherit from it and removal was a "done criteria." Grep `src/` for `use Symfony\Component\HttpFoundation`. Address in Slice 15.4.2.
-- **`ext-fileinfo`**: Verify still actively used in `src/` during Slice 15.4.2.
-- **Roadmap drift**: The roadmap previously showed Step 15.x slices numbered as 15.1–15.6 but the "Box API Coverage" and "Fixture Realism" sections were mislabeled as 15.1/15.2 in the section headers. Corrected to 15.5/15.6.
+## Known Gaps (Tracked, Not Regressions)
+- `ClientConfig` implements `ConfigProviderInterface` (wrong abstraction). Stub methods `getOAuth2RefreshToken()` and `getOAuth2AccessToken()` return null. → Slice 15.4.4.
+- `BoxClientFactory::createClient()` does not load pre-existing access/refresh tokens from env into a `TokenInterface`. Commands use raw access token strings directly on the connection as a shortcut. → Slice 15.4.4.
+
+## Upcoming Slices
+
+| Slice | Title | Notes |
+| :--- | :--- | :--- |
+| 15.4.1 | FilesystemTokenStorage CLI Support | `--storage-type filesystem` + `--storage-path`; `BOX_STORAGE_FILE_PATH` fallback |
+| 15.4.2 | Dependency Audit and Cleanup | ext-curl, http-foundation, PHP 8.4/8.5, Symfony constraints |
+| 15.4.3 | Symfony Invoke-Style Command Refactor | `#[AsCommand]` + `__invoke()` on all commands |
+| 15.4.4 | ClientConfig Architectural Cleanup | Decouple from interface, remove stubs/legacy fields, fix token loading |
+| 15.5 | Box API Coverage Alignment | Audit SDK vs Box API; endpoint matrix |
+| 15.6 | API Fixture Realism | Realistic fixtures for core resources |
+| 16 | Webhook Verification | Signature verification |
+| 17 | v1 Release Readiness | Final gate |
+
+## Key Architecture Decisions (Carry Forward)
+- Auth providers: `OAuth2Provider` and `JwtProvider` both implement `AuthProviderInterface`.
+- Env vars: `BOX_OAUTH_*` (OAuth2), `BOX_JWT_*` (JWT), `BOX_AUTH_MODE` (mode selector).
+- Config provider methods: provider-prefixed — `getOAuth2ClientId()`, `getJwtClientId()`, etc.
+- Private key: `EnvConfigProvider` reads PEM file; `JwtAuthConfig::$privateKey` is always PEM content.
+- CLI transport: `--transport` removed; `ConnectionInterface` transport methods kept for programmatic use.
+- CLI storage: `--storage-type pdo` only until 15.4.1 adds `filesystem`.
+- Command wiring: manual in `bin/box-sdk`, no DI container.
+- No plan mode. Claude writes prompts and docs; Junie executes code; human commits.
+
+## Transition Note
+Continuing in Claude Code CLI. CLAUDE.md exists at project root and will be loaded automatically.
+Memory files are at: `~/.claude/projects/-Users-chance-PhpstormProjects-mine-box-sdk/memory/`
