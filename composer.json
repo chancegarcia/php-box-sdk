@@ -1,7 +1,8 @@
 {
     "name": "chancegarcia/box-api-v2-sdk",
+    "version": "1.0.0",
     "license": "MIT",
-    "description": "PHP SDK and API client for Box API workflows compatible with Box API v2024.0, including OAuth2 authentication, file and folder operations, uploads, typed models, PSR-3 logging, and pluggable HTTP transports.",
+    "description": "PHP SDK and API client for the Box API v2024.0, supporting OAuth2 and JWT/S2S authentication, file and folder operations, uploads, webhook signature verification, typed models, and PSR-3 logging.",
     "keywords": [
         "box",
         "box-api",
@@ -13,6 +14,8 @@
         "file-storage",
         "file-upload",
         "oauth2",
+        "jwt",
+        "webhook",
         "php-sdk",
         "sdk",
         "api-client",

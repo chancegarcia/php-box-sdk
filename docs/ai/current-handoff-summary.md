@@ -1,80 +1,65 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-14 17:09:55 (America/Indiana)
+- **Timestamp**: 2026-05-14 17:37:13 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
 - **Next Step Status**: In Progress
-- **Roadmap Position**: Pre-v1 fix slices in progress. Next: ServiceInterface cleanup slice.
-- **Test baseline**: 330 tests, 898 assertions (unchanged from Slice 16)
+- **Roadmap Position**: Slice 17 — v1 Release Readiness (not started)
+- **Test baseline**: 334 tests, 902 assertions
 
 ## Completed This Session
 
-### Audit
-Full `src/` code smell audit completed → `docs/planning/code_smells_v1.md`.
-Key new findings beyond the known blockers:
-- **N1** — `FolderService::updateFolder()` `$ifMatch` branch (line 132) was also broken: array passed to `Connection::put()` → URL-encoded body, not JSON. Both branches now fixed.
-- **N2** — `Service::sendUpdateAndHydrate()` and `getResourceFromBox()` internally call the legacy methods they're supposed to replace. Must be migrated as part of ServiceInterface cleanup before the legacy methods can be removed.
-- **Q1b** — `BoxLoggerTrait` contains two dead methods (`parseResponse()`, `debug()`) and is misnamed. Plan: remove dead methods, rename to `BoxApiErrorTrait`, update three users (`Client`, `Service`, `Connection`). Approved for v1.
-- **D1** — Standing rule: check Box API v2 docs before removing any unused property from a resource service. `FileService::$sharedLink`/`$access` are the immediate case. Split into Session A (targeted check) and Session B (full field audit, Step 18 deliverable).
-
-### Fix Slice (complete)
-| Finding | Fix |
+### Release Metadata Gate (partial — Slice 17)
+| Item | What was done |
 |:---|:---|
-| A1 | `ClientConfig::setoAuth2AuthCode()` renamed to `setOAuth2AuthCode()`. Caller in `BoxClientFactory` updated. |
-| B1 | `BoxClientFactory::createClient()` now loads `accessToken`/`refreshToken` from config provider into client token. |
-| B2 + N1 | Both branches of `FolderService::updateFolder()` fixed. `$ifMatch` branch: `json_encode($params)` passed to `put()`. Fallback branch: replaced broken `sendUpdateToBox('PUT', ...)` with direct `$this->getConnection()->put()` + `handleBoxResponse()`. |
-| Q1 | `BoxLoggerTrait::error()` upgraded to richer implementation. `Service::error()` removed. One unified implementation covers `Client` and all `Service` subclasses. |
+| `composer.json` version | Added `"version": "1.0.0"` |
+| `composer.json` description | Updated to reference "Box API v2024.0"; added JWT/S2S and webhook verification; removed "pluggable HTTP transports" (removed in Step 13.2) |
+| `composer.json` keywords | Added `"jwt"` and `"webhook"` |
+| Security scan | Grepped `src/`, `tests/`, `docs/`, `bin/` for PEM headers, real tokens, DSNs, credentials — clean |
+| `name` / URLs | Left untouched — package/repo rename is the final step of v1 release process |
 
-## Completed This Session (continued)
-
-| Slice | What was done |
+### Documentation Drift Fixes
+| File | Fix |
 |:---|:---|
-| ServiceInterface cleanup | Removed `putIntoBox`, `queryBox`, `getFromBox`, `sendUpdateToBox`, `TOKEN_URI`, `REVOKE_URI` from `ServiceInterface` and `Service`; migrated all 10 call sites; removed `connect()` (A2); narrowed `postFile()` return type (A3); fixed `createFolder`/`copyFolder` JSON encoding (L3) |
-| handleResponseContent inline | Inlined into `handleBoxResponse`, removed deprecated method + `validateReturnType` + `$allowedReturnTypes` |
-| D1-A | Removed unused `$sharedLink` and `$access` properties from `FileService` |
-| D1-C | Box account subdomain support: `BOX_SUBDOMAIN` env var, `ConfigProviderInterface::getBoxSubdomain()`, `EnvConfigProvider`, `--subdomain` CLI option on `AbstractBoxCommand`, `FileService::buildWebUrl()`, `FolderService::buildWebUrl()`, URL output in `FileUploadCommand` |
+| `CLAUDE.md` | Test baseline corrected: 330→334 tests, 898→902 assertions |
+| `docs/planning/code_smells_v1.md` | Summary table: B3, N2, L1–L5, Q1b, A2, A3, D1-A all marked ✓ Done |
+| `docs/planning/v1-release-roadmap.md` | Step 15 status → ✓; inline "In Progress" → "Complete ✓"; 15.4.1/15.4.2 → ✓ |
 
-**Test baseline**: 334 tests, 902 assertions
+### Deferred / Decisions Made
+- **v0.11 transition layer**: No work before v1. Leave v0.11 as-is; open a ticket post-v1 if needed.
+- **Package/repo rename**: Final step of v1 release process — composer.json `name`, `homepage`, `support` URLs held until then.
+- **`docs/README.md` foundation status block**: Stale (still says Step 12 is next). Formally a Slice 17 documentation gate item — not touched now.
 
-## Upcoming Slices
+---
 
-| Slice | Title | Notes |
-|:---|:---|:---|
-| Q1b | BoxLoggerTrait cleanup | Remove `parseResponse()`, `debug()`; rename to `BoxApiErrorTrait`; update 3 users |
-| 17 | v1 Release Readiness | Code gate, docs gate (migration guide + user guides + changelog), release metadata |
-| 18 | Documentation Cleanup and Organization | Archive step trackers, retire superseded files, fix status drift; includes D1-B full field audit |
+## Remaining v1 Work
 
-## ServiceInterface Cleanup — Detailed Plan (next session)
+### Slice 17 — v1 Release Readiness
 
-### What to remove from ServiceInterface
-- `TOKEN_URI`, `REVOKE_URI` constants
-- `queryBox()`, `putIntoBox()`, `getFromBox()`, `sendUpdateToBox()`, `handleBoxResponse()`
-- Audit and likely remove: `getToken()`/`setToken()`, `getConnection()`/`setConnection()`
+#### Code Gate
+- Confirm `Service` base class legacy helper decision is recorded (deferred to v2 or cleaned) — verify, don't implement
+- `composer review` must pass 100%
 
-### Migrate helpers before removing legacy methods
-`getResourceFromBox()` and `sendUpdateAndHydrate()` in `Service` currently call the legacy methods internally. Migrate them first:
-- `getResourceFromBox($uri, $class)`: replace `getFromBox($uri, 'decoded')` with `$this->getConnection()->query($uri)` + `handleBoxResponse($response, 'decoded')`
-- `sendUpdateAndHydrate($uri, $params, $class)`: replace `sendUpdateToBox($uri, $params, 'decoded')` with `$this->getConnection()->put($uri, json_encode($params))` + `handleBoxResponse($response, 'decoded')`
+#### Documentation Gate
+- `docs/README.md` — mark Steps 10–16 complete, Step 17 in progress; fix stale foundation status block
+- `docs/migration/upgrading-0.11-to-1.0.md` — add sections: token storage (PDO/filesystem/in-memory), JWT/S2S configuration, webhook verification
+- `docs/user/programmatic-usage.md` — add JWT/S2S programmatic usage examples (enterprise token, app user token)
+- `docs/user/cli-test-harness.md` — document `--storage-type filesystem`, `--storage-path`, `BOX_STORAGE_FILE_PATH`, JWT CLI commands
+- `CHANGELOG.md` — write v1.0.0 entry covering Steps 7–17
 
-### Migrate concrete service call sites
-All remaining `queryBox()` / `getFromBox()` calls in concrete services:
+#### Release Metadata Gate (remaining)
+- Package/repo rename: update `name`, `homepage`, `support` URLs in `composer.json` — final step, human-driven
+- Re-run security scan after all docs/changelog are written
 
-| Service | Legacy call | Replacement |
-|:---|:---|:---|
-| `FolderService::getFolderItems()` | `queryBox($uri, 'flat')` | `$this->getConnection()->query($uri)` + `handleBoxResponse($response, 'flat')` |
-| `FolderService::getFolderCollaborations()` | `queryBox($uri, 'flat')` | same pattern |
-| `CollaborationService::getFolderCollaborations()` | `queryBox($uri, 'flat')` | same pattern |
-| `GroupService::listGroups()` | `queryBox($uri, 'flat')` | same pattern |
-| `UserService::listUsers()` | `queryBox($uri, 'flat')` | same pattern |
-| `SearchService::search()` | `queryBox($uri, 'flat')` | same pattern |
-| `UserEventService::getEvents()` | `getFromBox($uri, 'decoded')` | `$this->getConnection()->query($uri)` + `handleBoxResponse($response, 'decoded')` |
+### Slice 18 — Documentation Cleanup and Organization (code-free)
+- Archive ~10 completed step tracker docs to `docs/archive/steps/`
+- Delete/archive ~7 superseded planning files
+- Archive `docs/prompts/ai-workflow/` directory
+- Fix status drift in `docs/planning/release-task-lists.md`, `docs/planning/v1/overview.md`, `docs/ai/current-task-summary.md`
+- Update `docs/README.md` and `docs/planning/README.md` nav
 
-### Also in this slice
-- **A2**: Remove `Connection::connect()` from both `ConnectionInterface` and `Connection` (throws "not implemented").
-- **A3**: Narrow `ConnectionInterface::postFile()` return type from `array|BoxResponseInterface` to `BoxResponseInterface`.
-- **L3**: Update `FolderService::createFolder()` and `copyFolder()` to pass `json_encode($params)` directly to `post()` and drop the `$nameValuePair=true` arg.
-- **`AuthenticatedServiceInterface`**: Update after ServiceInterface is cleaned (it extends ServiceInterface).
+---
 
 ## Key Architecture Decisions (Carry Forward)
 - Auth providers: `OAuth2Provider` and `JwtProvider` both implement `AuthProviderInterface`.
@@ -86,10 +71,10 @@ All remaining `queryBox()` / `getFromBox()` calls in concrete services:
 - Command wiring: manual in `bin/box-sdk`, no DI container.
 - No plan mode. Claude Code CLI executes code directly; human reviews and commits.
 - `ClientConfig` is a pure OAuth2 DTO — does not implement `ConfigProviderInterface`.
-- `BoxClientFactory::createClient()` now loads access/refresh tokens from config provider.
-- `ClientConfig::setOAuth2AuthCode()` — lowercase-o typo fixed this session.
-- `BoxLoggerTrait::error()` is the single unified error-throwing implementation (Service::error() removed).
+- `BoxClientFactory::createClient()` loads access/refresh tokens from config provider.
+- `BoxApiErrorTrait` (renamed from `BoxLoggerTrait`) is the single unified error-throwing implementation.
 - Webhook signing: `Box\Webhook\WebhookVerifier`; formula is `base64(HMAC-SHA256(body + timestamp, key))`; management CRUD deferred.
+- Package/repo rename is the final step of the v1 release process — held until last minute.
 - Audit doc: `docs/planning/code_smells_v1.md` — full smell registry with slice assignments.
 
 ## Transition Note

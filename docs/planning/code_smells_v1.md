@@ -207,11 +207,11 @@ Just calls `getConnection()->query()` + `parseResponse()`. Blurs the line betwee
 | Finding | Severity | Slice | Status |
 |:---|:---|:---|:---|
 | B1, B2, N1, A1, Q1 | Bug / API surface | Session — BoxClientFactory + FolderService fix slice | ✓ Done |
-| B3, N2, L1–L5 (call site migration) | Blocker | Next session — ServiceInterface cleanup | Pending |
-| Q1b (BoxLoggerTrait dead methods + rename) | API surface / dead code | ServiceInterface cleanup slice or standalone v1 slice | Pending |
-| A2 (Connection::connect() removal) | API surface | ServiceInterface cleanup slice | Pending |
-| A3 (postFile return type) | API surface | ServiceInterface cleanup slice | Pending |
-| D1-A (FileService $sharedLink / $access) | Dead code / API coverage | Session A — targeted Box API docs check | Pending |
+| B3, N2, L1–L5 (call site migration) | Blocker | Next session — ServiceInterface cleanup | ✓ Done |
+| Q1b (BoxLoggerTrait dead methods + rename) | API surface / dead code | ServiceInterface cleanup slice or standalone v1 slice | ✓ Done |
+| A2 (Connection::connect() removal) | API surface | ServiceInterface cleanup slice | ✓ Done |
+| A3 (postFile return type) | API surface | ServiceInterface cleanup slice | ✓ Done |
+| D1-A (FileService $sharedLink / $access) | Dead code / API coverage | Session A — targeted Box API docs check | ✓ Done |
 | D1-B (full resource service field audit) | API coverage | Session B — Step 18 deliverable | Pending |
 | D2, D3 (Connection dead state / transport) | Dead code | Post-ServiceInterface slice | Pending |
 | D4 (Client orphaned caches) | Dead code / API decision | Step 18 | Pending |

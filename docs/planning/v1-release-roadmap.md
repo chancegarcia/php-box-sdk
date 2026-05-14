@@ -65,7 +65,7 @@ This work assumes the completion of:
 | 13.5 | [AuthProvider Extraction (OAuth2)](#step-135--authprovider-extraction-oauth2) | ✓ |
 | 13.6 | [Client Facade and Legacy Surface Review](#step-136--client-facade-and-legacy-surface-review) | ✓ |
 | 14 | [JWT/S2S Feasibility and Dependency Review](#step-14--jwts2s-feasibility-and-dependency-review) | ✓ |
-| 15 | [JWT/S2S Implementation](#step-15--jwts2s-implementation) | In Progress |
+| 15 | [JWT/S2S Implementation](#step-15--jwts2s-implementation) | ✓ |
 | 15.1 | [Dependency and Core JWT Support](#step-151--dependency-and-core-jwt-support) | ✓ |
 | 15.2 | [JwtProvider Implementation](#step-152--jwtprovider-implementation) | ✓ |
 | 15.3 | [Factory and Client Integration](#step-153--factory-and-client-integration) | ✓ |
@@ -339,7 +339,7 @@ Evaluate requirements and dependencies for implementing Box JWT/S2S authenticati
 
 #### Status
 - **Required for v1 release**
-- **In Progress** — Slices 15.1, 15.2, 15.3 complete. Slice 15.4 prompt ready.
+- **Complete** ✓
 
 #### Slice Status
 
@@ -349,8 +349,8 @@ Evaluate requirements and dependencies for implementing Box JWT/S2S authenticati
 | 15.2 | JwtProvider Implementation | ✓ |
 | 15.3 | Factory and Client Integration | ✓ |
 | 15.4 | CLI Support and Env Var Alignment | ✓ |
-| 15.4.1 | FilesystemTokenStorage CLI Support | Prompt Ready |
-| 15.4.2 | Dependency Audit and Cleanup | Not Started |
+| 15.4.1 | FilesystemTokenStorage CLI Support | ✓ |
+| 15.4.2 | Dependency Audit and Cleanup | ✓ |
 
 #### Purpose
 Implement JWT/S2S authentication based on the feasibility study.
