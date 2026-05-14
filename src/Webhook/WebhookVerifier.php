@@ -15,7 +15,7 @@ class WebhookVerifier implements WebhookVerifierInterface
         private readonly ?string $secondaryKey = null,
         private readonly int $maxAgeSeconds = self::MAX_AGE_SECONDS,
     ) {
-        if ($this->primaryKey === null && $this->secondaryKey === null) {
+        if (null === $this->primaryKey && null === $this->secondaryKey) {
             throw new \InvalidArgumentException('At least one webhook signing key (primary or secondary) must be provided.');
         }
     }
@@ -58,7 +58,7 @@ class WebhookVerifier implements WebhookVerifierInterface
         $delivered = DateTimeImmutable::createFromFormat(DateTimeInterface::RFC3339_EXTENDED, $deliveryTimestamp)
             ?: DateTimeImmutable::createFromFormat(DateTimeInterface::RFC3339, $deliveryTimestamp);
 
-        if ($delivered === false) {
+        if (false === $delivered) {
             return false;
         }
 

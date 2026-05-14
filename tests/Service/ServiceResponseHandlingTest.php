@@ -85,7 +85,6 @@ class ServiceResponseHandlingTest extends TestCase
         $response->method('isSuccessful')->willReturn(true);
         $response->method('getContent')->willReturn('invalid json');
 
-        // Existing behavior: handleResponseContent calls error() if json_decode fails
         $this->expectException(\Box\Exception\BoxException::class);
         $this->expectExceptionMessage('sdk_json_decode');
 

@@ -7,6 +7,7 @@ Welcome to the documentation for the Box PHP SDK.
 - [CLI Test Harness](user/cli-test-harness.md): Documentation for the `bin/box-sdk` CLI tool.
 
 ## [Migration Guides](migration/)
+- [Upgrading from 0.11.x to 1.0.0](migration/upgrading-0.11-to-1.0.md): Guide for the v1.0 release.
 - [Upgrading from 0.10.x to 0.11.0](migration/upgrading-0.10-to-0.11.md): Guide for the transition release.
 - [Model Namespace Migration Decisions](migration/model-namespace-migration-decisions.md): Background on namespace flattening.
 
@@ -31,8 +32,8 @@ Welcome to the documentation for the Box PHP SDK.
 - [Documentation Gap Inventory](planning/v1/documentation-gap-inventory.md): Tracking documentation needs.
 
 **Current Foundation Status:**
-- **Step 11 / Factory Modernization and Service Boundaries**: Completed.
-- **Step 12 / Token Storage Completion**: Ready for tracker/plan review (Next).
+- **Steps 10–16**: All complete.
+- **Step 17 / v1 Release Readiness**: In Progress.
 
 ## [AI and Internal Status](ai/)
 - **[Current Task Summary](ai/current-task-summary.md)**: Details of the most recently completed task.

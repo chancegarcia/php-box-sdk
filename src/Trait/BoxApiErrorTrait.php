@@ -34,7 +34,7 @@ trait BoxApiErrorTrait
      *
      * @throws BoxException
      */
-    public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null): void
+    public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null): never
     {
         $error = $data['error'] ?? 'unknown_error';
         if (null === $message || !is_string($message)) {

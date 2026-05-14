@@ -213,13 +213,94 @@ Resources in `Box\Resource` are now "pure" state objects. They do not own hydrat
     - **Passive State**: Avoid adding logic or dependencies to resource classes; they should remain simple data containers with typed properties, getters, and setters.
     - **Doctrine Collections**: Resources themselves should not manage collections. Collections are returned by services or DTOs.
 
-## Token Storage (Planned - Step 12)
+## Token Storage
 
-Upcoming changes in Step 12 will introduce a formal Token Storage mechanism.
+v1.0 introduces a formal `TokenStorageInterface` with two built-in backends and a programmatic in-memory option.
 
-- **Impact**: Expected Moderate to High.
-- **Planned Changes**:
-    - Introduction of `TokenStorageInterface`.
-    - Built-in support for Filesystem storage.
-    - Decoupling of token persistence from the `Client` facade.
-- **Migration**: Detailed notes will be provided upon completion of Step 12.
+### Storage Backends
+
+| Backend | Class | Use case |
+|:---|:---|:---|
+| Filesystem | `Box\Storage\Token\Filesystem\FilesystemTokenStorage` | Single-server / dev |
+| PDO | `Box\Storage\Token\Pdo\TokenStorage` | Multi-server / production |
+| In-memory | `Box\Storage\Token\Container\TokenStorageContainer` | Testing / ephemeral use |
+
+### Programmatic Usage
+
+```php
+use Box\Storage\Token\Filesystem\FilesystemTokenStorage;
+use Box\Storage\Token\Pdo\TokenStorage as PdoTokenStorage;
+
+// Filesystem
+$storage = new FilesystemTokenStorage('/var/data/box-tokens.json');
+
+// PDO
+$pdo = new \PDO('mysql:host=db;dbname=myapp', 'user', 'pass');
+$storage = new PdoTokenStorage($pdo);
+
+// Attach to client via BoxClientFactory
+$factory = new \Box\Service\BoxClientFactory($configProvider);
+$client  = $factory->createClient();
+$client->setTokenStorage($storage);
+```
+
+### CLI Storage Options
+
+Every CLI command accepts `--storage-type` and related flags (see [CLI Test Harness](../user/cli-test-harness.md#token-storage-options) for details):
+
+```bash
+# Filesystem (default)
+bin/box-sdk box:auth:exchange-code <CODE> --storage-type=filesystem --storage-path=var/tokens.json
+
+# PDO
+bin/box-sdk box:auth:exchange-code <CODE> --storage-type=pdo --pdo-dsn="mysql:host=db;dbname=app" \
+  --pdo-user=myuser --pdo-pass=mypass
+```
+
+## JWT / Server-to-Server Authentication
+
+v1.0 adds first-class JWT/S2S support via `Box\Auth\Jwt\JwtProvider` and `Box\Auth\Jwt\JwtAuthConfig`.
+
+### Configuration (Environment Variables)
+
+| Variable | Description |
+|:---|:---|
+| `BOX_AUTH_MODE` | Set to `jwt` to enable JWT mode. Defaults to `oauth2`. |
+| `BOX_JWT_CLIENT_ID` | Box app Client ID |
+| `BOX_JWT_CLIENT_SECRET` | Box app Client Secret |
+| `BOX_JWT_ENTERPRISE_ID` | Enterprise ID |
+| `BOX_JWT_PUBLIC_KEY_ID` | Public key ID registered in Box app settings |
+| `BOX_JWT_PRIVATE_KEY_PATH` | Path to the PEM private key file |
+| `BOX_JWT_PRIVATE_KEY_PASSPHRASE` | (Optional) Passphrase for encrypted private key |
+
+### Programmatic Usage
+
+See [Programmatic Usage — JWT/S2S](../user/programmatic-usage.md#jwt--server-to-server-s2s).
+
+## Webhook Signature Verification
+
+v1.0 ships `Box\Webhook\WebhookVerifier` for validating incoming Box webhook payloads.
+
+### Migration
+
+If you previously rolled your own HMAC verification, replace it with the built-in verifier:
+
+**Before (custom):**
+```php
+$expected = base64_encode(hash_hmac('sha256', $body . $timestamp, $key, true));
+if (!hash_equals($expected, $signature)) {
+    // reject
+}
+```
+
+**After (v1.0):**
+```php
+use Box\Webhook\WebhookVerifier;
+
+$verifier = new WebhookVerifier(primaryKey: $primaryKey, secondaryKey: $secondaryKey);
+if (!$verifier->verify($body, $timestamp, $primarySignature, $secondarySignature)) {
+    // reject
+}
+```
+
+The verifier enforces a 10-minute replay window and supports primary/secondary key rotation. Webhook CRUD management (create/update/delete webhook subscriptions) is deferred to a post-v1 release.

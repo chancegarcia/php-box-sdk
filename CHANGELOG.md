@@ -1,20 +1,81 @@
 # Changelog
 
-## Unreleased
+## v1.0.0
 
 ### Summary
-- Hardened the in-memory token storage implementation by verifying full lifecycle behavior, context isolation, and edge-case conformance.
-- Expanded the token storage contract tests to ensure predictable behavior for empty stores, token updates, and safe removal of missing contexts.
-- Confirmed that equivalent context objects correctly resolve to the same stored token, supporting robust multi-user and multi-enterprise SDK usage.
+- Introduced JWT/Server-to-Server (S2S) authentication via `JwtProvider` and `JwtAuthConfig`, supporting enterprise and app-user token exchange without OAuth2 redirects.
+- Added formal token storage with PDO (`TokenStorage`), Filesystem (`FilesystemTokenStorage`), and in-memory (`TokenStorageContainer`) backends behind a unified `TokenStorageInterface`.
+- Added `WebhookVerifier` for HMAC-SHA256 signature verification of incoming Box webhook payloads, with configurable replay-window protection and primary/secondary key rotation support.
+- Completed resource namespace rationalization: all resource classes now live under `Box\Resource`; one-class mirror interfaces removed.
+- Completed legacy architecture removal: `Box\Model` base classes, traits, and v0.11 shims have been fully removed.
+- Hardened the service layer with `BoxClientFactory`, `ClientServiceRegistry`, and the `AuthenticatedServiceInterface` boundary.
+- Normalized HTTP transport to Guzzle only; removed `--transport` CLI option.
+- Replaced `BoxLoggerTrait` with `BoxApiErrorTrait` (unified error-throw-and-log implementation).
+- Modernized all auth providers: `OAuth2Provider` and `JwtProvider` both implement `AuthProviderInterface`.
+- Updated CLI storage options: `--storage-type filesystem` (default) or `--storage-type pdo`; added `box:jwt:token` command for JWT flows.
 
 ### Developer Details
-- **Token Storage Hardening**:
-    - Verified that `TokenStorageContainer` returns `null` when retrieving from an empty store or for a missing context.
-    - Enforced one-active-token-per-context behavior: storing or updating a token for an existing context replaces the previous value.
-    - Verified that updating a missing context in `TokenStorageContainer` is treated as a store operation, ensuring no tokens are lost.
-    - Confirmed that `removeToken` is safe and idempotent when called for a missing context.
-    - Verified full isolation between distinct contexts (varying by user, enterprise, or client identifiers).
-    - Added comprehensive unit tests in `TokenStorageContractTest` covering these lifecycle and edge cases.
+
+- **JWT / S2S Authentication**:
+    - Added `Box\Auth\Jwt\JwtProvider` implementing `AuthProviderInterface` with `exchangeForEnterpriseToken()` and `exchangeForAppUserToken(string $userId)`.
+    - Added `Box\Auth\Jwt\JwtAuthConfig` DTO for JWT credentials; `$privateKey` is always PEM content, never a path.
+    - Added `Box\Auth\Jwt\JwtAssertionGenerator` for building signed JWT assertions.
+    - `EnvConfigProvider` reads `BOX_JWT_*` variables; `BOX_AUTH_MODE=jwt` switches `BoxClientFactory::createClientForCurrentMode()` to the JWT path.
+    - `BoxClientFactory::createJwtClient(JwtAuthConfig $config)` builds a fully wired JWT client.
+
+- **Token Storage**:
+    - Added `Box\Storage\Token\TokenStorageInterface` as the common contract.
+    - `FilesystemTokenStorage`: persists tokens to a JSON file. Path from `--storage-path` or `BOX_STORAGE_FILE_PATH`.
+    - `Pdo\TokenStorage`: persists tokens to a database. DSN/user/pass from `--pdo-dsn`/`--pdo-user`/`--pdo-pass` or `BOX_STORAGE_PDO_*` env vars.
+    - `TokenStorageContainer`: in-memory storage; one active token per context; supports lifecycle edge cases (empty store, safe idempotent remove, context isolation).
+    - CLI default storage type changed from `memory` to `filesystem`.
+
+- **Webhook Verification**:
+    - Added `Box\Webhook\WebhookVerifier` implementing `WebhookVerifierInterface`.
+    - Signing formula: `base64(HMAC-SHA256(body + delivery_timestamp, key))`.
+    - Enforces a 10-minute replay window. Supports both primary and secondary signing keys for rotation.
+    - Webhook CRUD management deferred to post-v1.
+
+- **Service Layer Hardening**:
+    - Added `Box\Service\BoxClientFactory` as the canonical client construction entry point.
+    - Added `Box\Service\ClientServiceRegistry` and `ClientServiceRegistryInterface` for typed service access.
+    - Added `AuthenticatedServiceInterface`; `Client` throws `RuntimeException` if an authenticated service is accessed without a token.
+    - `Service::handleBoxResponse()` replaces legacy `queryBox`/`handleResponseContent`; all services use this unified response path.
+
+- **Legacy Removal**:
+    - Removed `Box\Model` base architecture (`BaseModel`, `Model`, `BoxModel`, traits, interfaces).
+    - Removed one-class mirror factory interfaces (`FileFactoryInterface`, `FolderFactoryInterface`, `UserFactoryInterface`, `GroupFactoryInterface`, `CollaborationFactoryInterface`).
+    - Removed one-class mirror resource interfaces (`FileInterface`, `FolderInterface`, etc.).
+    - Removed `queryBox`, `putIntoBox`, `getFromBox`, `sendUpdateToBox`, `handleResponseContent`, `validateReturnType`, `allowedReturnTypes` from `ServiceInterface`/`Service`.
+    - Removed `authorizedConnection` (collapsed into `connection`).
+    - Removed `BoxLoggerTrait`; replaced by `BoxApiErrorTrait`.
+    - Removed `--transport` CLI option; Guzzle is the only transport.
+
+- **Resource and Namespace**:
+    - All resources now in `Box\Resource` (`File`, `Folder`, `Group`, `Collaboration`, `Event`, `AdminEvent`, `UserEvent`, `SharedLink`).
+    - Endpoint constants moved from resource interfaces to their respective service classes (`FileService::ENDPOINT`, etc.).
+    - Resources are passive state objects; hydration is handled exclusively by `Hydrator` and factories.
+
+- **Event Service**:
+    - `UserEventService::getEvents()` now returns `Box\Dto\Event\EventResponse` (Doctrine Collection of `Event` objects, `nextStreamPosition` as `string`).
+    - Added `EventResponseMapper` for mapping raw API arrays to `EventResponse`.
+
+- **Code Quality**:
+    - `BoxApiErrorTrait::error()` return type corrected to `never` (always throws).
+    - Yoda conditionals applied consistently across auth and webhook classes.
+    - PHPStan level-0 clean; 334 tests, 902 assertions.
+
+### Breaking Changes
+- **Namespace**: All resources moved to `Box\Resource`. Update all imports.
+- **Interfaces removed**: Mirror resource interfaces, mirror factory interfaces, and legacy model interfaces are gone. Use concrete classes.
+- **Legacy methods removed**: `queryBox`, `putIntoBox`, `getFromBox`, `sendUpdateToBox`, `handleResponseContent`, `mapBoxToClass`, `toBoxArray`, `buildQuery`, `getLastResult()`, `getDefaultReturnType()`, `setDefaultReturnType()`.
+- **Legacy classes removed**: `Box\Model\BaseModel`, `Box\Model\Model`, `Box\Model\BoxModel`, and all associated traits.
+- **CLI**: `--transport` option removed. `--storage-type memory` removed; use `filesystem` or `pdo`.
+- **`UserEventService::getEvents()`**: Now returns `EventResponse` DTO instead of array.
+- **`BoxApiErrorTrait::error()`**: Return type is now `never`. Any code checking the return value will break (there is no return value — it always throws).
+
+### Migration Notes
+See [Upgrading from 0.11 to 1.0](docs/migration/upgrading-0.11-to-1.0.md) for full migration details.
 
 ## v0.11.5
 

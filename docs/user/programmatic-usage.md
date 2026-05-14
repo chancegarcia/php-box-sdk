@@ -60,7 +60,7 @@ The SDK provides a `Box\Connection\Token\Token` model. Your application is respo
 3. **Reloading** the token into the `Client` for subsequent requests.
 4. **Refreshing** the token before or upon expiration using `$client->refreshToken()`.
 
-> **Note**: Step 12 will introduce a formal `TokenStorageInterface` to simplify this process.
+> **Note**: v1.0 ships a formal `TokenStorageInterface` with Filesystem and PDO backends. See [Token Storage](../migration/upgrading-0.11-to-1.0.md#token-storage) in the migration guide.
 
 ```php
 // Token Refresh Example
@@ -72,6 +72,79 @@ if ($token->isExpired()) {
 ```
 
 For more details on these changes, see the [v1 Upgrade Guide](../migration/upgrading-0.11-to-1.0.md).
+
+## 4a. JWT / Server-to-Server (S2S)
+
+JWT/S2S authentication is for integrations that act as the application itself (enterprise token) or as a specific managed user (app user token). No browser OAuth2 redirect is needed.
+
+### Required Configuration
+
+Set `BOX_AUTH_MODE=jwt` and the following environment variables in `.env` (or your secrets manager):
+
+```
+BOX_AUTH_MODE=jwt
+BOX_JWT_CLIENT_ID=your_client_id
+BOX_JWT_CLIENT_SECRET=your_client_secret
+BOX_JWT_ENTERPRISE_ID=your_enterprise_id
+BOX_JWT_PUBLIC_KEY_ID=your_key_id
+BOX_JWT_PRIVATE_KEY_PATH=/path/to/private_key.pem
+BOX_JWT_PRIVATE_KEY_PASSPHRASE=optional_passphrase
+```
+
+`BOX_JWT_PRIVATE_KEY_PATH` must point to the PEM private key file. The SDK reads the file contents — never the path — into `JwtAuthConfig::$privateKey`.
+
+### Enterprise Token
+
+Used for administrative operations (managing users, groups, events, etc.):
+
+```php
+use Box\Auth\Jwt\JwtAuthConfig;
+use Box\Service\BoxClientFactory;
+use Box\Service\EnvConfigProvider;
+
+$configProvider = new EnvConfigProvider();
+$config = new JwtAuthConfig(
+    clientId:             $configProvider->getJwtClientId(),
+    clientSecret:         $configProvider->getJwtClientSecret(),
+    enterpriseId:         $configProvider->getJwtEnterpriseId(),
+    publicKeyId:          $configProvider->getJwtPublicKeyId(),
+    privateKey:           $configProvider->getJwtPrivateKey(),
+    privateKeyPassphrase: $configProvider->getJwtPrivateKeyPassphrase(),
+);
+
+$factory = new BoxClientFactory($configProvider);
+$client  = $factory->createJwtClient($config);
+
+// Exchange for an enterprise access token
+$provider = $client->getAuthProvider();
+$token    = $provider->exchangeForEnterpriseToken();
+$client->setToken($token);
+
+$currentUser = $client->getCurrentUser();
+```
+
+### App User Token
+
+Used to act as a specific managed (App) user:
+
+```php
+$token = $provider->exchangeForAppUserToken('123456789'); // Box App User ID
+$client->setToken($token);
+
+// The client now acts as that app user
+$folder = $client->getFolder('0');
+```
+
+Tokens obtained via JWT are short-lived (typically 1 hour). Re-exchange rather than refresh — JWT tokens do not use refresh tokens.
+
+### Auto-mode via EnvConfigProvider
+
+If `BOX_AUTH_MODE=jwt` is set, `BoxClientFactory::createClientForCurrentMode()` automatically builds a JWT client:
+
+```php
+$factory = new BoxClientFactory($configProvider);
+$client  = $factory->createClientForCurrentMode(); // JWT client when BOX_AUTH_MODE=jwt
+```
 
 ## 5. Response and Error Model
 

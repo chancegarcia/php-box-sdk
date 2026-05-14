@@ -72,12 +72,58 @@ Refreshes an expired access token using a stored refresh token.
 bin/box-sdk box:auth:refresh-token --refresh-token=<REFRESH_TOKEN> --secrets-file=token.json
 ```
 
+### JWT / Server-to-Server Workflow
+
+#### Exchange JWT for Enterprise Token
+Exchanges a JWT assertion for an enterprise-level Box access token.
+```bash
+bin/box-sdk box:jwt:token
+```
+
+#### Exchange JWT for App User Token
+Exchanges a JWT assertion for a token scoped to a specific managed user.
+```bash
+bin/box-sdk box:jwt:token --user-id=<APP_USER_ID>
+```
+
+JWT commands read credentials from the `BOX_JWT_*` environment variables. Set `BOX_AUTH_MODE=jwt` in `.env` to switch the factory to JWT mode automatically.
+
 ### File Operations
 
 #### Upload a File
 Uploads a local file to a specific Box folder.
 ```bash
 bin/box-sdk box:file:upload /path/to/local/file.txt --folder-id=0
+```
+
+## 3a. Token Storage Options {#token-storage-options}
+
+All commands that persist tokens accept a `--storage-type` option:
+
+| Option | Values | Default |
+|:---|:---|:---|
+| `--storage-type` | `filesystem`, `pdo` | `filesystem` |
+| `--storage-path` | File path for token JSON | `var/tmp/box-sdk/tokens.json` (relative to project root) |
+| `--pdo-dsn` | PDO connection string | — |
+| `--pdo-user` | PDO username | — |
+| `--pdo-pass` | PDO password | — |
+
+The storage path can also be set via the `BOX_STORAGE_FILE_PATH` environment variable. When using PDO, the DSN can be set via `BOX_STORAGE_PDO_DSN`, the username via `BOX_STORAGE_PDO_USER`, and the password via `BOX_STORAGE_PDO_PASS`.
+
+**Filesystem (default):**
+```bash
+bin/box-sdk box:auth:exchange-code <CODE> \
+  --storage-type=filesystem \
+  --storage-path=var/tokens.json
+```
+
+**PDO:**
+```bash
+bin/box-sdk box:auth:exchange-code <CODE> \
+  --storage-type=pdo \
+  --pdo-dsn="mysql:host=localhost;dbname=myapp" \
+  --pdo-user=myuser \
+  --pdo-pass=mypass
 ```
 
 ## 4. Secret Handling and Output
@@ -97,16 +143,10 @@ The CLI uses the SDK's internal logging services, configured via Monolog.
 - `var/log/box-sdk-error.log`: Errors and exceptions.
 
 ### Runtime Overrides
-Every command supports the following flags for logging and transport:
+Every command supports the following flags for logging:
 - `--log-dir <dir>`: Change the target log directory.
 - `--log-file <name>`: Consolidate all levels into a single file.
 - `--log-config <path>`: Provide a custom PHP-based Monolog configuration.
-- `--transport <type>`: Choose the HTTP transport (`curl` or `guzzle`). `curl` is the default.
-
-Example using a specific transport:
-```bash
-bin/box-sdk box:file:upload /path/to/local/file.txt --transport=guzzle
-```
 
 ## 6. Customization
 

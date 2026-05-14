@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(composer review)",
+      "Bash(composer test)",
+      "Bash(composer analyse)",
+      "Bash(composer cs:check)",
+      "Bash(composer lint)"
+    ]
+  }
+}
