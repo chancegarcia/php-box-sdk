@@ -5,7 +5,8 @@
       "Bash(composer cs:fix)",
       "WebFetch(domain:developer.box.com)",
       "Bash(composer lint *)",
-      "Bash(composer test *)"
+      "Bash(composer test *)",
+      "Bash(grep -E \"ERROR|FAILURE|OK \\\\\\(|Tests:|--$\")"
     ]
   }
 }

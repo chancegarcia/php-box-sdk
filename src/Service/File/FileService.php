@@ -47,9 +47,6 @@ class FileService extends Service implements FileServiceInterface
     public const ENDPOINT = "https://api.box.com/2.0/files";
     public const UPLOAD_ENDPOINT = "https://upload.box.com/api/2.0/files/content";
 
-    protected $sharedLink;
-    protected $access;
-
     public function getFile(string $id): File
     {
         $uri = self::ENDPOINT . '/' . $id;

@@ -48,7 +48,6 @@ use Box\Trait\BoxLoggerTrait;
 use Box\Mapper\Hydrator;
 use OutOfBoundsException;
 use RuntimeException;
-use InvalidArgumentException;
 use BadMethodCallException;
 use stdClass;
 
@@ -66,16 +65,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
      * @var TokenInterface|null
      */
     protected $token;
-
-    /**
-     * @var array
-     */
-    private $allowedReturnTypes = [
-        'decoded',
-        'original',
-        'flat',
-        'array',
-    ];
 
     /**
      * {@inheritdoc}
@@ -124,29 +113,8 @@ class Service implements ServiceInterface, LoggerAwareInterface
     }
 
     /**
-     * @param string $type
-     * @return void
-     */
-    protected function validateReturnType($type = null)
-    {
-        if (!is_string($type)) {
-            throw new InvalidArgumentException('string type expected');
-        }
-
-        if ('array' === $type) {
-            return;
-        }
-
-        if (!in_array($type, $this->allowedReturnTypes)) {
-            $validTypes = implode(", ", $this->allowedReturnTypes);
-            throw new OutOfBoundsException($type . " is not a valid result type. valid types: " . $validTypes);
-        }
-    }
-
-
-    /**
      * @param ?BoxResponseInterface $response
-     * @param string $returnType
+     * @param string $returnType 'decoded', 'flat', 'array', or 'original'
      * @return mixed
      * @throws BoxResponseException
      */
@@ -156,14 +124,26 @@ class Service implements ServiceInterface, LoggerAwareInterface
             throw new BadMethodCallException("expecting instance of " . BoxResponseInterface::class . ". received: " . gettype($response));
         }
 
-        // here is where we decide to throw exceptions based on response
         if (!$response->isSuccessful()) {
             throw $this->processResponseError($response);
         }
 
-        $data = $this->handleResponseContent($returnType, $response);
+        $flat = $response->json(true);
+        $json = $response->getContent();
 
-        return $data;
+        if (null === $flat && '' !== (string)$json) {
+            $this->error([
+                'error' => 'sdk_json_decode',
+                'error_description' => 'unable to decode or recursion level too deep',
+            ]);
+        }
+
+        return match ($returnType) {
+            'decoded' => $response->json(false),
+            'flat', 'array' => $flat,
+            'original' => $json,
+            default => throw new OutOfBoundsException($returnType . ' is not a valid result type.'),
+        };
     }
 
     /**
@@ -194,64 +174,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
     {
         $response = $this->getConnection()->delete($uri);
         $this->handleBoxResponse($response, 'flat');
-    }
-
-    /**
-     * @param string $returnType
-     * @param BoxResponseInterface|string $response
-     * @return mixed
-     * @throws BoxException
-     * @deprecated v0.11.0 use handleBoxResponse or process modern responses directly
-     */
-    protected function handleResponseContent($returnType, $response): mixed
-    {
-        $this->validateReturnType($returnType);
-
-        if ($response instanceof BoxResponseInterface) {
-            $json = $response->getContent();
-            $decoded = $response->json(false);
-            $flat = $response->json(true);
-        } else {
-            $json = $response;
-            $decoded = json_decode((string)$json);
-            $flat = json_decode((string)$json, true);
-        }
-
-        $data = match ($returnType) {
-            'decoded' => $decoded,
-            'flat', 'array' => $flat,
-            'original' => $json,
-            default => throw new OutOfBoundsException($returnType . " is not a valid result type."),
-        };
-
-        if (null === $flat && '' !== (string)$json) {
-            $this->error([
-                'error' => "sdk_json_decode",
-                'error_description' => "unable to decode or recursion level too deep",
-            ]);
-        }
-
-        if (is_array($flat)) {
-            if (array_key_exists('error', $flat)) {
-                $this->error($flat);
-            }
-
-            if (array_key_exists('type', $flat) && 'error' === $flat['type']) {
-                $errorData = [
-                    'error' => "sdk_unknown",
-                    'error_description' => "sdk_unknown",
-                    'result_data' => $json,
-                ];
-
-                if (array_key_exists('code', $flat)) {
-                    $errorData['code'] = $flat['code'];
-                }
-
-                $this->error($errorData);
-            }
-        }
-
-        return $data;
     }
 
     /**
