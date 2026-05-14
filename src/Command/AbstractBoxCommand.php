@@ -104,8 +104,7 @@ abstract class AbstractBoxCommand extends Command
 
     private function buildFilesystemStorage(InputInterface $input): FilesystemTokenStorage
     {
-        $home = rtrim((string) (getenv('HOME') ?: sys_get_temp_dir()), '/');
-        $defaultPath = $home . '/.box-sdk/tokens.json';
+        $defaultPath = rtrim((string) getcwd(), '/') . '/var/tmp/box-sdk/tokens.json';
 
         $path = $input->getOption('storage-path') ?? $this->configProvider->getStorageFilePath() ?? $defaultPath;
 
