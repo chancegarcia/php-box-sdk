@@ -9,6 +9,7 @@ use Box\Client;
 use Box\ClientConfig;
 use Box\Contract\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
+use Box\Factory\TokenFactory;
 use Psr\Log\LoggerInterface;
 
 class BoxClientFactory implements BoxClientFactoryInterface
@@ -31,10 +32,22 @@ class BoxClientFactory implements BoxClientFactoryInterface
         $config->setOAuth2ClientId($this->configProvider->getOAuth2ClientId());
         $config->setOAuth2ClientSecret($this->configProvider->getOAuth2ClientSecret());
         $config->setOAuth2RedirectUri($this->configProvider->getOAuth2RedirectUri());
-        $config->setoAuth2AuthCode($this->configProvider->getOAuth2AuthCode());
+        $config->setOAuth2AuthCode($this->configProvider->getOAuth2AuthCode());
         $config->setOAuth2State($this->configProvider->getOAuth2State());
 
         $client = new Client($config);
+
+        $accessToken = $this->configProvider->getOAuth2AccessToken();
+        $refreshToken = $this->configProvider->getOAuth2RefreshToken();
+        if (null !== $accessToken) {
+            $token = (new TokenFactory())->createToken();
+            $token->setAccessToken($accessToken);
+            if (null !== $refreshToken) {
+                $token->setRefreshToken($refreshToken);
+            }
+            $client->setToken($token);
+        }
+
         if ($this->logger) {
             $client->setLogger($this->logger);
         }

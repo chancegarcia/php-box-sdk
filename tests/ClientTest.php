@@ -283,8 +283,7 @@ class ClientTest extends TestCase
             ->method('put')
             ->with(
                 FolderService::ENDPOINT . '/123',
-                $this->callback(fn($params) => $params['name'] === 'Updated Name'),
-                true
+                $this->callback(fn($params) => is_string($params) && str_contains($params, 'Updated Name'))
             )
             ->willReturn($response);
 

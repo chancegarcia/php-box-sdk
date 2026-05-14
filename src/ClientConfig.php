@@ -70,7 +70,7 @@ class ClientConfig
         return $this->oAuth2AuthCode;
     }
 
-    public function setoAuth2AuthCode(?string $oAuth2AuthCode): void
+    public function setOAuth2AuthCode(?string $oAuth2AuthCode): void
     {
         $this->oAuth2AuthCode = $oAuth2AuthCode;
     }

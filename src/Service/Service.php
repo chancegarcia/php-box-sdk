@@ -126,56 +126,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @throws BoxException
-     */
-    public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null): void
-    {
-        $error = $data['error'] ?? 'unknown_error';
-        if (null === $message || !is_string($message)) {
-            $message = $error;
-        }
-        $errorDescription = $data['error_description'] ?? $message;
-
-        $exception = new BoxException($message);
-        $exception->setError($error);
-        $exception->setErrorDescription($errorDescription);
-
-        if (array_key_exists('code', $data)) {
-            $code = $data['code'];
-            $exception->setBoxCode($code);
-        }
-
-        foreach ($data as $k => $v) {
-            if ($k !== 'error' && $k !== 'error_description') {
-                $exception->addContext($v, $k);
-            }
-        }
-
-        if ($this->getLogger() instanceof LoggerInterface) {
-            $context = [
-                __METHOD__ . ":" . __LINE__,
-                $data,
-                $error,
-                $errorDescription,
-                $exception->getTraceAsString(),
-            ];
-
-            if ($boxResponse instanceof BoxResponseInterface) {
-                $context['http_status'] = $boxResponse->getStatusCode();
-                $context['response_body'] = $boxResponse->getContent();
-            }
-
-            $redactedContext = $this->getRedactor()->redactArray($context);
-
-            $this->getLogger()->error($message, $redactedContext);
-        }
-
-        throw $exception;
-    }
-
-    /**
-     * {@inheritdoc}
      */
     final public function putIntoBox($uri = null, $params = [], $returnType = 'decoded')
     {

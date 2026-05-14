@@ -129,11 +129,12 @@ class FolderService extends Service implements FolderServiceInterface
         if (is_string($ifMatch) && !empty($ifMatch)) {
             $connection = $this->getConnection();
             $connection->addHeader('If-Match', $ifMatch);
-            $response = $connection->put($uri, $params, true);
+            $response = $connection->put($uri, json_encode($params));
             return $this->handleBoxResponse($response, 'flat');
         }
 
-        return $this->sendUpdateToBox($uri, $params, 'PUT', null, 'flat');
+        $response = $this->getConnection()->put($uri, json_encode($params));
+        return $this->handleBoxResponse($response, 'flat');
     }
 
     /**

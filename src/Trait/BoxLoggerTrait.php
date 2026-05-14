@@ -27,38 +27,50 @@ trait BoxLoggerTrait
     }
 
     /**
-     * used to throw exceptions that need to contain error information returned from Box
+     * Build and throw a BoxException from a Box API error data array.
      *
-     * @param array $data containing error and error_description keys
-     * @param string|null $message
-     * @param BoxResponseInterface|null $boxResponse
+     * @param array $data containing at minimum an 'error' key
+     * @param string|null $message override for the exception message
+     * @param BoxResponseInterface|null $boxResponse attach HTTP context to the exception
      *
      * @throws BoxException
      */
     public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null): void
     {
         $error = $data['error'] ?? 'unknown_error';
-        $errorDescription = $data['error_description'] ?? $message ?? 'An unknown error occurred';
-
-        $context = [
-            'error' => $error,
-            'error_description' => $errorDescription,
-        ];
-
-        if ($boxResponse instanceof BoxResponseInterface) {
-            $context['http_status'] = $boxResponse->getStatusCode();
-            $context['response_body'] = $boxResponse->getContent();
+        if (null === $message || !is_string($message)) {
+            $message = $error;
         }
+        $errorDescription = $data['error_description'] ?? $message;
 
-        $exception = new BoxException($errorDescription, BoxException::BOX_API_ERROR);
+        $exception = new BoxException($message);
+        $exception->setError($error);
+        $exception->setErrorDescription($errorDescription);
         $exception->setStatus($error);
 
+        if (array_key_exists('code', $data)) {
+            $exception->setBoxCode($data['code']);
+        }
+
+        foreach ($data as $k => $v) {
+            if ($k !== 'error' && $k !== 'error_description') {
+                $exception->addContext($v, $k);
+            }
+        }
+
         if ($this->getLogger() instanceof LoggerInterface) {
-            $loggerMessage = $error . "\n" . $exception->getTraceAsString() . "\n";
+            $context = [
+                'error' => $error,
+                'error_description' => $errorDescription,
+                'trace' => $exception->getTraceAsString(),
+            ];
 
-            $redactedContext = $this->getRedactor()->redactArray($context);
+            if ($boxResponse instanceof BoxResponseInterface) {
+                $context['http_status'] = $boxResponse->getStatusCode();
+                $context['response_body'] = $boxResponse->getContent();
+            }
 
-            $this->getLogger()->error($loggerMessage, $redactedContext);
+            $this->getLogger()->error($message, $this->getRedactor()->redactArray($context));
         }
 
         throw $exception;
