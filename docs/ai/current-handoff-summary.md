@@ -42,16 +42,34 @@
 **Decision recorded** (`docs/planning/v1/decision-index.md`):
 - Webhook Management (CRUD) deferred to post-v1. Direct transport is the escape hatch.
 
-## Known Gaps (Tracked, Not Regressions)
-- `BoxClientFactory::createClient()` does not load pre-existing access/refresh tokens from env into a `TokenInterface`. → Deferred.
-- `ServiceInterface` still exposes broad untyped helpers (`queryBox`, `putIntoBox`, `getFromBox`, `sendUpdateToBox`) and vestigial constants. → Deferred to v2.
-- `FolderService::updateFolder()` calls `sendUpdateToBox($uri, $params, 'PUT', null, 'flat')` with a mismatched 3rd argument — pre-existing issue, not regression. Deferred.
+## Confirmed Pre-v1 Work Items (Not Yet Sliced)
+
+These were previously listed as deferred gaps but are now confirmed as v1 blockers:
+
+### BoxClientFactory token loading
+`BoxClientFactory::createClient()` builds `ClientConfig` with OAuth2 credentials but never calls `$configProvider->getAccessToken()` / `getRefreshToken()`. Tokens from env are not loaded into the client. Needs a targeted fix slice.
+
+### ServiceInterface cleanup (plan approved)
+`ServiceInterface` exposes internal plumbing as public API: `queryBox`, `putIntoBox`, `getFromBox`, `sendUpdateToBox`, `handleBoxResponse`, `TOKEN_URI`, `REVOKE_URI`, `getToken`/`setToken`. None of these belong on the public interface. Plan approved:
+- Remove all four legacy helpers + `handleBoxResponse` from `ServiceInterface`
+- Remove `TOKEN_URI` / `REVOKE_URI` constants from `ServiceInterface`
+- Audit `getToken`/`setToken`/`getConnection`/`setConnection` on the interface — likely internal only
+- Convert concrete service call sites to `sendUpdateAndHydrate` / `getResourceFromBox` / direct connection calls
+- Once call sites are gone, remove the methods from `Service` base class entirely
+- `sendUpdateToBox` itself is also legacy: untyped return, string-mode selector, mutation-based hydration — remove it with the rest
+
+### FolderService::updateFolder() bug (line 136)
+`sendUpdateToBox($uri, $params, 'PUT', null, 'flat')` — `'PUT'` is passed as the return-type selector (invalid, would throw `OutOfBoundsException` if hit). `'flat'` is a phantom 5th arg silently dropped. This code path is untested. Fix: replace with direct `$this->getConnection()->put()` + `handleBoxResponse($response, 'flat')`, matching the `$ifMatch` branch directly above it.
+
+### Codebase smell audit (pending)
+Full `src/` audit for remaining legacy baggage. Will produce `docs/planning/code_smells_v1.md`. Scheduled for next session.
 
 ## Upcoming Slices
 
 | Slice | Title | Notes |
 | :--- | :--- | :--- |
-| 17 | v1 Release Readiness | Final gate: docs, changelog, security scan, composer review |
+| 17 | v1 Release Readiness | Code gate, docs gate (migration guide + user guides + changelog), release metadata |
+| 18 | Documentation Cleanup and Organization | Part of v1 release: archive completed step trackers, retire superseded files, fix status drift |
 
 ## Key Architecture Decisions (Carry Forward)
 - Auth providers: `OAuth2Provider` and `JwtProvider` both implement `AuthProviderInterface`.

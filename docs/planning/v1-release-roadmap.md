@@ -78,6 +78,7 @@ This work assumes the completion of:
 | 15.6 | [API Fixture Realism and Contract Alignment](#step-156--api-fixture-realism-and-contract-alignment) | ✓ |
 | 16 | [Webhook Verification and Evaluation](#step-16--webhook-verification-and-evaluation) | ✓ |
 | 17 | [v1 Release Readiness](#step-17--v1-release-readiness) | Not Started |
+| 18 | [Documentation Cleanup and Organization](#step-18--documentation-cleanup-and-organization) | Not Started |
 
 ## Remaining v1 Sequence
 
@@ -578,16 +579,87 @@ Implement Box webhook signature verification and evaluate whether a full `Webhoo
 Final polish and validation before tagging v1.0.0.
 
 ### Scope
-- **Service Base Modernization Gate**: Final verification that `Service` base modernization and cleanup of legacy response/request helpers is complete.
-- Final documentation pass (README, migration docs).
-- Final changelog pass.
-- Full validation (`composer review`).
-- Security scan for credentials.
-- Release metadata checks.
+
+#### Code Gate
+- **Service Base Modernization Gate**: Confirm the `Service` base class deferred helpers (`queryBox`, `putIntoBox`, `getFromBox`, `sendUpdateToBox`) and legacy constants are either cleaned up or explicitly documented as deferred to v2. No new cleanup required — just verify the decision is recorded.
+- Full validation (`composer review` must pass 100%).
+
+#### Documentation Gate
+- **`docs/README.md`**: Fix status drift — mark Steps 10–16 complete, Step 17 in progress.
+- **`docs/migration/upgrading-0.11-to-1.0.md`**: Extend with sections for token storage (PDO/filesystem/in-memory), JWT/S2S configuration, and webhook verification.
+- **`docs/user/programmatic-usage.md`**: Add JWT/S2S programmatic usage examples (enterprise token, app user token).
+- **`docs/user/cli-test-harness.md`**: Document `--storage-type filesystem` / `--storage-path` / `BOX_STORAGE_FILE_PATH`; JWT CLI commands.
+- **CHANGELOG.md**: Write v1.0.0 changelog covering all Steps 7–17.
+
+#### Release Metadata Gate
+- `composer.json`: bump `version` to `1.0.0`, confirm `description`, `keywords`, PHP `>=8.4` constraint, Symfony `^7.4|^8` constraint.
+- Security scan: grep `src/`, `tests/`, `docs/` for any accidentally committed real credentials, keys, DSNs, or tokens.
 
 ### Acceptance Criteria
 - `composer review` passes 100%.
+- Migration guide covers token storage, JWT/S2S, and webhook sections.
+- CHANGELOG.md written.
+- `composer.json` at `1.0.0`.
+- No credential leaks found.
 - No known release blockers.
+
+---
+
+## Step 18 — Documentation Cleanup and Organization
+
+### Purpose
+v1.0.0 housekeeping — part of the v1 release, not deferred. Reduce noise in the `docs/` directory so the next maintenance phase starts with a clean, navigable structure. This step does not change any code.
+
+### Scope
+
+#### Archive Completed Step Trackers
+Move to `docs/archive/steps/` (or delete after confirming no forward references):
+- `docs/audits/08-service-layer-hardening-audit.md`
+- `docs/audits/10-resource-namespace-interface-audit.md`
+- `docs/audits/11-factory-service-boundary-audit.md`
+- `docs/audits/11-v1-service-coverage-auth-boundary-audit.md`
+- `docs/audits/12-token-storage-completion-audit.md`
+- `docs/audits/13-auth-lifecycle-provider-extraction-audit.md`
+- `docs/audits/14-jwt-s2s-feasibility-audit.md`
+- `docs/planning/07-foundation-refinement.md`
+- `docs/planning/08-service-layer-hardening.md`
+- `docs/planning/09-legacy-architecture-removal.md`
+- `docs/planning/10-resource-namespace-interface-rationalization.md`
+
+#### Retire Superseded Files
+Delete or archive (confirmed superseded by better documents):
+- `docs/audits/box-api-endpoint-coverage.md` — superseded by `docs/audits/15.5-api-coverage-matrix.md`
+- `docs/planning/v1/api-coverage-audit.md` — same
+- `docs/planning/v1/interface-and-model-audit.md` — pre-implementation; implementation complete
+- `docs/audits/model-typing-decisions.md` — v0.11 era; all decisions implemented
+- `docs/audits/model-signature-audit.md` — v0.11 era; all recommendations implemented
+- `docs/planning/v1/implementation-checklist.md` — superseded by `v1-release-roadmap.md`
+- `docs/prompts/generic-phpstorm-ai-chat-prompt-delivery-format.md` — outdated tooling
+
+#### Archive AI Workflow Prompts
+Move to `docs/archive/prompts/` (Claude Code CLI memory supersedes):
+- `docs/prompts/ai-workflow/` (entire directory)
+- `docs/prompts/changelog-prompt.md`
+
+#### Fix Remaining Status Drift
+- `docs/planning/release-task-lists.md` — mark completed v1 tasks; remove or archive v0.11 section
+- `docs/planning/v1/overview.md` — mark as historical
+- `docs/ai/current-task-summary.md` — update or retire after v1 tag
+
+#### Navigation Improvements
+- Update `docs/README.md` to reflect final v1 state: completed steps, current canonical docs, archived references
+- Update `docs/planning/README.md` canonical source map to reflect what was archived
+
+### Non-Goals
+- Do not change any source code.
+- Do not delete audit docs that are still referenced by active planning documents.
+- Do not restructure `docs/user/` or `docs/migration/` (covered in Step 17).
+
+### Acceptance Criteria
+- `docs/` root and `docs/planning/` contain only current, forward-looking files.
+- Archived files are in `docs/archive/` with a clear index.
+- `docs/README.md` accurately represents the current doc structure.
+- No broken internal links introduced.
 
 ---
 
@@ -596,11 +668,15 @@ Final polish and validation before tagging v1.0.0.
 - Step 11 Factory Modernization and Service Boundaries complete. ✓
 - Step 12 Token Storage Completion and Integration complete. ✓
 - Step 13 Auth Lifecycle/Auth Provider Extraction complete. ✓
-- Step 14 JWT/S2S feasibility complete.
-- Step 15 JWT/S2S implementation complete.
-- Step 15.1 API Coverage Alignment complete.
-- Step 15.2 API Fixture Realism complete enough for release confidence.
-- Step 16 Webhook Verification decision and implementation complete.
+- Step 14 JWT/S2S feasibility complete. ✓
+- Step 15 JWT/S2S implementation complete. ✓
+- Step 15.5 API Coverage Alignment complete. ✓
+- Step 15.6 API Fixture Realism complete enough for release confidence. ✓
+- Step 16 Webhook Verification decision and implementation complete. ✓
+- Step 17 v1 Release Readiness complete.
+- `composer review` passes.
+- No known credential leaks.
+- Migration docs / changelog accurate.
 - Step 17 final release readiness complete.
 - `composer review` passes.
 - No known credential leaks.

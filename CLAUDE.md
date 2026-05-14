@@ -37,7 +37,7 @@ TZ="America/Indiana/Indianapolis" date "+%Y-%m-%d %H:%M:%S"
 ## Current Status (as of 2026-05-14)
 - **Slices complete**: 15.1, 15.2, 15.3, 15.4, 15.4.1, 15.4.2, 15.4.3, 15.4.4, 15.5, 15.6, 16
 - **Next slice**: 17 — v1 Release Readiness
-- **Upcoming**: 17
+- **Upcoming**: 17, 18 (docs cleanup)
 - **Test baseline**: 330 tests, 898 assertions
 
 ## Key Architectural Decisions
