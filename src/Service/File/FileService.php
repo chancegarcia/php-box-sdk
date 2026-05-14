@@ -144,4 +144,9 @@ class FileService extends Service implements FileServiceInterface
     {
         return new File();
     }
+
+    public static function buildWebUrl(string $id, string $subdomain): string
+    {
+        return sprintf('https://%s.app.box.com/file/%s', $subdomain, $id);
+    }
 }

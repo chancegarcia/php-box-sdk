@@ -73,6 +73,12 @@ class EnvConfigProvider implements ConfigProviderInterface
         return $_ENV['BOX_STORAGE_FILE_PATH'] ?? $_SERVER['BOX_STORAGE_FILE_PATH'] ?? null;
     }
 
+    public function getBoxSubdomain(): ?string
+    {
+        $value = $_ENV['BOX_SUBDOMAIN'] ?? $_SERVER['BOX_SUBDOMAIN'] ?? null;
+        return (null === $value || '' === $value) ? null : (string) $value;
+    }
+
     public function getJsonFormatterClass(): ?string
     {
         return $_ENV['BOX_JSON_FORMATTER'] ?? $_SERVER['BOX_JSON_FORMATTER'] ?? null;

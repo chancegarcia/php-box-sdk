@@ -180,4 +180,12 @@ class FolderServiceTest extends TestCase
         $this->createService($connection)->deleteFolder($folderId, true);
         $this->addToAssertionCount(1);
     }
+
+    public function testBuildWebUrl(): void
+    {
+        $this->assertSame(
+            'https://acme.app.box.com/folder/99001',
+            FolderService::buildWebUrl('99001', 'acme')
+        );
+    }
 }

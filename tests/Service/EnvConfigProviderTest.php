@@ -135,4 +135,19 @@ class EnvConfigProviderTest extends TestCase
         $provider = new EnvConfigProvider();
         $this->assertNull($provider->getStorageFilePath());
     }
+
+    public function testGetBoxSubdomainFromEnv(): void
+    {
+        $_ENV['BOX_SUBDOMAIN'] = 'acme';
+        $provider = new EnvConfigProvider();
+        $this->assertSame('acme', $provider->getBoxSubdomain());
+        unset($_ENV['BOX_SUBDOMAIN']);
+    }
+
+    public function testGetBoxSubdomainReturnsNullWhenUnset(): void
+    {
+        unset($_ENV['BOX_SUBDOMAIN'], $_SERVER['BOX_SUBDOMAIN']);
+        $provider = new EnvConfigProvider();
+        $this->assertNull($provider->getBoxSubdomain());
+    }
 }

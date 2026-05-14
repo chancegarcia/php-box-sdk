@@ -1,6 +1,6 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-14 16:05:00 (America/Indiana)
+- **Timestamp**: 2026-05-14 17:09:55 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
@@ -26,13 +26,22 @@ Key new findings beyond the known blockers:
 | B2 + N1 | Both branches of `FolderService::updateFolder()` fixed. `$ifMatch` branch: `json_encode($params)` passed to `put()`. Fallback branch: replaced broken `sendUpdateToBox('PUT', ...)` with direct `$this->getConnection()->put()` + `handleBoxResponse()`. |
 | Q1 | `BoxLoggerTrait::error()` upgraded to richer implementation. `Service::error()` removed. One unified implementation covers `Client` and all `Service` subclasses. |
 
+## Completed This Session (continued)
+
+| Slice | What was done |
+|:---|:---|
+| ServiceInterface cleanup | Removed `putIntoBox`, `queryBox`, `getFromBox`, `sendUpdateToBox`, `TOKEN_URI`, `REVOKE_URI` from `ServiceInterface` and `Service`; migrated all 10 call sites; removed `connect()` (A2); narrowed `postFile()` return type (A3); fixed `createFolder`/`copyFolder` JSON encoding (L3) |
+| handleResponseContent inline | Inlined into `handleBoxResponse`, removed deprecated method + `validateReturnType` + `$allowedReturnTypes` |
+| D1-A | Removed unused `$sharedLink` and `$access` properties from `FileService` |
+| D1-C | Box account subdomain support: `BOX_SUBDOMAIN` env var, `ConfigProviderInterface::getBoxSubdomain()`, `EnvConfigProvider`, `--subdomain` CLI option on `AbstractBoxCommand`, `FileService::buildWebUrl()`, `FolderService::buildWebUrl()`, URL output in `FileUploadCommand` |
+
+**Test baseline**: 334 tests, 902 assertions
+
 ## Upcoming Slices
 
 | Slice | Title | Notes |
 |:---|:---|:---|
-| ServiceInterface cleanup | Remove legacy plumbing from `ServiceInterface` and `Service` base class | See detailed plan below |
-| D1-A | FileService property check | Check Box API v2 docs for `$sharedLink` and `$access` on FileService |
-| Q1b | BoxLoggerTrait cleanup | Remove `parseResponse()`, `debug()`; rename to `BoxApiErrorTrait` |
+| Q1b | BoxLoggerTrait cleanup | Remove `parseResponse()`, `debug()`; rename to `BoxApiErrorTrait`; update 3 users |
 | 17 | v1 Release Readiness | Code gate, docs gate (migration guide + user guides + changelog), release metadata |
 | 18 | Documentation Cleanup and Organization | Archive step trackers, retire superseded files, fix status drift; includes D1-B full field audit |
 

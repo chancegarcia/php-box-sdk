@@ -48,4 +48,12 @@ interface ConfigProviderInterface
      * @return string|null
      */
     public function getStorageFilePath(): ?string;
+
+    /**
+     * Box account subdomain (e.g. "acme" for acme.app.box.com).
+     * Used to construct direct web URLs for files and folders.
+     *
+     * @return string|null
+     */
+    public function getBoxSubdomain(): ?string;
 }

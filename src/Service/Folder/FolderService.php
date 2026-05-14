@@ -195,4 +195,9 @@ class FolderService extends Service implements FolderServiceInterface
 
         return $this->hydrate(Folder::class, $data);
     }
+
+    public static function buildWebUrl(string $id, string $subdomain): string
+    {
+        return sprintf('https://%s.app.box.com/folder/%s', $subdomain, $id);
+    }
 }

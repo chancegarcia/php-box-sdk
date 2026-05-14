@@ -52,7 +52,17 @@ abstract class AbstractBoxCommand extends Command
             ->addOption('pdo-dsn', null, InputOption::VALUE_REQUIRED, 'PDO DSN for storage')
             ->addOption('pdo-user', null, InputOption::VALUE_REQUIRED, 'PDO username')
             ->addOption('pdo-pass', null, InputOption::VALUE_REQUIRED, 'PDO password')
-            ->addOption('storage-path', null, InputOption::VALUE_REQUIRED, 'File path for filesystem token storage');
+            ->addOption('storage-path', null, InputOption::VALUE_REQUIRED, 'File path for filesystem token storage')
+            ->addOption('subdomain', null, InputOption::VALUE_REQUIRED, 'Box account subdomain (e.g. "acme" for acme.app.box.com); falls back to BOX_SUBDOMAIN env');
+    }
+
+    protected function getBoxSubdomain(InputInterface $input): ?string
+    {
+        $option = $input->getOption('subdomain');
+        if (null !== $option && '' !== $option) {
+            return (string) $option;
+        }
+        return $this->configProvider->getBoxSubdomain();
     }
 
     protected function applyStorageOption(InputInterface $input, Client $client): void

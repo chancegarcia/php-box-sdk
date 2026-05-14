@@ -108,6 +108,10 @@ class FileUploadCommand extends AbstractBoxCommand
                     if (isset($result['entries'][0]['name'])) {
                         $io->writeln(sprintf('<info>Name</info>: %s', $result['entries'][0]['name']));
                     }
+                    $subdomain = $this->getBoxSubdomain($input);
+                    if (null !== $subdomain) {
+                        $io->writeln(sprintf('<info>Box URL</info>: %s', FileService::buildWebUrl($fileId, $subdomain)));
+                    }
                 } else {
                     $this->outputFormatter->formatMasked($io, $result);
                 }

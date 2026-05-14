@@ -236,4 +236,12 @@ class FileServiceTest extends TestCase
         $this->assertSame($fileId, $result->getId());
         $this->assertNull($result->getSharedLink());
     }
+
+    public function testBuildWebUrl(): void
+    {
+        $this->assertSame(
+            'https://acme.app.box.com/file/12345',
+            FileService::buildWebUrl('12345', 'acme')
+        );
+    }
 }

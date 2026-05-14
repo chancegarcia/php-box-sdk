@@ -55,7 +55,7 @@ use Box\Http\Response\BoxResponseInterface;
 use Box\Mapper\Hydrator;
 use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
-use Box\Trait\BoxLoggerTrait;
+use Box\Trait\BoxApiErrorTrait;
 use Box\Factory\TokenFactory;
 use Box\Factory\TokenFactoryInterface;
 
@@ -66,7 +66,7 @@ use Box\Factory\TokenFactoryInterface;
 class Client implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
-    use BoxLoggerTrait;
+    use BoxApiErrorTrait;
 
     public const SEARCH_URI = "https://api.box.com/2.0/search";
 

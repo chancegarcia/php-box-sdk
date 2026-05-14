@@ -44,7 +44,7 @@ use Box\Connection\Token\Token;
 use Box\Connection\Token\TokenInterface;
 use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
-use Box\Trait\BoxLoggerTrait;
+use Box\Trait\BoxApiErrorTrait;
 use Box\Mapper\Hydrator;
 use OutOfBoundsException;
 use RuntimeException;
@@ -54,7 +54,7 @@ use stdClass;
 class Service implements ServiceInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
-    use BoxLoggerTrait;
+    use BoxApiErrorTrait;
 
     /**
      * @var ConnectionInterface|null

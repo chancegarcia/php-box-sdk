@@ -49,7 +49,7 @@ use Box\Http\Transport\GuzzleTransport;
 use Box\Http\Transport\TransportInterface;
 use Box\Mapper\Hydrator;
 use Box\Trait\LoggerAwareTrait;
-use Box\Trait\BoxLoggerTrait;
+use Box\Trait\BoxApiErrorTrait;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -60,7 +60,7 @@ use Psr\Log\LoggerInterface;
 class Connection implements ConnectionInterface
 {
     use LoggerAwareTrait;
-    use BoxLoggerTrait;
+    use BoxApiErrorTrait;
 
     public const TRANSPORT_GUZZLE = 'guzzle';
 
