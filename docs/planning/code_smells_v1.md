@@ -123,7 +123,9 @@ Never read or written anywhere in the class or its interface.
 
 **Standing rule:** Before removing any apparently unused property from a resource service, verify against the Box API v2 docs whether the feature is planned but not yet implemented. If it is relevant (e.g., `$sharedLink` on FileService could support future shared-link management operations), add a `// TODO: post-v1 — see Box API docs: <feature>` comment and note it in this doc. Only remove if the Box API docs confirm the property has no planned use or the feature is already fully covered elsewhere.
 
-**D1 action item:** Check Box API v2 Files resource docs before removing `$sharedLink` and `$access` from FileService. Deferred to a dedicated research session (web searches required).
+**D1 split into two sessions:**
+- **Session A (light):** Check Box API v2 docs for `FileService::$sharedLink` and `$access` specifically. Resolve and close those two properties.
+- **Session B (thorough):** Full Box API v2 field coverage audit across all resource services (File, Folder, Group, User, Collaboration, Event). Produces a gap tracking doc as a Step 18 deliverable.
 
 ### D2 — Connection: dead auth-flow state
 `src/Connection/Connection.php`
@@ -153,10 +155,26 @@ public const TRANSPORT_GUZZLE = 'guzzle';
 
 ## 6. Minor Quality Issues
 
-### Q1 — Service::error() duplicates BoxLoggerTrait::error()
-`src/Service/Service.php:132`, `src/Trait/BoxLoggerTrait.php:38`
+### Q1 — Service::error() duplicates BoxLoggerTrait::error() ✓ RESOLVED
+`src/Service/Service.php`, `src/Trait/BoxLoggerTrait.php`
 
-`Service` uses `BoxLoggerTrait` but overrides `error()` with a longer implementation. `Client` uses `BoxLoggerTrait::error()` directly. Two diverging implementations of the same concept. The override suppresses the trait version so there is no runtime conflict, but worth unifying post-v1.
+`Service::error()` removed. `BoxLoggerTrait::error()` upgraded to the richer implementation (sets `error`, `errorDescription`, `status`, `boxCode`; iterates all data keys for `addContext()`; logs with full context). Both `Client` and all `Service` subclasses now share one implementation via the trait.
+
+### Q1b — BoxLoggerTrait contains dead methods (v1 fix)
+`src/Trait/BoxLoggerTrait.php`
+
+`BoxLoggerTrait` was a legacy artifact from the old `Model` god class. After Q1 unification it now has two dead methods:
+
+- **`parseResponse()`** — `Client` overrides it with its own simpler version; `Service` never calls it (uses `handleBoxResponse()` instead); `Connection` never calls it. Confirmed dead.
+- **`debug()`** — trivial null-guard (`if logger instanceof LoggerInterface { logger->debug() }`). PHP 8.4 nullsafe `$this->logger?->debug()` makes it redundant at every call site.
+
+The trait name is also misleading (it's really about Box API error construction, not logging). Rename is a pre-v1 API surface fix since the trait is public.
+
+**Plan:**
+- Remove `parseResponse()` from the trait. Audit call sites — expect zero.
+- Remove `debug()` from the trait. Replace any callers with `$this->logger?->debug()`.
+- Rename `BoxLoggerTrait` → `BoxApiErrorTrait`; update all three users (`Client`, `Service`, `Connection`).
+- Keep `error()`, `getRedactor()`, `setRedactor()`.
 
 ### Q2 — CollaborationService::getFolderCollaborations() hardcodes folders URL inline
 `src/Service/Collaboration/CollaborationService.php:19`
@@ -184,13 +202,17 @@ Just calls `getConnection()->query()` + `parseResponse()`. Blurs the line betwee
 
 ---
 
-## Summary: Recommended Slice Assignments
+## Summary: Slice Assignments
 
-| Finding | Severity | Slice |
-|:---|:---|:---|
-| B1, B2, N1, A1 | Bug / API surface | **This session** — BoxClientFactory + FolderService fix slice |
-| B3, N2, L1–L5 (call site migration) | Blocker | **Next session** — ServiceInterface cleanup |
-| A2, A3, D1 | API surface / dead code | **ServiceInterface cleanup slice** (low effort, good time to sweep) |
-| D2, D3 | Dead code | **Post-ServiceInterface slice** or Step 18 |
-| D4 | Dead code / API decision | **Step 18** (needs deliberate API decision) |
-| Q1–Q5 | Minor | **Post-v1 or Step 18** |
+| Finding | Severity | Slice | Status |
+|:---|:---|:---|:---|
+| B1, B2, N1, A1, Q1 | Bug / API surface | Session — BoxClientFactory + FolderService fix slice | ✓ Done |
+| B3, N2, L1–L5 (call site migration) | Blocker | Next session — ServiceInterface cleanup | Pending |
+| Q1b (BoxLoggerTrait dead methods + rename) | API surface / dead code | ServiceInterface cleanup slice or standalone v1 slice | Pending |
+| A2 (Connection::connect() removal) | API surface | ServiceInterface cleanup slice | Pending |
+| A3 (postFile return type) | API surface | ServiceInterface cleanup slice | Pending |
+| D1-A (FileService $sharedLink / $access) | Dead code / API coverage | Session A — targeted Box API docs check | Pending |
+| D1-B (full resource service field audit) | API coverage | Session B — Step 18 deliverable | Pending |
+| D2, D3 (Connection dead state / transport) | Dead code | Post-ServiceInterface slice | Pending |
+| D4 (Client orphaned caches) | Dead code / API decision | Step 18 | Pending |
+| Q2–Q5 | Minor | Step 18 or post-v1 | Pending |

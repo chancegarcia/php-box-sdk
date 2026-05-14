@@ -1,75 +1,71 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-14 05:20:39 (America/Indiana)
+- **Timestamp**: 2026-05-14 16:05:00 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
 - **Next Step Status**: In Progress
-- **Roadmap Position**: Webhook Verification (Step 16) — complete. Next: Step 17 (v1 Release Readiness).
-- **Test baseline**: 330 tests, 898 assertions (after Slice 16)
+- **Roadmap Position**: Pre-v1 fix slices in progress. Next: ServiceInterface cleanup slice.
+- **Test baseline**: 330 tests, 898 assertions (unchanged from Slice 16)
 
-## Completed Slices (Steps 15–16)
+## Completed This Session
 
-| Slice | Title | Status |
-| :--- | :--- | :--- |
-| 15.1 | Dependency and Core JWT Support | ✓ |
-| 15.2 | JwtProvider Implementation | ✓ |
-| 15.3 | Factory and Client Integration | ✓ |
-| 15.4 | CLI Support and Env Var Alignment | ✓ |
-| 15.4.1 | FilesystemTokenStorage CLI Support | ✓ |
-| 15.4.2 | Dependency Audit and Cleanup | ✓ |
-| 15.4.3 | Symfony Invoke-Style Command Refactor | ✓ |
-| 15.4.4 | ClientConfig Architectural Cleanup | ✓ |
-| 15.5 | Box API Coverage Alignment | ✓ |
-| 15.6 | API Fixture Realism | ✓ |
-| 16 | Webhook Verification and Evaluation | ✓ |
+### Audit
+Full `src/` code smell audit completed → `docs/planning/code_smells_v1.md`.
+Key new findings beyond the known blockers:
+- **N1** — `FolderService::updateFolder()` `$ifMatch` branch (line 132) was also broken: array passed to `Connection::put()` → URL-encoded body, not JSON. Both branches now fixed.
+- **N2** — `Service::sendUpdateAndHydrate()` and `getResourceFromBox()` internally call the legacy methods they're supposed to replace. Must be migrated as part of ServiceInterface cleanup before the legacy methods can be removed.
+- **Q1b** — `BoxLoggerTrait` contains two dead methods (`parseResponse()`, `debug()`) and is misnamed. Plan: remove dead methods, rename to `BoxApiErrorTrait`, update three users (`Client`, `Service`, `Connection`). Approved for v1.
+- **D1** — Standing rule: check Box API v2 docs before removing any unused property from a resource service. `FileService::$sharedLink`/`$access` are the immediate case. Split into Session A (targeted check) and Session B (full field audit, Step 18 deliverable).
 
-## What Slice 16 Delivered
-
-**New namespace**: `Box\Webhook`
-
-**New files**:
-- `src/Webhook/WebhookVerifierInterface.php` — `verify(body, deliveryTimestamp, ?primarySignature, ?secondarySignature): bool`
-- `src/Webhook/WebhookVerifier.php` — HMAC-SHA256 signature verification using primary and/or secondary signing keys; constant-time comparison via `hash_equals`; configurable max-age window (default 10 minutes); RFC 3339 timestamp parsing with freshness guard.
-- `tests/Webhook/WebhookVerifierTest.php` — 9 tests covering valid primary, valid secondary, both-keys-configured (each branch), wrong signature, omitted signatures, stale timestamp, unparsable timestamp, constructor guard, and custom max-age.
-
-**Key behaviors**:
-- Constructor throws `\InvalidArgumentException` if both keys are null.
-- Timestamp freshness is checked before signatures to short-circuit stale replay attempts.
-- Box signing formula: `base64(HMAC-SHA256(body + deliveryTimestamp, key))`.
-- Either the primary or secondary signature passing is sufficient for `verify()` to return `true`.
-
-**Decision recorded** (`docs/planning/v1/decision-index.md`):
-- Webhook Management (CRUD) deferred to post-v1. Direct transport is the escape hatch.
-
-## Confirmed Pre-v1 Work Items (Not Yet Sliced)
-
-These were previously listed as deferred gaps but are now confirmed as v1 blockers:
-
-### BoxClientFactory token loading
-`BoxClientFactory::createClient()` builds `ClientConfig` with OAuth2 credentials but never calls `$configProvider->getAccessToken()` / `getRefreshToken()`. Tokens from env are not loaded into the client. Needs a targeted fix slice.
-
-### ServiceInterface cleanup (plan approved)
-`ServiceInterface` exposes internal plumbing as public API: `queryBox`, `putIntoBox`, `getFromBox`, `sendUpdateToBox`, `handleBoxResponse`, `TOKEN_URI`, `REVOKE_URI`, `getToken`/`setToken`. None of these belong on the public interface. Plan approved:
-- Remove all four legacy helpers + `handleBoxResponse` from `ServiceInterface`
-- Remove `TOKEN_URI` / `REVOKE_URI` constants from `ServiceInterface`
-- Audit `getToken`/`setToken`/`getConnection`/`setConnection` on the interface — likely internal only
-- Convert concrete service call sites to `sendUpdateAndHydrate` / `getResourceFromBox` / direct connection calls
-- Once call sites are gone, remove the methods from `Service` base class entirely
-- `sendUpdateToBox` itself is also legacy: untyped return, string-mode selector, mutation-based hydration — remove it with the rest
-
-### FolderService::updateFolder() bug (line 136)
-`sendUpdateToBox($uri, $params, 'PUT', null, 'flat')` — `'PUT'` is passed as the return-type selector (invalid, would throw `OutOfBoundsException` if hit). `'flat'` is a phantom 5th arg silently dropped. This code path is untested. Fix: replace with direct `$this->getConnection()->put()` + `handleBoxResponse($response, 'flat')`, matching the `$ifMatch` branch directly above it.
-
-### Codebase smell audit (pending)
-Full `src/` audit for remaining legacy baggage. Will produce `docs/planning/code_smells_v1.md`. Scheduled for next session.
+### Fix Slice (complete)
+| Finding | Fix |
+|:---|:---|
+| A1 | `ClientConfig::setoAuth2AuthCode()` renamed to `setOAuth2AuthCode()`. Caller in `BoxClientFactory` updated. |
+| B1 | `BoxClientFactory::createClient()` now loads `accessToken`/`refreshToken` from config provider into client token. |
+| B2 + N1 | Both branches of `FolderService::updateFolder()` fixed. `$ifMatch` branch: `json_encode($params)` passed to `put()`. Fallback branch: replaced broken `sendUpdateToBox('PUT', ...)` with direct `$this->getConnection()->put()` + `handleBoxResponse()`. |
+| Q1 | `BoxLoggerTrait::error()` upgraded to richer implementation. `Service::error()` removed. One unified implementation covers `Client` and all `Service` subclasses. |
 
 ## Upcoming Slices
 
 | Slice | Title | Notes |
-| :--- | :--- | :--- |
+|:---|:---|:---|
+| ServiceInterface cleanup | Remove legacy plumbing from `ServiceInterface` and `Service` base class | See detailed plan below |
+| D1-A | FileService property check | Check Box API v2 docs for `$sharedLink` and `$access` on FileService |
+| Q1b | BoxLoggerTrait cleanup | Remove `parseResponse()`, `debug()`; rename to `BoxApiErrorTrait` |
 | 17 | v1 Release Readiness | Code gate, docs gate (migration guide + user guides + changelog), release metadata |
-| 18 | Documentation Cleanup and Organization | Part of v1 release: archive completed step trackers, retire superseded files, fix status drift |
+| 18 | Documentation Cleanup and Organization | Archive step trackers, retire superseded files, fix status drift; includes D1-B full field audit |
+
+## ServiceInterface Cleanup — Detailed Plan (next session)
+
+### What to remove from ServiceInterface
+- `TOKEN_URI`, `REVOKE_URI` constants
+- `queryBox()`, `putIntoBox()`, `getFromBox()`, `sendUpdateToBox()`, `handleBoxResponse()`
+- Audit and likely remove: `getToken()`/`setToken()`, `getConnection()`/`setConnection()`
+
+### Migrate helpers before removing legacy methods
+`getResourceFromBox()` and `sendUpdateAndHydrate()` in `Service` currently call the legacy methods internally. Migrate them first:
+- `getResourceFromBox($uri, $class)`: replace `getFromBox($uri, 'decoded')` with `$this->getConnection()->query($uri)` + `handleBoxResponse($response, 'decoded')`
+- `sendUpdateAndHydrate($uri, $params, $class)`: replace `sendUpdateToBox($uri, $params, 'decoded')` with `$this->getConnection()->put($uri, json_encode($params))` + `handleBoxResponse($response, 'decoded')`
+
+### Migrate concrete service call sites
+All remaining `queryBox()` / `getFromBox()` calls in concrete services:
+
+| Service | Legacy call | Replacement |
+|:---|:---|:---|
+| `FolderService::getFolderItems()` | `queryBox($uri, 'flat')` | `$this->getConnection()->query($uri)` + `handleBoxResponse($response, 'flat')` |
+| `FolderService::getFolderCollaborations()` | `queryBox($uri, 'flat')` | same pattern |
+| `CollaborationService::getFolderCollaborations()` | `queryBox($uri, 'flat')` | same pattern |
+| `GroupService::listGroups()` | `queryBox($uri, 'flat')` | same pattern |
+| `UserService::listUsers()` | `queryBox($uri, 'flat')` | same pattern |
+| `SearchService::search()` | `queryBox($uri, 'flat')` | same pattern |
+| `UserEventService::getEvents()` | `getFromBox($uri, 'decoded')` | `$this->getConnection()->query($uri)` + `handleBoxResponse($response, 'decoded')` |
+
+### Also in this slice
+- **A2**: Remove `Connection::connect()` from both `ConnectionInterface` and `Connection` (throws "not implemented").
+- **A3**: Narrow `ConnectionInterface::postFile()` return type from `array|BoxResponseInterface` to `BoxResponseInterface`.
+- **L3**: Update `FolderService::createFolder()` and `copyFolder()` to pass `json_encode($params)` directly to `post()` and drop the `$nameValuePair=true` arg.
+- **`AuthenticatedServiceInterface`**: Update after ServiceInterface is cleaned (it extends ServiceInterface).
 
 ## Key Architecture Decisions (Carry Forward)
 - Auth providers: `OAuth2Provider` and `JwtProvider` both implement `AuthProviderInterface`.
@@ -81,11 +77,12 @@ Full `src/` audit for remaining legacy baggage. Will produce `docs/planning/code
 - Command wiring: manual in `bin/box-sdk`, no DI container.
 - No plan mode. Claude Code CLI executes code directly; human reviews and commits.
 - `ClientConfig` is a pure OAuth2 DTO — does not implement `ConfigProviderInterface`.
-- `Service::$clientId`/`$clientSecret` removed — credentials live on `Client` and `AuthProvider` only.
-- `ConnectionInterface::delete()` now formally declared.
-- Fixtures: `Box\Tests\Fixtures\BoxApiFixtures` is the canonical source for Box API-shaped test data.
+- `BoxClientFactory::createClient()` now loads access/refresh tokens from config provider.
+- `ClientConfig::setOAuth2AuthCode()` — lowercase-o typo fixed this session.
+- `BoxLoggerTrait::error()` is the single unified error-throwing implementation (Service::error() removed).
 - Webhook signing: `Box\Webhook\WebhookVerifier`; formula is `base64(HMAC-SHA256(body + timestamp, key))`; management CRUD deferred.
+- Audit doc: `docs/planning/code_smells_v1.md` — full smell registry with slice assignments.
 
 ## Transition Note
-Continuing in Claude Code CLI. CLAUDE.md exists at project root and will be loaded automatically.
+Continuing in Claude Code CLI (native macOS Terminal). CLAUDE.md exists at project root and will be loaded automatically.
 Memory files are at: `~/.claude/projects/-Users-chance-PhpstormProjects-mine-box-sdk/memory/`
