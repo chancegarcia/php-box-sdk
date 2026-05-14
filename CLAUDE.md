@@ -35,8 +35,8 @@ TZ="America/Indiana/Indianapolis" date "+%Y-%m-%d %H:%M:%S"
 ```
 
 ## Current Status (as of 2026-05-14)
-- **Slices complete**: 15.1, 15.2, 15.3, 15.4, 15.4.1, 15.4.2
-- **Next slice**: 15.4.3 — Symfony Invoke-Style Command Refactor
+- **Slices complete**: 15.1, 15.2, 15.3, 15.4, 15.4.1, 15.4.2, 15.4.3
+- **Next slice**: 15.4.4 — ClientConfig Architectural Cleanup
 - **Upcoming**: 15.4.3 (Symfony invoke-style commands), 15.4.4 (ClientConfig cleanup), 15.5, 15.6, 16, 17
 - **Test baseline**: 292 tests, 761 assertions
 

@@ -8,6 +8,7 @@ use Box\Exception\BoxResponseException;
 use Box\Logger\LoggerFactory;
 use Box\Connection\Token\Token;
 use Box\Service\ConsoleOutputFormatter;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -15,10 +16,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Exception;
 
+#[AsCommand(name: 'box:auth:refresh-token', description: 'Refreshes an access token using a refresh token')]
 class AuthRefreshCommand extends AbstractBoxCommand
 {
-    protected static $defaultName = 'box:auth:refresh-token';
-
     public function __construct(
         BoxClientFactoryInterface $clientFactory,
         ConfigProviderInterface $configProvider,
@@ -32,14 +32,12 @@ class AuthRefreshCommand extends AbstractBoxCommand
     {
         parent::configure();
         $this
-            ->setName(self::$defaultName)
-            ->setDescription('Refreshes an access token using a refresh token')
             ->setHelp('This command uses a refresh token to obtain a new access token and a new refresh token.')
             ->addOption('secrets-file', null, InputOption::VALUE_REQUIRED, 'Path to write the full token payload')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force writing to secrets file without confirmation');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function __invoke(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $this->logger->info('Starting token refresh command');
@@ -80,7 +78,7 @@ class AuthRefreshCommand extends AbstractBoxCommand
             if ($input->getOption('json')) {
                 $this->outputFormatter->formatMasked($io, [
                     'success' => true,
-                    'command' => self::$defaultName,
+                    'command' => $this->getName(),
                     'message' => 'Token refresh successful',
                     'data' => $tokenData,
                 ], true);

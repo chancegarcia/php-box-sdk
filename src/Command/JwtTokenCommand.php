@@ -9,6 +9,7 @@ use Box\Contract\ConfigProviderInterface;
 use Box\Exception\BoxException;
 use Box\Logger\LoggerFactory;
 use Box\Service\ConsoleOutputFormatter;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -16,10 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
+#[AsCommand(name: 'box:jwt:token', description: 'Exchange a JWT assertion for a Box access token (enterprise or app user).')]
 class JwtTokenCommand extends AbstractBoxCommand
 {
-    protected static $defaultName = 'box:jwt:token';
-
     public function __construct(
         BoxClientFactoryInterface $clientFactory,
         ConfigProviderInterface $configProvider,
@@ -33,12 +33,10 @@ class JwtTokenCommand extends AbstractBoxCommand
     {
         parent::configure();
         $this
-            ->setName(self::$defaultName)
-            ->setDescription('Exchange a JWT assertion for a Box access token (enterprise or app user).')
             ->addOption('user-id', null, InputOption::VALUE_REQUIRED, 'User ID for App User token exchange');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function __invoke(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $this->logger->info('Starting JWT token exchange command');

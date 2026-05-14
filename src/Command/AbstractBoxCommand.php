@@ -31,6 +31,13 @@ abstract class AbstractBoxCommand extends Command
         parent::__construct();
     }
 
+    abstract public function __invoke(InputInterface $input, OutputInterface $output): int;
+
+    final public function execute(InputInterface $input, OutputInterface $output): int
+    {
+        return $this->__invoke($input, $output);
+    }
+
     protected function configure(): void
     {
         $this

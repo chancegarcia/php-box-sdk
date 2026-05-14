@@ -9,6 +9,7 @@ use Box\Service\File\FileService;
 use Box\Logger\LoggerFactory;
 use Box\Connection\Token\Token;
 use Box\Service\ConsoleOutputFormatter;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,10 +18,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Exception;
 
+#[AsCommand(name: 'box:file:upload', description: 'Uploads a local file to Box')]
 class FileUploadCommand extends AbstractBoxCommand
 {
-    protected static $defaultName = 'box:file:upload';
-
     public function __construct(
         BoxClientFactoryInterface $clientFactory,
         ConfigProviderInterface $configProvider,
@@ -34,8 +34,6 @@ class FileUploadCommand extends AbstractBoxCommand
     {
         parent::configure();
         $this
-            ->setName(self::$defaultName)
-            ->setDescription('Uploads a local file to Box')
             ->setHelp('This command uploads a file from your local system to Box.')
             ->addArgument(
                 'file-path',
@@ -50,7 +48,7 @@ class FileUploadCommand extends AbstractBoxCommand
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function __invoke(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $this->logger->info('Starting file upload command');
@@ -97,7 +95,7 @@ class FileUploadCommand extends AbstractBoxCommand
             if ($input->getOption('json')) {
                 $this->outputFormatter->formatMasked($io, [
                     'success' => true,
-                    'command' => self::$defaultName,
+                    'command' => $this->getName(),
                     'message' => 'File uploaded successfully',
                     'data' => $result,
                 ], true);

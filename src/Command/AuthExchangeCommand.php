@@ -7,6 +7,7 @@ use Box\Contract\ConfigProviderInterface;
 use Box\Exception\BoxResponseException;
 use Box\Logger\LoggerFactory;
 use Box\Service\ConsoleOutputFormatter;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,10 +16,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Exception;
 
+#[AsCommand(name: 'box:auth:exchange-code', description: 'Exchanges an authorization code for an access token')]
 class AuthExchangeCommand extends AbstractBoxCommand
 {
-    protected static $defaultName = 'box:auth:exchange-code';
-
     public function __construct(
         BoxClientFactoryInterface $clientFactory,
         ConfigProviderInterface $configProvider,
@@ -32,15 +32,13 @@ class AuthExchangeCommand extends AbstractBoxCommand
     {
         parent::configure();
         $this
-            ->setName(self::$defaultName)
-            ->setDescription('Exchanges an authorization code for an access token')
             ->setHelp('This command exchanges the temporary authorization code obtained from the browser for a more permanent access token.')
             ->addArgument('code', InputArgument::OPTIONAL, 'The authorization code (falls back to BOX_AUTH_CODE env)')
             ->addOption('secrets-file', null, InputOption::VALUE_REQUIRED, 'Path to write the full token payload')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force writing to secrets file without confirmation');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function __invoke(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $this->logger->info('Starting token exchange command');
@@ -70,7 +68,7 @@ class AuthExchangeCommand extends AbstractBoxCommand
             if ($input->getOption('json')) {
                 $this->outputFormatter->formatMasked($io, [
                     'success' => true,
-                    'command' => self::$defaultName,
+                    'command' => $this->getName(),
                     'message' => 'Token exchange successful',
                     'data' => $tokenData,
                 ], true);

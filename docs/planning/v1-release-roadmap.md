@@ -72,7 +72,7 @@ This work assumes the completion of:
 | 15.4 | [CLI Support and Env Var Alignment](#step-154--cli-support-and-env-var-alignment) | ✓ |
 | 15.4.1 | [FilesystemTokenStorage CLI Support](#step-1541--filesystemtokenstorage-cli-support) | ✓ |
 | 15.4.2 | [Dependency Audit and Cleanup](#step-1542--dependency-audit-and-cleanup) | ✓ |
-| 15.4.3 | [Symfony Invoke-Style Command Refactor](#step-1543--symfony-invoke-style-command-refactor) | Not Started |
+| 15.4.3 | [Symfony Invoke-Style Command Refactor](#step-1543--symfony-invoke-style-command-refactor) | ✓ |
 | 15.4.4 | [ClientConfig Architectural Cleanup](#step-1544--clientconfig-architectural-cleanup) | Not Started |
 | 15.5 | [Box API Coverage Alignment](#step-155--box-api-coverage-alignment) | Not Started |
 | 15.6 | [API Fixture Realism and Contract Alignment](#step-156--api-fixture-realism-and-contract-alignment) | Not Started |
@@ -623,3 +623,10 @@ Final polish and validation before tagging v1.0.0.
 - Advanced auto-pagination.
 - Full endpoint parity (all Box APIs).
 - Framework-specific bundles.
+- **Symfony `#[Argument]`/`#[Option]` parameter attributes on `__invoke()`**: Symfony Console's
+  native invokable command support (`InvokableCommand`) processes these attributes, but only when
+  (a) no subclass overrides `execute()`, and (b) the command definition has no pre-registered
+  arguments or options. Both conditions are blocked by our architecture: `AbstractBoxCommand`
+  overrides `execute()` as a bridge, and its `configure()` registers shared options. Enabling
+  this would require either a DI container (which resolves commands without the bridge) or a
+  significant restructure of the base class. Revisit if a DI container is added post-v1.

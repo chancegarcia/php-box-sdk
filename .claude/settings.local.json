@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(composer review *)"
+      "Bash(composer review *)",
+      "Bash(composer cs:fix)"
     ]
   }
 }

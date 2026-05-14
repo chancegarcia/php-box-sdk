@@ -1,12 +1,12 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-14 02:44:01 (America/Indiana)
+- **Timestamp**: 2026-05-14 03:37:09 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
 - **Next Step Status**: In Progress
-- **Roadmap Position**: JWT/S2S Implementation (Step 15) — Slices 15.1–15.4.1 complete. Next: Slice 15.4.2.
-- **Test baseline**: 292 tests, 761 assertions (after Slice 15.4.1)
+- **Roadmap Position**: JWT/S2S Implementation (Step 15) — Slices 15.1–15.4.3 complete. Next: Slice 15.4.4.
+- **Test baseline**: 293 tests, 763 assertions (after Slice 15.4.3)
 
 ## Completed Slices (Step 15)
 
@@ -17,6 +17,16 @@
 | 15.3 | Factory and Client Integration | ✓ |
 | 15.4 | CLI Support and Env Var Alignment | ✓ |
 | 15.4.1 | FilesystemTokenStorage CLI Support | ✓ |
+| 15.4.2 | Dependency Audit and Cleanup | ✓ |
+| 15.4.3 | Symfony Invoke-Style Command Refactor | ✓ |
+
+## What Slice 15.4.3 Delivered
+- `AbstractBoxCommand`: `abstract public function __invoke()` declared; `final public function execute()` bridges Symfony's call to `__invoke()`.
+- All 5 commands (`AuthExchangeCommand`, `AuthRefreshCommand`, `AuthUrlCommand`, `FileUploadCommand`, `JwtTokenCommand`): `#[AsCommand]` attribute added; `$defaultName` removed; `setName()`/`setDescription()` removed from `configure()`; `execute()` renamed to `public __invoke()`; `self::$defaultName` references replaced with `$this->getName()`.
+- Note: `#[Argument]`/`#[Option]` parameter attributes on `__invoke()` are not usable with this architecture (documented in roadmap deferred list).
+
+## What Slice 15.4.2 Delivered
+- `composer.json`: removed `ext-curl` (no usages since CurlTransport deleted) and `symfony/http-foundation` (no usages in src or tests); updated `symfony/dotenv` and `symfony/console` constraints from `^7.4` to `^7.4|^8`.
 
 ## What Slice 15.4.1 Delivered
 - `FilesystemTokenStorage`: implements `TokenStorageInterface`; stores tokens as a JSON map on disk keyed by `TokenStorageContext::getCanonicalKey()`.
@@ -44,7 +54,7 @@
 
 | Slice | Title | Notes |
 | :--- | :--- | :--- |
-| 15.4.2 | Dependency Audit and Cleanup | ext-curl, http-foundation, PHP 8.4/8.5, Symfony constraints |
+| 15.4.4 | ClientConfig Architectural Cleanup | Remove `implements ConfigProviderInterface`, delete stubs, remove device/legacy fields, narrow type hints |
 | 15.4.3 | Symfony Invoke-Style Command Refactor | `#[AsCommand]` + `__invoke()` on all commands |
 | 15.4.4 | ClientConfig Architectural Cleanup | Decouple from interface, remove stubs/legacy fields, fix token loading |
 | 15.5 | Box API Coverage Alignment | Audit SDK vs Box API; endpoint matrix |
