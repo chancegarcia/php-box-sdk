@@ -904,8 +904,6 @@ class Client implements LoggerAwareInterface
     protected function configureService(ServiceInterface $service): ServiceInterface
     {
         $service->setConnection($this->getConnection());
-        $service->setClientId($this->getClientId());
-        $service->setClientSecret($this->getClientSecret());
 
         if ($service instanceof AuthenticatedServiceInterface) {
             $token = $this->getToken();

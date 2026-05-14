@@ -35,10 +35,10 @@ TZ="America/Indiana/Indianapolis" date "+%Y-%m-%d %H:%M:%S"
 ```
 
 ## Current Status (as of 2026-05-14)
-- **Slices complete**: 15.1, 15.2, 15.3, 15.4, 15.4.1, 15.4.2, 15.4.3, 15.4.4
-- **Next slice**: 15.5 — Box API Coverage Alignment
-- **Upcoming**: 15.5, 15.6, 16, 17
-- **Test baseline**: 293 tests, 762 assertions
+- **Slices complete**: 15.1, 15.2, 15.3, 15.4, 15.4.1, 15.4.2, 15.4.3, 15.4.4, 15.5
+- **Next slice**: 15.6 — API Fixture Realism
+- **Upcoming**: 15.6, 16, 17
+- **Test baseline**: 311 tests, 808 assertions
 
 ## Key Architectural Decisions
 - **Auth providers**: `OAuth2Provider` and `JwtProvider` both implement `AuthProviderInterface`.

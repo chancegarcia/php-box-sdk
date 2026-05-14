@@ -139,6 +139,18 @@ class FolderService extends Service implements FolderServiceInterface
     /**
      * @inheritdoc
      */
+    public function deleteFolder(string $id, bool $recursive = false): void
+    {
+        $uri = self::ENDPOINT . '/' . $id;
+        if ($recursive) {
+            $uri .= '?recursive=true';
+        }
+        $this->sendDeleteToBox($uri);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getFolderCollaborations(Folder $folder): array
     {
         $uri = self::ENDPOINT . '/' . $folder->getId() . '/collaborations';

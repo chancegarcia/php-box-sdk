@@ -3,7 +3,9 @@
     "allow": [
       "Bash(composer review *)",
       "Bash(composer cs:fix)",
-      "WebFetch(domain:developer.box.com)"
+      "WebFetch(domain:developer.box.com)",
+      "Bash(composer lint *)",
+      "Bash(composer test *)"
     ]
   }
 }

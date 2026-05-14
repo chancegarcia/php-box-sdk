@@ -75,6 +75,14 @@ interface ConnectionInterface extends LoggerAwareInterface
     public function put(string $uri, array|string $params = []): BoxResponseInterface;
 
     /**
+     * DELETE
+     *
+     * @param string $uri
+     * @return BoxResponseInterface
+     */
+    public function delete(string $uri): BoxResponseInterface;
+
+    /**
      * @param string $file file/path to file
      * @return mixed
      */

@@ -68,9 +68,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
      */
     protected $token;
 
-    protected $clientId;
-    protected $clientSecret;
-
     /**
      * @var array
      */
@@ -125,40 +122,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
     public function setToken($token = null)
     {
         $this->token = $token;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getClientId()
-    {
-        return $this->clientId;
-    }
-
-    /**
-     * @param string|null $clientId
-     * @return void
-     */
-    public function setClientId($clientId = null): void
-    {
-        $this->clientId = $clientId;
-    }
-
-    /**
-     * @param string|null $clientSecret
-     * @return void
-     */
-    public function setClientSecret($clientSecret = null): void
-    {
-        $this->clientSecret = $clientSecret;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getClientSecret()
-    {
-        return $this->clientSecret;
     }
 
     /**
@@ -296,19 +259,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
                 );
             }
 
-            $callBackParams = [
-                $uri,
-                $params,
-                $type,
-            ];
-
-            switch ($bre->getCode()) {
-                case 401:
-                    $boxData = $this->refreshConnection([$this, 'putIntoBox'], $callBackParams, $bre);
-                    break;
-                default:
-                    throw $bre;
-            }
+            throw $bre;
         } catch (BoxException $be) {
             if ($this->getLogger() instanceof LoggerInterface) {
                 $this->getLogger()->error(
@@ -381,18 +332,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
                 );
             }
 
-            $callBackParams = [
-                $uri,
-                $type,
-            ];
-
-            switch ($bre->getCode()) {
-                case 401:
-                    $boxData = $this->refreshConnection([$this, 'queryBox'], $callBackParams, $bre);
-                    break;
-                default:
-                    throw $bre;
-            }
+            throw $bre;
         } catch (BoxException $be) {
             if ($this->getLogger() instanceof LoggerInterface) {
                 $this->getLogger()->error(
@@ -432,13 +372,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
         return $returnData;
     }
 
-    /**
-     * this does not update the token storage with the refreshed token; that action is handled by user or a wrapped
-     * method
-     * {@inheritdoc}
-     *
-     * @throws BoxException
-     */
     /**
      * @param string $type
      * @return void
@@ -501,15 +434,15 @@ class Service implements ServiceInterface, LoggerAwareInterface
     }
 
     /**
-     * @param array $callback
-     * @param array $params
-     * @param BoxResponseException|BoxException $be
-     * @return array|mixed|stdClass|string
-     * @throws BoxException
+     * Send a DELETE request and discard the (typically 204) response.
+     *
+     * @param string $uri
+     * @throws BoxResponseException
      */
-    public function refreshConnection($callback, $params, $be = null)
+    protected function sendDeleteToBox(string $uri): void
     {
-        throw $be;
+        $response = $this->getConnection()->delete($uri);
+        $this->handleBoxResponse($response, 'flat');
     }
 
     /**

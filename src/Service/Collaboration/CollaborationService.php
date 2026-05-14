@@ -3,6 +3,7 @@
 namespace Box\Service\Collaboration;
 
 use Box\Resource\Collaboration;
+use Box\Resource\File;
 use Box\Resource\Folder;
 use Box\Service\Service;
 
@@ -23,19 +24,53 @@ class CollaborationService extends Service implements CollaborationServiceInterf
     /**
      * @inheritdoc
      */
-    public function addCollaboration(Folder|string|int $folder, mixed $collaborator, string $role = 'editor'): Collaboration
+    public function addCollaboration(Folder|File|string|int $item, mixed $collaborator, string $role = 'editor'): Collaboration
     {
-        $folderId = $folder instanceof Folder ? $folder->getId() : $folder;
+        if ($item instanceof Folder) {
+            $itemType = 'folder';
+            $itemId = (string) $item->getId();
+        } elseif ($item instanceof File) {
+            $itemType = 'file';
+            $itemId = (string) $item->getId();
+        } else {
+            $itemType = 'folder';
+            $itemId = (string) $item;
+        }
 
         $params = [
             'item' => [
-                'type' => 'folder',
-                'id' => (string) $folderId,
+                'type' => $itemType,
+                'id' => $itemId,
             ],
             'accessible_by' => $collaborator,
             'role' => $role,
         ];
 
         return $this->sendUpdateAndHydrate(self::ENDPOINT, $params, Collaboration::class);
+    }
+
+    public function getCollaboration(string $id): Collaboration
+    {
+        $uri = self::ENDPOINT . '/' . $id;
+
+        return $this->getResourceFromBox($uri, Collaboration::class);
+    }
+
+    public function updateCollaboration(Collaboration $collaboration): Collaboration
+    {
+        $uri = self::ENDPOINT . '/' . $collaboration->getId();
+
+        $params = array_filter([
+            'role' => $collaboration->getRole(),
+            'status' => $collaboration->getStatus(),
+        ], fn($v) => null !== $v);
+
+        return $this->sendUpdateAndHydrate($uri, $params, Collaboration::class);
+    }
+
+    public function deleteCollaboration(string $id): void
+    {
+        $uri = self::ENDPOINT . '/' . $id;
+        $this->sendDeleteToBox($uri);
     }
 }

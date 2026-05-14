@@ -145,4 +145,35 @@ class UserServiceTest extends TestCase
 
         $service->getUser($userId);
     }
+
+    public function testListUsersReturnsArray(): void
+    {
+        $listData = [
+            'total_count' => 2,
+            'entries' => [
+                ['type' => 'user', 'id' => '1', 'name' => 'Alice'],
+                ['type' => 'user', 'id' => '2', 'name' => 'Bob'],
+            ],
+        ];
+
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('isSuccessful')->willReturn(true);
+        $response->method('getContent')->willReturn(json_encode($listData));
+        $response->method('json')->willReturnCallback(fn(bool $assoc) => $assoc ? $listData : (object)$listData);
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->expects($this->once())
+            ->method('query')
+            ->with(UserService::ENDPOINT . '?limit=100&offset=0')
+            ->willReturn($response);
+
+        $service = new UserService();
+        $service->setConnection($connection);
+        $service->setToken($this->createMock(TokenInterface::class));
+
+        $result = $service->listUsers();
+
+        $this->assertIsArray($result);
+        $this->assertSame(2, $result['total_count']);
+    }
 }

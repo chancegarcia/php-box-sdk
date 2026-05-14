@@ -43,6 +43,14 @@ use Box\Service\AuthenticatedServiceInterface;
 
 interface FileServiceInterface extends AuthenticatedServiceInterface
 {
+    public function getFile(string $id): File;
+
+    public function updateFile(File $file): File;
+
+    public function deleteFile(string $id): void;
+
+    public function downloadFile(string $id): string;
+
     /**
      * @param File $file
      * @param SharedLink|CreateSharedLinkRequest|array|null $sharedLink shared link object used to set box permissions

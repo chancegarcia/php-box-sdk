@@ -50,6 +50,42 @@ class FileService extends Service implements FileServiceInterface
     protected $sharedLink;
     protected $access;
 
+    public function getFile(string $id): File
+    {
+        $uri = self::ENDPOINT . '/' . $id;
+
+        return $this->getResourceFromBox($uri, File::class);
+    }
+
+    public function updateFile(File $file): File
+    {
+        $uri = self::ENDPOINT . '/' . $file->getId();
+
+        $params = array_filter([
+            'name' => $file->getName(),
+            'description' => $file->getDescription(),
+        ], fn($v) => null !== $v);
+
+        return $this->sendUpdateAndHydrate($uri, $params, File::class);
+    }
+
+    public function deleteFile(string $id): void
+    {
+        $uri = self::ENDPOINT . '/' . $id;
+        $this->sendDeleteToBox($uri);
+    }
+
+    public function downloadFile(string $id): string
+    {
+        $uri = self::ENDPOINT . '/' . $id . '/content';
+        $response = $this->getConnection()->query($uri);
+        if (!$response->isSuccessful()) {
+            throw $this->processResponseError($response);
+        }
+
+        return $response->getContent();
+    }
+
     /**
      * {@inheritdoc}
      * @param File $file

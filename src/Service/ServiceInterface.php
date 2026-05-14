@@ -82,28 +82,6 @@ interface ServiceInterface
     public function setToken($token = null);
 
     /**
-     * @return mixed
-     */
-    public function getClientId();
-
-    /**
-     * @param string|null $clientId
-     * @return void
-     */
-    public function setClientId($clientId = null): void;
-
-    /**
-     * @param string|null $clientSecret
-     * @return void
-     */
-    public function setClientSecret($clientSecret = null): void;
-
-    /**
-     * @return string|null
-     */
-    public function getClientSecret();
-
-    /**
      * used to throw exceptions that need to contain error information returned from Box
      *
      * @param BoxResponseInterface $response

@@ -161,4 +161,88 @@ class FileServiceTest extends TestCase
         $this->assertInstanceOf(File::class, $result);
         $this->assertSame($fileId, $result->getId());
     }
+
+    public function testGetFileReturnsFileResource(): void
+    {
+        $fileId = '111222';
+        $responseData = ['type' => 'file', 'id' => $fileId, 'name' => 'test.txt'];
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->expects($this->once())
+            ->method('query')
+            ->with(FileService::ENDPOINT . '/' . $fileId)
+            ->willReturn($this->createMockResponse($responseData));
+
+        $service = $this->createService($connection);
+        $result = $service->getFile($fileId);
+
+        $this->assertInstanceOf(File::class, $result);
+        $this->assertSame($fileId, $result->getId());
+    }
+
+    public function testUpdateFileCallsPutWithNameAndDescription(): void
+    {
+        $fileId = '333444';
+        $file = new File();
+        $file->setId($fileId);
+        $file->setName('updated.txt');
+        $file->setDescription('new desc');
+
+        $responseData = ['type' => 'file', 'id' => $fileId, 'name' => 'updated.txt'];
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->expects($this->once())
+            ->method('put')
+            ->with(
+                FileService::ENDPOINT . '/' . $fileId,
+                $this->callback(fn($p) => str_contains($p, 'updated.txt'))
+            )
+            ->willReturn($this->createMockResponse($responseData));
+
+        $service = $this->createService($connection);
+        $result = $service->updateFile($file);
+
+        $this->assertInstanceOf(File::class, $result);
+    }
+
+    public function testDeleteFileCallsDeleteOnConnection(): void
+    {
+        $fileId = '555666';
+
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('isSuccessful')->willReturn(true);
+        $response->method('json')->willReturn([]);
+        $response->method('getContent')->willReturn('');
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->expects($this->once())
+            ->method('delete')
+            ->with(FileService::ENDPOINT . '/' . $fileId)
+            ->willReturn($response);
+
+        $service = $this->createService($connection);
+        $service->deleteFile($fileId);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testDownloadFileReturnsContent(): void
+    {
+        $fileId = '777888';
+        $fileContent = 'binary file content here';
+
+        $response = $this->createMock(BoxResponseInterface::class);
+        $response->method('isSuccessful')->willReturn(true);
+        $response->method('getContent')->willReturn($fileContent);
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->expects($this->once())
+            ->method('query')
+            ->with(FileService::ENDPOINT . '/' . $fileId . '/content')
+            ->willReturn($response);
+
+        $service = $this->createService($connection);
+        $result = $service->downloadFile($fileId);
+
+        $this->assertSame($fileContent, $result);
+    }
 }

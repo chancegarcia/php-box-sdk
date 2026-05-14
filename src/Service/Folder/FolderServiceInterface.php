@@ -51,6 +51,13 @@ interface FolderServiceInterface extends AuthenticatedServiceInterface
     public function updateFolder(Folder $folder, string|bool|null $ifMatch = null): array;
 
     /**
+     * @param string $id
+     * @param bool $recursive
+     * @return void
+     */
+    public function deleteFolder(string $id, bool $recursive = false): void;
+
+    /**
      * @param Folder $folder
      * @return array
      */
