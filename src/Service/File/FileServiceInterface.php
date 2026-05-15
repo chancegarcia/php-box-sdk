@@ -5,6 +5,7 @@
  * User: chance
  * Date: 10/9/15
  * Time: 5:32 PM
+ *
  * @package     Box
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
@@ -30,12 +31,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 namespace Box\Service\File;
 
 use Box\Dto\File\Request\CreateSharedLinkRequest;
+use Box\Dto\File\UploadPart;
+use Box\Dto\File\UploadSession;
 use Box\Http\FileStream;
 use Box\Resource\File;
 use Box\Resource\SharedLink;
@@ -54,7 +56,6 @@ interface FileServiceInterface extends AuthenticatedServiceInterface
     /**
      * @param File $file
      * @param SharedLink|CreateSharedLinkRequest|array|null $sharedLink shared link object used to set box permissions
-     *
      * @return File
      */
     public function createSharedLink(File $file, SharedLink|CreateSharedLinkRequest|array|null $sharedLink = null): File;
@@ -70,4 +71,16 @@ interface FileServiceInterface extends AuthenticatedServiceInterface
      * @return File
      */
     public function createNewFile(): File;
+
+    public function createUploadSession(string|int $parentId, string $filename, int $fileSize): UploadSession;
+
+    public function uploadPart(string $sessionId, string $data, int $offset, int $totalSize): UploadPart;
+
+    /** @return UploadPart[] */
+    public function listUploadSessionParts(string $sessionId): array;
+
+    /** @param UploadPart[] $parts */
+    public function commitUploadSession(string $sessionId, array $parts, string $fileSha1): File;
+
+    public function abortUploadSession(string $sessionId): void;
 }

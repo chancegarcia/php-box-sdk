@@ -27,7 +27,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 namespace Box\Connection;
@@ -39,7 +38,19 @@ use Box\Http\FileStream;
 interface ConnectionInterface extends LoggerAwareInterface
 {
     /**
+     * Send a raw request with full control over method, URI, and options.
+     * Use when per-request headers or a non-JSON body are required.
+     *
+     * @param string $method HTTP method (GET, POST, PUT, DELETE, …)
+     * @param string $uri
+     * @param array $options Guzzle-compatible options: 'body', 'headers', 'multipart', etc.
+     * @return BoxResponseInterface
+     */
+    public function request(string $method, string $uri, array $options = []): BoxResponseInterface;
+
+    /**
      * GET
+     *
      * @param string $uri
      * @return BoxResponseInterface
      */
@@ -53,7 +64,6 @@ interface ConnectionInterface extends LoggerAwareInterface
      *                                  encoded string will become the only valid value
      * @param bool $nameValuePair this will be deprecated/fully removed in the future since params as a json
      *                                  encoded string will be the expected value
-     *
      * @return BoxResponseInterface
      */
     public function post(string $uri, array|string $params = [], bool $nameValuePair = false): BoxResponseInterface;
@@ -62,7 +72,6 @@ interface ConnectionInterface extends LoggerAwareInterface
      * @param string $uri
      * @param array|string $params array will be deprecated in the future;
      *                             json encoded string will become the only valid value
-     *
      * @return BoxResponseInterface
      */
     public function put(string $uri, array|string $params = []): BoxResponseInterface;
