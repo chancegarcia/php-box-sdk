@@ -2,146 +2,112 @@
 
 ## Project Vision
 
-Build a reliable, developer-friendly PHP SDK for working with Box-related functionality. v1.0 is the **current focus**, implementing a hardened, service-oriented architecture with full PSR compliance.
+Build a reliable, developer-friendly PHP SDK for working with the Box API. The SDK functions as a clean boundary layer — framework-neutral, PSR-compliant, and suitable for standalone use or integration into application frameworks.
 
-v0.11.0 was a **functional transition release** that modernized the codebase and introduced v1.0 architecture patterns while preserving backward compatibility.
+## Release History
 
-The CLI exists mainly as a quick, practical test tool for verifying SDK behavior without needing to wire the package into an existing Composer project during every iteration.
+### v0.11.0 (Functional Transition) — Complete
+Bridge release from v0.10.x. Modernized for PHP 8.4, introduced recursive hydration, Doctrine Collections, `FileStream`, and PSR alignment. Legacy aliases preserved for transition.
 
-## Release Strategy
+### v1.0.0 — Released
+Full architectural overhaul. No legacy baggage. Key additions:
+- JWT/S2S authentication (`JwtProvider`, `JwtAuthConfig`, `box:jwt:token` CLI)
+- Token storage: Filesystem, PDO, In-Memory behind `TokenStorageInterface`
+- Webhook signature verification (`WebhookVerifier`)
+- Resource namespace rationalization (`Box\Resource`)
+- Service layer hardening (`BoxClientFactory`, `ClientServiceRegistry`, `AuthenticatedServiceInterface`)
+- Guzzle-only transport; PSR-3/7/17/18 compliant
+- Chunked file upload (low-level session API + client orchestrator)
+- Optional PSR-14 event dispatcher
 
-### v0.11.0 (Functional Transition)
-- **Goal**: Bridge v0.10.x and v1.0, stabilize core behavior, and modernize for PHP 8.4.
-- **Status**: Completed.
-- **Key Features**:
-    - PHP 8.4+ requirement.
-    - Flattened namespaces with legacy aliases.
-    - Recursive Hydration layer.
-    - Integration with Doctrine Collections.
-    - Transition layer for nested model fields (supporting both arrays and objects).
-    - Introduction of DTOs for complex payloads.
-    - Pluggable HTTP transports (Guzzle/Curl).
-    - Improved `FileStream` for uploads.
-- **Release Tasks**: See [v0.11 Release Task List](release-task-lists.md#v011-release-task-list).
+---
 
-### v1.0 (Design Perfection)
-- **Goal**: Full implementation of the future architecture with no legacy baggage.
-- **Status**: Current Focus.
-- **Key Focus**: See [v1.0 Planning](v1/overview.md) and [v1.0 Strategy](v1/strategy-and-contracts.md) for detailed technical goals.
-- **Planned Changes**:
-    - **Client as Facade**: `Client` will become a lightweight facade over focused services (e.g., `FileService`, `UserService`).
-    - **Service-First Architecture**: High-level operations move to focused services.
-    - **Direct Transport API**: Supported advanced extension point for raw PSR-7 requests; supports both PSR-oriented `send()` and ergonomic `request()` methods.
-    - **No Legacy Baggage**: Remove all legacy aliases and deprecated namespaces.
-    - **Strict Typing**: Enforce object-only types for nested model fields; standardize IDs as `string` and dates as `DateTimeImmutable`.
-    - **Modern Auth Boundary**: Decouple `Connection` into `Transport` and `AuthProvider`.
-    - **Token Storage**: v1 core provides In-Memory and PDO storage with support for multiple contexts and one active token per context. PDO schema is documented (helper SQL); encryption at rest is application/integration responsibility with SDK guidance. Filesystem storage evaluation is a v1 goal. Advanced multi-token storage and Doctrine ORM/Symfony bundle deferred to post-v1.
-    - **Clean Connection**: Decouple `Connection` from `Model` inheritance; make it a raw request/response layer.
-    - **Service Consistency**: Services will return mapped model objects or typed DTOs consistently.
-    - **Modern DI**: Replace class-string setters with constructor injection or factories.
-    - **Expanded Coverage**: Implement high-priority endpoints like Metadata; Sign Requests and Webhooks deferred to v1.1.0 (with v1.0.0 direct transport fallback).
-    - **PSR Compliance**: Achieve full PSR-12 compliance and align with PSR-3, PSR-7, PSR-17, and PSR-18.
-    - **Resilience**: Optional, disabled-by-default retry behavior with `Retry-After` support.
-- **Release Tasks**: See [v1.0 Release Task List](release-task-lists.md#v10-release-task-list).
+## Post-v1 Release Plan
 
-## Current Focus Areas
+### v1.1 — Core File Operations + Ergonomics
 
-### 1. Core SDK Stability
-- Strengthen the main client and service layer.
-- Improve connection handling and response parsing.
-- Keep DTOs, models, and storage abstractions consistent.
-- Improve `Retry-After` handling in the service layer.
+| Item | Notes |
+|:---|:---|
+| Upload new file version | `POST /files/{id}/content` |
+| Copy file | `POST /files/{id}/copy` |
+| File versions listing | `GET /files/{id}/versions` |
+| Auto-pagination helper | Cross-cutting; applies to folder items, users, groups, search |
+| Search advanced params | content_types, date ranges, ancestor_folder_ids, metadata filters |
+| Auto-retry with Retry-After | Retry loop in transport layer; was deferred from v0.11 |
+| PHP Enums for roles/statuses | Expand `SharedLinkAccess`, collaboration roles, user status |
+| CLI command additions | New commands for v1.1 features |
 
-### 2. Authentication Workflows
-- Finalize and harden authentication-related flows.
-- Support token refresh and authorization URL generation.
-- Improve error handling for auth failures and edge cases.
+### v1.2 — Metadata
 
-### 3. File Upload and Streaming
-- Support robust file uploads including streaming via `FileStream`.
-- Improve handling of local files, temporary files, and remote responses.
-- Validate upload success/failure states thoroughly.
+Full Box metadata family — self-contained, worth its own release.
 
-### 4. CLI as a Verification Tool
-- **Harness Retention**: The CLI test harness is retained in the core repository as a practical verification tool.
-- **V1.0 Goals**: Preserve existing command utility; keep commands aligned with v1 architecture.
-- **JWT/S2S Testing**: If practical, support CLI-based JWT/S2S testing in v1.0.0.
-- **Boundary**: Keep commands thin; reusable logic belongs in SDK services, not commands.
-- **Redaction**: Ensure CLI output uses SDK redaction rules.
-- **V1.1 Expansion**: Add more useful commands in v1.1.0 only if they improve practical SDK verification (driven by usefulness, not endpoint parity).
+| Item | Notes |
+|:---|:---|
+| Metadata templates (CRUD) | `/metadata-templates` |
+| File metadata instances (CRUD) | `/files/{id}/metadata/...` |
+| Folder metadata instances (CRUD) | `/folders/{id}/metadata/...` |
 
-### 5. Testing and Quality
-- Expand PHPUnit coverage across commands, services, and client behavior.
-- Add tests for edge cases and failure scenarios.
-- Cover critical hydration and mapping paths.
+### v1.3 — Webhook Management + Content Interactions
 
-### 6. PSR Compliance
-- Achieve full PSR-12 compliance before v1.0.
-- Decouple HTTP layer to align with PSR-7/18.
-- Use PSR-17 factories for requests and streams.
+| Item | Notes |
+|:---|:---|
+| Webhook management CRUD | `/webhooks` — create/update/delete/list (verification already shipped) |
+| Comments | `/comments`, `/files/{id}/comments` |
+| Tasks + task assignments | `/tasks`, `/task-assignments` |
+| Collections (starred items) | `/collections` |
+| Web links | `/web-links` |
+| Thumbnails | `GET /files/{id}/thumbnail/{ext}` |
+| Zip downloads | `/zip-downloads` |
+| Long-poll events | `OPTIONS /events` |
 
-### 7. Documentation
-- Improve project documentation for setup and usage
-- Add practical examples for authentication and upload flows
-- Document command-line options and environment variables
-- Keep README and docs aligned with actual behavior
+### v1.4 — Enterprise Admin + Symfony Bundle
 
-### 8. Configuration Format Future Planning
-- Defer YAML/XML configuration support to future framework integrations (e.g., [Future Symfony Bundle](future/future-symfony-bundle.md)).
-- Core SDK should remain framework-neutral and expose PHP-native configuration APIs.
+JWT/S2S-powered admin operations plus the first framework integration.
 
-## Short-Term Goals
+| Item | Notes |
+|:---|:---|
+| Symfony bundle | Service definitions, env var bridge, config format |
+| User create/update/delete | `POST/PUT/DELETE /users/{id}` |
+| Email aliases + avatar | `/users/{id}/email-aliases`, `/users/{id}/avatar` |
+| User memberships | `GET /users/{id}/memberships` |
+| Group update + membership details | `PUT /groups/{id}`, `GET /group-memberships/{id}` |
+| Group collaborations | `GET /groups/{id}/collaborations` |
+| Enterprise events | Admin log stream |
+| Collaboration pending invites | `GET /collaborations` |
+| Collaboration allowlist | `/collaboration-whitelist-*` |
 
-- Clean up and prioritize existing TODO items
-- Stabilize authentication and refresh flows
-- Improve upload command reliability
-- Add or refine tests around the most used paths
-- Document installation and first-run setup more clearly
-- Keep the CLI useful as a fast SDK validation path
+### v1.5 — Remaining Gaps and Housekeeping
 
-## Mid-Term Goals
+| Item | Notes |
+|:---|:---|
+| Trash management | `GET/DELETE /files/{id}/trash`, `/folders/{id}/trash` |
+| Folder locks | `/folder-locks` |
+| Watermarks | `GET/PUT/DELETE` on files + folders |
+| File collaborations listing | `GET /files/{id}/collaborations` |
+| Sign Requests | `/sign-requests` — Box Sign |
 
-- Expand SDK coverage for additional Box-related operations
-- Improve internal abstraction boundaries
-- Add more consistent response and error handling
-- Keep the CLI lean while preserving its usefulness for manual testing
-- Improve developer tooling and project conventions
+---
 
-## Long-Term Goals
+## v2.0 — Extended Framework Integrations
 
-- Provide a polished SDK-first experience suitable for real-world use
-- Keep the codebase modular, testable, and easy to evolve
-- Support a broader set of Box workflows without sacrificing simplicity
-- Establish strong documentation and maintainability standards
-- Revisit YAML/XML support only if it becomes clearly valuable for a future framework integration layer.
+| Item | Notes |
+|:---|:---|
+| Laravel service provider | Facade, config, service container wiring |
+| Doctrine ORM token storage | Was explicitly deferred in v1 strategy-and-contracts |
 
-## Success Criteria
+---
 
-- SDK behavior is reliable, predictable, and well-tested
-- CLI commands remain useful as a fast way to verify SDK functionality
-- Authentication flows are robust and well-tested
-- Upload operations are stable and clearly reported
-- Documentation matches actual behavior
-- The test suite provides confidence for future changes
+## Design Principles (Carry Forward)
 
-## Open Questions
-
-- Which Box features should be prioritized next?
-- Which SDK capabilities matter most for the next phase?
-- What is the right balance between SDK depth and CLI convenience?
-- YAML/XML configuration support is deferred and belongs in a future framework integration layer rather than the core SDK.
-
-## Maintenance Notes
-
-- Keep roadmap aligned with the current TODO list
-- Update priorities as features are completed
-- Revisit goals after major releases or structural changes
-- YAML/XML integration belongs in a future framework integration layer.
+- **Framework-neutral core**: No framework dependencies in the core SDK. Framework integrations live in separate packages.
+- **PSR-compliant**: PSR-3 (logging), PSR-7/17/18 (HTTP), PSR-14 (events). Optional injection pattern for all.
+- **Service-first**: Business operations live in focused services; `Client` is a thin facade.
+- **No legacy baggage**: Each major version is a clean cut. Transition helpers go in a dedicated minor release if needed.
+- **CLI as verification harness**: Commands stay thin. New commands only when they meaningfully verify SDK behavior.
 
 ---
 
 **See also:**
-- [README.md](../README.md)
-- [Programmatic Usage Guide](../user/programmatic-usage.md)
-- [CLI Test Harness Guide](../user/cli-test-harness.md)
+- [Documentation Index](../README.md)
+- [API Coverage Matrix](../audits/15.5-api-coverage-matrix.md)
 - [PSR Compliance Assessment](../audits/psr-compliance-assessment.md)

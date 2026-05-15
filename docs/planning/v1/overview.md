@@ -34,14 +34,27 @@ This document tracks detailed architectural decisions, typing rules, and impleme
 
 ## API Coverage Expansion
 
-Priority endpoints for v1.0:
-- File Versions
-- Collections
-- Comments
-- Tasks
-- Metadata
-- Webhooks
-- Sign Requests
+### Shipped in v1.0.0
+Core CRUD and primary operations for all initially scoped resource families:
+- **FileService**: upload, get, update, delete, download, shared link
+- **FolderService**: get, create, update, delete, list items, copy, collaborations, shared link, resolve shared link
+- **UserService**: get current user, get by ID, list enterprise users
+- **GroupService**: list groups, create, get, delete, list members, add/remove members
+- **CollaborationService**: add (folders and files), get, update, delete
+- **UserEventService**: get event stream
+- **SearchService**: keyword search
+
+### Deferred to v1.x
+All of the following were listed as v1.0 priorities but were formally deferred:
+- **File Versions** — version history management
+- **Collections** — starred items / favorites
+- **Comments** — file commenting
+- **Tasks** — task and review workflows
+- **Metadata** — structured metadata templates and instances
+- **Webhooks** (CRUD) — webhook management (signature verification shipped in v1.0)
+- **Sign Requests** — Box Sign integration
+
+See [API Coverage Matrix](../../audits/api-coverage-matrix.md) for the full endpoint-level breakdown.
 
 ---
 **Status:** v1.0.0 released. This document is a historical planning reference; the goals listed above are complete or formally deferred.

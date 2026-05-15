@@ -1,46 +1,51 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-14 21:27:53 (America/Indiana)
+- **Timestamp**: 2026-05-15 00:44 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
-- **Roadmap Position**: Slice 18 complete — documentation cleanup done
+- **Roadmap Position**: Slices 17 and 18 complete. Doc cleanup complete. Slice 19 is next (not started).
 - **Test baseline**: 334 tests, 902 assertions
-- **v1 remaining**: Package/repo rename only (human-driven, user will ping when ready)
+- **v1 remaining**: Slice 19 (Chunked Upload + PSR-14 Events) → package/repo rename (user-driven)
 
-## Completed This Session
+## Next Action
 
-### Permissions Setup
-- Created `.claude/settings.json` with allowlist for all `composer` validation commands.
+**Start Slice 19 — Chunked Upload + PSR-14 Events.**
 
-### Slice 17 — Code Gate (complete)
-- Stale `handleResponseContent` comment removed from `tests/Service/ServiceResponseHandlingTest.php`
-- `BoxApiErrorTrait::error()` return type corrected `void` → `never`
-- Yoda conditionals fixed in `WebhookVerifier.php` (lines 18, 61)
-- All legacy symbol scan targets confirmed clean
-- `composer review`: 334 tests, 902 assertions — green
+Read `docs/ai/next-session-plan.md` for the 8-gate plan. Open questions and doc cleanup tasks are all resolved — go straight to Gate 1.
 
-### Slice 17 — Documentation Gate (complete)
-- `docs/README.md` — foundation status corrected; v1.0 migration guide linked
-- `docs/migration/upgrading-0.11-to-1.0.md` — token storage, JWT/S2S, webhook sections written
-- `docs/user/programmatic-usage.md` — JWT/S2S section added
-- `docs/user/cli-test-harness.md` — JWT commands, storage options table, stale `--transport` removed
-- `CHANGELOG.md` — full v1.0.0 entry written
-
-### Slice 18 — Documentation Cleanup (complete)
-- Archived 12 completed step trackers/audits → `docs/archive/steps/`
-- Archived 7 superseded planning/audit files → `docs/archive/planning/`
-- Created `docs/archive/README.md` index
-- Fixed status drift: `release-task-lists.md`, `v1/overview.md`, `current-task-summary.md`
-- Updated nav: `docs/README.md`, `docs/planning/README.md`
-- Fixed broken links: `v1/decision-index.md`, `v1/package-rename-plan.md`
-- Roadmap release blockers: Steps 17 and 18 marked ✓
+Do not prompt about package/repo rename.
 
 ---
 
-## Remaining v1 Work
+## Completed This Session (2026-05-15)
 
-**Package/repo rename** — final step, human-driven. User will ping when ready. Do not prompt.
+### Documentation Cleanup (all 7 tasks done)
+1. **CHANGELOG.md** — Removed v0.11.4 and v0.11.5 entries; v1.0.0 now flows directly to v0.11.3.
+2. **docs/README.md** — Updated API coverage matrix link, removed rename plan link, replaced AI status section with `[Internal](internal/status.md)`.
+3. **docs/internal/status.md** — Created; links to handoff, task summary, next session plan, and rename plan.
+4. **docs/audits/api-coverage-matrix.md** — Created (renamed from `15.5-api-coverage-matrix.md`); all ❌ endpoints flipped to ✅, service base cleanup noted as complete, deferred list accurate. Old file deleted.
+5. **docs/planning/v1/overview.md** — API Coverage Expansion section updated to clearly show what shipped vs. deferred to v1.x.
+6. **docs/planning/v1/architecture-rules.md** — Retry section marked "not implemented, deferred to v1.1"; `RetryExhaustedException` flagged as not yet in v1.0.
+7. **docs/planning/v1/strategy-and-contracts.md** — JWT updated to "implemented", retry flagged deferred, Metadata bumped to v1.1.0, open questions resolved or closed.
+8. **docs/user/programmatic-usage.md** — Fixed awkward "Models (Resources)" bullet under Data Types.
+
+### Deferred (Post-Slice-19)
+- `llms.txt` for the SDK — user-facing convention for LLM tooling; review after Slice 19 when API surface is more complete. Consider adding to Gate 8 docs at that point.
+
+---
+
+## Slice 19 — Chunked Upload + PSR-14 Events
+
+8-gate plan in `docs/ai/next-session-plan.md`. Gates in order:
+1. PSR-14 infrastructure
+2. FileStream additions
+3. DTOs
+4. FileService low-level API
+5. Orchestrator
+6. Client facade
+7. Tests
+8. Documentation (+ `llms.txt` review)
 
 ---
 
@@ -50,14 +55,13 @@
 - Config provider methods: provider-prefixed — `getOAuth2ClientId()`, `getJwtClientId()`, etc.
 - Private key: `EnvConfigProvider` reads PEM file; `JwtAuthConfig::$privateKey` is always PEM content.
 - CLI transport: `--transport` removed; `ConnectionInterface` transport methods kept for programmatic use.
-- CLI storage: `--storage-type filesystem` (default) or `--storage-type pdo`; path defaults to `var/tmp/box-sdk/tokens.json` relative to project root.
-- JWT CLI command: `box:jwt:token` (enterprise token) / `box:jwt:token --user-id=<ID>` (app user token).
-- Command wiring: manual in `bin/box-sdk`, no DI container.
-- No plan mode. Claude Code CLI executes code directly; human reviews and commits.
+- CLI storage: `--storage-type filesystem` (default) or `--storage-type pdo`.
+- JWT CLI: `box:jwt:token` (enterprise) / `box:jwt:token --user-id=<ID>` (app user).
 - `BoxApiErrorTrait::error()` return type is `never` — always throws.
-- Webhook signing: `Box\Webhook\WebhookVerifier`; formula is `base64(HMAC-SHA256(body + timestamp, key))`; management CRUD deferred.
-- Audit doc: `docs/planning/code_smells_v1.md` — full smell registry with slice assignments.
-
-## Transition Note
-Continuing in Claude Code CLI (native macOS Terminal). CLAUDE.md exists at project root and will be loaded automatically.
-Memory files are at: `~/.claude/projects/-Users-chance-PhpstormProjects-mine-box-sdk/memory/`
+- Webhook signing: `Box\Webhook\WebhookVerifier`; formula `base64(HMAC-SHA256(body + timestamp, key))`; CRUD deferred.
+- PSR-14: Optional `EventDispatcherInterface` injection on `Client` — same pattern as PSR-3 logger.
+- Chunked upload: low-level session API public on `FileService`; orchestrator on `FileService` + `Client` facade.
+- Chunked upload part SHA1: `base64_encode(sha1($chunk, true))` — raw binary flag required.
+- Chunked upload whole-file SHA1: incremental via `hash_init/update/final`.
+- Auto-retry / auto-token-refresh: **not implemented**; deferred to v1.1. Only `RateLimitException` exists.
+- `ArrayConfigProvider`: good idea, deferred to v1.1 (confirmed this session).

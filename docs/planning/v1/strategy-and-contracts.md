@@ -194,9 +194,8 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
 4. **Token Storage**: `AuthProvider` calls `TokenStorage->save()` after refresh.
 
 ### JWT / Server-to-Server (S2S)
-- **Status**: Targeted v1.0.0 requirement.
-- **Sequencing**: A feasibility checkpoint will be performed after the core transport/auth-provider refactor.
-- **Components**: `JwtAuthProvider` requiring private key, client ID, client secret, and enterprise ID.
+- **Status**: Implemented in v1.0.0. `JwtProvider` implements `AuthProviderInterface`; `JwtAuthConfig` DTO holds all JWT credentials.
+- **Components**: `JwtProvider` + `JwtAuthConfig` (PEM private key content, client ID, client secret, enterprise ID, public key ID). `BoxClientFactory::createJwtClient()` is the canonical entry point.
 
 ### Direct Transport Auth
 - **Default**: Auth headers injected automatically if Transport was created via Client.
@@ -242,7 +241,9 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
 
 ## 9. Retry and Rate-Limit Strategy
 
-### Policy
+> **v1.0 Status**: Not implemented. Deferred to v1.1. Only `RateLimitException` (thrown on HTTP 429) exists in v1.0; there is no retry loop, no `setAutoRetry()`, and no `RetryExhaustedException`.
+
+### Policy (v1.1 target)
 - **Optional**: Disabled by default or configurable.
 - **Scope**: Applied at the Transport layer.
 - **Config**:
@@ -321,7 +322,7 @@ This document consolidates and hardens the v1.0 architecture, contracts, workflo
 | Collaborations | High | `CollaborationService` |
 | Sign Requests | v1.1.0 | `SignRequestService` (New) |
 | Webhooks | v1.1.0 | `WebhookService` (New) |
-| Metadata | High | `MetadataService` (New) |
+| Metadata | v1.1.0 | `MetadataService` (New) |
 
 ## 13. Pagination Strategy
 
@@ -465,17 +466,19 @@ The final migration guide MUST cover:
 
 ## 21. Open Questions and Risks
 
-- **JWT Timing**: Targeted v1.0.0; feasibility checkpoint after foundation.
-- **Auto-pagination**: Complexity vs value for v1.0.
+- **JWT Timing**: Resolved. Implemented in v1.0.0 via `JwtProvider` and `JwtAuthConfig`.
+- **Auto-pagination**: Deferred to v1.1. Manual pagination via response DTOs ships in v1.0.
 - **Upload Progress**: PSR-18 doesn't natively handle progress hooks well; deferred to v1.1.0 or earlier only if concrete Guzzle-specific requirements arise.
 
 ## 22. Open Questions for Token Storage
 
-- What exact fields should `TokenStorageContext` contain? (Non-blocking for v1.0)
-- Should the context object expose a canonical string key? (Likely yes)
-- Should PDO storage enforce one active token per context with a unique constraint? (Yes, documented)
-- Should unsupported multi-token-per-context attempts overwrite, reject, or require explicit update semantics? (Overwrite by default in core v1.0)
-- Should auth type be part of the context key or a separate metadata field? (Metadata)
-- Should JWT/S2S and OAuth2 tokens share the same storage contract and context model? (Yes)
+**v1.0 decisions (final):**
+- Context is a plain string key (e.g., `"default"`, `"user:123"`). One active token per context.
+- PDO and Filesystem storage ship in v1.0; Doctrine ORM deferred.
+- Multi-token-per-context attempts overwrite by default.
+- Auth type is metadata, not part of the context key.
+- JWT and OAuth2 tokens share the same storage contract (`TokenStorageInterface`).
+
+**Still open (post-v1):**
 - Should future Symfony bundle storage support token history by default or as an opt-in feature?
 - What package/repository should eventually host the Symfony bundle?

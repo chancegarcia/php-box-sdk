@@ -59,14 +59,16 @@ These rules define the required structure for the Box PHP SDK V1.0 refactor.
 - **Hydration**: Centralized in `Box\Mapper` or `Box\Http\Hydrator`, not in the models themselves. Resource construction should be handled by hydrator/mapper boundaries.
 
 ### Retry and Rate-Limit Behavior
-- **Default**: Disabled.
-- **Scope**: Applied at the Transport layer (middleware/decorator).
-- **Applicability**: Applies to both Service and Direct Transport calls.
-- **Safe Retries**: Only retry GET, HEAD, and idempotent operations (with `Idempotency-Key`) by default.
-- **Opt-in**: Non-idempotent retries require explicit opt-in via request options.
-- **Retry-After**: Transport MUST honor Box API's `Retry-After` header.
-- **Exhaustion**: Throws `RetryExhaustedException` when max attempts are reached.
-- **Metadata**: Exceptions and response wrappers MUST expose retry count and last response.
+- **v1.0 Status**: Not implemented. Deferred to v1.1. Only `RateLimitException` (thrown on HTTP 429) exists; no retry loop or `RetryExhaustedException` in v1.0.
+- **Design (v1.1 target)**:
+    - **Default**: Disabled.
+    - **Scope**: Applied at the Transport layer (middleware/decorator).
+    - **Applicability**: Applies to both Service and Direct Transport calls.
+    - **Safe Retries**: Only retry GET, HEAD, and idempotent operations (with `Idempotency-Key`) by default.
+    - **Opt-in**: Non-idempotent retries require explicit opt-in via request options.
+    - **Retry-After**: Transport MUST honor Box API's `Retry-After` header.
+    - **Exhaustion**: Throws `RetryExhaustedException` when max attempts are reached.
+    - **Metadata**: Exceptions and response wrappers MUST expose retry count and last response.
 
 ### Logging and Redaction Policy
 - **Logger**: PSR-3 `Psr\Log\LoggerInterface` (Default: `NullLogger`).
@@ -95,7 +97,7 @@ These rules define the required structure for the Box PHP SDK V1.0 refactor.
     - `JsonDecodeException` (Invalid response body).
     - `HydrationException` (Mapping failure).
     - `TokenStorageException` (Persistence failure).
-    - `RetryExhaustedException` (Max attempts reached).
+    - `RetryExhaustedException` (Max attempts reached) — not yet implemented; deferred to v1.1.
 - **Context**: All API exceptions MUST provide access to the raw PSR-7 Request and Response (redacted).
 - **Direct Transport**: Direct transport throws these exceptions by default, maintaining consistency with Services.
 

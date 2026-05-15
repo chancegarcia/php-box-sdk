@@ -1,6 +1,6 @@
-# Slice 15.5 — Box API Coverage Matrix
+# Box API Coverage Matrix
 
-**Timestamp**: 2026-05-14 (America/Indiana)
+**Updated**: 2026-05-15
 **Branch**: release-v1.0.0
 
 ---
@@ -8,7 +8,7 @@
 ## Methodology
 
 Compared each service against the Box API reference (source: `https://developer.box.com/llms.txt`).
-Legend: ✅ Implemented | ❌ Missing (added in this slice) | ⏸ Deferred (documented below)
+Legend: ✅ Implemented | ⏸ Deferred (documented below)
 
 ---
 
@@ -17,10 +17,10 @@ Legend: ✅ Implemented | ❌ Missing (added in this slice) | ⏸ Deferred (docu
 | Method | Path | Operation | Status |
 |--------|------|-----------|--------|
 | POST | `/files/content` | Upload new file | ✅ `uploadFile()` |
-| GET | `/files/{id}` | Get file details | ❌ → `getFile()` added |
-| PUT | `/files/{id}` | Update file metadata/name | ❌ → `updateFile()` added |
-| DELETE | `/files/{id}` | Delete file (to trash) | ❌ → `deleteFile()` added |
-| GET | `/files/{id}/content` | Download file content | ❌ → `downloadFile()` added |
+| GET | `/files/{id}` | Get file details | ✅ `getFile()` |
+| PUT | `/files/{id}` | Update file metadata/name | ✅ `updateFile()` |
+| DELETE | `/files/{id}` | Delete file (to trash) | ✅ `deleteFile()` |
+| GET | `/files/{id}/content` | Download file content | ✅ `downloadFile()` |
 | PUT | `/files/{id}?fields=shared_link` | Add/update shared link | ✅ `createSharedLink()` |
 | POST | `/files/{id}/content` | Upload new version | ⏸ Deferred |
 | POST | `/files/{id}/copy` | Copy a file | ⏸ Deferred |
@@ -43,7 +43,7 @@ Legend: ✅ Implemented | ❌ Missing (added in this slice) | ⏸ Deferred (docu
 | GET | `/folders/{id}` | Get folder | ✅ `getFolder()` |
 | POST | `/folders` | Create folder | ✅ `createFolder()` |
 | PUT | `/folders/{id}` | Update folder | ✅ `updateFolder()` |
-| DELETE | `/folders/{id}` | Delete folder | ❌ → `deleteFolder()` added |
+| DELETE | `/folders/{id}` | Delete folder | ✅ `deleteFolder()` |
 | GET | `/folders/{id}/items` | List folder items | ✅ `getFolderItems()` |
 | POST | `/folders/{id}/copy` | Copy folder | ✅ `copyFolder()` |
 | GET | `/folders/{id}/collaborations` | List collaborations | ✅ `getFolderCollaborations()` |
@@ -62,7 +62,7 @@ Legend: ✅ Implemented | ❌ Missing (added in this slice) | ⏸ Deferred (docu
 |--------|------|-----------|--------|
 | GET | `/users/me` | Get current user | ✅ `getCurrentUser()` |
 | GET | `/users/{id}` | Get user by ID | ✅ `getUser()` |
-| GET | `/users` | List enterprise users | ❌ → `listUsers()` added |
+| GET | `/users` | List enterprise users | ✅ `listUsers()` |
 | POST | `/users` | Create managed user | ⏸ Deferred (admin) |
 | PUT | `/users/{id}` | Update user | ⏸ Deferred |
 | DELETE | `/users/{id}` | Delete user | ⏸ Deferred |
@@ -77,12 +77,12 @@ Legend: ✅ Implemented | ❌ Missing (added in this slice) | ⏸ Deferred (docu
 | Method | Path | Operation | Status |
 |--------|------|-----------|--------|
 | GET | `/groups/{id}/memberships` | List group members | ✅ `getGroupMembershipList()` |
-| GET | `/groups` | List all groups | ❌ → `listGroups()` added |
-| POST | `/groups` | Create group | ❌ → `createGroup()` added |
-| GET | `/groups/{id}` | Get group | ❌ → `getGroup()` added |
-| DELETE | `/groups/{id}` | Delete group | ❌ → `deleteGroup()` added |
-| POST | `/group-memberships` | Add group member | ❌ → `addGroupMember()` added |
-| DELETE | `/group-memberships/{id}` | Remove group member | ❌ → `removeGroupMember()` added |
+| GET | `/groups` | List all groups | ✅ `listGroups()` |
+| POST | `/groups` | Create group | ✅ `createGroup()` |
+| GET | `/groups/{id}` | Get group | ✅ `getGroup()` |
+| DELETE | `/groups/{id}` | Delete group | ✅ `deleteGroup()` |
+| POST | `/group-memberships` | Add group member | ✅ `addGroupMember()` |
+| DELETE | `/group-memberships/{id}` | Remove group member | ✅ `removeGroupMember()` |
 | PUT | `/groups/{id}` | Update group | ⏸ Deferred |
 | GET | `/group-memberships/{id}` | Get membership details | ⏸ Deferred |
 | GET | `/groups/{id}/collaborations` | Group collaborations | ⏸ Deferred |
@@ -95,10 +95,10 @@ Legend: ✅ Implemented | ❌ Missing (added in this slice) | ⏸ Deferred (docu
 |--------|------|-----------|--------|
 | POST | `/collaborations` | Add collaboration (folder) | ✅ `addCollaboration()` (folders only) |
 | GET | `/folders/{id}/collaborations` | Get folder collabs | ✅ `getFolderCollaborations()` |
-| GET | `/collaborations/{id}` | Get collaboration | ❌ → `getCollaboration()` added |
-| PUT | `/collaborations/{id}` | Update collaboration | ❌ → `updateCollaboration()` added |
-| DELETE | `/collaborations/{id}` | Delete collaboration | ❌ → `deleteCollaboration()` added |
-| POST | `/collaborations` | Add collaboration (file) | ❌ → extended `addCollaboration()` for files |
+| GET | `/collaborations/{id}` | Get collaboration | ✅ `getCollaboration()` |
+| PUT | `/collaborations/{id}` | Update collaboration | ✅ `updateCollaboration()` |
+| DELETE | `/collaborations/{id}` | Delete collaboration | ✅ `deleteCollaboration()` |
+| POST | `/collaborations` | Add collaboration (file) | ✅ `addCollaboration()` (files supported) |
 | GET | `/files/{id}/collaborations` | Get file collabs | ⏸ Deferred |
 | GET | `/collaborations` | List pending invites | ⏸ Deferred |
 | POST/GET/DELETE | `/collaboration-whitelist-*` | Domain allowlist | ⏸ Deferred |
@@ -123,34 +123,32 @@ Legend: ✅ Implemented | ❌ Missing (added in this slice) | ⏸ Deferred (docu
 
 ---
 
-## Service Base Modernization
+## Service Base Changes (v1.0.0)
 
-Changes made in this slice to `Service` / `ServiceInterface`:
+Changes completed during the v1.0.0 development cycle:
 
 | Item | Action |
 |------|--------|
-| `$clientId`, `$clientSecret` properties | Removed — never read inside service logic; credentials live on `Client` and `AuthProvider` |
+| `$clientId`, `$clientSecret` properties | Removed — credentials live on `Client` and `AuthProvider` |
 | `getClientId()`, `setClientId()` | Removed from `Service` and `ServiceInterface` |
 | `getClientSecret()`, `setClientSecret()` | Removed from `Service` and `ServiceInterface` |
-| `refreshConnection()` | Removed — implementation just re-threw the exception; 401 handling now inlines `throw $bre` |
+| `refreshConnection()` | Removed — 401 handling now inlines `throw $bre` |
 | `sendDeleteToBox(string $uri): void` | Added — standard DELETE helper for void operations |
 | `Client::configureService()` | Removed `setClientId`/`setClientSecret` calls on services |
-
-Deferred base-service cleanup (15.6 or later):
-- `queryBox()`, `putIntoBox()`, `getFromBox()`, `sendUpdateToBox()` — broad untyped base helpers; removing from interface would be a breaking change; defer to v2 or a dedicated refactor slice
-- `handleResponseContent()` (marked `@deprecated v0.11.0`) — still used internally; leave for dedicated cleanup
-- `ServiceInterface::TOKEN_URI`, `REVOKE_URI` constants — vestigial, never used by services
+| `queryBox()`, `putIntoBox()`, `getFromBox()`, `sendUpdateToBox()` | Removed from `ServiceInterface` and `Service` in v1.0.0 |
+| `handleResponseContent()` | Removed from `ServiceInterface` and `Service` in v1.0.0 |
+| `ServiceInterface::TOKEN_URI`, `REVOKE_URI` | Removed (vestigial constants, never used) |
 
 ---
 
-## Deferred Endpoint Families (Post-v1)
+## Deferred Endpoint Families (Post-v1.0)
 
-The following Box API families are explicitly out of scope for v1:
+The following Box API families are explicitly out of scope for v1.0:
 
 - **Comments** (`/comments`) — file commenting
 - **Tasks** (`/tasks`, `/task-assignments`) — task/review workflows
 - **Metadata** (`/metadata-templates`, `/files/{id}/metadata`) — structured metadata
-- **Webhooks** (`/webhooks`) — webhook management CRUD (signature verification handled in Step 16)
+- **Webhooks** (`/webhooks`) — webhook management CRUD (signature verification shipped in v1.0)
 - **Collections** (`/collections`) — starred items / favorites
 - **Web Links** (`/web-links`) — Box web link objects
 - **Zip Downloads** (`/zip-downloads`) — multi-file download

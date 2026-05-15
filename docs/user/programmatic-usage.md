@@ -260,7 +260,7 @@ The SDK models are hydrated via a centralized `Hydrator`. In v1.0, services hand
 
 ### Data Types
 - **IDs:** Box IDs are handled as `string|int`. The SDK will normalize these when communicating with the API.
-- **Resources:** Models (Resources) are typed objects representing Box entities. They are no longer expected to handle their own hydration logic.
+- **Resources:** Typed objects (e.g., `Box\Resource\File`, `Box\Resource\User`) representing Box entities. Services handle hydration; resources do not perform network calls or self-map.
 
 ## 8. Logging and Observability
 

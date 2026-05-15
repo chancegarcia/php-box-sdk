@@ -13,7 +13,7 @@ Welcome to the documentation for the Box PHP SDK.
 
 ## Reference
 
-- [API Coverage Matrix](audits/15.5-api-coverage-matrix.md): Which Box API endpoints are supported, deferred, or out of scope.
+- [API Coverage Matrix](audits/api-coverage-matrix.md): Which Box API endpoints are supported, deferred, or out of scope.
 - [PSR Compliance Assessment](audits/psr-compliance-assessment.md): Which PSR interfaces the SDK implements.
 - [Roadmap](planning/roadmap.md): High-level release direction and upcoming features.
 - [Architecture Rules](planning/v1/architecture-rules.md): Structural rules for extending or integrating the SDK.
@@ -33,12 +33,9 @@ Welcome to the documentation for the Box PHP SDK.
 - [v1.0 Overview](planning/v1/overview.md) (Historical): High-level goals and typing standards.
 - [Test Coverage Plan](planning/v1/test-coverage-plan.md): Quality and testing strategy.
 - [API Coverage Audit](planning/v1/api-coverage-audit.md): Assessment of Box API endpoint coverage.
-- [Package Rename Plan](planning/v1/package-rename-plan.md): Planning for the move to `box/sdk`.
 
 **Current Foundation Status:**
 - **Steps 10–17**: All complete. v1.0.0 released.
 
-## [AI and Internal Status](ai/)
-- **[Current Task Summary](ai/current-task-summary.md)**: Details of the most recently completed task.
-- **[Current Handoff Summary](ai/current-handoff-summary.md)**: Latest state for the next session.
-- [AI Assistant Planning Context](ai/ai-assistant-planning-context.md): Background for AI-driven development.
+## [Internal](internal/)
+- **[Internal Status](internal/status.md)**: AI development state, active handoff, next session plan, and rename plan tracking.
