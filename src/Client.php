@@ -499,6 +499,18 @@ class Client implements LoggerAwareInterface
         return $fileService->uploadFile($file, $parentId);
     }
 
+    public function chunkedUpload(string|FileStream $file, string|int $parentId): File
+    {
+        $fileService = $this->serviceRegistry->getFileService();
+        $this->configureService($fileService);
+
+        if (null !== $this->eventDispatcher) {
+            $fileService->setEventDispatcher($this->eventDispatcher);
+        }
+
+        return $fileService->chunkedUpload($file, $parentId);
+    }
+
     public function exchangeAuthorizationCodeForToken(): TokenInterface
     {
         $code = $this->getAuthorizationCode();

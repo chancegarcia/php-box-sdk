@@ -33,6 +33,8 @@ Do not prompt about package/repo rename.
 ### Deferred (Post-Slice-19)
 - `llms.txt` — deferred to v1.1 or v1.2 (decided 2026-05-15). Timing depends on post-release v1 patch volume before bundle work begins. Do not add to Gate 8.
 - **PHPDoc quality audit + PHPStan level bump** — audit `T[]` annotations and upgrade to `list<T>` or `array<K, V>` where appropriate; bump PHPStan level after audit to benefit from improved inference. Do a full codebase review before changing the level — scope is large. Post-v1.
+- **`BoxClientFactory` namespace move** — currently `Box\Service\BoxClientFactory`; belongs in `Box\Factory` alongside `TokenFactory`, `ConnectionFactory`. Breaking change, must be pre-v1 or wait for v2. Slot as its own small slice after Slice 19.
+- **`createOAuth2Client()` rename** — rename `BoxClientFactory::createClient()` to `createOAuth2Client()` to make the auth mode explicit. Same slice as the namespace move. Interface (`BoxClientFactoryInterface`) must be updated in tandem.
 
 ---
 
