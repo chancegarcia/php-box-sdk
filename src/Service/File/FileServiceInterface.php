@@ -42,6 +42,7 @@ use Box\Http\FileStream;
 use Box\Resource\File;
 use Box\Resource\SharedLink;
 use Box\Service\AuthenticatedServiceInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 interface FileServiceInterface extends AuthenticatedServiceInterface
 {
@@ -72,6 +73,10 @@ interface FileServiceInterface extends AuthenticatedServiceInterface
      */
     public function createNewFile(): File;
 
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher): void;
+
+    public function getEventDispatcher(): ?EventDispatcherInterface;
+
     public function createUploadSession(string|int $parentId, string $filename, int $fileSize): UploadSession;
 
     public function uploadPart(string $sessionId, string $data, int $offset, int $totalSize): UploadPart;
@@ -83,4 +88,6 @@ interface FileServiceInterface extends AuthenticatedServiceInterface
     public function commitUploadSession(string $sessionId, array $parts, string $fileSha1): File;
 
     public function abortUploadSession(string $sessionId): void;
+
+    public function chunkedUpload(string|FileStream $file, string|int $parentId, ?int $partSize = null): File;
 }
