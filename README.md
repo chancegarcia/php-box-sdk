@@ -8,14 +8,13 @@
 
 A modern PHP SDK for interacting with the [Box.com API](https://developer.box.com/).
 
-**Status:** Deep in **v1.0 implementation**. Step 11 is complete. Step 12 (Token Storage) is in progress.
+**Status:** v1.0.0 released.
 
 This library is designed as a boundary layer for Box API access, suitable for standalone use or integration into frameworks like Symfony.
 
 ## Requirements
 
 - PHP 8.4 or higher
-- `ext-curl`
 - `ext-fileinfo`
 
 ## Installation
@@ -26,110 +25,89 @@ composer require chancegarcia/box-api-v2-sdk
 
 ## Quickstart
 
-This section covers the essentials for getting started with the SDK.
+### OAuth2 Workflow
 
-### 1. Setup the Client
+The recommended setup uses `BoxClientFactory` with an `EnvConfigProvider`, which reads credentials from environment variables (`BOX_OAUTH_CLIENT_ID`, `BOX_OAUTH_CLIENT_SECRET`, etc.):
+
 ```php
-use Box\Client;
+use Box\Service\BoxClientFactory;
+use Box\Service\EnvConfigProvider;
 
-$client = new Client();
-$client->setClientId('YOUR_CLIENT_ID');
-$client->setClientSecret('YOUR_CLIENT_SECRET');
+$factory = new BoxClientFactory(new EnvConfigProvider());
+$client  = $factory->createClient();
 ```
 
-### 2. OAuth2 Workflow
-To start the OAuth2 flow, generate the authorization URL:
+Generate the authorization URL and redirect the user:
+
 ```php
-$authUrl = $client->buildAuthQuery();
+$authUrl = $client->buildAuthorizationUrl();
 // Redirect user to $authUrl
 ```
 
-After the user authorizes and is redirected back to your site with a `code`, exchange it for a token:
+After the user authorizes and is redirected back with a `code`, exchange it for a token:
+
 ```php
 $client->setAuthorizationCode($_GET['code']);
-$token = $client->exchangeAuthorizationCodeForToken(); // Recommended alias for getAccessToken()
+$token = $client->exchangeAuthorizationCodeForToken();
 ```
 
-### 3. File and Folder Operations
-Once you have an active token, you can interact with Box resources:
+### JWT / Server-to-Server
+
+For server-to-server integrations (no browser redirect needed), set `BOX_AUTH_MODE=jwt` and the `BOX_JWT_*` environment variables, then:
+
+```php
+use Box\Service\BoxClientFactory;
+use Box\Service\EnvConfigProvider;
+
+$configProvider = new EnvConfigProvider();
+$factory        = new BoxClientFactory($configProvider);
+$client         = $factory->createClientForCurrentMode(); // JWT client when BOX_AUTH_MODE=jwt
+```
+
+See the [Programmatic Usage Guide](docs/user/programmatic-usage.md) for enterprise and app-user token exchange examples.
+
+### File and Folder Operations
+
 ```php
 use Box\Http\FileStream;
 
 $client->setToken($token);
 
-// Upload a local file to a specific folder
-$response = $client->uploadFileToBox('/path/to/local/file.txt', '12345'); 
+// Upload a local file
+$result = $client->uploadFileToBox('/path/to/file.txt', '12345');
 
 // Upload via stream (no local file needed)
 $stream = FileStream::fromString('Hello World', 'hello.txt');
-$response = $client->uploadFileToBox($stream, '0'); // '0' is the root folder ID
+$result = $client->uploadFileToBox($stream, '0'); // '0' is the root folder ID
 
-// Get root folder
-$rootFolder = $client->getFolder();
+// Get a folder
+$folder = $client->getFolder('12345');
 ```
-
-## v1 Foundation and Service Hardening
-- **Hardened Service Layer**: Services now use refined response and hydration patterns. `UserService` and `FileService` provide templates for typed resource interaction.
-- **PSR-7-Backed Responses**: `BoxResponse` now wraps a PSR-7 `ResponseInterface`, providing better compliance and helper methods like `json()`.
-- **Hardened Error Boundaries**: Improved exception taxonomy with `ApiException` and `TransportException`. Exceptions now automatically redact sensitive data (tokens).
-- **Transport Normalization**: Consistent response behavior across Guzzle and Curl transports.
-- **CLI Redaction**: Command output now masks tokens and secrets by default.
-- **Migration**: See the [v1 Upgrade Guide](docs/migration/upgrading-0.11-to-1.0.md) for details.
-
-## v0.11.0 Transition & Compatibility
-- **Typed Models & DTOs**: v0.11 introduces recursive hydration into typed objects. Some nested fields now accept both objects and legacy arrays as a transition layer.
-- **Flattened Namespaces**: Primary classes are now found in shorter namespaces (e.g., `Box\Client`).
-- **Non-Fluent Setters**: Setters now return `void`. Chained setter calls are no longer supported.
-- **Migration**: See the [v0.11 Upgrade Guide](docs/migration/upgrading-0.10-to-0.11.md) for details.
 
 ## Advanced Documentation
 
-For in-depth architectural guidance, library integration patterns, and advanced usage, see the [Programmatic Usage Guide](docs/user/programmatic-usage.md).
+For in-depth architectural guidance, library integration patterns, and advanced usage:
 
-## CLI Test Harness
+- [Programmatic Usage Guide](docs/user/programmatic-usage.md) — OAuth2, JWT/S2S, token storage, error handling, file streaming
+- [CLI Test Harness Guide](docs/user/cli-test-harness.md) — `bin/box-sdk` commands for manual verification
+- [v1.0 Migration Guide](docs/migration/upgrading-0.11-to-1.0.md) — upgrading from v0.11
 
-The SDK includes a Symfony Console-based CLI tool for manual testing and practical SDK verification. This harness is retained in the core repository to provide a reliable way to sanity-check SDK behavior (auth flows, uploads, etc.) without a downstream application. It remains lightweight and strictly separated from future framework integrations.
+## Development and Quality Checks
 
-For detailed setup instructions, available commands, and logging options, see the [CLI Test Harness Guide](docs/user/cli-test-harness.md).
+```bash
+composer review    # Run all checks (recommended before pushing)
+composer test      # PHPUnit
+composer analyse   # PHPStan
+composer cs:check  # PHP_CodeSniffer
+composer cs:fix    # Fix code style automatically
+composer lint      # PHP syntax check
+```
 
 ---
 
 **See also:**
 - [Changelog](CHANGELOG.md)
 - [Documentation Index](docs/README.md)
-- [Upgrading from 0.10.x to 0.11.0](docs/migration/upgrading-0.10-to-0.11.md)
-- [Programmatic Usage Guide](docs/user/programmatic-usage.md)
-- [CLI Test Harness Guide](docs/user/cli-test-harness.md)
-- [Project Roadmap](docs/planning/roadmap.md)
-
-## Development and Quality Checks
-
-The following commands are available for local development and quality assurance:
-
-- **Run all checks (recommended before pushing):**
-  ```bash
-  composer review
-  ```
-- **Run tests:**
-  ```bash
-  composer test
-  ```
-- **Static analysis (PHPStan):**
-  ```bash
-  composer analyse
-  ```
-- **Check code style:**
-  ```bash
-  composer cs:check
-  ```
-- **Fix code style automatically:**
-  ```bash
-  composer cs:fix
-  ```
-- **Lint PHP syntax:**
-  ```bash
-  composer lint
-  ```
 
 ## License
 

@@ -673,14 +673,11 @@ Move to `docs/archive/prompts/` (Claude Code CLI memory supersedes):
 - Step 15.5 API Coverage Alignment complete. ✓
 - Step 15.6 API Fixture Realism complete enough for release confidence. ✓
 - Step 16 Webhook Verification decision and implementation complete. ✓
-- Step 17 v1 Release Readiness complete.
-- `composer review` passes.
-- No known credential leaks.
-- Migration docs / changelog accurate.
-- Step 17 final release readiness complete.
-- `composer review` passes.
-- No known credential leaks.
-- Migration docs/changelog accurate.
+- Step 17 v1 Release Readiness complete. ✓
+- Step 18 Documentation Cleanup and Organization complete. ✓
+- `composer review` passes. ✓
+- No known credential leaks. ✓
+- Migration docs / changelog accurate. ✓
 
 | Capability | v1 status | Notes |
 |---|---|---|

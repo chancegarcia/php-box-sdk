@@ -14,7 +14,7 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 | Factories hydrate user arrays | **Decided** | `v1-release-roadmap.md` | None |
 | Services hydrate API responses | **Decided** | `v1-release-roadmap.md` | None |
 | Services own URI construction | **Decided** | `v1-release-roadmap.md` | None |
-| Authenticated service boundary | **Decided** | `11-v1-service-coverage-auth-boundary-audit.md` | None |
+| Authenticated service boundary | **Decided** | `v1-release-roadmap.md` (audit archived) | None |
 | Public direct transport API | **Decided** | `v1-strategy-and-contracts.md` | None |
 | Guzzle 7 as default PSR-18 client | **Decided** | `v1-strategy-and-contracts.md` | None |
 | IDs as `string` | **Decided** | `v1-architecture-rules.md` | None |
@@ -33,7 +33,7 @@ This document tracks implementation-ready decisions, proposed strategies, and op
 | Doctrine ORM Storage Deferral | **Decided** | `future-symfony-bundle.md` | None |
 | Doctrine Collections for Lists | **Decided** | `v1-architecture-rules.md` | None |
 | Migration Documentation Requirements | **Decided** | `v1-strategy-and-contracts.md` | None |
-| Documentation Gap Inventory | **Active** | `v1-documentation-gap-inventory.md` | Tracks ongoing P2/P3 items |
+| Documentation Gap Inventory | **Complete** | `v1-documentation-gap-inventory.md` (archived) | All P1 gaps filled in v1.0; P2/P3 deferred |
 | SDK Response Wrapper | **Decided** | `v1-strategy-and-contracts.md` | Implementation: Replace with thin PSR-7 wrapper |
 | Response Strategy Alignment | **Decided** | `v1-strategy-and-contracts.md` | None |
 | JWT/S2S Auth Required | **Decided** | `v1-release-roadmap.md` | Required for v1 release |

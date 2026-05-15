@@ -1,37 +1,26 @@
 ### Summary
-Implemented Slice 15.4.1: FilesystemTokenStorage CLI Support. Added a JSON-file-backed token
-storage class, wired it into `AbstractBoxCommand` as `--storage-type filesystem`, and extended
-`ConfigProviderInterface`/`EnvConfigProvider` with `getStorageFilePath()`.
+Completed Slice 17 (v1 Release Readiness) — Code Gate and Documentation Gate.
 
-### Changes
-- **src/Storage/Token/Filesystem/FilesystemTokenStorage.php** (new): Implements
-  `TokenStorageInterface`. Stores tokens as a JSON map on disk keyed by
-  `TokenStorageContext::getCanonicalKey()`. Private `loadMap()`/`saveMap()` helpers; throws
-  `TokenStorageException` on bad JSON or write failure. No locking (single-user CLI use case).
-- **src/Contract/ConfigProviderInterface.php**: Added `getStorageFilePath(): ?string`.
-- **src/Service/EnvConfigProvider.php**: Implemented `getStorageFilePath()` reading
-  `BOX_STORAGE_FILE_PATH`.
-- **src/ClientConfig.php**: Added stub `getStorageFilePath()` returning null (cleanup in 15.4.4).
-- **src/Command/AbstractBoxCommand.php**: Added `--storage-path` option; updated
-  `--storage-type` description to list `pdo, filesystem`; replaced inline PDO block with
-  `match` dispatch to `buildPdoStorage()` / `buildFilesystemStorage()` private helpers.
-  Added `FilesystemTokenStorage` import.
-- **.env.dist** / **.env**: Added `BOX_STORAGE_FILE_PATH=`.
-- **tests/Storage/Filesystem/FilesystemTokenStorageTest.php** (new): 10 test methods covering
-  store, retrieve, update upsert, remove, clear, multi-context isolation, bad JSON, and
-  persistence across instances.
-- **tests/Service/EnvConfigProviderTest.php**: Added 2 tests for `getStorageFilePath()`.
-- **tests/Command/AuthStorageIntegrationTest.php**: Added 1 command integration test asserting
-  `FilesystemTokenStorage` is injected when `--storage-type filesystem` is passed.
+### Code Gate Changes
+- `BoxApiErrorTrait::error()` return type corrected `void` → `never` (always throws; PHPStan now narrows correctly at all call sites).
+- Yoda conditionals fixed in `WebhookVerifier.php` lines 18 and 61.
+- Stale `handleResponseContent` comment removed from `tests/Service/ServiceResponseHandlingTest.php`.
+- All legacy symbol scan targets confirmed clean (no stale references to removed names).
+
+### Documentation Gate Changes
+- `docs/README.md`: Foundation status updated; v1.0 migration guide link added.
+- `docs/migration/upgrading-0.11-to-1.0.md`: Replaced stale "Step 12 Planned" stub with full Token Storage, JWT/S2S, and Webhook Verification sections.
+- `docs/user/programmatic-usage.md`: Added §4a JWT/S2S (enterprise token, app user token, auto-mode).
+- `docs/user/cli-test-harness.md`: Added JWT CLI commands, token storage options table; removed stale `--transport` option.
+- `CHANGELOG.md`: Replaced "Unreleased" with full v1.0.0 entry covering Steps 10–17.
+
+### Slice 18 Changes (Documentation Cleanup)
+- Archived 12 completed step trackers/audits to `docs/archive/steps/`.
+- Archived 7 superseded planning/audit files to `docs/archive/planning/`.
+- Fixed status drift in `docs/planning/release-task-lists.md`, `docs/planning/v1/overview.md`, `docs/planning/README.md`, `docs/README.md`.
 
 ### Verification
-- `composer review` passed: 292 tests, 761 assertions (up from 279/739).
+- `composer review` passed: 334 tests, 902 assertions.
 - PHPStan level 0: no errors.
 - PHP_CodeSniffer: no errors.
 - PHP lint: no syntax errors.
-
-### Notes
-- `ClientConfig::getStorageFilePath()` is a stub returning null. It will be removed in Slice
-  15.4.4 when `ClientConfig` stops implementing `ConfigProviderInterface`.
-- No file locking is implemented; this is intentional for single-user CLI use.
-- Workflow change: Claude Code CLI now executes code directly. Junie is no longer used.

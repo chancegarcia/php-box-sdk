@@ -300,5 +300,4 @@ Resources in v1.0 are focused on data representation. Validation and hydration l
 **See also:**
 - [README.md](../README.md)
 - [CLI Test Harness Guide](cli-test-harness.md)
-- [Project Roadmap](../planning/roadmap.md)
-- [v1.0 Planning](../planning/v1/overview.md)
+- [Upgrading from 0.11 to 1.0](../migration/upgrading-0.11-to-1.0.md)

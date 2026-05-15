@@ -26,12 +26,12 @@ This document details the planned tasks for the `v0.11` transition release and t
 - [x] Completed: Improve Hydrator tests to cover nested object mapping more thoroughly. *Rationale: Ensure the new recursive hydration works as expected. Implementation: Added `HydratorComplexTest` covering nested collections and deep object trees.*
 
 ### CLI
-- **Must**: Preserve existing CLI command utility and align with v1 architecture.
-- **Must**: Validate existing commands after v1 service/transport/auth refactors.
-- **Must**: Ensure CLI output uses redaction rules; verify with redaction tests.
-- **Should**: Support CLI-based JWT/S2S testing if practical.
-- **Should**: Update CLI documentation for any changed command behavior.
-- **Could**: Add more useful commands in v1.1.0 to improve practical SDK verification (useful workflows, not parity).
+- [x] Completed: Preserve existing CLI command utility and align with v1 architecture.
+- [x] Completed: Validate existing commands after v1 service/transport/auth refactors.
+- [x] Completed: Ensure CLI output uses redaction rules; verify with redaction tests.
+- [x] Completed: Support CLI-based JWT/S2S testing — `box:jwt:token` command added.
+- [x] Completed: Update CLI documentation for changed command behavior.
+- [-] Deferred: Add more useful commands in v1.1.0 to improve practical SDK verification.
 
 ### Tests & Documentation
 - [x] Completed: Expand PHPUnit coverage for existing file, folder, and auth services. *Rationale: Regressions must be prevented during the transition. Implementation: Significant test coverage added for models and commands.*
@@ -72,11 +72,11 @@ This document details the planned tasks for the `v0.11` transition release and t
     - Classifications
 
 ### Auth & Features
-- **Must**: Add JWT authentication support (targeted for v1.0.0 foundation). *Rationale: Support server-to-server integrations.*
-- **Must**: Complete Token Storage support (In-Memory, PDO). *Rationale: Reliable token management for v1.*
-- **Should**: Add chunked upload support. *Rationale: Handle very large files reliably.*
+- [x] Completed: Add JWT authentication support. *Implementation: `JwtProvider`, `JwtAuthConfig`, `JwtAssertionGenerator`; `box:jwt:token` CLI command; `BOX_AUTH_MODE=jwt` env switch.*
+- [x] Completed: Complete Token Storage support (Filesystem, PDO, In-Memory). *Implementation: `FilesystemTokenStorage`, `Pdo\TokenStorage`, `TokenStorageContainer` behind `TokenStorageInterface`.*
+- [-] Deferred: Add chunked upload support. *Rationale: Handle very large files reliably. Deferred to post-v1.*
 
 ### Models & Mapping
-- **Must**: Remove custom collection classes in favor of Doctrine Collections. *Rationale: Use standard, well-tested libraries.*
-- **Should**: Use PHP Enums for roles, statuses, and types. *Rationale: Type safety and better IDE support.*
-- **Should**: Add handling for Box-specific errors like `item_name_in_use` (409). *Rationale: Provide first-class support for common API error scenarios.*
+- [x] Completed: Remove custom collection classes in favor of Doctrine Collections. *Implementation: `EventResponse` uses Doctrine Collections; `EventResponseMapper` handles mapping.*
+- [-] Deferred: Use PHP Enums for roles, statuses, and types. *Deferred to post-v1.*
+- [-] Deferred: Add handling for Box-specific errors like `item_name_in_use` (409). *Deferred to post-v1.*

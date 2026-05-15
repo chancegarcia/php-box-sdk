@@ -44,8 +44,10 @@ Priority endpoints for v1.0:
 - Sign Requests
 
 ---
+**Status:** v1.0.0 released. This document is a historical planning reference; the goals listed above are complete or formally deferred.
+
 **Historical Context:**
-- [Model Signature Audit](../../audits/model-signature-audit.md)
-- [Model Typing Decisions](../../audits/model-typing-decisions.md)
 - [Model Namespace Migration Decisions](../../migration/model-namespace-migration-decisions.md)
 - [PSR Compliance Assessment](../../audits/psr-compliance-assessment.md)
+- Model Signature Audit — archived to `docs/archive/planning/`
+- Model Typing Decisions — archived to `docs/archive/planning/`
