@@ -148,14 +148,19 @@ class FileService extends Service implements FileServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * @param string|FileStream $file
+     * @param string|int $parentId
+     *
+     * @return File
+     * @throws BoxResponseException
      */
-    public function uploadFile(string|FileStream $file, string|int $parentId): array
+    public function uploadFile(string|FileStream $file, string|int $parentId): File
     {
         $uri = self::UPLOAD_ENDPOINT;
         $response = $this->getConnection()->postFile($uri, $file, $parentId);
+        $data = $this->handleBoxResponse($response, 'flat');
 
-        return $this->handleBoxResponse($response, 'flat');
+        return $this->hydrate(File::class, $data['entries'][0]);
     }
 
     /**

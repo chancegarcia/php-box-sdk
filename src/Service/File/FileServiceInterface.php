@@ -61,12 +61,7 @@ interface FileServiceInterface extends AuthenticatedServiceInterface
      */
     public function createSharedLink(File $file, SharedLink|CreateSharedLinkRequest|array|null $sharedLink = null): File;
 
-    /**
-     * @param string|FileStream $file
-     * @param string|int $parentId
-     * @return array
-     */
-    public function uploadFile(string|FileStream $file, string|int $parentId): array;
+    public function uploadFile(string|FileStream $file, string|int $parentId): File;
 
     /**
      * @return File

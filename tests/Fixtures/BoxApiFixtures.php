@@ -143,6 +143,8 @@ class BoxApiFixtures
         return [
             'total_count' => count($entries),
             'entries'     => $entries,
+            'offset'      => 0,
+            'limit'       => 100,
         ];
     }
 
@@ -158,6 +160,50 @@ class BoxApiFixtures
         return [
             'total_count' => count($entries),
             'entries'     => $entries,
+            'offset'      => 0,
+            'limit'       => 100,
+        ];
+    }
+
+    public static function groupMembershipListResponse(?array $entries = null): array
+    {
+        if ($entries === null) {
+            $entries = [
+                self::groupMembershipResponse(),
+                self::groupMembershipResponse(['id' => '1560355', 'user' => ['type' => 'user', 'id' => '123456', 'name' => 'Jane Doe', 'login' => 'jane@example.com']]),
+            ];
+        }
+
+        return [
+            'total_count' => count($entries),
+            'entries'     => $entries,
+            'offset'      => 0,
+            'limit'       => 100,
+        ];
+    }
+
+    public static function collaborationListResponse(?array $entries = null): array
+    {
+        if ($entries === null) {
+            $entries = [
+                self::collaborationResponse(),
+                self::collaborationResponse(['id' => '14176247', 'role' => 'viewer']),
+            ];
+        }
+
+        return [
+            'total_count' => count($entries),
+            'entries'     => $entries,
+            'offset'      => 0,
+            'limit'       => 100,
+        ];
+    }
+
+    public static function uploadFileResponse(?array $fileOverrides = []): array
+    {
+        return [
+            'total_count' => 1,
+            'entries'     => [self::fileResponse($fileOverrides)],
         ];
     }
 }

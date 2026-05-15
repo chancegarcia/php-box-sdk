@@ -43,12 +43,7 @@ interface FolderServiceInterface extends AuthenticatedServiceInterface
      */
     public function createFolder(string $name, string|int $parentId = 0, array $options = []): Folder;
 
-    /**
-     * @param Folder $folder
-     * @param string|bool|null $ifMatch
-     * @return array
-     */
-    public function updateFolder(Folder $folder, string|bool|null $ifMatch = null): array;
+    public function updateFolder(Folder $folder, string|bool|null $ifMatch = null): Folder;
 
     /**
      * @param string $id
@@ -56,12 +51,6 @@ interface FolderServiceInterface extends AuthenticatedServiceInterface
      * @return void
      */
     public function deleteFolder(string $id, bool $recursive = false): void;
-
-    /**
-     * @param Folder $folder
-     * @return array
-     */
-    public function getFolderCollaborations(Folder $folder): array;
 
     /**
      * @param Folder $folder

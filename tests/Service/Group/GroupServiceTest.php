@@ -7,7 +7,9 @@ namespace Box\Tests\Service\Group;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
 use Box\Http\Response\BoxResponseInterface;
+use Box\Dto\PagedResult;
 use Box\Resource\Group;
+use Box\Resource\GroupMembership;
 use Box\Service\Group\GroupService;
 use Box\Tests\Fixtures\BoxApiFixtures;
 use PHPUnit\Framework\TestCase;
@@ -51,7 +53,7 @@ class GroupServiceTest extends TestCase
         );
     }
 
-    public function testListGroupsReturnsArray(): void
+    public function testListGroupsReturnsPagedResult(): void
     {
         $listData = BoxApiFixtures::groupListResponse();
 
@@ -63,9 +65,10 @@ class GroupServiceTest extends TestCase
 
         $result = $this->createService($connection)->listGroups();
 
-        $this->assertIsArray($result);
-        $this->assertSame(2, $result['total_count']);
-        $this->assertCount(2, $result['entries']);
+        $this->assertInstanceOf(PagedResult::class, $result);
+        $this->assertSame(2, $result->totalCount);
+        $this->assertCount(2, $result->entries);
+        $this->assertContainsOnlyInstancesOf(Group::class, $result->entries);
     }
 
     public function testCreateGroupReturnsGroupResource(): void
@@ -122,7 +125,7 @@ class GroupServiceTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testAddGroupMemberReturnsArray(): void
+    public function testAddGroupMemberReturnsGroupMembership(): void
     {
         $membershipData = BoxApiFixtures::groupMembershipResponse();
 
@@ -137,10 +140,27 @@ class GroupServiceTest extends TestCase
 
         $result = $this->createService($connection)->addGroupMember('189108', '755492');
 
-        $this->assertIsArray($result);
-        $this->assertSame('group_membership', $result['type']);
-        $this->assertSame('1560354', $result['id']);
-        $this->assertSame('member', $result['role']);
+        $this->assertInstanceOf(GroupMembership::class, $result);
+        $this->assertSame('1560354', $result->getId());
+        $this->assertSame('member', $result->getRole());
+    }
+
+    public function testGetGroupMembershipListReturnsPagedResult(): void
+    {
+        $listData = BoxApiFixtures::groupMembershipListResponse();
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->expects($this->once())
+            ->method('query')
+            ->with($this->stringContains('/189108/memberships'))
+            ->willReturn($this->createMockResponse($listData));
+
+        $result = $this->createService($connection)->getGroupMembershipList('189108');
+
+        $this->assertInstanceOf(PagedResult::class, $result);
+        $this->assertSame(2, $result->totalCount);
+        $this->assertCount(2, $result->entries);
+        $this->assertContainsOnlyInstancesOf(GroupMembership::class, $result->entries);
     }
 
     public function testRemoveGroupMemberCallsDelete(): void

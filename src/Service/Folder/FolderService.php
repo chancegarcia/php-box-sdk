@@ -2,8 +2,10 @@
 
 namespace Box\Service\Folder;
 
+use Box\Exception\BoxResponseException;
 use Box\Resource\Folder;
 use Box\Service\Service;
+use JsonException;
 
 class FolderService extends Service implements FolderServiceInterface
 {
@@ -86,9 +88,14 @@ class FolderService extends Service implements FolderServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * @param Folder $folder
+     * @param string|bool|null $ifMatch
+     *
+     * @return Folder
+     * @throws BoxResponseException
+     * @throws JsonException
      */
-    public function updateFolder(Folder $folder, string|bool|null $ifMatch = null): array
+    public function updateFolder(Folder $folder, string|bool|null $ifMatch = null): Folder
     {
         $uri = self::ENDPOINT . '/' . $folder->getId();
 
@@ -127,14 +134,13 @@ class FolderService extends Service implements FolderServiceInterface
         }
 
         if (is_string($ifMatch) && !empty($ifMatch)) {
-            $connection = $this->getConnection();
-            $connection->addHeader('If-Match', $ifMatch);
-            $response = $connection->put($uri, json_encode($params));
-            return $this->handleBoxResponse($response, 'flat');
+            $this->getConnection()->addHeader('If-Match', $ifMatch);
         }
 
-        $response = $this->getConnection()->put($uri, json_encode($params));
-        return $this->handleBoxResponse($response, 'flat');
+        $response = $this->getConnection()->put($uri, json_encode($params, JSON_THROW_ON_ERROR));
+        $data = $this->handleBoxResponse($response, 'flat');
+
+        return $this->hydrate(Folder::class, $data);
     }
 
     /**
@@ -147,16 +153,6 @@ class FolderService extends Service implements FolderServiceInterface
             $uri .= '?recursive=true';
         }
         $this->sendDeleteToBox($uri);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getFolderCollaborations(Folder $folder): array
-    {
-        $uri = self::ENDPOINT . '/' . $folder->getId() . '/collaborations';
-
-        return $this->handleBoxResponse($this->getConnection()->query($uri), 'flat');
     }
 
     /**

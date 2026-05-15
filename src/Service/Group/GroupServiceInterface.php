@@ -2,12 +2,19 @@
 
 namespace Box\Service\Group;
 
+use Box\Dto\PagedResult;
 use Box\Resource\Group;
+use Box\Resource\GroupMembership;
 use Box\Service\AuthenticatedServiceInterface;
 
 interface GroupServiceInterface extends AuthenticatedServiceInterface
 {
-    public function listGroups(int $limit = 100, int $offset = 0): array;
+    /**
+     * @param int $limit
+     * @param int $offset
+     * @return PagedResult<Group>
+     */
+    public function listGroups(int $limit = 100, int $offset = 0): PagedResult;
 
     public function createGroup(string $name, array $options = []): Group;
 
@@ -19,9 +26,9 @@ interface GroupServiceInterface extends AuthenticatedServiceInterface
      * @param string|int $groupId
      * @param int|string $limit
      * @param int|string $offset
-     * @return array
+     * @return PagedResult<GroupMembership>
      */
-    public function getGroupMembershipList(string|int $groupId, int|string $limit = 100, int|string $offset = 0): array;
+    public function getGroupMembershipList(string|int $groupId, int|string $limit = 100, int|string $offset = 0): PagedResult;
 
     /**
      * @param string|int $groupId
@@ -31,7 +38,7 @@ interface GroupServiceInterface extends AuthenticatedServiceInterface
      */
     public function getMembershipListUri(string|int $groupId, int|string $limit = 100, int|string $offset = 0): string;
 
-    public function addGroupMember(string $groupId, string $userId, string $role = 'member'): array;
+    public function addGroupMember(string $groupId, string $userId, string $role = 'member'): GroupMembership;
 
     public function removeGroupMember(string $membershipId): void;
 }

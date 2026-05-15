@@ -4,31 +4,37 @@ declare(strict_types=1);
 
 namespace Box\Service;
 
+use Box\Dto\PagedResult;
+use Box\Exception\BoxException;
+use Box\Exception\BoxResponseException;
 use Box\Resource\User;
 
 class UserService extends Service implements UserServiceInterface
 {
-    public const ENDPOINT = 'https://api.box.com/2.0/users';
-    public const CURRENT_USER_ENDPOINT = 'https://api.box.com/2.0/users/me';
+    public const string ENDPOINT = 'https://api.box.com/2.0/users';
+    public const string CURRENT_USER_ENDPOINT = 'https://api.box.com/2.0/users/me';
 
     /**
      * List all users in the enterprise.
      *
      * @param int $limit
      * @param int $offset
-     * @return array
+     * @return PagedResult<User>
+     * @throws BoxResponseException
      */
-    public function listUsers(int $limit = 100, int $offset = 0): array
+    public function listUsers(int $limit = 100, int $offset = 0): PagedResult
     {
         $uri = self::ENDPOINT . '?limit=' . $limit . '&offset=' . $offset;
+        $data = $this->handleBoxResponse($this->getConnection()->query($uri), 'flat');
 
-        return $this->handleBoxResponse($this->getConnection()->query($uri), 'flat');
+        return $this->hydratePagedResult($data, User::class);
     }
 
     /**
      * Get the current user's details.
      *
      * @return User
+     * @throws BoxException
      */
     public function getCurrentUser(): User
     {
@@ -40,6 +46,7 @@ class UserService extends Service implements UserServiceInterface
      *
      * @param string $userId
      * @return User
+     * @throws BoxException
      */
     public function getUser(string $userId): User
     {

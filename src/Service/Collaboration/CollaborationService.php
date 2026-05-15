@@ -2,6 +2,8 @@
 
 namespace Box\Service\Collaboration;
 
+use Box\Dto\PagedResult;
+use Box\Exception\BoxResponseException;
 use Box\Resource\Collaboration;
 use Box\Resource\File;
 use Box\Resource\Folder;
@@ -13,12 +15,15 @@ class CollaborationService extends Service implements CollaborationServiceInterf
 
     /**
      * @inheritdoc
+     * @return PagedResult<Collaboration>
+     * @throws BoxResponseException
      */
-    public function getFolderCollaborations(Folder $folder): array
+    public function getFolderCollaborations(Folder $folder): PagedResult
     {
         $uri = "https://api.box.com/2.0/folders/" . $folder->getId() . "/collaborations";
+        $data = $this->handleBoxResponse($this->getConnection()->query($uri), 'flat');
 
-        return $this->handleBoxResponse($this->getConnection()->query($uri), 'flat');
+        return $this->hydratePagedResult($data, Collaboration::class);
     }
 
     /**

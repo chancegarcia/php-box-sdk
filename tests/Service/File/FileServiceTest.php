@@ -237,6 +237,23 @@ class FileServiceTest extends TestCase
         $this->assertNull($result->getSharedLink());
     }
 
+    public function testUploadFileReturnsFileResource(): void
+    {
+        $responseData = BoxApiFixtures::uploadFileResponse(['id' => '987654321', 'name' => 'upload.txt']);
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->expects($this->once())
+            ->method('postFile')
+            ->with(FileService::UPLOAD_ENDPOINT, 'local/path.txt', '0')
+            ->willReturn($this->createMockResponse($responseData));
+
+        $result = $this->createService($connection)->uploadFile('local/path.txt', '0');
+
+        $this->assertInstanceOf(File::class, $result);
+        $this->assertSame('987654321', $result->getId());
+        $this->assertSame('upload.txt', $result->getName());
+    }
+
     public function testBuildWebUrl(): void
     {
         $this->assertSame(

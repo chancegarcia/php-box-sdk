@@ -28,6 +28,7 @@ Use this as a checklist. Each item links to the full section below.
 | Exception `catch` blocks | Low — class rename | [Exception Handling](#3-exception-handling) |
 | `getLastResult()` calls | Low — remove, use exceptions | [Removed Debug Methods](#4-removed-debug-methods) |
 | `getEvents()` result handling | Moderate — return type changed | [Event Service](#5-event-service) |
+| Service method return types | Moderate — raw arrays replaced with typed returns | [Service Return Types](#9-service-method-return-type-changes) |
 | Removed factory interfaces | Check if you implement them | [Factory Interfaces](#6-factory-interfaces) |
 | Removed model base classes | Check if you extend them | [Removed Classes](#7-removed-classes-and-interfaces) |
 | CLI `--transport` option | Remove from scripts | [CLI Changes](#8-cli-changes) |
@@ -209,6 +210,30 @@ The legacy `Box\Connection\ConnectionFactory` has also been removed. Use `Box\Fa
 
 ---
 
+### 9. Service Method Return Type Changes
+
+Several service methods that previously returned raw `array` now return typed objects. If you call these methods directly on service classes (rather than through `Client`), update your code:
+
+| Method | Before (v0.11) | After (v1.0) |
+|:---|:---|:---|
+| `FolderService::updateFolder()` | `array` | `Folder` |
+| `FileService::uploadFile()` | `array` (envelope) | `File` |
+| `UserService::listUsers()` | `array` | `PagedResult<User>` |
+| `GroupService::listGroups()` | `array` | `PagedResult<Group>` |
+| `GroupService::addGroupMember()` | `array` | `GroupMembership` |
+| `GroupService::getGroupMembershipList()` | `array` | `PagedResult<GroupMembership>` |
+| `CollaborationService::getFolderCollaborations()` | `array` | `PagedResult<Collaboration>` |
+
+**`FolderService::getFolderCollaborations()` has been removed.** Use `CollaborationService::getFolderCollaborations()` instead — it is the canonical home for collaboration operations.
+
+**`PagedResult<T>`** is a new DTO in `Box\Dto\PagedResult` with public readonly properties: `entries` (typed array), `totalCount`, `offset`, `limit`.
+
+**`GroupMembership`** is a new resource class at `Box\Resource\GroupMembership`.
+
+The `Client` facade methods for these operations (`updateBoxFolder()`, `getFolderCollaborations()`) have had their return types updated to match.
+
+---
+
 ### 8. CLI Changes
 
 **`--transport` option removed.** Guzzle is now the only HTTP transport. Remove `--transport=guzzle` or `--transport=curl` from any scripts.
@@ -282,7 +307,7 @@ Enforces a 10-minute replay window. Supports primary/secondary key rotation.
 
 ## What Stayed the Same
 
-- All `Client` methods for file, folder, user, group, and collaboration operations (`getFile()`, `getFolder()`, `uploadFileToBox()`, etc.) work the same way and return the same types.
+- All `Client` methods for reading single resources (`getFile()`, `getFolder()`, `getUser()`, `getGroup()`, `getCollaboration()`) work the same way and return the same types. Collection and mutating methods have updated return types — see [Service Return Types](#9-service-method-return-type-changes).
 - `Token`, `ClientConfig`, and connection setup are largely unchanged.
 - PSR-3 logger injection: `$client->setLogger($logger)` works as before.
 - OAuth2 flow: `buildAuthorizationUrl()`, `setAuthorizationCode()`, `exchangeAuthorizationCodeForToken()`, `refreshToken()`.

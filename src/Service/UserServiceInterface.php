@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Box\Service;
 
+use Box\Dto\PagedResult;
 use Box\Resource\User;
 
 interface UserServiceInterface extends AuthenticatedServiceInterface
@@ -13,9 +14,9 @@ interface UserServiceInterface extends AuthenticatedServiceInterface
      *
      * @param int $limit
      * @param int $offset
-     * @return array
+     * @return PagedResult<User>
      */
-    public function listUsers(int $limit = 100, int $offset = 0): array;
+    public function listUsers(int $limit = 100, int $offset = 0): PagedResult;
 
     /**
      * Get the current user's details.

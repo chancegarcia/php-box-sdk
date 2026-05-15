@@ -36,6 +36,7 @@ use Box\Auth\OAuth2Provider;
 use Box\Auth\OAuth2ProviderInterface;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
+use Box\Dto\PagedResult;
 use Box\Dto\TokenStorageContext;
 use Box\Exception\BoxException;
 use Box\Resource\Collaboration;
@@ -369,10 +370,9 @@ class Client implements LoggerAwareInterface
     /**
      * @param Folder $folder
      * @param string|bool $ifMatchHeader etag string or true to use folder's current etag
-     * @throws BoxException
-     * @return array updated folder data
+     * @return Folder
      */
-    public function updateBoxFolder(Folder $folder, string|bool $ifMatchHeader = false): array
+    public function updateBoxFolder(Folder $folder, string|bool $ifMatchHeader = false): Folder
     {
         $folderService = $this->configureService($this->serviceRegistry->getFolderService());
 
@@ -381,10 +381,10 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param Folder $folder
-     * @return array raw json data as an array
+     * @return PagedResult<Collaboration>
      * @throws BoxException
      */
-    public function getFolderCollaborations(Folder $folder): array
+    public function getFolderCollaborations(Folder $folder): PagedResult
     {
         $collaborationService = $this->configureService($this->serviceRegistry->getCollaborationService());
 

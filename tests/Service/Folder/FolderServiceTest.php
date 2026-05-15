@@ -181,6 +181,31 @@ class FolderServiceTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
+    public function testUpdateFolderReturnsFolderResource(): void
+    {
+        $folderId = '11446498';
+        $responseData = BoxApiFixtures::folderResponse(['id' => $folderId, 'name' => 'Renamed Folder']);
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->expects($this->once())
+            ->method('put')
+            ->with(
+                FolderService::ENDPOINT . '/' . $folderId,
+                $this->callback(fn($p) => str_contains($p, 'Renamed Folder'))
+            )
+            ->willReturn($this->createMockResponse($responseData));
+
+        $folder = new Folder();
+        $folder->setId($folderId);
+        $folder->setName('Renamed Folder');
+
+        $result = $this->createService($connection)->updateFolder($folder);
+
+        $this->assertInstanceOf(Folder::class, $result);
+        $this->assertSame($folderId, $result->getId());
+        $this->assertSame('Renamed Folder', $result->getName());
+    }
+
     public function testBuildWebUrl(): void
     {
         $this->assertSame(

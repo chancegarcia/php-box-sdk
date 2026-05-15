@@ -36,6 +36,7 @@
 
 namespace Box\Service;
 
+use Box\Dto\PagedResult;
 use Box\Exception\BoxResponseException;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Exception\BoxException;
@@ -206,6 +207,29 @@ class Service implements ServiceInterface, LoggerAwareInterface
         $data = $this->handleBoxResponse($response, 'decoded');
 
         return $this->hydrate($resourceClass, $data);
+    }
+
+    /**
+     * Hydrate a Box paged-collection response into a typed PagedResult.
+     *
+     * @template T of object
+     * @param array $data Flat response array with 'entries', 'total_count', 'offset', 'limit'
+     * @param class-string<T> $entryClass
+     * @return PagedResult<T>
+     */
+    protected function hydratePagedResult(array $data, string $entryClass): PagedResult
+    {
+        $entries = array_map(
+            fn(array $entry) => $this->hydrate($entryClass, $entry),
+            $data['entries'] ?? [],
+        );
+
+        return new PagedResult(
+            entries: $entries,
+            totalCount: (int) ($data['total_count'] ?? 0),
+            offset: (int) ($data['offset'] ?? 0),
+            limit: (int) ($data['limit'] ?? 0),
+        );
     }
 
     /**

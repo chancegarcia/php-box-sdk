@@ -6,6 +6,7 @@ use Box\Client;
 use Box\ClientConfig;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Service\ClientServiceRegistry;
+use Box\Dto\PagedResult;
 use Box\Resource\Collaboration;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
@@ -302,9 +303,9 @@ class ClientTest extends TestCase
         $folder->setName('Updated Name');
         $folder->setEtag('etag123');
 
-        $data = $this->client->updateBoxFolder($folder, true);
-        $this->assertIsArray($data);
-        $this->assertEquals('Updated Name', $data['name']);
+        $result = $this->client->updateBoxFolder($folder, true);
+        $this->assertInstanceOf(Folder::class, $result);
+        $this->assertEquals('Updated Name', $result->getName());
     }
 
     public function testExchangeAuthorizationCodeForToken()
@@ -348,10 +349,11 @@ class ClientTest extends TestCase
         $folder = new Folder();
         $folder->setId('123');
 
-        $data = $this->client->getFolderCollaborations($folder);
-        $this->assertIsArray($data);
-        $this->assertEquals(1, $data['total_count']);
-        $this->assertEquals('collab1', $data['entries'][0]['id']);
+        $result = $this->client->getFolderCollaborations($folder);
+        $this->assertInstanceOf(PagedResult::class, $result);
+        $this->assertSame(1, $result->totalCount);
+        $this->assertCount(1, $result->entries);
+        $this->assertContainsOnlyInstancesOf(Collaboration::class, $result->entries);
     }
 
     public function testAddCollaboration()

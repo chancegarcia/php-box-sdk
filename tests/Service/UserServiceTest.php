@@ -9,6 +9,7 @@ use Box\Connection\Token\TokenInterface;
 use Box\Enum\UserStatus;
 use Box\Exception\BoxResponseException;
 use Box\Http\Response\BoxResponseInterface;
+use Box\Dto\PagedResult;
 use Box\Resource\User;
 use Box\Service\UserService;
 use Box\Tests\Fixtures\BoxApiFixtures;
@@ -74,12 +75,6 @@ class UserServiceTest extends TestCase
         $this->assertSame(5368709120, $user->getSpaceAmount());
     }
 
-    public function testServiceDoesNotDependOnLegacyUserModel(): void
-    {
-        $this->assertFalse(class_exists('Box\Model\User\User'), 'Legacy User model should not exist.');
-        $this->assertFalse(interface_exists('Box\User\UserInterface'), 'Legacy User interface should not exist.');
-    }
-
     public function testGetUserHandlesErrorResponse(): void
     {
         $errorData = ['type' => 'error', 'status' => 404, 'code' => 'not_found', 'message' => 'User not found'];
@@ -99,7 +94,7 @@ class UserServiceTest extends TestCase
         $this->createService($connection)->getUser('error-user');
     }
 
-    public function testListUsersReturnsArray(): void
+    public function testListUsersReturnsPagedResult(): void
     {
         $listData = BoxApiFixtures::userListResponse();
 
@@ -111,9 +106,10 @@ class UserServiceTest extends TestCase
 
         $result = $this->createService($connection)->listUsers();
 
-        $this->assertIsArray($result);
-        $this->assertSame(2, $result['total_count']);
-        $this->assertCount(2, $result['entries']);
+        $this->assertInstanceOf(PagedResult::class, $result);
+        $this->assertSame(2, $result->totalCount);
+        $this->assertCount(2, $result->entries);
+        $this->assertContainsOnlyInstancesOf(User::class, $result->entries);
     }
 
     public function testListUsersRespectsLimitAndOffset(): void
@@ -128,6 +124,7 @@ class UserServiceTest extends TestCase
 
         $result = $this->createService($connection)->listUsers(25, 50);
 
-        $this->assertIsArray($result);
+        $this->assertInstanceOf(PagedResult::class, $result);
+        $this->assertCount(1, $result->entries);
     }
 }

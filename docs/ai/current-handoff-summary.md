@@ -1,18 +1,24 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-15 00:44 (America/Indiana)
+- **Timestamp**: 2026-05-15 05:10 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
-- **Roadmap Position**: Slices 17 and 18 complete. Doc cleanup complete. Slice 19 is next (not started).
-- **Test baseline**: 334 tests, 902 assertions
-- **v1 remaining**: Slice 19 (Chunked Upload + PSR-14 Events) → package/repo rename (user-driven)
+- **Roadmap Position**: Slice 19 Gates 1–8 complete. Gate 9 is next.
+- **Test baseline**: 342 tests, 958 assertions
+- **v1 remaining**: Slice 19 Gate 9 (additional PSR-14 events) → BoxClientFactory namespace + rename slice → package/repo rename (user-driven)
 
 ## Next Action
 
-**Start Slice 19 — Chunked Upload + PSR-14 Events.**
+**Gate 9** — additional PSR-14 events (token lifecycle, FileUploaded, RateLimitHit, JwtTokenGenerated).
 
-Read `docs/ai/next-session-plan.md` for the 8-gate plan. Open questions and doc cleanup tasks are all resolved — go straight to Gate 1.
+Read `docs/ai/next-session-plan.md` for full Gate 9 scope.
+
+**Before executing**, verify two things in source:
+1. Where the 429 boundary lives (probably `Service::handleBoxResponse` — grep for `429` or `RateLimitException`)
+2. How `JwtProvider` will receive the dispatcher — does it already see the `Client`'s dispatcher, or does it need injection?
+
+**Tooling note**: run phpcbf via `composer cs:fix`, not `./vendor/bin/phpcbf` directly — the composer shortcut is pre-approved in `.claude/settings.local.json`.
 
 Do not prompt about package/repo rename.
 
@@ -20,21 +26,46 @@ Do not prompt about package/repo rename.
 
 ## Completed This Session (2026-05-15)
 
-### Documentation Cleanup (all 7 tasks done)
-1. **CHANGELOG.md** — Removed v0.11.4 and v0.11.5 entries; v1.0.0 now flows directly to v0.11.3.
-2. **docs/README.md** — Updated API coverage matrix link, removed rename plan link, replaced AI status section with `[Internal](internal/status.md)`.
-3. **docs/internal/status.md** — Created; links to handoff, task summary, next session plan, and rename plan.
-4. **docs/audits/api-coverage-matrix.md** — Created (renamed from `15.5-api-coverage-matrix.md`); all ❌ endpoints flipped to ✅, service base cleanup noted as complete, deferred list accurate. Old file deleted.
-5. **docs/planning/v1/overview.md** — API Coverage Expansion section updated to clearly show what shipped vs. deferred to v1.x.
-6. **docs/planning/v1/architecture-rules.md** — Retry section marked "not implemented, deferred to v1.1"; `RetryExhaustedException` flagged as not yet in v1.0.
-7. **docs/planning/v1/strategy-and-contracts.md** — JWT updated to "implemented", retry flagged deferred, Metadata bumped to v1.1.0, open questions resolved or closed.
-8. **docs/user/programmatic-usage.md** — Fixed awkward "Models (Resources)" bullet under Data Types.
+### Pre-Gate-9 Documentation
+- **`docs/user/api-coverage.md`** — Created; lists every supported Box API endpoint per service class with Method, HTTP, Box Endpoint, Notes columns. Includes chunked upload low-level session API sub-section. Search entry notes why raw array return is deferred (heterogeneous results, no discriminated union).
+- **`docs/README.md`** — Added link to `api-coverage.md` under User Documentation.
 
-### Deferred (Post-Slice-19)
-- `llms.txt` — deferred to v1.1 or v1.2 (decided 2026-05-15). Timing depends on post-release v1 patch volume before bundle work begins. Do not add to Gate 8.
-- **PHPDoc quality audit + PHPStan level bump** — audit `T[]` annotations and upgrade to `list<T>` or `array<K, V>` where appropriate; bump PHPStan level after audit to benefit from improved inference. Do a full codebase review before changing the level — scope is large. Post-v1.
-- **`BoxClientFactory` namespace move** — currently `Box\Service\BoxClientFactory`; belongs in `Box\Factory` alongside `TokenFactory`, `ConnectionFactory`. Breaking change, must be pre-v1 or wait for v2. Slot as its own small slice after Slice 19.
-- **`createOAuth2Client()` rename** — rename `BoxClientFactory::createClient()` to `createOAuth2Client()` to make the auth mode explicit. Same slice as the namespace move. Interface (`BoxClientFactoryInterface`) must be updated in tandem.
+### Typed Return Refactor (raw `array` → typed objects across 7 service methods)
+
+New types:
+- **`src/Dto/PagedResult.php`** — `@template T of object` readonly DTO; properties: `entries` (`T[]`), `totalCount`, `offset`, `limit`.
+- **`src/Resource/GroupMembership.php`** — new resource; properties: `type`, `id`, `user`, `group`, `role`, `createdAt`, `modifiedAt`.
+- **`Service::hydratePagedResult(array $data, string $entryClass): PagedResult`** — protected helper on base `Service`; used by all 5 collection methods.
+
+Methods updated (return type before → after):
+
+| Method | Before | After |
+|---|---|---|
+| `FileService::uploadFile()` | `array` | `File` |
+| `FolderService::updateFolder()` | `array` | `Folder` |
+| `UserService::listUsers()` | `array` | `PagedResult<User>` |
+| `GroupService::listGroups()` | `array` | `PagedResult<Group>` |
+| `GroupService::addGroupMember()` | `array` | `GroupMembership` |
+| `GroupService::getGroupMembershipList()` | `array` | `PagedResult<GroupMembership>` |
+| `CollaborationService::getFolderCollaborations()` | `array` | `PagedResult<Collaboration>` |
+
+`FolderService::getFolderCollaborations()` **removed** — was a duplicate; `CollaborationService` is canonical. `FolderServiceInterface` updated to match.
+
+`Client.php` updated: `updateBoxFolder()` → `Folder`; `getFolderCollaborations()` → `PagedResult<Collaboration>`.
+
+### Migration Guide Updated
+- **`docs/migration/upgrading-0.11-to-1.0.md`** — Added Section 9 (Service Method Return Type Changes) with full table, `PagedResult<T>` and `GroupMembership` introductions, `getFolderCollaborations` removal note, and Client facade updates. "What Stayed the Same" corrected to distinguish single-resource reads (unchanged) from collection/mutating methods (updated).
+
+### Legacy Regression Tests Deleted
+- `tests/Resource/LegacyRemovalTest.php` — deleted (tested that old `Box\Model\*` classes don't exist)
+- `tests/Resource/UserMigrationTest.php` — deleted (tested that old `Box\User\*` classes don't exist)
+- `testServiceDoesNotDependOnLegacyUserModel` removed from `UserServiceTest`
+
+Tests that cover **current** behavior retained and updated to assert typed returns.
+
+Two tests with "legacy" in their name were verified to test current valid behavior and are intentionally kept:
+- `BoxResponseTest::testConstructFromLegacyInputs` — tests `BoxResponse` constructed from raw content+header strings (supported constructor path)
+- `FileServiceTest::testCreateSharedLinkWithLegacySharedLink` — tests passing a `SharedLink` object to `createSharedLink()` (valid current type in the signature)
 
 ---
 
@@ -44,11 +75,11 @@ Do not prompt about package/repo rename.
 1. PSR-14 infrastructure ✅
 2. FileStream additions ✅
 3. DTOs ✅
-4. FileService low-level API
-5. Orchestrator
-6. Client facade
-7. Tests
-8. Documentation (+ `llms.txt` review)
+4. FileService low-level API ✅
+5. Orchestrator ✅
+6. Client facade ✅
+7. Tests ✅
+8. Documentation ✅
 9. Additional PSR-14 events — token lifecycle, FileUploaded, RateLimitHit, JwtTokenGenerated
 
 ---
@@ -69,3 +100,13 @@ Do not prompt about package/repo rename.
 - Chunked upload whole-file SHA1: incremental via `hash_init/update/final`.
 - Auto-retry / auto-token-refresh: **not implemented**; deferred to v1.1. Only `RateLimitException` exists.
 - `ArrayConfigProvider`: good idea, deferred to v1.1 (confirmed this session).
+- `SearchService::search` returns raw `array` — intentional; Box returns heterogeneous entries (files, folders, web links) that cannot be strongly typed; deferred to future minor release.
+- `PagedResult<T>` (`Box\Dto\PagedResult`) and `GroupMembership` (`Box\Resource\GroupMembership`) are new in this session.
+
+---
+
+## Deferred (Post-Slice-19)
+- `llms.txt` — deferred to v1.1 or v1.2. Do not add to Gate 8.
+- **PHPDoc quality audit + PHPStan level bump** — audit `T[]` annotations, upgrade to `list<T>` or `array<K, V>`; bump PHPStan level after. Full codebase review required. Post-v1.
+- **`BoxClientFactory` namespace move** — currently `Box\Service\BoxClientFactory`; belongs in `Box\Factory`. Breaking change. Slot as own slice after Slice 19.
+- **`createOAuth2Client()` rename** — rename `BoxClientFactory::createClient()` to `createOAuth2Client()`. Same slice as namespace move. `BoxClientFactoryInterface` must update in tandem.

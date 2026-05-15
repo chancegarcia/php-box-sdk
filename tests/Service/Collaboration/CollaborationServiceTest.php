@@ -6,7 +6,9 @@ namespace Box\Tests\Service\Collaboration;
 
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
+use Box\Exception\BoxResponseException;
 use Box\Http\Response\BoxResponseInterface;
+use Box\Dto\PagedResult;
 use Box\Resource\Collaboration;
 use Box\Resource\File;
 use Box\Resource\Folder;
@@ -144,6 +146,27 @@ class CollaborationServiceTest extends TestCase
         $this->assertInstanceOf(Collaboration::class, $result);
         $this->assertSame('14176246', $result->getId());
         $this->assertSame('viewer', $result->getRole());
+    }
+
+    public function testGetFolderCollaborationsReturnsPagedResult(): void
+    {
+        $folder = new Folder();
+        $folder->setId('11446498');
+
+        $listData = BoxApiFixtures::collaborationListResponse();
+
+        $connection = $this->createMock(ConnectionInterface::class);
+        $connection->expects($this->once())
+            ->method('query')
+            ->with('https://api.box.com/2.0/folders/11446498/collaborations')
+            ->willReturn($this->createMockResponse($listData));
+
+        $result = $this->createService($connection)->getFolderCollaborations($folder);
+
+        $this->assertInstanceOf(PagedResult::class, $result);
+        $this->assertSame(2, $result->totalCount);
+        $this->assertCount(2, $result->entries);
+        $this->assertContainsOnlyInstancesOf(Collaboration::class, $result->entries);
     }
 
     public function testDeleteCollaborationCallsDelete(): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Box\Service\Collaboration;
 
+use Box\Dto\PagedResult;
 use Box\Resource\Collaboration;
 use Box\Resource\File;
 use Box\Resource\Folder;
@@ -15,9 +16,9 @@ interface CollaborationServiceInterface extends AuthenticatedServiceInterface
      * Get collaborations for a folder.
      *
      * @param Folder $folder
-     * @return array
+     * @return PagedResult<Collaboration>
      */
-    public function getFolderCollaborations(Folder $folder): array;
+    public function getFolderCollaborations(Folder $folder): PagedResult;
 
     /**
      * Add a collaboration to a folder or file.

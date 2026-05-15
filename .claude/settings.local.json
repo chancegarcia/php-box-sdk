@@ -8,8 +8,7 @@
       "Bash(composer test *)",
       "Bash(grep -E \"ERROR|FAILURE|OK \\\\\\(|Tests:|--$\")",
       "Bash(grep -rn --include=\"*.php\" --include=\"*.md\" --include=\"*.json\" --include=\"*.yaml\" --include=\"*.yml\" --include=\"*.env\" -E \"\\(BEGIN \\(RSA|EC|OPENSSH\\) PRIVATE KEY|-----BEGIN CERTIFICATE|client_secret\\\\s*=\\\\s*['\\\\\"][^'\\\\\"]{10}|access_token\\\\s*=\\\\s*['\\\\\"][^'\\\\\"]{10}|refresh_token\\\\s*=\\\\s*['\\\\\"][^'\\\\\"]{10}|password\\\\s*=\\\\s*['\\\\\"][^'\\\\\"]{8}|dsn\\\\s*=\\\\s*['\\\\\"]mysql|BOX_JWT_PRIVATE_KEY_PATH\\\\s*=\\\\s*[^$]|BOX_OAUTH_CLIENT_SECRET\\\\s*=\\\\s*[^$\\\\n]\\)\" src/ tests/ docs/ bin/)",
-      "Bash(grep -rE \"\\(public|private|protected\\)\\\\s+\\(function|\\\\$\\)[^:]*\\\\\\(\" /Users/chance/PhpstormProjects/mine/box-sdk/src/ --include=\"*.php\" -n)",
-      "Bash(composer require *)"
+      "Bash(grep -rE \"\\(public|private|protected\\)\\\\s+\\(function|\\\\$\\)[^:]*\\\\\\(\" /Users/chance/PhpstormProjects/mine/box-sdk/src/ --include=\"*.php\" -n)"
     ]
   }
 }

@@ -469,6 +469,8 @@ Every major seam in the SDK is backed by an interface. You can swap in your own 
 
 Individual service interfaces (`FileServiceInterface`, `FolderServiceInterface`, `UserServiceInterface`, `SearchServiceInterface`, `CollaborationServiceInterface`, `GroupServiceInterface`, `UserEventServiceInterface`) are useful for mocking in unit tests or wrapping services with decoration.
 
+For a full list of supported Box API endpoints per service, see [API Coverage](api-coverage.md).
+
 ### Composition Pattern
 
 ```php

@@ -4,6 +4,7 @@ Welcome to the documentation for the Box PHP SDK.
 
 ## [User Documentation](user/)
 - [Programmatic Usage](user/programmatic-usage.md): Core SDK usage patterns and examples.
+- [API Coverage](user/api-coverage.md): Full list of supported Box API endpoints by service class.
 - [CLI Test Harness](user/cli-test-harness.md): Documentation for the `bin/box-sdk` CLI tool.
 
 ## [Migration Guides](migration/)
