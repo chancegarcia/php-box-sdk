@@ -31,7 +31,6 @@ trait BoxApiErrorTrait
      * @param array $data containing at minimum an 'error' key
      * @param string|null $message override for the exception message
      * @param BoxResponseInterface|null $boxResponse attach HTTP context to the exception
-     *
      * @throws BoxException
      */
     public function error(array $data, ?string $message = null, ?BoxResponseInterface $boxResponse = null): never

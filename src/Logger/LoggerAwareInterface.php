@@ -5,6 +5,7 @@
  * User: chance
  * Date: 1/20/16
  * Time: 9:14 PM
+ *
  * @package     Box
  * @subpackage  Box_Logger
  * @author      Chance Garcia
@@ -31,7 +32,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 namespace Box\Logger;

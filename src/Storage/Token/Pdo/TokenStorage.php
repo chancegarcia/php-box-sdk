@@ -5,6 +5,7 @@
  * User: chance
  * Date: 9/22/15
  * Time: 2:24 PM
+ *
  * @package     Box
  * @subpackage  Box_Storage
  * @author      Chance Garcia
@@ -31,7 +32,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 namespace Box\Storage\Token\Pdo;
@@ -46,6 +46,7 @@ use PDOException;
 
 /**
  * Class TokenStorage
+ *
  * @package Box\Storage\Pdo
  */
 class TokenStorage implements TokenStorageInterface
@@ -60,6 +61,7 @@ class TokenStorage implements TokenStorageInterface
 
     /**
      * map for persistence
+     *
      * @var array map contains the database column as the key and the token object getter method as the value.
      */
     protected array $tokenMap = [
@@ -216,6 +218,7 @@ class TokenStorage implements TokenStorageInterface
 
     /**
      * {@inheritdoc}
+     *
      * @throws TokenStorageException
      */
     public function storeToken(TokenInterface $token, TokenStorageContext $context): void
@@ -225,6 +228,7 @@ class TokenStorage implements TokenStorageInterface
 
     /**
      * {@inheritdoc}
+     *
      * @throws TokenStorageException
      */
     public function updateToken(TokenInterface $token, TokenStorageContext $context): void
@@ -306,6 +310,7 @@ class TokenStorage implements TokenStorageInterface
 
     /**
      * {@inheritdoc}
+     *
      * @throws TokenStorageException
      */
     public function retrieveToken(TokenStorageContext $context): ?TokenInterface
@@ -363,6 +368,7 @@ class TokenStorage implements TokenStorageInterface
 
     /**
      * {@inheritdoc}
+     *
      * @throws TokenStorageException
      */
     public function removeToken(TokenStorageContext $context): void
@@ -408,6 +414,7 @@ class TokenStorage implements TokenStorageInterface
 
     /**
      * {@inheritdoc}
+     *
      * @throws TokenStorageException
      */
     public function clear(): void

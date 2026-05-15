@@ -5,6 +5,7 @@
  * User: chance
  * Date: 9/17/15
  * Time: 5:29 PM
+ *
  * @package     Box
  * @subpackage  Box_Model
  * @author      Chance Garcia
@@ -31,7 +32,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 namespace Box\Resource;
@@ -60,7 +60,6 @@ class Event
 
     /**
      * @param mixed $type
-     *
      * @return void
      */
     public function setType(mixed $type = null): void
@@ -78,7 +77,6 @@ class Event
 
     /**
      * @param mixed $eventId
-     *
      * @return void
      */
     public function setEventId(mixed $eventId = null): void
@@ -96,7 +94,6 @@ class Event
 
     /**
      * @param mixed $createdBy
-     *
      * @return void
      */
     public function setCreatedBy(mixed $createdBy = null): void
@@ -114,7 +111,6 @@ class Event
 
     /**
      * @param mixed $eventType
-     *
      * @return void
      */
     public function setEventType(mixed $eventType = null): void
@@ -132,7 +128,6 @@ class Event
 
     /**
      * @param mixed $sessionId
-     *
      * @return void
      */
     public function setSessionId(mixed $sessionId = null): void
@@ -150,7 +145,6 @@ class Event
 
     /**
      * @param mixed $source
-     *
      * @return void
      */
     public function setSource(mixed $source = null): void

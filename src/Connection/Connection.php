@@ -29,7 +29,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 namespace Box\Connection;
@@ -54,6 +53,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Class Connection
+ *
  * @package Box\Model
  * @todo v1: remove client credential synchronization and make Connection the source of truth
  */

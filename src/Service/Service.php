@@ -5,6 +5,7 @@
  * User: chance
  * Date: 9/18/15
  * Time: 2:55 PM
+ *
  * @package     Box
  * @subpackage  Box_Model
  * @author      Chance Garcia
@@ -31,7 +32,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 namespace Box\Service;
@@ -68,6 +68,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
 
     /**
      * {@inheritdoc}
+     *
      * @return ConnectionInterface
      */
     public function getConnection()

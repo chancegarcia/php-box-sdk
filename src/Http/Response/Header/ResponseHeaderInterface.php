@@ -15,7 +15,6 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
- *
  */
 
 namespace Box\Http\Response\Header;
@@ -29,7 +28,6 @@ interface ResponseHeaderInterface
 
     /**
      * @param StatusLineInterface|null $statusLine
-     *
      */
     public function setStatusLine(?StatusLineInterface $statusLine = null): ResponseHeaderInterface;
 
@@ -40,7 +38,6 @@ interface ResponseHeaderInterface
 
     /**
      * @param array|null $headerLines
-     *
      */
     public function setHeaderLines(?array $headerLines = null): ResponseHeaderInterface;
 }

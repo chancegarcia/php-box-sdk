@@ -5,6 +5,7 @@
  * User: chance
  * Date: 9/22/15
  * Time: 4:52 PM
+ *
  * @package     Box
  * @subpackage  Box_Storage
  * @author      Chance Garcia
@@ -31,7 +32,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 namespace Box\Storage\Token\Container;

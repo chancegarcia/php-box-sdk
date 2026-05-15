@@ -5,6 +5,7 @@
  * User: chance
  * Date: 9/18/15
  * Time: 6:48 PM
+ *
  * @package     Box
  * @subpackage  Box_Model
  * @author      Chance Garcia
@@ -31,7 +32,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 namespace Box\Service\Event;
@@ -42,6 +42,7 @@ use Box\Mapper\EventResponseMapper;
 
 /**
  * Interface UserEventServiceInterface
+ *
  * @package Box\Service\Event
  */
 interface UserEventServiceInterface extends ServiceInterface
@@ -61,7 +62,6 @@ interface UserEventServiceInterface extends ServiceInterface
 
     /**
      * @param string|null $streamType
-     *
      * @return void
      */
     public function setStreamType(?string $streamType = null): void;
@@ -73,7 +73,6 @@ interface UserEventServiceInterface extends ServiceInterface
 
     /**
      * @param string|int|null $limit set null to reset to default value
-     *
      * @return void
      */
     public function setLimit(string|int|null $limit = null): void;

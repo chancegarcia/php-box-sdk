@@ -95,7 +95,7 @@ Pass event dispatcher to service before delegating.
 - Search example
 - Error recovery pattern (401 → refresh → retry)
 
-**Also review `llms.txt`** — consumer-facing LLM convention file. Deferred from pre-Slice-19 cleanup; revisit here when API surface is more complete. Decision: add to repo or defer to post-v1.
+**`llms.txt` is deferred to v1.1 or v1.2** — decision made 2026-05-15. Scope depends on how much v1 patching happens post-release before bundle work begins. Do not revisit in Gate 8.
 
 ### Gate 9: Additional PSR-14 Events
 
@@ -143,5 +143,4 @@ Removed both entries. Work was never tagged or released; v1.0.0 entry covers it.
 - Slice 19 all 9 gates complete
 - `composer review` green
 - `programmatic-usage.md` chunked upload + doc gaps + events reference filled
-- `llms.txt` decision made (add or formally defer)
 - API coverage matrix updated to reflect chunked upload as ✅

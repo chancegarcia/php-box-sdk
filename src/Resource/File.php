@@ -27,7 +27,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 namespace Box\Resource;
@@ -154,7 +153,6 @@ class File
 
     /**
      * @param User|array|null $createdBy
-     *
      * @return void
      */
     public function setCreatedBy(mixed $createdBy = null): void
@@ -244,7 +242,6 @@ class File
 
     /**
      * @param User|array|null $modifiedBy
-     *
      * @return void
      */
     public function setModifiedBy(mixed $modifiedBy = null): void
@@ -316,7 +313,6 @@ class File
 
     /**
      * @param User|array|null $ownedBy
-     *
      * @return void
      */
     public function setOwnedBy(mixed $ownedBy = null): void
@@ -338,7 +334,6 @@ class File
 
     /**
      * @param Folder|array|null $parent
-     *
      * @return void
      */
     public function setParent(mixed $parent = null): void
@@ -360,7 +355,6 @@ class File
 
     /**
      * @param mixed $pathCollection
-     *
      * @return void
      */
     public function setPathCollection(mixed $pathCollection = null): void
@@ -382,7 +376,6 @@ class File
 
     /**
      * @param mixed $permissions
-     *
      * @return void
      */
     public function setPermissions(mixed $permissions = null): void
@@ -417,7 +410,6 @@ class File
 
     /**
      * @param string|int|null $sequenceId
-     *
      * @return void
      */
     public function setSequenceId(string|int|null $sequenceId = null): void
@@ -435,7 +427,6 @@ class File
 
     /**
      * @param string|null $sha1
-     *
      * @return void
      */
     public function setSha1(?string $sha1 = null): void
@@ -453,7 +444,6 @@ class File
 
     /**
      * @param SharedLink|array|null $sharedLink
-     *
      * @return void
      */
     public function setSharedLink(SharedLink|array|null $sharedLink = null): void
@@ -509,7 +499,6 @@ class File
 
     /**
      * @param string $type
-     *
      * @return void
      */
     public function setType(string $type = "file"): void
@@ -527,7 +516,6 @@ class File
 
     /**
      * @param string|int|null $versionNumber
-     *
      * @return void
      */
     public function setVersionNumber(string|int|null $versionNumber = null): void

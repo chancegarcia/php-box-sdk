@@ -27,7 +27,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 namespace Box\Resource;
@@ -93,7 +92,6 @@ class Group
 
     /**
      * @param string|null $name
-     *
      * @throws GroupException
      * @return void
      */

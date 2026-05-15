@@ -15,7 +15,6 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
- *
  */
 
 namespace Box\Http\Response;
@@ -83,7 +82,6 @@ interface BoxResponseInterface extends PsrResponseInterface
      *
      * @param string $version The HTTP protocol version
      * @return static
-     *
      */
     public function setProtocolVersion(string $version): static;
 

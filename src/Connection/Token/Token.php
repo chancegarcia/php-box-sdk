@@ -27,7 +27,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 namespace Box\Connection\Token;
@@ -128,6 +127,7 @@ class Token implements TokenInterface
 
     /**
      * {@inheritdoc}
+     *
      * @param array|null $restrictedTo
      */
     public function setRestrictedTo(?array $restrictedTo = null): void

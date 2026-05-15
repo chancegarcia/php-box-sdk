@@ -27,7 +27,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 namespace Box;
@@ -62,6 +61,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class Client
+ *
  * @package Box
  */
 class Client implements LoggerAwareInterface
@@ -131,7 +131,6 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param array|null $options
-     *
      * @return Folder
      */
     public function getNewFolder(?array $options = null): Folder
@@ -141,7 +140,6 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param array|null $options
-     *
      * @return User
      */
     public function getNewUser(?array $options = null): User
@@ -151,7 +149,6 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param array|null $options
-     *
      * @return Group
      */
     public function getNewGroup(?array $options = null): Group
@@ -161,7 +158,6 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param array|null $options
-     *
      * @return Collaboration
      */
     public function getNewCollaboration(?array $options = null): Collaboration
@@ -171,7 +167,6 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param array|null $options
-     *
      * @return File
      */
     public function getNewFile(?array $options = null): File
@@ -182,7 +177,6 @@ class Client implements LoggerAwareInterface
     /**
      * @param string|int $id use 0 for returning all folders
      * @param bool $retrieve if no folder is found, attempt to retrieve from box
-     *
      * @return Folder|null returns null if no such folder exists and retrieve is false
      */
     public function getFolder(string|int $id = 0, bool $retrieve = true): ?Folder
@@ -242,7 +236,6 @@ class Client implements LoggerAwareInterface
      * @param null $group
      * @param null $limit leave null to get all; if limit is null but offset is numeric, limit will default to 100
      * @param null $offset leave null to get all; if limit is null but offset is numeric, limit will default to 100
-     *
      * @return array returns an array of User objects that are in the group membership
      * @throws \Box\Exception\BoxException
      */
@@ -335,7 +328,6 @@ class Client implements LoggerAwareInterface
      * @param Folder $folder
      * @param int $limit
      * @param int $offset
-     *
      * @return Folder
      */
     public function getBoxFolderItems(Folder $folder, int $limit = 100, int $offset = 0): Folder
@@ -364,7 +356,6 @@ class Client implements LoggerAwareInterface
      * @param string $name
      * @param string|int $parentFolderId
      * @param array|null $options
-     *
      * @return Folder
      * @throws BoxException
      */
@@ -378,7 +369,6 @@ class Client implements LoggerAwareInterface
     /**
      * @param Folder $folder
      * @param string|bool $ifMatchHeader etag string or true to use folder's current etag
-     *
      * @throws BoxException
      * @return array updated folder data
      */
@@ -391,7 +381,6 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param Folder $folder
-     *
      * @return array raw json data as an array
      * @throws BoxException
      */
@@ -407,7 +396,6 @@ class Client implements LoggerAwareInterface
      * @param User|Group $collaborator
      * @param string $role see {@link http://developers.box.com/docs/#collaborations box documentation for all possible
      *     roles} default is viewer
-     *
      * @return Collaboration
      * @throws BoxException
      */
@@ -447,7 +435,6 @@ class Client implements LoggerAwareInterface
      * @param null|Folder $folder
      * @param array|null shared link options with
      * default shared link set to collaborator access, no unshared time or permissions set to
-     *
      * @return Folder
      * @throws BoxException
      */
@@ -469,7 +456,6 @@ class Client implements LoggerAwareInterface
      * @param Folder $parent
      * @param string|null $name
      * @param bool $addToFolders
-     *
      * @return Folder
      * @throws \Exception
      * @throws BoxException
@@ -554,7 +540,6 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param TokenInterface $token
-     *
      * @return array
      * @throws BoxException
      */
@@ -594,7 +579,6 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param string|null $clientSecret
-     *
      * @return void
      */
     public function setClientSecret(string $clientSecret = ''): void
@@ -876,7 +860,6 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param string $uri
-     *
      * @return array
      * @throws BoxException
      */
