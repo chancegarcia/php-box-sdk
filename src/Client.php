@@ -58,6 +58,7 @@ use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxApiErrorTrait;
 use Box\Factory\TokenFactory;
 use Box\Factory\TokenFactoryInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class Client
@@ -107,6 +108,8 @@ class Client implements LoggerAwareInterface
     protected ?TokenFactoryInterface $tokenFactory = null;
 
     protected ?ClientConfig $config = null;
+
+    private ?EventDispatcherInterface $eventDispatcher = null;
 
     public function __construct(
         ?ClientConfig $config = null,
@@ -899,6 +902,16 @@ class Client implements LoggerAwareInterface
         $searchService = $this->configureService($this->serviceRegistry->getSearchService());
 
         return $searchService->search($query, $limit, $offset, $type);
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher): void
+    {
+        $this->eventDispatcher = $dispatcher;
+    }
+
+    public function getEventDispatcher(): ?EventDispatcherInterface
+    {
+        return $this->eventDispatcher;
     }
 
     protected function configureService(ServiceInterface $service): ServiceInterface

@@ -41,6 +41,7 @@
     "require": {
         "php": ">=8.4",
         "psr/log": "^3",
+        "psr/event-dispatcher": "^1.0",
         "ext-fileinfo": "*",
         "ext-openssl": "*",
         "symfony/dotenv": "^7.4|^8",
