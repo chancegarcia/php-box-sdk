@@ -97,6 +97,30 @@ Pass event dispatcher to service before delegating.
 
 **Also review `llms.txt`** — consumer-facing LLM convention file. Deferred from pre-Slice-19 cleanup; revisit here when API surface is more complete. Decision: add to repo or defer to post-v1.
 
+### Gate 9: Additional PSR-14 Events
+
+Extend the event infrastructure beyond chunked upload to cover the rest of the SDK surface. Event classes go in `src/Event/` under the namespace that matches the firing site.
+
+**Token lifecycle** — `src/Event/Auth/` — wire into `Client.php`:
+- `TokenExchanged` — holds `TokenInterface $token`; fired after `exchangeAuthorizationCodeForToken()` succeeds
+- `TokenRefreshed` — holds `TokenInterface $token`; fired after `refreshToken()` succeeds; primary hook point for v1.1 auto-refresh
+- `TokenRevoked` — holds `TokenInterface $token`; fired after `destroyToken()` succeeds
+- `TokenLoadedFromStorage` — holds `TokenInterface $token`; fired after `loadTokenFromStorage()` returns a token
+- `TokenSavedToStorage` — holds `TokenInterface $token`; fired after `saveTokenToStorage()` writes
+
+**Standard file upload** — `src/Event/File/` — wire into `FileService::uploadFile()`:
+- `FileUploaded` — holds `\Box\Resource\File $file`; gives consumers a uniform event surface across both upload paths
+
+**Rate limiting** — `src/Event/Http/` — wire into the 429 exception boundary in `Connection` (or `Service`):
+- `RateLimitHit` — holds `int $retryAfter`; observability now, natural hook for v1.1 auto-retry loop
+
+**JWT token generation** — `src/Event/Auth/` — wire into `JwtProvider::getToken()`:
+- `JwtTokenGenerated` — holds `TokenInterface $token`; audit trail for enterprise S2S deployments
+
+**Tests**: construction tests for each new event class; wire-up tests confirming events are dispatched (mock dispatcher, assert `dispatch()` called with correct event type).
+
+**Docs**: add an "Events reference" section to `programmatic-usage.md` listing all dispatched events, their payload, and when they fire.
+
 ---
 
 ## Resolved Questions (do not re-open)
@@ -116,8 +140,8 @@ Removed both entries. Work was never tagged or released; v1.0.0 entry covers it.
 
 ## Acceptance Criteria for Slice 19
 
-- Slice 19 all 8 gates complete
+- Slice 19 all 9 gates complete
 - `composer review` green
-- `programmatic-usage.md` chunked upload + doc gaps filled
+- `programmatic-usage.md` chunked upload + doc gaps + events reference filled
 - `llms.txt` decision made (add or formally defer)
 - API coverage matrix updated to reflect chunked upload as ✅

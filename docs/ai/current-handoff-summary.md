@@ -37,15 +37,16 @@ Do not prompt about package/repo rename.
 
 ## Slice 19 — Chunked Upload + PSR-14 Events
 
-8-gate plan in `docs/ai/next-session-plan.md`. Gates in order:
-1. PSR-14 infrastructure
-2. FileStream additions
-3. DTOs
+9-gate plan in `docs/ai/next-session-plan.md`. Gates in order:
+1. PSR-14 infrastructure ✅
+2. FileStream additions ✅
+3. DTOs ✅
 4. FileService low-level API
 5. Orchestrator
 6. Client facade
 7. Tests
 8. Documentation (+ `llms.txt` review)
+9. Additional PSR-14 events — token lifecycle, FileUploaded, RateLimitHit, JwtTokenGenerated
 
 ---
 
