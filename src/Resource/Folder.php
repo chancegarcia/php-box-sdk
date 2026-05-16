@@ -32,6 +32,7 @@
 
 namespace Box\Resource;
 
+use Box\Dto\PathCollection;
 use Countable;
 use DateTimeInterface;
 
@@ -46,8 +47,7 @@ class Folder
     protected DateTimeInterface|string|null $modifiedAt = null;
     protected ?string $description = null;
     protected ?int $size = null;
-    // mixed: path_collection is a heterogeneous structure from the Box API, not yet modeled as a DTO
-    protected mixed $pathCollection = null;
+    protected ?PathCollection $pathCollection = null;
     // mixed: hydrator may deliver a User as array or object depending on API response shape
     protected mixed $createdBy = null;
     // mixed: hydrator may deliver a User as array or object depending on API response shape
@@ -297,12 +297,18 @@ class Folder
         return $this->parent;
     }
 
-    public function setPathCollection(mixed $pathCollection = null): void
+    public function setPathCollection(array|PathCollection|null $pathCollection = null): void
     {
+        if (is_array($pathCollection)) {
+            $totalCount = (int) ($pathCollection['total_count'] ?? 0);
+            $entries = $pathCollection['entries'] ?? [];
+            $pathCollection = new PathCollection($totalCount, $entries);
+        }
+
         $this->pathCollection = $pathCollection;
     }
 
-    public function getPathCollection(): mixed
+    public function getPathCollection(): ?PathCollection
     {
         return $this->pathCollection;
     }

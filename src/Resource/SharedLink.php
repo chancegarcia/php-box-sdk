@@ -37,23 +37,24 @@
 
 namespace Box\Resource;
 
+use Box\Enum\SharedLinkAccess;
 use Box\Resource\SharedLink\Permissions\Permissions;
 use DateTimeInterface;
 
 class SharedLink
 {
-    protected ?string $access = null;
+    protected ?SharedLinkAccess $access = null;
     protected DateTimeInterface|string|null $unsharedAt = null;
     protected ?string $password = null;
     protected ?Permissions $permissions = null;
     protected ?string $effectiveAccess = null;
 
-    public function getAccess(): ?string
+    public function getAccess(): ?SharedLinkAccess
     {
         return $this->access;
     }
 
-    public function setAccess(?string $access = null): void
+    public function setAccess(?SharedLinkAccess $access = null): void
     {
         $this->access = $access;
     }
@@ -111,7 +112,7 @@ class SharedLink
     public function toArray(): array
     {
         return [
-            'access' => $this->access,
+            'access' => $this->access?->value,
             'unshared_at' => $this->unsharedAt,
             'password' => $this->password,
         ];

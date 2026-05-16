@@ -66,7 +66,21 @@ class Hydrator
 
         $type = $parameters[0]->getType();
         $hydratedValue = $this->hydrateValue($type, $value, $target, $propertyName);
+
+        if ($hydratedValue === null && $value !== null && $this->isEnumResolutionFailure($type)) {
+            return;
+        }
+
         $target->$setter($hydratedValue);
+    }
+
+    private function isEnumResolutionFailure(?ReflectionType $type): bool
+    {
+        if ($type instanceof ReflectionNamedType && !$type->isBuiltin() && enum_exists($type->getName())) {
+            return true;
+        }
+
+        return false;
     }
 
     private function hydrateViaProperty(object $target, string $propertyName, mixed $value): void
@@ -108,21 +122,21 @@ class Hydrator
             }
 
             if (is_scalar($value) && enum_exists($className)) {
-                try {
-                    return $className::from($value);
-                } catch (Exception) {
-                    return $value;
-                }
+                return $className::tryFrom($value);
             }
         }
 
         if ($type instanceof ReflectionUnionType) {
             foreach ($type->getTypes() as $unionType) {
+                if ($unionType instanceof ReflectionNamedType && $unionType->isBuiltin() && $unionType->getName() === 'array' && is_array($value)) {
+                    return $value;
+                }
+            }
+
+            foreach ($type->getTypes() as $unionType) {
                 if ($unionType instanceof ReflectionNamedType && !$unionType->isBuiltin()) {
                     $className = $unionType->getName();
                     if (is_array($value) || $value instanceof stdClass) {
-                        // Attempt to hydrate into the first non-builtin class in the union
-                        // This might need more sophisticated logic if multiple classes are possible
                         return $this->hydrate($className, $value);
                     }
                 }

@@ -83,7 +83,7 @@ class FileService extends Service implements FileServiceInterface
         $params = array_filter([
             'name' => $file->getName(),
             'description' => $file->getDescription(),
-        ], fn($v) => null !== $v);
+        ], static fn($v) => null !== $v);
 
         return $this->sendUpdateAndHydrate($uri, $params, File::class);
     }
@@ -243,7 +243,7 @@ class FileService extends Service implements FileServiceInterface
         $data = $this->handleBoxResponse($response, 'flat');
 
         return array_map(
-            fn(array $part) => new UploadPart(
+            static fn(array $part) => new UploadPart(
                 partId: $part['part_id'],
                 offset: $part['offset'],
                 size: $part['size'],
@@ -257,7 +257,7 @@ class FileService extends Service implements FileServiceInterface
     public function commitUploadSession(string $sessionId, array $parts, string $fileSha1): File
     {
         $partPayload = array_map(
-            fn(UploadPart $part) => [
+            static fn(UploadPart $part) => [
                 'part_id' => $part->partId,
                 'offset' => $part->offset,
                 'size' => $part->size,

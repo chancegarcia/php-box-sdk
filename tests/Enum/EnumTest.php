@@ -6,6 +6,7 @@ namespace Box\Tests\Enum;
 
 use Box\Enum\BoxItemType;
 use Box\Enum\CollaborationRole;
+use Box\Enum\CollaborationStatus;
 use Box\Enum\SharedLinkAccess;
 use Box\Enum\UserStatus;
 use PHPUnit\Framework\TestCase;
@@ -51,11 +52,19 @@ class EnumTest extends TestCase
         $this->assertSame('collaborators', SharedLinkAccess::Collaborators->value);
     }
 
+    public function testCollaborationStatusValues(): void
+    {
+        $this->assertSame('accepted', CollaborationStatus::Accepted->value);
+        $this->assertSame('pending', CollaborationStatus::Pending->value);
+        $this->assertSame('rejected', CollaborationStatus::Rejected->value);
+    }
+
     public function testEnumFromValue(): void
     {
         $this->assertSame(BoxItemType::File, BoxItemType::from('file'));
         $this->assertSame(UserStatus::Active, UserStatus::from('active'));
         $this->assertSame(CollaborationRole::Editor, CollaborationRole::from('editor'));
+        $this->assertSame(CollaborationStatus::Accepted, CollaborationStatus::from('accepted'));
         $this->assertSame(SharedLinkAccess::Open, SharedLinkAccess::from('open'));
     }
 }

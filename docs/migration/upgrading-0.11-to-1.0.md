@@ -33,6 +33,9 @@ Use this as a checklist. Each item links to the full section below.
 | Removed model base classes | Check if you extend them | [Removed Classes](#7-removed-classes-and-interfaces) |
 | CLI `--transport` option | Remove from scripts | [CLI Changes](#8-cli-changes) |
 | `BoxClientFactory` namespace and method rename | Low — find & replace | [BoxClientFactory Move](#10-boxclientfactory-move) |
+| `Collaboration` role/status now enum-typed | Low — replace string literals with enum cases | [Enum-Typed Properties](#11-enum-typed-resource-properties) |
+| `File`/`Folder` `pathCollection` now `PathCollection` DTO | Low — update read-side code | [PathCollection DTO](#12-pathcollection-dto) |
+| `File::setSharedLink` no longer accepts array | Low — construct `SharedLink` object | [File::setSharedLink Narrowed](#13-filesharedlink-narrowed) |
 
 ---
 
@@ -208,6 +211,82 @@ The entire legacy `Box\Model` base architecture has been removed:
 **If your code extends any of these**, you will need to refactor. Resources in v1.0 are standalone classes — they do not extend a base model. Implement `Psr\Log\LoggerAwareInterface` directly if you need logging in a custom service.
 
 The legacy `Box\Connection\ConnectionFactory` has also been removed. Use `Box\Factory\ConnectionFactory` (which implements `ConnectionFactoryInterface`).
+
+---
+
+### 11. Enum-Typed Resource Properties
+
+Several resource properties that previously accepted or returned raw strings have been replaced with backed enum types. This provides compile-time safety and eliminates the need to know valid string values by memory.
+
+| Class | Property / Method | Before (v0.11) | After (v1.0) |
+|:---|:---|:---|:---|
+| `Collaboration` | `setRole()` / `getRole()` | `?string` | `?CollaborationRole` (`Box\Enum\CollaborationRole`) |
+| `Collaboration` | `setStatus()` / `getStatus()` | `?string` (with runtime validation) | `?CollaborationStatus` (`Box\Enum\CollaborationStatus`) |
+| `SharedLink` | `setAccess()` / `getAccess()` | `?string` | `?SharedLinkAccess` (`Box\Enum\SharedLinkAccess`) |
+
+**Before (v0.11):**
+```php
+$collaboration->setRole('editor');
+$collaboration->setStatus('accepted');
+$sharedLink->setAccess('open');
+```
+
+**After (v1.0):**
+```php
+use Box\Enum\CollaborationRole;
+use Box\Enum\CollaborationStatus;
+use Box\Enum\SharedLinkAccess;
+
+$collaboration->setRole(CollaborationRole::Editor);
+$collaboration->setStatus(CollaborationStatus::Accepted);
+$sharedLink->setAccess(SharedLinkAccess::Open);
+```
+
+The `CollaborationStatus` enum is new in v1.0 (`accepted`, `pending`, `rejected`). The runtime `BoxException` that the old `setStatus()` threw for invalid strings is removed — use the enum cases instead.
+
+---
+
+### 12. PathCollection DTO
+
+`File::setPathCollection()` / `getPathCollection()` and `Folder::setPathCollection()` / `getPathCollection()` now use the `Box\Dto\PathCollection` DTO instead of `mixed`.
+
+The setter still accepts a raw array (for Hydrator compatibility), so existing code that passes arrays will continue to work. If you read `getPathCollection()` and treated the return as an array, update to use the DTO:
+
+**Before (v0.11):**
+```php
+$raw = $file->getPathCollection(); // mixed / array
+$count = $raw['total_count'] ?? 0;
+```
+
+**After (v1.0):**
+```php
+use Box\Dto\PathCollection;
+
+$pc = $file->getPathCollection(); // ?PathCollection
+$count = $pc?->totalCount ?? 0;
+```
+
+---
+
+### 13. File::setSharedLink Narrowed
+
+`File::setSharedLink()` no longer accepts `array`. Pass a `SharedLink` instance or `null`.
+
+The `Hydrator` automatically converts the `shared_link` JSON object to a `SharedLink` instance during hydration, so this change only affects code that calls `setSharedLink()` manually with a raw array.
+
+**Before (v0.11):**
+```php
+$file->setSharedLink(['access' => 'open', 'password' => null]);
+```
+
+**After (v1.0):**
+```php
+use Box\Resource\SharedLink;
+
+$link = new SharedLink();
+$link->setAccess(\Box\Enum\SharedLinkAccess::Open);
+$file->setSharedLink($link);
+```
 
 ---
 

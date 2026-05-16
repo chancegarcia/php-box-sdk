@@ -3,6 +3,7 @@
 namespace Box\Service\Collaboration;
 
 use Box\Dto\PagedResult;
+use Box\Exception\BoxException;
 use Box\Exception\BoxResponseException;
 use Box\Resource\Collaboration;
 use Box\Resource\File;
@@ -62,14 +63,20 @@ class CollaborationService extends Service implements CollaborationServiceInterf
         return $this->getResourceFromBox($uri, Collaboration::class);
     }
 
+    /**
+     * @param Collaboration $collaboration
+     *
+     * @return Collaboration
+     * @throws BoxException
+     */
     public function updateCollaboration(Collaboration $collaboration): Collaboration
     {
         $uri = self::ENDPOINT . '/' . $collaboration->getId();
 
         $params = array_filter([
-            'role' => $collaboration->getRole(),
-            'status' => $collaboration->getStatus(),
-        ], fn($v) => null !== $v);
+            'role' => $collaboration->getRole()?->value,
+            'status' => $collaboration->getStatus()?->value,
+        ], static fn($v) => null !== $v);
 
         return $this->sendUpdateAndHydrate($uri, $params, Collaboration::class);
     }

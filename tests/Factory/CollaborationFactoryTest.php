@@ -2,6 +2,8 @@
 
 namespace Box\Tests\Factory;
 
+use Box\Enum\CollaborationRole;
+use Box\Enum\CollaborationStatus;
 use Box\Factory\CollaborationFactory;
 use Box\Resource\Collaboration;
 use PHPUnit\Framework\TestCase;
@@ -29,7 +31,7 @@ class CollaborationFactoryTest extends TestCase
 
         $this->assertInstanceOf(Collaboration::class, $collaboration);
         $this->assertEquals('abc', $collaboration->getId());
-        $this->assertEquals('editor', $collaboration->getRole());
-        $this->assertEquals('accepted', $collaboration->getStatus());
+        $this->assertSame(CollaborationRole::Editor, $collaboration->getRole());
+        $this->assertSame(CollaborationStatus::Accepted, $collaboration->getStatus());
     }
 }

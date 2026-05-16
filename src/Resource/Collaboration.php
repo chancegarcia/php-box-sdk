@@ -32,7 +32,8 @@
 
 namespace Box\Resource;
 
-use Box\Exception\BoxException;
+use Box\Enum\CollaborationRole;
+use Box\Enum\CollaborationStatus;
 use DateTimeInterface;
 
 class Collaboration
@@ -44,10 +45,10 @@ class Collaboration
     protected DateTimeInterface|string|null $createdAt = null;
     protected DateTimeInterface|string|null $modifiedAt = null;
     protected DateTimeInterface|string|null $expiresAt = null;
-    protected ?string $status = null;
+    protected ?CollaborationStatus $status = null;
     // mixed: accessible_by can be a User or Group; hydrator may deliver an array or object
     protected mixed $accessibleBy = null;
-    protected ?string $role = null;
+    protected ?CollaborationRole $role = null;
     protected DateTimeInterface|string|null $acknowledgedAt = null;
     // mixed: item can be a File or Folder; hydrator may deliver an array or object
     protected mixed $item = null;
@@ -157,52 +158,22 @@ class Collaboration
         return $this->modifiedAt;
     }
 
-    /**
-     * @param string|null $role
-     *
-     * @return void
-     */
-    public function setRole(?string $role = null): void
+    public function setRole(?CollaborationRole $role = null): void
     {
         $this->role = $role;
     }
 
-    public function getRole(): ?string
+    public function getRole(): ?CollaborationRole
     {
         return $this->role;
     }
 
-    /**
-     * @param string|null $status
-     *
-     * @throws BoxException
-     * @return void
-     */
-    public function setStatus(?string $status = null): void
+    public function setStatus(?CollaborationStatus $status = null): void
     {
-        if (null === $status) {
-            $this->status = null;
-            return;
-        }
-
-        $status = strtolower($status); // normalize
-        $acceptable = [
-            'accepted',
-            'pending',
-            'rejected'
-        ];
-
-        if (!in_array($status, $acceptable)) {
-            throw new BoxException(
-                "status can only be one of the following values: " . implode(', ', $acceptable),
-                BoxException::INVALID_INPUT
-            );
-        }
-
         $this->status = $status;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?CollaborationStatus
     {
         return $this->status;
     }

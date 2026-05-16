@@ -32,9 +32,9 @@
 
 namespace Box\Resource;
 
-use DateTimeInterface;
-use Box\Resource\Folder;
+use Box\Dto\PathCollection;
 use Box\Resource\SharedLink;
+use DateTimeInterface;
 
 class File
 {
@@ -46,7 +46,7 @@ class File
     protected ?string $name = null;
     protected ?string $description = null;
     protected ?int $size = null;
-    protected mixed $pathCollection = null;
+    protected ?PathCollection $pathCollection = null;
     protected DateTimeInterface|string|null $createdAt = null;
     protected DateTimeInterface|string|null $modifiedAt = null;
     protected DateTimeInterface|string|null $trashedAt = null;
@@ -56,7 +56,7 @@ class File
     protected mixed $createdBy = null;
     protected mixed $modifiedBy = null;
     protected mixed $ownedBy = null;
-    protected mixed $sharedLink = null;
+    protected ?SharedLink $sharedLink = null;
     protected mixed $parent = null;
     protected ?string $itemStatus = null;
 
@@ -352,21 +352,18 @@ class File
         return $this->parent;
     }
 
-    /**
-     * @param mixed $pathCollection
-     *
-     * @return void
-     */
-    public function setPathCollection(mixed $pathCollection = null): void
+    public function setPathCollection(array|PathCollection|null $pathCollection = null): void
     {
-        // Post-v1: narrow type and hydrate PathCollection DTO once implemented
+        if (is_array($pathCollection)) {
+            $totalCount = (int) ($pathCollection['total_count'] ?? 0);
+            $entries = $pathCollection['entries'] ?? [];
+            $pathCollection = new PathCollection($totalCount, $entries);
+        }
+
         $this->pathCollection = $pathCollection;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getPathCollection(): mixed
+    public function getPathCollection(): ?PathCollection
     {
         return $this->pathCollection;
     }
@@ -443,20 +440,11 @@ class File
         return $this->sha1;
     }
 
-    /**
-     * @param SharedLink|array|null $sharedLink
-     *
-     * @return void
-     */
-    public function setSharedLink(SharedLink|array|null $sharedLink = null): void
+    public function setSharedLink(?SharedLink $sharedLink = null): void
     {
-        // Post-v1: remove array support and narrow to ?SharedLink once Hydrator hydrates SharedLink from array
         $this->sharedLink = $sharedLink;
     }
 
-    /**
-     * @return SharedLink|null
-     */
     public function getSharedLink(): ?SharedLink
     {
         return $this->sharedLink;

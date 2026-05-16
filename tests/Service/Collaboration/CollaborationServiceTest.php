@@ -6,8 +6,10 @@ namespace Box\Tests\Service\Collaboration;
 
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
-use Box\Http\Response\BoxResponseInterface;
 use Box\Dto\PagedResult;
+use Box\Enum\CollaborationRole;
+use Box\Enum\CollaborationStatus;
+use Box\Http\Response\BoxResponseInterface;
 use Box\Resource\Collaboration;
 use Box\Resource\File;
 use Box\Resource\Folder;
@@ -70,7 +72,7 @@ class CollaborationServiceTest extends TestCase
 
         $this->assertInstanceOf(Collaboration::class, $result);
         $this->assertSame('collab-1', $result->getId());
-        $this->assertSame('editor', $result->getRole());
+        $this->assertSame(CollaborationRole::Editor, $result->getRole());
     }
 
     public function testAddCollaborationWithFileObject(): void
@@ -101,7 +103,7 @@ class CollaborationServiceTest extends TestCase
 
         $this->assertInstanceOf(Collaboration::class, $result);
         $this->assertSame('collab-2', $result->getId());
-        $this->assertSame('viewer', $result->getRole());
+        $this->assertSame(CollaborationRole::Viewer, $result->getRole());
     }
 
     public function testGetCollaborationReturnsCollaborationResource(): void
@@ -119,15 +121,15 @@ class CollaborationServiceTest extends TestCase
 
         $this->assertInstanceOf(Collaboration::class, $result);
         $this->assertSame($collabId, $result->getId());
-        $this->assertSame('editor', $result->getRole());
-        $this->assertSame('accepted', $result->getStatus());
+        $this->assertSame(CollaborationRole::Editor, $result->getRole());
+        $this->assertSame(CollaborationStatus::Accepted, $result->getStatus());
     }
 
     public function testUpdateCollaborationCallsPut(): void
     {
         $collab = new Collaboration();
         $collab->setId('14176246');
-        $collab->setRole('viewer');
+        $collab->setRole(CollaborationRole::Viewer);
 
         $collabData = BoxApiFixtures::collaborationResponse(['id' => '14176246', 'role' => 'viewer']);
 
@@ -144,7 +146,7 @@ class CollaborationServiceTest extends TestCase
 
         $this->assertInstanceOf(Collaboration::class, $result);
         $this->assertSame('14176246', $result->getId());
-        $this->assertSame('viewer', $result->getRole());
+        $this->assertSame(CollaborationRole::Viewer, $result->getRole());
     }
 
     public function testGetFolderCollaborationsReturnsPagedResult(): void

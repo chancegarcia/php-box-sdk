@@ -118,11 +118,6 @@ class HydratorTest extends TestCase
 
     public function testInvalidEnumScalarBehavior(): void
     {
-        // The current implementation in Hydrator::hydrateValue catches the Exception
-        // when $className::from($value) fails and returns the original $value.
-        // If the property/setter is strictly typed, this will cause a TypeError
-        // when the Hydrator tries to assign/call.
-
         $target = new class {
             public string|UserStatus $status;
         };
@@ -131,5 +126,25 @@ class HydratorTest extends TestCase
         $this->hydrator->hydrate($target, $data);
 
         $this->assertEquals('invalid_status', $target->status);
+    }
+
+    public function testUnknownEnumValueSkipsNullableEnumSetter(): void
+    {
+        $target = new class {
+            private ?UserStatus $status = null;
+            public function setStatus(?UserStatus $status): void
+            {
+                $this->status = $status;
+            }
+            public function getStatus(): ?UserStatus
+            {
+                return $this->status;
+            }
+        };
+
+        $data = ['status' => 'unknown_value'];
+        $this->hydrator->hydrate($target, $data);
+
+        $this->assertNull($target->getStatus());
     }
 }

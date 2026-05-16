@@ -128,7 +128,7 @@ class FolderService extends Service implements FolderServiceInterface
             }
         }
 
-        $params = array_filter($params, fn($v) => null !== $v);
+        $params = array_filter($params, static fn($v) => null !== $v);
 
         if (true === $ifMatch) {
             $ifMatch = $folder->getEtag();
