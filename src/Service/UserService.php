@@ -17,9 +17,6 @@ class UserService extends Service implements UserServiceInterface
     /**
      * List all users in the enterprise.
      *
-     * @param int $limit
-     * @param int $offset
-     *
      * @throws BoxResponseException
      * @return PagedResult<User>
      */
@@ -35,7 +32,6 @@ class UserService extends Service implements UserServiceInterface
      * Get the current user's details.
      *
      * @throws BoxException
-     * @return User
      */
     public function getCurrentUser(): User
     {
@@ -45,10 +41,7 @@ class UserService extends Service implements UserServiceInterface
     /**
      * Get a user's details by ID.
      *
-     * @param string $userId
-     *
      * @throws BoxException
-     * @return User
      */
     public function getUser(string $userId): User
     {

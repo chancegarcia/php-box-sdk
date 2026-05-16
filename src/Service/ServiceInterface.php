@@ -51,12 +51,10 @@ interface ServiceInterface
     public function setToken(?TokenInterface $token = null): void;
 
     /**
-     * @param BoxResponseInterface|null $response
      * @param string $returnType 'decoded', 'flat', 'array', or 'original'
      *
      * @throws BoxException
      * @throws BadMethodCallException
-     * @return mixed
      */
     public function handleBoxResponse(?BoxResponseInterface $response = null, string $returnType = 'decoded'): mixed;
 }

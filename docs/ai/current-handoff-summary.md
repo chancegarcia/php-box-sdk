@@ -1,10 +1,10 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-16 02:07 (America/Indiana)
+- **Timestamp**: 2026-05-16 02:48 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
-- **Roadmap Position**: Slice 21 complete. Next: Slice 22.
+- **Roadmap Position**: Slice 21 complete. PHPCS sniff additions complete. Next: Slice 22.
 - **Test baseline**: 372 tests, 1002 assertions
 - **v1 remaining**: Slice 22 (license/rebrand prep) → Step 17 (release readiness) → Step 18 (doc cleanup) → package/repo rename (user-driven)
 
@@ -21,7 +21,7 @@ Do not prompt about package/repo rename.
 ### Slice 21 — Docblock Quality & Legacy Tag Cleanup [COMPLETE ✓]
 
 **Item 1 — `@inheritdoc` Correctness**
-- All lone `{@inheritdoc}` / `@inheritdoc` docblocks removed (entire block = just the tag): 47 instances across 10 files. Typed signatures make them redundant.
+- All lone `{@inheritdoc}` / `@inheritdoc` docblocks removed (47 instances across 10 files). Typed signatures make them redundant.
 - Mixed-content docblocks: `@inheritdoc` tag removed, valuable `@throws`/`@return` tags kept.
 
 **Item 2 — `@package` / `@subpackage` Removal**
@@ -35,70 +35,49 @@ Do not prompt about package/repo rename.
 - `EntrySource`: `mixed $synced` field retained with comment explaining Box Sync polymorphism.
 
 **Item 4 — `json_encode` / `json_decode` Hardening**
-- `JSON_THROW_ON_ERROR` added to all bare `json_encode`/`json_decode` calls in `src/`:
-  - `JwtAssertionGenerator::generate()` (×2)
-  - `JwtTokenCommand::__invoke()` output
-  - `Service::sendUpdateAndHydrate()`
-  - `FolderService::createFolder()` and `copyFolder()`
-  - `BoxResponse::json()` — now throws `\JsonException` (previously returned `[]` on bad JSON)
-  - `BoxResponseException` constructor — wrapped in `try/catch(\JsonException)` (can't throw from constructor)
-- `BoxResponseTest::testJsonDecodingInvalidJson` updated to expect `\JsonException`.
+- `JSON_THROW_ON_ERROR` added to all bare `json_encode`/`json_decode` calls in `src/`.
+- `BoxResponse::json()` now throws `\JsonException` (previously returned `[]` on bad JSON).
+- `BoxResponseException` constructor wraps `json_decode` in try/catch (constructors cannot throw).
+- `BoxResponse::json()` test updated to expect `\JsonException`.
 
-**Item 5 — Legacy Survivor Audit**
-- `$nameValuePair` parameter removed from `Connection::post()` and `ConnectionInterface::post()`.
-- Array→form-encoded path in `post()` and `put()` kept (used by OAuth2 token endpoints); deprecation warnings removed.
-- `Client.php` collaboration POST updated to pass `json_encode($params, JSON_THROW_ON_ERROR)` directly.
-- `FileService::normalizeSharedLinkPayload()` — dead `method_exists($sharedLink, 'toArray')` fallback removed (both `SharedLink` and `CreateSharedLinkRequest` have `toArray()`).
-- `FolderService::updateFolder()` — `method_exists($sharedLink, 'toArray')` kept (Folder::$sharedLink is `mixed`, guard is live).
+**Item 5 — `$nameValuePair` Deprecation Removal**
+- Parameter removed from `Connection::post()` and `ConnectionInterface::post()`.
+- Only caller (`Client.php:449`) updated to pass `json_encode($params, JSON_THROW_ON_ERROR)`.
+- All `@trigger_error` deprecation calls removed.
 
-**Item 6 — Naming Convention Audit**
-- No snake_case method names or parameters found in `src/`.
-- `$sStatusLine`/`$sHeader` in `StatusLine`/`ResponseHeader` are camelCase (Hungarian prefix, no underscores) — PSR-12 compliant.
-- No public method renames required.
+**Item 6 — `@throws` Chain Coverage**
+- Added `@throws \JsonException` to all callers in the bubble chain: `AuthProviderInterface`, `OAuth2Provider`, `JwtProviderInterface`, `JwtProvider`, `JwtAssertionGeneratorInterface`, `JwtAssertionGenerator`, `Service::sendUpdateAndHydrate()`, `FolderService`, `FileService`, `CollaborationService`, `CollaborationServiceInterface`, `FileServiceInterface`, `FolderServiceInterface`, `GroupServiceInterface`, `Client`.
 
-**`@throws` Chain Coverage (user-requested mid-slice)**
-- Added `@throws \JsonException` to every method in the bubble chain up to catch boundaries:
-  - `JwtAssertionGeneratorInterface::generate()` and implementation
-  - `AuthProviderInterface::exchangeAuthorizationCode()` and `refreshToken()`
-  - `JwtProviderInterface::exchangeForEnterpriseToken()` and `exchangeForAppUserToken()`
-  - All `JwtProvider` and `OAuth2Provider` implementations
-  - `FolderServiceInterface`/`FolderService`: `createFolder`, `updateFolder`, `createSharedLink`, `copyFolder`
-  - `CollaborationServiceInterface`/`CollaborationService`: `addCollaboration`, `updateCollaboration`
-  - `FileServiceInterface`/`FileService`: `updateFile`, `createSharedLink`
-  - `GroupServiceInterface`: `createGroup`, `addGroupMember`
-  - `Client`: `exchangeAuthorizationCodeForToken`, `refreshToken`, `addCollaboration`, `createNewBoxFolder`, `updateBoxFolder`, `createSharedLinkForFolder`, `copyBoxFolder`
+**Style Standards Updated**
+- `docs/prompts/ai-workflow/php-code-style-guidance.md`: Added JSON hardening, `@param` omission, `@throws` chain, and array generic syntax sections.
+- Global memory `feedback_code_style.md`: All four rules added.
 
-**Style rules added (user-requested mid-slice)**
-- `@throws` chain coverage rule added to global memory and `php-code-style-guidance.md`
-- `array` generic syntax rule added (all `@param array`, `@return array` must use `list<T>` / `array<K,V>` / shape)
-- `json_encode`/`json_decode` hardening rule added (always `JSON_THROW_ON_ERROR`)
+**Migration Docs Updated**
+- `docs/migration/upgrading-0.11-to-1.0.md`: Section 14 (`$nameValuePair` removal), Section 15 (`BoxResponse::json()` now throws).
 
-**Migration guide** — Sections 14 and 15 added:
-- Section 14: `$nameValuePair` parameter removed from `Connection::post()`
-- Section 15: `BoxResponse::json()` now throws `\JsonException` on malformed JSON
+### PHPCS Sniff Additions [COMPLETE ✓]
+
+Added to `phpcs.xml.dist` (Slevomat 8.29):
+
+| Sniff | Purpose |
+|---|---|
+| `Commenting.ForbiddenAnnotations` | Forbids `@category`, `@package`, `@subpackage` |
+| `Commenting.UselessInheritDocComment` | Removes lone `@inheritDoc` blocks |
+| `Commenting.UselessFunctionDocComment` | Removes docblocks with zero value beyond signature |
+| `TypeHints.ParameterTypeHint` | Flags redundant bare `@param` tags (`UselessAnnotation` only) |
+| `TypeHints.ReturnTypeHint` | Flags redundant bare `@return` tags (`UselessAnnotation` only) |
+
+- `MissingAnyTypeHint`, `MissingNativeTypeHint`, `MissingTraversableTypeHintSpecification` excluded from both type-hint sniffs to avoid flooding on existing array generics.
+- `DocCommentSpacing.annotationsGroups`: `@category, @package, @subpackage` element removed.
+- `cs:fix` applied: 643 violations auto-fixed across 49 files.
+- `composer review` fully green after all fixes.
 
 ---
 
-## Key Architecture Decisions (Carry Forward)
-- Auth providers: `OAuth2Provider` and `JwtProvider` both implement `AuthProviderInterface`.
-- Env vars: `BOX_OAUTH_*` (OAuth2), `BOX_JWT_*` (JWT), `BOX_AUTH_MODE` (mode selector).
-- Config provider methods: provider-prefixed — `getOAuth2ClientId()`, `getJwtClientId()`, etc.
-- Private key: `EnvConfigProvider` reads PEM file; `JwtAuthConfig::$privateKey` is always PEM content.
-- CLI transport: `--transport` removed; `ConnectionInterface` transport methods kept for programmatic use.
-- CLI storage: `--storage-type filesystem` (default) or `--storage-type pdo`.
-- JWT CLI: `box:jwt:token` (enterprise) / `box:jwt:token --user-id=<ID>` (app user).
-- `BoxApiErrorTrait::error()` return type is `never` — always throws.
-- Webhook signing: `Box\Webhook\WebhookVerifier`; formula `base64(HMAC-SHA256(body + timestamp, key))`; CRUD deferred.
-- PSR-14: Optional `EventDispatcherInterface` injection on `Client` — propagated to `Connection` and `JwtProvider` via `instanceof` checks.
-- Chunked upload: low-level session API public on `FileService`; orchestrator on `FileService` + `Client` facade.
-- Auto-retry / auto-token-refresh: deferred to v1.1.
-- `SearchService::search` returns raw `array` — intentional; Box returns heterogeneous entries.
-- `PagedResult<T>` and `GroupMembership` in previous sessions.
-- `BoxClientFactory`: now `Box\Factory\BoxClientFactory`; `createOAuth2Client()` (was `createClient()`).
-- Constructors: `Token`, `Connection`, `AuthenticationResponse`, `AdminEvent` no longer self-hydrate — hydration belongs in factories.
-- Enums: `CollaborationRole`, `CollaborationStatus`, `SharedLinkAccess` wired to resource setters; `BoxItemType` is utility-only.
-- `PathCollection` DTO: `File` and `Folder` coerce raw API arrays in `setPathCollection`.
-- `static fn` over `fn` when closure has no `$this`/`self`/`static`/`parent` reference.
-- `Connection::post()` / `put()`: array params → form-encoded (for OAuth2); string params → passed as-is (for JSON bodies). No `$nameValuePair` parameter.
-- `BoxResponse::json()` throws `\JsonException` on malformed JSON — no silent fallback.
-- All `json_encode`/`json_decode` calls use `JSON_THROW_ON_ERROR`.
+## Key Decisions Made This Session
+
+- **`method_exists` in `FileService`**: Dead code (SharedLink always has `toArray()`). Removed.
+- **`method_exists` in `FolderService`**: Live guard (`Folder::$sharedLink` is `mixed`). Retained.
+- **`BoxResponse::json()` on bad JSON**: Now throws instead of silently returning `[]`. Migration note added.
+- **OAuth2 array params in `Connection::post()`**: Intentional form-encoding. Array support kept; only `$nameValuePair` string path removed.
+- **`ParameterTypeHintSniff`/`ReturnTypeHintSniff` scope**: Only `UselessAnnotation` enabled; missing-type codes excluded. This enforces the "omit bare @param/@return" rule without requiring native-type audits on existing `array` params.

@@ -48,40 +48,19 @@ interface UserEventServiceInterface extends ServiceInterface
      */
     public function getValidStreamTypes(): array;
 
-    /**
-     * @return string
-     */
     public function getStreamType(): string;
 
-    /**
-     * @param string|null $streamType
-     *
-     * @return void
-     */
     public function setStreamType(?string $streamType = null): void;
 
-    /**
-     * @return int
-     */
     public function getLimit(): int;
 
     /**
      * @param string|int|null $limit set null to reset to default value
-     *
-     * @return void
      */
     public function setLimit(string|int|null $limit = null): void;
 
-    /**
-     * @return string|int
-     */
     public function getStreamPosition(): string|int;
 
-    /**
-     * @param string|int|null $streamPosition
-     *
-     * @return void
-     */
     public function setStreamPosition(string|int|null $streamPosition = null): void;
 
     public function getEvents(): EventResponse;

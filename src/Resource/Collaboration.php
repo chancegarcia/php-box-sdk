@@ -55,11 +55,6 @@ class Collaboration
         return $this->id;
     }
 
-    /**
-     * @param string|int|null $id
-     *
-     * @return void
-     */
     public function setId(string|int|null $id = null): void
     {
         $this->id = $id;
@@ -75,11 +70,6 @@ class Collaboration
         return $this->accessibleBy;
     }
 
-    /**
-     * @param DateTimeInterface|string|null $acknowledgedAt
-     *
-     * @return void
-     */
     public function setAcknowledgedAt(DateTimeInterface|string|null $acknowledgedAt = null): void
     {
         $this->acknowledgedAt = $acknowledgedAt;
@@ -90,11 +80,6 @@ class Collaboration
         return $this->acknowledgedAt;
     }
 
-    /**
-     * @param DateTimeInterface|string|null $createdAt
-     *
-     * @return void
-     */
     public function setCreatedAt(DateTimeInterface|string|null $createdAt = null): void
     {
         $this->createdAt = $createdAt;
@@ -115,11 +100,6 @@ class Collaboration
         return $this->createdBy;
     }
 
-    /**
-     * @param DateTimeInterface|string|null $expiresAt
-     *
-     * @return void
-     */
     public function setExpiresAt(DateTimeInterface|string|null $expiresAt = null): void
     {
         $this->expiresAt = $expiresAt;
@@ -140,11 +120,6 @@ class Collaboration
         return $this->item;
     }
 
-    /**
-     * @param DateTimeInterface|string|null $modifiedAt
-     *
-     * @return void
-     */
     public function setModifiedAt(DateTimeInterface|string|null $modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;

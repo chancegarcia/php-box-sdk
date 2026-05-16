@@ -86,17 +86,12 @@ class Folder
 
     /**
      * convenience function
-     *
-     * @return mixed
      */
     public function getItems(): mixed
     {
         return $this->getItemCollection();
     }
 
-    /**
-     * @return bool
-     */
     public function isEmpty(): bool
     {
         $itemCollection = $this->getItemCollection();
@@ -121,21 +116,11 @@ class Folder
         return $this->id;
     }
 
-    /**
-     * @param string|int|null $id
-     *
-     * @return void
-     */
     public function setId(string|int|null $id = null): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @param DateTimeInterface|string|null $createdAt
-     *
-     * @return void
-     */
     public function setCreatedAt(DateTimeInterface|string|null $createdAt = null): void
     {
         $this->createdAt = $createdAt;
@@ -156,11 +141,6 @@ class Folder
         return $this->createdBy;
     }
 
-    /**
-     * @param string|null $description
-     *
-     * @return void
-     */
     public function setDescription(?string $description = null): void
     {
         $this->description = $description;
@@ -171,11 +151,6 @@ class Folder
         return $this->description;
     }
 
-    /**
-     * @param string|null $etag
-     *
-     * @return void
-     */
     public function setEtag(?string $etag = null): void
     {
         $this->etag = $etag;
@@ -216,11 +191,6 @@ class Folder
         return $this->itemCollection;
     }
 
-    /**
-     * @param string|null $itemStatus
-     *
-     * @return void
-     */
     public function setItemStatus(?string $itemStatus = null): void
     {
         $this->itemStatus = $itemStatus;
@@ -231,19 +201,11 @@ class Folder
         return $this->itemStatus;
     }
 
-    /**
-     * @param DateTimeInterface|string|null $modifiedAt
-     *
-     * @return void
-     */
     public function setModifiedAt(DateTimeInterface|string|null $modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
     }
 
-    /**
-     * @return DateTimeInterface|string|null
-     */
     public function getModifiedAt(): DateTimeInterface|string|null
     {
         return $this->modifiedAt;
@@ -259,11 +221,6 @@ class Folder
         return $this->modifiedBy;
     }
 
-    /**
-     * @param string|null $name
-     *
-     * @return void
-     */
     public function setName(?string $name = null): void
     {
         $this->name = $name;
@@ -330,11 +287,6 @@ class Folder
         return $this->sharedLink;
     }
 
-    /**
-     * @param int|null $size
-     *
-     * @return void
-     */
     public function setSize(?int $size = null): void
     {
         $this->size = $size;

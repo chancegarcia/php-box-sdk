@@ -19,19 +19,10 @@ namespace Box\Http\Response\Header;
 
 interface ResponseHeaderInterface
 {
-    /**
-     * @return StatusLineInterface|null
-     */
     public function getStatusLine(): ?StatusLineInterface;
 
-    /**
-     * @param StatusLineInterface|null $statusLine
-     */
     public function setStatusLine(?StatusLineInterface $statusLine = null): ResponseHeaderInterface;
 
-    /**
-     * @return array
-     */
     public function getHeaderLines(): array;
 
     /**

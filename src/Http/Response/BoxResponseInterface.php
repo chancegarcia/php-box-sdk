@@ -22,53 +22,23 @@ use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 
 interface BoxResponseInterface extends PsrResponseInterface
 {
-    /**
-     * @return ResponseHeaderInterface
-     */
     public function getResponseHeader(): ResponseHeaderInterface;
 
-    /**
-     * @return PsrResponseInterface|null
-     */
     public function getPsrResponse(): ?PsrResponseInterface;
 
-    /**
-     * @return string
-     */
     public function getContent(): string;
 
     /**
-     * @param bool $assoc
-     *
      * @throws \JsonException
-     * @return mixed
      */
     public function json(bool $assoc = true): mixed;
 
-    /**
-     * @return int|null
-     */
     public function getRetryAfter(): ?int;
 
-    /**
-     * @param string $name
-     *
-     * @return bool
-     */
     public function hasHeader(string $name): bool;
 
-    /**
-     * @param string $name
-     *
-     * @return array
-     */
     public function getHeader(string $name): array;
 
-    /**
-     * @param string $name
-     *
-     * @return string
-     */
     public function getHeaderLine(string $name): string;
 
     // making interface entries for httpfoundation Response class that we extend and use
@@ -92,71 +62,51 @@ interface BoxResponseInterface extends PsrResponseInterface
     // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
     /**
      * Is response invalid?
-     *
-     * @return bool
      */
     public function isInvalid(): bool;
 
     /**
      * Is response informative?
-     *
-     * @return bool
      */
     public function isInformational(): bool;
 
     /**
      * Is response successful?
-     *
-     * @return bool
      */
     public function isSuccessful(): bool;
 
     /**
      * Is the response a redirect?
-     *
-     * @return bool
      */
     public function isRedirection(): bool;
 
     /**
      * Is there a client error?
-     *
-     * @return bool
      */
     public function isClientError(): bool;
 
     /**
      * Was there a server side error?
-     *
-     * @return bool
      */
     public function isServerError(): bool;
 
     /**
      * Is the response OK?
-     *
-     * @return bool
      */
     public function isOk(): bool;
 
     /**
      * Is the response forbidden?
-     *
-     * @return bool
      */
     public function isForbidden(): bool;
 
     /**
      * Is the response a not found error?
-     *
-     * @return bool
      */
     public function isNotFound(): bool;
 
     /**
      * Is the response empty?
-     *
-     * @return bool
      */
     public function isEmpty(): bool;
 }

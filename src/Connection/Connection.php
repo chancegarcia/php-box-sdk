@@ -179,12 +179,7 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * @param string $uri
-     * @param string|FileStream $file
-     * @param string|int $parentId
-     *
-     * @throws \Box\Exception\BoxException
-     * @return BoxResponseInterface
+     * @throws BoxException
      */
     public function postFile(string $uri, string|FileStream $file, string|int $parentId = 0): BoxResponseInterface
     {
@@ -240,9 +235,6 @@ class Connection implements ConnectionInterface
         ]);
     }
 
-    /**
-     * @param mixed $requestType
-     */
     public function setRequestType(mixed $requestType = null): void
     {
         $this->requestType = $requestType;
@@ -253,9 +245,6 @@ class Connection implements ConnectionInterface
         return $this->requestType;
     }
 
-    /**
-     * @param mixed $authenticationResponse
-     */
     public function setAuthenticationResponse(mixed $authenticationResponse = null): void
     {
         $this->authenticationResponse = $authenticationResponse;
@@ -266,9 +255,6 @@ class Connection implements ConnectionInterface
         return $this->authenticationResponse;
     }
 
-    /**
-     * @param mixed $responseType
-     */
     public function setResponseType(mixed $responseType = null): void
     {
         $this->responseType = $responseType;
@@ -279,9 +265,6 @@ class Connection implements ConnectionInterface
         return $this->responseType;
     }
 
-    /**
-     * @param mixed $state
-     */
     public function setState(mixed $state = null): void
     {
         $this->state = $state;

@@ -62,11 +62,8 @@ class CollaborationService extends Service implements CollaborationServiceInterf
     }
 
     /**
-     * @param Collaboration $collaboration
-     *
      * @throws BoxException
      * @throws \JsonException
-     * @return Collaboration
      */
     public function updateCollaboration(Collaboration $collaboration): Collaboration
     {

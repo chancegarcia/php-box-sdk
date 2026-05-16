@@ -16,9 +16,6 @@ class GroupService extends Service implements GroupServiceInterface
     public const string MEMBERSHIP_ENDPOINT = "https://api.box.com/2.0/group_memberships";
 
     /**
-     * @param int $limit
-     * @param int $offset
-     *
      * @throws BoxResponseException
      * @return PagedResult<Group>
      */
@@ -65,10 +62,6 @@ class GroupService extends Service implements GroupServiceInterface
     }
 
     /**
-     * @param string|int $groupId
-     * @param int|string $limit
-     * @param int|string $offset
-     *
      * @throws BoxResponseException
      * @return PagedResult<GroupMembership>
      */
@@ -80,13 +73,6 @@ class GroupService extends Service implements GroupServiceInterface
         return $this->hydratePagedResult($data, GroupMembership::class);
     }
 
-    /**
-     * @param string|int $groupId
-     * @param int|string $limit
-     * @param int|string $offset
-     *
-     * @return string
-     */
     public function getMembershipListUri(string|int $groupId, int|string $limit = 100, int|string $offset = 0): string
     {
         return self::ENDPOINT . "/" . $groupId . "/memberships" . "?offset=" . $offset . "&limit=" . $limit;

@@ -25,7 +25,6 @@ class FilesystemTokenStorage implements TokenStorageInterface
      * @param TokenStorageContext $context The context defining where and how the token should be stored.
      *
      * @throws TokenStorageException
-     * @return void
      */
     public function storeToken(TokenInterface $token, TokenStorageContext $context): void
     {
@@ -35,11 +34,7 @@ class FilesystemTokenStorage implements TokenStorageInterface
     }
 
     /**
-     * @param TokenInterface $token
-     * @param TokenStorageContext $context
-     *
      * @throws TokenStorageException
-     * @return void
      */
     public function updateToken(TokenInterface $token, TokenStorageContext $context): void
     {
@@ -47,11 +42,8 @@ class FilesystemTokenStorage implements TokenStorageInterface
     }
 
     /**
-     * @param TokenStorageContext $context
-     *
      * @throws TokenStorageException
      * @throws \ReflectionException
-     * @return TokenInterface|null
      */
     public function retrieveToken(TokenStorageContext $context): ?TokenInterface
     {
@@ -69,10 +61,7 @@ class FilesystemTokenStorage implements TokenStorageInterface
     }
 
     /**
-     * @param TokenStorageContext $context
-     *
      * @throws TokenStorageException
-     * @return void
      */
     public function removeToken(TokenStorageContext $context): void
     {
@@ -89,18 +78,12 @@ class FilesystemTokenStorage implements TokenStorageInterface
 
     /**
      * @throws TokenStorageException
-     * @return void
      */
     public function clear(): void
     {
         $this->saveMap([]);
     }
 
-    /**
-     * @param TokenInterface $token
-     *
-     * @return array
-     */
     private function tokenToArray(TokenInterface $token): array
     {
         return [
@@ -114,7 +97,6 @@ class FilesystemTokenStorage implements TokenStorageInterface
 
     /**
      * @throws TokenStorageException
-     * @return array
      */
     private function loadMap(): array
     {
@@ -142,10 +124,7 @@ class FilesystemTokenStorage implements TokenStorageInterface
     }
 
     /**
-     * @param array $map
-     *
      * @throws TokenStorageException
-     * @return void
      */
     private function saveMap(array $map): void
     {

@@ -40,11 +40,6 @@ class Group
     protected DateTimeInterface|string|null $createdAt = null;
     protected DateTimeInterface|string|null $modifiedAt = null;
 
-    /**
-     * @param string|int|null $id
-     *
-     * @return void
-     */
     public function setId(string|int|null $id = null): void
     {
         $this->id = $id;
@@ -55,47 +50,28 @@ class Group
         return $this->id;
     }
 
-    /**
-     * @param DateTimeInterface|string|null $createdAt
-     *
-     * @return void
-     */
     public function setCreatedAt(DateTimeInterface|string|null $createdAt = null): void
     {
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return DateTimeInterface|string|null
-     */
     public function getCreatedAt(): DateTimeInterface|string|null
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param DateTimeInterface|string|null $modifiedAt
-     *
-     * @return void
-     */
     public function setModifiedAt(DateTimeInterface|string|null $modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
     }
 
-    /**
-     * @return DateTimeInterface|string|null
-     */
     public function getModifiedAt(): DateTimeInterface|string|null
     {
         return $this->modifiedAt;
     }
 
     /**
-     * @param string|null $name
-     *
      * @throws GroupException
-     * @return void
      */
     public function setName(?string $name = null): void
     {
@@ -110,9 +86,6 @@ class Group
         $this->name = $name;
     }
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string
     {
         return $this->name;

@@ -72,83 +72,46 @@ class File
         return $this->id;
     }
 
-    /**
-     * @param string|int|null $id
-     *
-     * @return void
-     */
     public function setId(string|int|null $id = null): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @param int|null $commentCount
-     *
-     * @return void
-     */
     public function setCommentCount(?int $commentCount = null): void
     {
         $this->commentCount = $commentCount;
     }
 
-    /**
-     * @return int|null
-     */
     public function getCommentCount(): ?int
     {
         return $this->commentCount;
     }
 
-    /**
-     * @param DateTimeInterface|string|null $contentCreatedAt
-     *
-     * @return void
-     */
     public function setContentCreatedAt(DateTimeInterface|string|null $contentCreatedAt = null): void
     {
         $this->contentCreatedAt = $contentCreatedAt;
     }
 
-    /**
-     * @return DateTimeInterface|string|null
-     */
     public function getContentCreatedAt(): DateTimeInterface|string|null
     {
         return $this->contentCreatedAt;
     }
 
-    /**
-     * @param DateTimeInterface|string|null $contentModifiedAt
-     *
-     * @return void
-     */
     public function setContentModifiedAt(DateTimeInterface|string|null $contentModifiedAt = null): void
     {
         $this->contentModifiedAt = $contentModifiedAt;
     }
 
-    /**
-     * @return DateTimeInterface|string|null
-     */
     public function getContentModifiedAt(): DateTimeInterface|string|null
     {
         return $this->contentModifiedAt;
     }
 
-    /**
-     * @param DateTimeInterface|string|null $createdAt
-     *
-     * @return void
-     */
     public function setCreatedAt(DateTimeInterface|string|null $createdAt = null): void
     {
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return DateTimeInterface|string|null
-     */
     public function getCreatedAt(): DateTimeInterface|string|null
     {
         return $this->createdAt;
@@ -156,89 +119,52 @@ class File
 
     /**
      * @param User|array|null $createdBy
-     *
-     * @return void
      */
     public function setCreatedBy(mixed $createdBy = null): void
     {
         $this->createdBy = $createdBy;
     }
 
-    /**
-     * @return mixed
-     */
     public function getCreatedBy(): mixed
     {
         return $this->createdBy;
     }
 
-    /**
-     * @param string|null $description
-     *
-     * @return void
-     */
     public function setDescription(?string $description = null): void
     {
         $this->description = $description;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param string|null $etag
-     *
-     * @return void
-     */
     public function setEtag(?string $etag = null): void
     {
         $this->etag = $etag;
     }
 
-    /**
-     * @return string|null
-     */
     public function getEtag(): ?string
     {
         return $this->etag;
     }
 
-    /**
-     * @param string|null $itemStatus
-     *
-     * @return void
-     */
     public function setItemStatus(?string $itemStatus = null): void
     {
         $this->itemStatus = $itemStatus;
     }
 
-    /**
-     * @return string|null
-     */
     public function getItemStatus(): ?string
     {
         return $this->itemStatus;
     }
 
-    /**
-     * @param DateTimeInterface|string|null $modifiedAt
-     *
-     * @return void
-     */
     public function setModifiedAt(DateTimeInterface|string|null $modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
     }
 
-    /**
-     * @return DateTimeInterface|string|null
-     */
     public function getModifiedAt(): DateTimeInterface|string|null
     {
         return $this->modifiedAt;
@@ -246,35 +172,22 @@ class File
 
     /**
      * @param User|array|null $modifiedBy
-     *
-     * @return void
      */
     public function setModifiedBy(mixed $modifiedBy = null): void
     {
         $this->modifiedBy = $modifiedBy;
     }
 
-    /**
-     * @return mixed
-     */
     public function getModifiedBy(): mixed
     {
         return $this->modifiedBy;
     }
 
-    /**
-     * @param string|null $name
-     *
-     * @return void
-     */
     public function setName(?string $name = null): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string
     {
         return $this->name;
@@ -312,17 +225,12 @@ class File
 
     /**
      * @param User|array|null $ownedBy
-     *
-     * @return void
      */
     public function setOwnedBy(mixed $ownedBy = null): void
     {
         $this->ownedBy = $ownedBy;
     }
 
-    /**
-     * @return mixed
-     */
     public function getOwnedBy(): mixed
     {
         return $this->ownedBy;
@@ -330,17 +238,12 @@ class File
 
     /**
      * @param Folder|array|null $parent
-     *
-     * @return void
      */
     public function setParent(mixed $parent = null): void
     {
         $this->parent = $parent;
     }
 
-    /**
-     * @return mixed
-     */
     public function getParent(): mixed
     {
         return $this->parent;
@@ -362,73 +265,41 @@ class File
         return $this->pathCollection;
     }
 
-    /**
-     * @param mixed $permissions
-     *
-     * @return void
-     */
     public function setPermissions(mixed $permissions = null): void
     {
         $this->permissions = $permissions;
     }
 
-    /**
-     * @return mixed
-     */
     public function getPermissions(): mixed
     {
         return $this->permissions;
     }
 
-    /**
-     * @param DateTimeInterface|string|null $purgedAt
-     *
-     * @return void
-     */
     public function setPurgedAt(DateTimeInterface|string|null $purgedAt = null): void
     {
         $this->purgedAt = $purgedAt;
     }
 
-    /**
-     * @return DateTimeInterface|string|null
-     */
     public function getPurgedAt(): DateTimeInterface|string|null
     {
         return $this->purgedAt;
     }
 
-    /**
-     * @param string|int|null $sequenceId
-     *
-     * @return void
-     */
     public function setSequenceId(string|int|null $sequenceId = null): void
     {
         $this->sequenceId = $sequenceId;
     }
 
-    /**
-     * @return string|int|null
-     */
     public function getSequenceId(): string|int|null
     {
         return $this->sequenceId;
     }
 
-    /**
-     * @param string|null $sha1
-     *
-     * @return void
-     */
     public function setSha1(?string $sha1 = null): void
     {
         $this->sha1 = $sha1;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSha1(): ?string
     {
         return $this->sha1;
@@ -444,73 +315,41 @@ class File
         return $this->sharedLink;
     }
 
-    /**
-     * @param int|null $size
-     *
-     * @return void
-     */
     public function setSize(?int $size = null): void
     {
         $this->size = $size;
     }
 
-    /**
-     * @return int|null
-     */
     public function getSize(): ?int
     {
         return $this->size;
     }
 
-    /**
-     * @param DateTimeInterface|string|null $trashedAt
-     *
-     * @return void
-     */
     public function setTrashedAt(DateTimeInterface|string|null $trashedAt = null): void
     {
         $this->trashedAt = $trashedAt;
     }
 
-    /**
-     * @return DateTimeInterface|string|null
-     */
     public function getTrashedAt(): DateTimeInterface|string|null
     {
         return $this->trashedAt;
     }
 
-    /**
-     * @param string $type
-     *
-     * @return void
-     */
     public function setType(string $type = "file"): void
     {
         $this->type = $type;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @param string|int|null $versionNumber
-     *
-     * @return void
-     */
     public function setVersionNumber(string|int|null $versionNumber = null): void
     {
         $this->versionNumber = $versionNumber;
     }
 
-    /**
-     * @return string|int|null
-     */
     public function getVersionNumber(): string|int|null
     {
         return $this->versionNumber;

@@ -39,8 +39,5 @@ use Psr\Log\LoggerInterface;
 
 interface LoggerAwareInterface extends PsrLoggerAwareInterface
 {
-    /**
-     * @return LoggerInterface|null
-     */
     public function getLogger(): ?LoggerInterface;
 }

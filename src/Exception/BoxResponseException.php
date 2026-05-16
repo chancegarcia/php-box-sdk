@@ -42,12 +42,6 @@ class BoxResponseException extends BoxException
 
     protected ?BoxResponseInterface $response = null;
 
-    /**
-     * @param string $message
-     * @param int|string $code
-     * @param Exception|null $previous
-     * @param BoxResponseInterface|null $response
-     */
     public function __construct(string $message = "", int|string $code = 0, ?Exception $previous = null, ?BoxResponseInterface $response = null)
     {
         parent::__construct($message, $code, $previous);
@@ -90,19 +84,11 @@ class BoxResponseException extends BoxException
         }
     }
 
-    /**
-     * @return null|BoxResponseInterface
-     */
     public function getResponse(): ?BoxResponseInterface
     {
         return $this->response;
     }
 
-    /**
-     * @param BoxResponseInterface|null $response
-     *
-     * @return void
-     */
     public function setResponse(?BoxResponseInterface $response = null): void
     {
         $this->response = $response;

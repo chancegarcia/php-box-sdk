@@ -29,31 +29,17 @@ interface ConfigProviderInterface
     // Returns passphrase or null if not set
     public function getJwtPrivateKeyPassphrase(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getStoragePdoDsn(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getStoragePdoUser(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getStoragePdoPassword(): ?string;
 
-    /**
-     * @return string|null
-     */
     public function getStorageFilePath(): ?string;
 
     /**
      * Box account subdomain (e.g. "acme" for acme.app.box.com).
      * Used to construct direct web URLs for files and folders.
-     *
-     * @return string|null
      */
     public function getBoxSubdomain(): ?string;
 }

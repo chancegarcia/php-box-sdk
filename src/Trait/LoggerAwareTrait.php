@@ -35,17 +35,11 @@ trait LoggerAwareTrait
 {
     protected ?LoggerInterface $logger = null;
 
-    /**
-     * @return LoggerInterface|null
-     */
     public function getLogger(): ?LoggerInterface
     {
         return $this->logger;
     }
 
-    /**
-     * @param LoggerInterface|null $logger
-     */
     public function setLogger(?LoggerInterface $logger = null): void
     {
         $this->logger = $logger;

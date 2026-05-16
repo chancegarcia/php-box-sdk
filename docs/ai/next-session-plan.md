@@ -1,13 +1,13 @@
 # Next Session Plan
 
-**Updated**: 2026-05-16 02:07 (America/Indiana)
+**Updated**: 2026-05-16 02:48 (America/Indiana)
 **Branch**: `release-v1.0.0`
 
 ---
 
 ## Start Here
 
-Slice 21 is complete. **Pick up at Slice 22: License & Rebrand Preparation.**
+Slices 20, 20.5, and 21 are complete. PHPCS sniffs for docblock enforcement are wired. **Pick up at Slice 22: License & Rebrand Preparation.**
 
 ---
 
@@ -48,20 +48,22 @@ Sequence: Step 17 → Step 18 → rename (user-driven)
 - Archive completed step trackers to `docs/archive/`
 - Retire superseded planning files
 - Fix `docs/README.md` to reflect final v1 state
+- Update `v1-release-roadmap.md` status for Slices 20, 20.5, 21, 22 (currently show "Not Started" — stale)
 
 ---
 
 ## Deferred / Post-v1 Tasks (do not open unless asked)
 
-- **Array generic annotation pass** — All `@param array`, `@return array`, `@var array` in existing docblocks must be converted to `list<T>` / `array<K,V>` / inline shapes. A new cleanup sub-slice is needed; rule is now in style standards but full audit is post-v1.
-- **`@throws` completeness pass** — New style rule requires `@throws` on every method in the exception bubble chain. Full audit of all remaining public methods in `src/` against this rule deferred to post-Slice-22 or Step 17 review.
+- **Array generic annotation pass** — All `@param array`, `@return array`, `@var array` in existing docblocks must be converted to `list<T>` / `array<K,V>` / inline shapes. Rule is in style standards and now enforced by `MissingTraversableTypeHintSpecification` (excluded for now). Full audit is post-v1.
+- **`@throws` completeness pass** — New style rule requires `@throws` on every method in the exception bubble chain. Main callers covered in Slice 21; full audit of all remaining public methods deferred post-v1.
 - **Naming standardization** — Standardize terminology in roadmap/planning docs (steps/slices/sub-slices/sub-steps). Global guideline update deferred to post-v1.
 - **Property hooks** — PHP 8.4 property hooks for DTOs. Breaking API surface, Hydrator compatibility untested. Deferred to post-v1.
+- **`ForbiddenAnnotations` expansion** — Add `@author`, `@copyright`, `@license` to the forbidden list after Slice 22 license cleanup is committed.
 
 ---
 
 ## Resolved Questions (do not re-open)
-- `@package`/`@subpackage`: Removed entirely. ✓
+- `@package`/`@subpackage`: Removed entirely and now auto-enforced by PHPCS. ✓
 - File-level license headers: Remove entirely for Apache 2.0. Root `LICENSE` file is sufficient. ✓ (will be done in Slice 22)
 - `$nameValuePair` in `Connection::post()`: Removed. Array params remain for OAuth2 form-encoding. ✓
 - `BoxResponse::json()` on bad JSON: Now throws `\JsonException`. ✓
@@ -70,3 +72,5 @@ Sequence: Step 17 → Step 18 → rename (user-driven)
 - `BoxClientFactory`: now `Box\Factory\BoxClientFactory`; method is `createOAuth2Client()`. ✓
 - Constructor hydration: belongs in factories, not resource/model constructors. ✓
 - `static fn`: use whenever closure has no `$this`/`self`/`static`/`parent` reference. ✓
+- Redundant `@param`/`@return` tags: now auto-enforced via `ParameterTypeHint.UselessAnnotation` and `ReturnTypeHint.UselessAnnotation`. ✓
+- Lone `@inheritDoc` blocks: now auto-enforced via `UselessInheritDocComment`. ✓

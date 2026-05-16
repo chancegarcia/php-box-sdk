@@ -39,9 +39,6 @@ class Token implements TokenInterface
     protected array $restrictedTo = [];
     protected ?int $receivedAt = null;
 
-    /**
-     * @param mixed $expiresIn
-     */
     public function setExpiresIn(mixed $expiresIn = null): void
     {
         $this->expiresIn = $expiresIn;
@@ -55,9 +52,6 @@ class Token implements TokenInterface
         return $this->expiresIn;
     }
 
-    /**
-     * @param mixed $tokenType
-     */
     public function setTokenType(mixed $tokenType = null): void
     {
         $this->tokenType = $tokenType;
@@ -68,9 +62,6 @@ class Token implements TokenInterface
         return $this->tokenType;
     }
 
-    /**
-     * @param mixed $accessToken
-     */
     public function setAccessToken(mixed $accessToken = null): void
     {
         $this->accessToken = $accessToken;
@@ -81,9 +72,6 @@ class Token implements TokenInterface
         return $this->accessToken;
     }
 
-    /**
-     * @param mixed $grantType
-     */
     public function setGrantType(mixed $grantType = null): void
     {
         $this->grantType = $grantType;
@@ -94,9 +82,6 @@ class Token implements TokenInterface
         return $this->grantType;
     }
 
-    /**
-     * @param mixed $refreshToken
-     */
     public function setRefreshToken(mixed $refreshToken = null): void
     {
         $this->refreshToken = $refreshToken;
@@ -117,9 +102,6 @@ class Token implements TokenInterface
         $this->restrictedTo = $restrictedTo ?? [];
     }
 
-    /**
-     * @return int|null
-     */
     public function getReceivedAt(): ?int
     {
         return $this->receivedAt;

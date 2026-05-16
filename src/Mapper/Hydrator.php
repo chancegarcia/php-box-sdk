@@ -18,7 +18,7 @@ class Hydrator
 {
     /**
      * @param class-string<T>|T $target
-     * @param array|stdClass $data
+     * @param array|stdClass $data object or array from box api
      *
      * @throws ReflectionException
      * @return T

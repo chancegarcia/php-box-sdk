@@ -76,7 +76,6 @@ class BoxClientFactory implements BoxClientFactoryInterface
 
     /**
      * @throws BoxException
-     * @return Client
      */
     public function createClientForCurrentMode(): Client
     {

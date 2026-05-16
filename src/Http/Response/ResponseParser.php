@@ -34,7 +34,6 @@ use Box\Exception\BoxException;
 class ResponseParser
 {
     /**
-     * @param string $sStatusLine
      * @param bool $associative  if true, then returns with keys: httpVersion, statusCode, reasonPhrase
      *
      * @throws BoxException
@@ -75,12 +74,6 @@ class ResponseParser
         return $statusLine;
     }
 
-    /**
-     * @param string $sHeaders
-     * @param bool $replace
-     *
-     * @return array
-     */
     public static function parseHeader(string $sHeaders = '', bool $replace = false): array
     {
         if (!is_string($sHeaders)) {

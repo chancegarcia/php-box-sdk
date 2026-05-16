@@ -57,19 +57,14 @@ interface FileServiceInterface extends AuthenticatedServiceInterface
     public function downloadFile(string $id): string;
 
     /**
-     * @param File $file
      * @param SharedLink|CreateSharedLinkRequest|array|null $sharedLink shared link object used to set box permissions
      *
      * @throws \JsonException
-     * @return File
      */
     public function createSharedLink(File $file, SharedLink|CreateSharedLinkRequest|array|null $sharedLink = null): File;
 
     public function uploadFile(string|FileStream $file, string|int $parentId): File;
 
-    /**
-     * @return File
-     */
     public function createNewFile(): File;
 
     public function setEventDispatcher(EventDispatcherInterface $dispatcher): void;

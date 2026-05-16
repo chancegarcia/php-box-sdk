@@ -40,62 +40,40 @@ interface ConnectionInterface extends LoggerAwareInterface
      * Use when per-request headers or a non-JSON body are required.
      *
      * @param string $method HTTP method (GET, POST, PUT, DELETE, …)
-     * @param string $uri
      * @param array $options Guzzle-compatible options: 'body', 'headers', 'multipart', etc.
-     *
-     * @return BoxResponseInterface
      */
     public function request(string $method, string $uri, array $options = []): BoxResponseInterface;
 
     /**
      * GET
-     *
-     * @param string $uri
-     *
-     * @return BoxResponseInterface
      */
     public function query(string $uri): BoxResponseInterface;
 
     /**
      * POST
      *
-     * @param string $uri
      * @param array|string $params array values are form-encoded; pass a JSON string for JSON bodies
-     *
-     * @return BoxResponseInterface
      */
     public function post(string $uri, array|string $params = []): BoxResponseInterface;
 
     /**
-     * @param string $uri
      * @param array|string $params array values are form-encoded; pass a JSON string for JSON bodies
-     *
-     * @return BoxResponseInterface
      */
     public function put(string $uri, array|string $params = []): BoxResponseInterface;
 
     /**
      * DELETE
-     *
-     * @param string $uri
-     *
-     * @return BoxResponseInterface
      */
     public function delete(string $uri): BoxResponseInterface;
 
     /**
      * @param string $file file/path to file
-     *
-     * @return mixed
      */
     public function getMimeType(string $file): mixed;
 
     /**
-     * @param string $uri
      * @param string|FileStream $file file/path to file or FileStream object
-     * @param string|int $parentId
      *
-     * @return array|BoxResponseInterface
      */
     public function postFile(
         string $uri,

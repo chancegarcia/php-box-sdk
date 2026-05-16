@@ -75,8 +75,5 @@ trait BoxApiErrorTrait
         throw $exception;
     }
 
-    /**
-     * @return LoggerInterface|null
-     */
     abstract public function getLogger(): ?LoggerInterface;
 }

@@ -2,6 +2,7 @@
 
 namespace Box\Service\Folder;
 
+use Box\Exception\BoxException;
 use Box\Exception\BoxResponseException;
 use Box\Resource\Folder;
 use Box\Service\Service;
@@ -18,10 +19,7 @@ class FolderService extends Service implements FolderServiceInterface
     }
 
     /**
-     * @param string|int $id
-     *
-     * @throws \Box\Exception\BoxException
-     * @return Folder
+     * @throws BoxException
      */
     public function getFolder(string|int $id): Folder
     {
@@ -81,12 +79,8 @@ class FolderService extends Service implements FolderServiceInterface
     }
 
     /**
-     * @param Folder $folder
-     * @param string|bool|null $ifMatch
-     *
      * @throws BoxResponseException
      * @throws JsonException
-     * @return Folder
      */
     public function updateFolder(Folder $folder, string|bool|null $ifMatch = null): Folder
     {

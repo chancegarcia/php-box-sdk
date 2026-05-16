@@ -54,11 +54,6 @@ class BoxException extends \Exception
 
     protected static ?Redactor $redactor = null;
 
-    /**
-     * @param string $message
-     * @param int|string $code
-     * @param \Throwable|null $previous
-     */
     public function __construct(string $message = "", int|string $code = 0, ?\Throwable $previous = null)
     {
         $message = $this->redact($message);
@@ -89,9 +84,6 @@ class BoxException extends \Exception
      */
     protected ?BoxResponseInterface $boxResponse = null;
 
-    /**
-     * @return void
-     */
     public function setError(mixed $error = null): void
     {
         $this->error = $error;
@@ -102,9 +94,6 @@ class BoxException extends \Exception
         return $this->error;
     }
 
-    /**
-     * @return void
-     */
     public function setErrorDescription(mixed $errorDescription = null): void
     {
         $this->errorDescription = $errorDescription;
@@ -206,17 +195,11 @@ class BoxException extends \Exception
         $this->boxCode = $boxCode;
     }
 
-    /**
-     * @return BoxResponseInterface|null
-     */
     public function getBoxResponse(): ?BoxResponseInterface
     {
         return $this->boxResponse;
     }
 
-    /**
-     * @param BoxResponseInterface $boxResponse
-     */
     public function setBoxResponse(BoxResponseInterface $boxResponse): void
     {
         $this->boxResponse = $boxResponse;

@@ -67,12 +67,6 @@ class TokenStorage implements TokenStorageInterface
 
     /**
      * construct with pdo or connection arguments
-     *
-     * @param string|null $dsn
-     * @param string|null $username
-     * @param string|null $password
-     * @param array $options
-     * @param PDO|null $pdo
      */
     public function __construct(
         ?string $dsn = null,
@@ -88,57 +82,36 @@ class TokenStorage implements TokenStorageInterface
         $this->pdo = $pdo;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDsn(): ?string
     {
         return $this->dsn;
     }
 
-    /**
-     * @param string|null $dsn
-     */
     public function setDsn(?string $dsn = null): void
     {
         $this->dsn = $dsn;
     }
 
-    /**
-     * @return string|null
-     */
     public function getUsername(): ?string
     {
         return $this->username;
     }
 
-    /**
-     * @param string|null $username
-     */
     public function setUsername(?string $username = null): void
     {
         $this->username = $username;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    /**
-     * @param string|null $password
-     */
     public function setPassword(?string $password = null): void
     {
         $this->password = $password;
     }
 
-    /**
-     * @return array
-     */
     public function getOptions(): array
     {
         return $this->options;
@@ -152,9 +125,6 @@ class TokenStorage implements TokenStorageInterface
         $this->options = $options ?? [];
     }
 
-    /**
-     * @return PDO|null
-     */
     public function getPdo(): ?PDO
     {
         if (null === $this->pdo && null !== $this->dsn) {
@@ -165,25 +135,16 @@ class TokenStorage implements TokenStorageInterface
         return $this->pdo;
     }
 
-    /**
-     * @param PDO|null $pdo
-     */
     public function setPdo(?PDO $pdo = null): void
     {
         $this->pdo = $pdo;
     }
 
-    /**
-     * @return string
-     */
     public function getTokenTableName(): string
     {
         return $this->tokenTableName;
     }
 
-    /**
-     * @param string|null $tokenTableName
-     */
     public function setTokenTableName(?string $tokenTableName = null): void
     {
         if (null !== $tokenTableName) {
@@ -191,9 +152,6 @@ class TokenStorage implements TokenStorageInterface
         }
     }
 
-    /**
-     * @return array
-     */
     public function getTokenMap(): array
     {
         return $this->tokenMap;
@@ -424,10 +382,6 @@ class TokenStorage implements TokenStorageInterface
 
     /**
      * Helper for nullable column comparison in WHERE clause.
-     *
-     * @param string $column
-     *
-     * @return string
      */
     protected function getNullableColumnSql(string $column): string
     {

@@ -60,7 +60,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
 
     /**
      * @throws RuntimeException
-     * @return ConnectionInterface
      */
     public function getConnection(): ConnectionInterface
     {
@@ -97,13 +96,11 @@ class Service implements ServiceInterface, LoggerAwareInterface
     }
 
     /**
-     * @param ?BoxResponseInterface $response
      * @param string $returnType 'decoded', 'flat', 'array', or 'original'
      *
      * @throws BoxResponseException
      * @throws BadMethodCallException
      * @throws OutOfBoundsException
-     * @return mixed
      */
     public function handleBoxResponse(?BoxResponseInterface $response = null, string $returnType = 'decoded'): mixed
     {
@@ -133,11 +130,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
         };
     }
 
-    /**
-     * @param BoxResponseInterface $response
-     *
-     * @return BoxResponseException
-     */
     protected function processResponseError(BoxResponseInterface $response): BoxResponseException
     {
         $e = new BoxResponseException("Box Response was unsuccessful. ", $response->getStatusCode(), null, $response);
@@ -155,8 +147,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
     /**
      * Send a DELETE request and discard the (typically 204) response.
      *
-     * @param string $uri
-     *
      * @throws BoxResponseException
      */
     protected function sendDeleteToBox(string $uri): void
@@ -169,7 +159,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
      * Hydrate a decoded payload into a class.
      *
      * @param class-string<T> $targetClass
-     * @param array|stdClass $data
      *
      * @return T
      *
@@ -184,7 +173,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
     /**
      * Helper to get and hydrate a resource from Box.
      *
-     * @param string $uri
      * @param class-string<T> $resourceClass
      *
      * @throws BoxException
@@ -228,8 +216,6 @@ class Service implements ServiceInterface, LoggerAwareInterface
     /**
      * Helper to send an update to Box and hydrate the response.
      *
-     * @param string $uri
-     * @param array|string $params
      * @param class-string<T> $resourceClass
      *
      * @throws BoxException

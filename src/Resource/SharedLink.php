@@ -61,11 +61,6 @@ class SharedLink
         return $this->unsharedAt;
     }
 
-    /**
-     * @param DateTimeInterface|string|null $unsharedAt
-     *
-     * @return void
-     */
     public function setUnsharedAt(DateTimeInterface|string|null $unsharedAt = null): void
     {
         $this->unsharedAt = $unsharedAt;
@@ -86,11 +81,6 @@ class SharedLink
         return $this->permissions;
     }
 
-    /**
-     * @param Permissions|null $permissions
-     *
-     * @return void
-     */
     public function setPermissions(?Permissions $permissions = null): void
     {
         $this->permissions = $permissions;

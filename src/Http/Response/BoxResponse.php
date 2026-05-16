@@ -158,7 +158,6 @@ class BoxResponse implements BoxResponseInterface
     }
 
     /**
-     * @param string $name
      * @param string|string[] $value
      *
      * @return static
@@ -172,7 +171,6 @@ class BoxResponse implements BoxResponseInterface
     }
 
     /**
-     * @param string $name
      * @param string|string[] $value
      *
      * @return static

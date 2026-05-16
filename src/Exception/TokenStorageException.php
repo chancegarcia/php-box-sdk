@@ -42,33 +42,21 @@ class TokenStorageException extends \Exception
     protected ?TokenStorageInterface $tokenStorage = null;
     protected ?TokenStorageContext $tokenStorageContext = null;
 
-    /**
-     * @return TokenStorageInterface|null
-     */
     public function getTokenStorage(): ?TokenStorageInterface
     {
         return $this->tokenStorage;
     }
 
-    /**
-     * @param TokenStorageInterface|null $tokenStorage
-     */
     public function setTokenStorage(?TokenStorageInterface $tokenStorage = null): void
     {
         $this->tokenStorage = $tokenStorage;
     }
 
-    /**
-     * @return TokenStorageContext|null
-     */
     public function getTokenStorageContext(): ?TokenStorageContext
     {
         return $this->tokenStorageContext;
     }
 
-    /**
-     * @param TokenStorageContext|null $tokenStorageContext
-     */
     public function setTokenStorageContext(?TokenStorageContext $tokenStorageContext = null): void
     {
         $this->tokenStorageContext = $tokenStorageContext;

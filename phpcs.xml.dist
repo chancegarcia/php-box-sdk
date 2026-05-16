@@ -45,6 +45,37 @@
         </properties>
     </rule>
 
+    <!-- Forbid legacy/irrelevant PHPDoc annotations -->
+    <rule ref="SlevomatCodingStandard.Commenting.ForbiddenAnnotations">
+        <properties>
+            <property name="forbiddenAnnotations" type="array">
+                <element value="@category"/>
+                <element value="@package"/>
+                <element value="@subpackage"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Remove lone @inheritDoc tags (redundant when method is fully typed) -->
+    <rule ref="SlevomatCodingStandard.Commenting.UselessInheritDocComment"/>
+
+    <!-- Remove entire docblocks that add no value beyond the native signature -->
+    <rule ref="SlevomatCodingStandard.Commenting.UselessFunctionDocComment"/>
+
+    <!-- Flag redundant @param tags (bare type-only, no description) -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingTraversableTypeHintSpecification"/>
+    </rule>
+
+    <!-- Flag redundant @return tags (bare type-only, no description) -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint">
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification"/>
+    </rule>
+
     <!-- Enforce consistent PHPDoc formatting: no blank lines before/after content, opener on its own line -->
     <rule ref="SlevomatCodingStandard.Commenting.DocCommentSpacing">
         <properties>
@@ -54,7 +85,6 @@
             <property name="linesCountBetweenDifferentAnnotationsTypes" value="1"/>
             <property name="annotationsGroups" type="array">
                 <element value="@api, @since"/>
-                <element value="@category, @package, @subpackage"/>
                 <element value="@author, @copyright, @license"/>
                 <element value="@var, @param"/>
                 <element value="@throws, @return"/>

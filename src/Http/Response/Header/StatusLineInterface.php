@@ -19,63 +19,23 @@ namespace Box\Http\Response\Header;
 
 interface StatusLineInterface
 {
-    /**
-     * @return string
-     */
     public function getHttpVersion(): string;
 
-    /**
-     * @param string|null $httpVersion
-     *
-     * @return void
-     */
     public function setHttpVersion(?string $httpVersion = null): void;
 
-    /**
-     * @return int
-     */
     public function getStatusCode(): int;
 
-    /**
-     * @param int|null $statusCode
-     *
-     * @return void
-     */
     public function setStatusCode(?int $statusCode = null): void;
 
-    /**
-     * @return string
-     */
     public function getReasonPhrase(): string;
 
-    /**
-     * @param string|null $reasonPhrase
-     *
-     * @return void
-     */
     public function setReasonPhrase(?string $reasonPhrase = null): void;
 
-    /**
-     * @return string
-     */
     public function getHttpVersionPrefix(): string;
 
-    /**
-     * @param string|null $httpVersionPrefix
-     *
-     * @return void
-     */
     public function setHttpVersionPrefix(?string $httpVersionPrefix = null): void;
 
-    /**
-     * @return string
-     */
     public function getHttpVersionNumber(): string;
 
-    /**
-     * @param string|null $httpVersionNumber
-     *
-     * @return void
-     */
     public function setHttpVersionNumber(?string $httpVersionNumber = null): void;
 }

@@ -42,28 +42,16 @@ interface TokenStorageInterface
     /**
      * Store token to storage.
      * Implementation should handle one-active-token-per-context behavior.
-     *
-     * @param TokenInterface $token
-     * @param TokenStorageContext $context
-     *
-     * @return void
      */
     public function storeToken(TokenInterface $token, TokenStorageContext $context): void;
 
     /**
      * Update token in storage for a given context.
-     *
-     * @param TokenInterface $token
-     * @param TokenStorageContext $context
-     *
-     * @return void
      */
     public function updateToken(TokenInterface $token, TokenStorageContext $context): void;
 
     /**
      * Retrieve token from storage for a given context.
-     *
-     * @param TokenStorageContext $context
      *
      * @return TokenInterface|null Returns null if no token is found for the context.
      */
@@ -71,18 +59,12 @@ interface TokenStorageInterface
 
     /**
      * Remove token from storage for a given context.
-     *
-     * @param TokenStorageContext $context
-     *
-     * @return void
      */
     public function removeToken(TokenStorageContext $context): void;
 
     /**
      * Clear all tokens from storage.
      * Optional implementation for clearing the entire storage backend.
-     *
-     * @return void
      */
     public function clear(): void;
 }

@@ -125,11 +125,6 @@ class FileService extends Service implements FileServiceInterface
         return $this->sendUpdateAndHydrate($uri, $params, File::class);
     }
 
-    /**
-     * @param SharedLink|CreateSharedLinkRequest|null $sharedLink
-     *
-     * @return array
-     */
     private function normalizeSharedLinkPayload(SharedLink|CreateSharedLinkRequest|null $sharedLink): array
     {
         if (null === $sharedLink) {
@@ -140,11 +135,7 @@ class FileService extends Service implements FileServiceInterface
     }
 
     /**
-     * @param string|FileStream $file
-     * @param string|int $parentId
-     *
      * @throws BoxResponseException
-     * @return File
      */
     public function uploadFile(string|FileStream $file, string|int $parentId): File
     {
@@ -159,9 +150,6 @@ class FileService extends Service implements FileServiceInterface
         return $uploadedFile;
     }
 
-    /**
-     * @return File
-     */
     public function createNewFile(): File
     {
         return new File();
