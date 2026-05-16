@@ -36,6 +36,8 @@ Use this as a checklist. Each item links to the full section below.
 | `Collaboration` role/status now enum-typed | Low — replace string literals with enum cases | [Enum-Typed Properties](#11-enum-typed-resource-properties) |
 | `File`/`Folder` `pathCollection` now `PathCollection` DTO | Low — update read-side code | [PathCollection DTO](#12-pathcollection-dto) |
 | `File::setSharedLink` no longer accepts array | Low — construct `SharedLink` object | [File::setSharedLink Narrowed](#13-filesharedlink-narrowed) |
+| `Connection::post()` — `$nameValuePair` removed | Low — pass JSON string instead | [Connection::post() Change](#14-connectionpost--namevaluepair-parameter-removed) |
+| `BoxResponse::json()` throws `JsonException` on bad JSON | Low — catch `JsonException` | [BoxResponse::json() Change](#15-boxresponsejson--now-throws-jsonexception-on-malformed-json) |
 
 ---
 

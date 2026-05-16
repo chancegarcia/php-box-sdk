@@ -78,11 +78,11 @@ This work assumes the completion of:
 | 15.6 | [API Fixture Realism and Contract Alignment](#step-156--api-fixture-realism-and-contract-alignment) | ✓ |
 | 16 | [Webhook Verification and Evaluation](#step-16--webhook-verification-and-evaluation) | ✓ |
 | 19 | [Chunked Upload + PSR-14 Events](#slice-19--chunked-upload--psr-14-events) | ✓ |
-| 20 | [Human Code Review & Cleanup Feedback](#slice-20--human-code-review--cleanup-feedback) | Not Started |
-| 20.5 | [Enum Wiring & Hydrator Audit](#slice-205--enum-wiring--hydrator-audit) | Not Started |
-| 21 | [Docblock Quality & Legacy Tag Cleanup](#slice-21--docblock-quality--legacy-tag-cleanup) | Not Started |
-| 22 | [License & Rebrand Preparation](#slice-22--license--rebrand-preparation) | Not Started |
-| 17 | [v1 Release Readiness](#step-17--v1-release-readiness) | Not Started |
+| 20 | [Human Code Review & Cleanup Feedback](#slice-20--human-code-review--cleanup-feedback) | ✓ |
+| 20.5 | [Enum Wiring & Hydrator Audit](#slice-205--enum-wiring--hydrator-audit) | ✓ |
+| 21 | [Docblock Quality & Legacy Tag Cleanup](#slice-21--docblock-quality--legacy-tag-cleanup) | ✓ |
+| 22 | [License & Rebrand Preparation](#slice-22--license--rebrand-preparation) | ✓ |
+| 17 | [v1 Release Readiness](#step-17--v1-release-readiness) | In Progress |
 | 18 | [Documentation Cleanup and Organization](#step-18--documentation-cleanup-and-organization) | Not Started |
 
 ## Remaining v1 Sequence

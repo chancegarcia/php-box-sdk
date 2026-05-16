@@ -36,7 +36,7 @@ Welcome to the documentation for the Box PHP SDK.
 - [API Coverage Audit](planning/v1/api-coverage-audit.md): Assessment of Box API endpoint coverage.
 
 **Current Foundation Status:**
-- **Steps 10–17**: All complete. v1.0.0 released.
+- **Steps 10–16**: Complete. **Step 17**: In progress (v1 release readiness).
 
 ## [Internal](internal/)
 - **[Internal Status](internal/status.md)**: AI development state, active handoff, next session plan, and rename plan tracking.

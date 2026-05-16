@@ -38,7 +38,7 @@
     - Webhook CRUD management deferred to post-v1.
 
 - **Service Layer Hardening**:
-    - Added `Box\Service\BoxClientFactory` as the canonical client construction entry point.
+    - Added `Box\Factory\BoxClientFactory` as the canonical client construction entry point.
     - Added `Box\Service\ClientServiceRegistry` and `ClientServiceRegistryInterface` for typed service access.
     - Added `AuthenticatedServiceInterface`; `Client` throws `RuntimeException` if an authenticated service is accessed without a token.
     - `Service::handleBoxResponse()` replaces legacy `queryBox`/`handleResponseContent`; all services use this unified response path.
@@ -64,7 +64,7 @@
 - **Code Quality**:
     - `BoxApiErrorTrait::error()` return type corrected to `never` (always throws).
     - Yoda conditionals applied consistently across auth and webhook classes.
-    - PHPStan level-0 clean; 334 tests, 902 assertions.
+    - PHPStan level-0 clean; 372 tests, 1002 assertions.
 
 ### Breaking Changes
 - **Namespace**: All resources moved to `Box\Resource`. Update all imports.
