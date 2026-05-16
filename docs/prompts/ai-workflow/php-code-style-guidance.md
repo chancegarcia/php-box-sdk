@@ -50,6 +50,7 @@ This document outlines the preferred PHP code style and validation expectations 
 - Do not add custom PHPCS/PHPStan enforcement for nested ternaries unless explicitly requested; enforce this preference through review and project guidelines for now.
 - Yoda Conditions: Use Yoda conditions (`if (null === $value)`) where they help prevent accidental assignments, but only if they do not significantly reduce readability.
 - Early Returns: Prefer early returns to reduce nesting depth.
+- Arrow functions: prefer `static fn` over `fn` when the closure does not reference `$this`, `self`, `static`, or `parent`. This avoids binding the enclosing object and carries a minor performance benefit.
 
 ## Logging and Debugging
 
