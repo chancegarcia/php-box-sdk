@@ -2,6 +2,7 @@
 
 namespace Box\Service\Folder;
 
+use Box\Exception\BoxResponseException;
 use Box\Resource\Folder;
 use Box\Service\AuthenticatedServiceInterface;
 
@@ -44,10 +45,15 @@ interface FolderServiceInterface extends AuthenticatedServiceInterface
      * @param string|int $parentId
      * @param array $options
      *
+     * @throws \JsonException
      * @return Folder
      */
     public function createFolder(string $name, string|int $parentId = 0, array $options = []): Folder;
 
+    /**
+     * @throws BoxResponseException
+     * @throws \JsonException
+     */
     public function updateFolder(Folder $folder, string|bool|null $ifMatch = null): Folder;
 
     /**
@@ -62,6 +68,7 @@ interface FolderServiceInterface extends AuthenticatedServiceInterface
      * @param Folder $folder
      * @param array|null $params
      *
+     * @throws \JsonException
      * @return Folder
      */
     public function createSharedLink(Folder $folder, ?array $params = null): Folder;
@@ -71,6 +78,7 @@ interface FolderServiceInterface extends AuthenticatedServiceInterface
      * @param Folder $parent
      * @param string|null $name
      *
+     * @throws \JsonException
      * @return Folder
      */
     public function copyFolder(Folder $originalFolder, Folder $parent, ?string $name = null): Folder;

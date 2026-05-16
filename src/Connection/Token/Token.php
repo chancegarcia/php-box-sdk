@@ -1,9 +1,6 @@
 <?php
 
 /**
- * @package     Box
- * @subpackage  Box_Connection
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -110,19 +107,11 @@ class Token implements TokenInterface
         return $this->refreshToken;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getRestrictedTo(): array
     {
         return $this->restrictedTo;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @param array|null $restrictedTo
-     */
     public function setRestrictedTo(?array $restrictedTo = null): void
     {
         $this->restrictedTo = $restrictedTo ?? [];
@@ -136,9 +125,6 @@ class Token implements TokenInterface
         return $this->receivedAt;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function isExpired(): bool
     {
         if (null === $this->expiresIn || null === $this->receivedAt) {

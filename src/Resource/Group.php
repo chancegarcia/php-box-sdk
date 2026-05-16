@@ -1,9 +1,6 @@
 <?php
 
 /**
- * @package     Box
- * @subpackage  Box_Group
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2014 Chance Garcia, chancegarcia.com
  *

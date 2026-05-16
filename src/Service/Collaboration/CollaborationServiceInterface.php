@@ -28,12 +28,16 @@ interface CollaborationServiceInterface extends AuthenticatedServiceInterface
      * @param mixed $collaborator
      * @param string $role
      *
+     * @throws \JsonException
      * @return Collaboration
      */
     public function addCollaboration(Folder|File|string|int $item, mixed $collaborator, string $role = 'editor'): Collaboration;
 
     public function getCollaboration(string $id): Collaboration;
 
+    /**
+     * @throws \JsonException
+     */
     public function updateCollaboration(Collaboration $collaboration): Collaboration;
 
     public function deleteCollaboration(string $id): void;

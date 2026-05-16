@@ -72,7 +72,7 @@ class JwtTokenCommand extends AbstractBoxCommand
             $tokenData = $token->toArray();
 
             if ($input->getOption('json')) {
-                $output->writeln(json_encode($tokenData, JSON_PRETTY_PRINT));
+                $output->writeln(json_encode($tokenData, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
             } else {
                 $io->success('JWT token exchange successful!');
                 $this->outputFormatter->formatMasked($io, $tokenData);

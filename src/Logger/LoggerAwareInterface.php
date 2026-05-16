@@ -6,9 +6,6 @@
  * Date: 1/20/16
  * Time: 9:14 PM
  *
- * @package     Box
- * @subpackage  Box_Logger
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *

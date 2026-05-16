@@ -17,8 +17,6 @@ class CollaborationService extends Service implements CollaborationServiceInterf
     /**
      * @throws BoxResponseException
      * @return PagedResult<Collaboration>
-     *
-     * @inheritdoc
      */
     public function getFolderCollaborations(Folder $folder): PagedResult
     {
@@ -29,7 +27,7 @@ class CollaborationService extends Service implements CollaborationServiceInterf
     }
 
     /**
-     * @inheritdoc
+     * @throws \JsonException|BoxException
      */
     public function addCollaboration(Folder|File|string|int $item, mixed $collaborator, string $role = 'editor'): Collaboration
     {
@@ -66,8 +64,9 @@ class CollaborationService extends Service implements CollaborationServiceInterf
     /**
      * @param Collaboration $collaboration
      *
-     * @return Collaboration
      * @throws BoxException
+     * @throws \JsonException
+     * @return Collaboration
      */
     public function updateCollaboration(Collaboration $collaboration): Collaboration
     {

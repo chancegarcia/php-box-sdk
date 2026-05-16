@@ -61,6 +61,7 @@ class JwtProvider implements JwtProviderInterface
      * @param array<string, mixed> $options
      *
      * @throws BoxException
+     * @throws \JsonException
      * @return TokenInterface
      */
     public function refreshToken(TokenInterface $token, array $options = []): TokenInterface
@@ -84,6 +85,7 @@ class JwtProvider implements JwtProviderInterface
 
     /**
      * @throws BoxException
+     * @throws \JsonException
      * @return TokenInterface
      */
     public function exchangeForEnterpriseToken(): TokenInterface
@@ -100,6 +102,7 @@ class JwtProvider implements JwtProviderInterface
      * @param string $userId
      *
      * @throws BoxException
+     * @throws \JsonException
      * @return TokenInterface
      */
     public function exchangeForAppUserToken(string $userId): TokenInterface

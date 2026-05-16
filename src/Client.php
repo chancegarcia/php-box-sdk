@@ -1,9 +1,6 @@
 <?php
 
 /**
- * @package     Box
- * @subpackage  Box_Client
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -68,11 +65,6 @@ use Box\Factory\TokenFactory;
 use Box\Factory\TokenFactoryInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
-/**
- * Class Client
- *
- * @package Box
- */
 class Client implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
@@ -380,6 +372,7 @@ class Client implements LoggerAwareInterface
      * @param array|null $options
      *
      * @throws BoxException
+     * @throws \JsonException
      * @return Folder
      */
     public function createNewBoxFolder(string $name, string|int $parentFolderId = 0, ?array $options = []): Folder
@@ -393,6 +386,7 @@ class Client implements LoggerAwareInterface
      * @param Folder $folder
      * @param string|bool $ifMatchHeader etag string or true to use folder's current etag
      *
+     * @throws \JsonException
      * @return Folder
      */
     public function updateBoxFolder(Folder $folder, string|bool $ifMatchHeader = false): Folder
@@ -422,6 +416,7 @@ class Client implements LoggerAwareInterface
      *     roles} default is viewer
      *
      * @throws BoxException
+     * @throws \JsonException
      * @return Collaboration
      */
     public function addCollaboration(Folder $folder, User|Group $collaborator, string $role = 'viewer'): Collaboration
@@ -443,10 +438,9 @@ class Client implements LoggerAwareInterface
             'role' => $role
         ];
 
-        // can be refactored a bit more but the json encode works in the connection class
         $connection = $this->getConnection();
 
-        $response = $connection->post($uri, $params, true);
+        $response = $connection->post($uri, json_encode($params, JSON_THROW_ON_ERROR));
 
         $data = $this->parseResponse($response);
 
@@ -461,6 +455,7 @@ class Client implements LoggerAwareInterface
      * @param array|null $params shared link options; default shared link set to collaborator access, no unshared time or permissions set
      *
      * @throws BoxException
+     * @throws \JsonException
      * @return Folder
      */
     public function createSharedLinkForFolder(?Folder $folder = null, ?array $params = null): Folder
@@ -484,9 +479,8 @@ class Client implements LoggerAwareInterface
      *
      * @throws \Exception
      * @throws BoxException
+     * @throws \JsonException
      * @return Folder
-     *
-     * @internal param $destinationId
      */
     public function copyBoxFolder(Folder $originalFolder, Folder $parent, ?string $name = null, bool $addToFolders = true): Folder
     {
@@ -547,6 +541,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @throws BoxException if no authorization code is set
+     * @throws \JsonException
      * @return TokenInterface
      */
     public function exchangeAuthorizationCodeForToken(): TokenInterface
@@ -568,6 +563,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @throws BoxException
+     * @throws \JsonException
      * @return TokenInterface
      */
     public function refreshToken(): TokenInterface

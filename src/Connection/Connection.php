@@ -1,9 +1,6 @@
 <?php
 
 /**
- * @package     Box
- * @subpackage  Box_Connection
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -53,11 +50,6 @@ use Box\Trait\BoxApiErrorTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Class Connection
- *
- * @package Box\Model
- */
 class Connection implements ConnectionInterface
 {
     use LoggerAwareTrait;
@@ -97,9 +89,6 @@ class Connection implements ConnectionInterface
         $this->authenticationResponseFactory = $authenticationResponseFactory ?? new AuthenticationResponseFactory();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function query(string $uri): BoxResponseInterface
     {
         return $this->request('GET', $uri);
@@ -164,53 +153,24 @@ class Connection implements ConnectionInterface
         return $this->request('DELETE', $uri);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function put(string $uri, array|string $params = []): BoxResponseInterface
     {
-        if (is_array($params)) {
-            $postParams = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
-            @trigger_error(
-                'the `params` value as an array will be deprecated in the future. Please provide a json encoded string',
-                E_USER_DEPRECATED
-            );
-        } else {
-            $postParams = $params;
-        }
+        $postParams = is_array($params)
+            ? http_build_query($params, '', '&', PHP_QUERY_RFC3986)
+            : $params;
 
         return $this->request('PUT', $uri, ['body' => $postParams]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function post(string $uri, array|string $params = [], bool $nameValuePair = false): BoxResponseInterface
+    public function post(string $uri, array|string $params = []): BoxResponseInterface
     {
-        if ($nameValuePair) {
-            $params = json_encode($params);
-            @trigger_error(
-                'the `nameValuePair` switch will be deprecated in the future; all values will be json encoded values',
-                E_USER_DEPRECATED
-            );
-        }
-
-        if (is_array($params)) {
-            $postParams = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
-            @trigger_error(
-                'the `params` value as an array will be deprecated in the future. Please provide a json encoded string',
-                E_USER_DEPRECATED
-            );
-        } else {
-            $postParams = $params;
-        }
+        $postParams = is_array($params)
+            ? http_build_query($params, '', '&', PHP_QUERY_RFC3986)
+            : $params;
 
         return $this->request('POST', $uri, ['body' => $postParams]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getMimeType(string $file): mixed
     {
         $fInfo = finfo_open(FILEINFO_MIME_TYPE);

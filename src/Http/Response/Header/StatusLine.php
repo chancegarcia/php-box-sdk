@@ -1,9 +1,6 @@
 <?php
 
 /**
- * @package     Box
- * @subpackage  Box_Http_Response
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2016 Chance Garcia, chancegarcia.com
  *
@@ -50,81 +47,51 @@ class StatusLine implements StatusLineInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getHttpVersionPrefix(): string
     {
         return $this->httpVersionPrefix;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setHttpVersionPrefix(?string $httpVersionPrefix = null): void
     {
         $this->httpVersionPrefix = $httpVersionPrefix;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getHttpVersionNumber(): string
     {
         return $this->httpVersionNumber;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setHttpVersionNumber(?string $httpVersionNumber = null): void
     {
         $this->httpVersionNumber = $httpVersionNumber;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getHttpVersion(): string
     {
         return $this->httpVersion;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setHttpVersion(?string $httpVersion = null): void
     {
         $this->httpVersion = $httpVersion;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setStatusCode(?int $statusCode = null): void
     {
         $this->statusCode = $statusCode;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getReasonPhrase(): string
     {
         return $this->reasonPhrase;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setReasonPhrase(?string $reasonPhrase = null): void
     {
         $this->reasonPhrase = $reasonPhrase;

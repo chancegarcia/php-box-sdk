@@ -12,9 +12,6 @@ class FolderService extends Service implements FolderServiceInterface
     public const string ENDPOINT = 'https://api.box.com/2.0/folders';
     public const string SHARED_ITEM_ENDPOINT = 'https://api.box.com/2.0/shared_items';
 
-    /**
-     * @inheritdoc
-     */
     public function getFolderItemsUri(string|int $folderId, int $limit = 100, int $offset = 0): string
     {
         return self::ENDPOINT . "/" . $folderId . "/items" . "?limit=" . $limit . "&offset=" . $offset;
@@ -33,9 +30,6 @@ class FolderService extends Service implements FolderServiceInterface
         return $this->getResourceFromBox($uri, Folder::class);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getFolderBySharedUri(string $sharedUri): Folder|false
     {
         $uri = self::SHARED_ITEM_ENDPOINT;
@@ -53,9 +47,6 @@ class FolderService extends Service implements FolderServiceInterface
         return false;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getFolderItems(string|int $id, int $limit = 100, int $offset = 0): Folder
     {
         $uri = $this->getFolderItemsUri($id, $limit, $offset);
@@ -68,7 +59,8 @@ class FolderService extends Service implements FolderServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * @throws BoxResponseException
+     * @throws JsonException
      */
     public function createFolder(string $name, string|int $parentId = 0, array $options = []): Folder
     {
@@ -81,7 +73,7 @@ class FolderService extends Service implements FolderServiceInterface
 
         $uri = self::ENDPOINT;
 
-        $response = $this->getConnection()->post($uri, json_encode($params));
+        $response = $this->getConnection()->post($uri, json_encode($params, JSON_THROW_ON_ERROR));
 
         $data = $this->handleBoxResponse($response, 'flat');
 
@@ -144,9 +136,6 @@ class FolderService extends Service implements FolderServiceInterface
         return $this->hydrate(Folder::class, $data);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function deleteFolder(string $id, bool $recursive = false): void
     {
         $uri = self::ENDPOINT . '/' . $id;
@@ -157,7 +146,8 @@ class FolderService extends Service implements FolderServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * @throws BoxResponseException
+     * @throws \JsonException
      */
     public function createSharedLink(Folder $folder, ?array $params = null): Folder
     {
@@ -175,7 +165,8 @@ class FolderService extends Service implements FolderServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * @throws BoxResponseException
+     * @throws JsonException
      */
     public function copyFolder(Folder $originalFolder, Folder $parent, ?string $name = null): Folder
     {
@@ -186,7 +177,7 @@ class FolderService extends Service implements FolderServiceInterface
             $params['name'] = $name;
         }
 
-        $response = $this->getConnection()->post($uri, json_encode($params));
+        $response = $this->getConnection()->post($uri, json_encode($params, JSON_THROW_ON_ERROR));
 
         $data = $this->handleBoxResponse($response, 'flat');
 

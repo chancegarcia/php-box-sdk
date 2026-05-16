@@ -33,6 +33,35 @@ This document outlines the preferred PHP code style and validation expectations 
 - **Static Analysis**: Use PHPDoc array shapes and generics (e.g., `array<string, int>`) to improve static analysis (PHPStan/Psalm).
 - **Public API Stability**: Do not change public method signatures or property types in a backward-incompatible way unless explicitly requested.
 
+## JSON Encoding and Decoding
+
+- **Always pass `JSON_THROW_ON_ERROR`** to both `json_encode()` and `json_decode()`. This converts silent failures (`false` / `null` + `json_last_error()`) into catchable `\JsonException`.
+- **Never use `json_last_error()` checks** as an alternative to `JSON_THROW_ON_ERROR`. The flag is mandatory.
+- **Catching at boundaries only**: Wrap `json_decode()` in `try/catch (\JsonException)` only at system boundaries where a fallback makes sense (e.g., parsing untrusted external input, exception constructors). Never swallow the exception silently — log or convert it to a domain exception.
+- **`json_encode` failures are rarely expected**: In normal SDK code encoding well-typed arrays, a `JsonException` from `json_encode` is always a programming error — let it propagate.
+
+## `@param` Tags
+
+- **Omit redundant `@param` tags**: If a `@param` tag states only the type and variable name with no additional description or value, omit it. Modern PHP type hints make it redundant.
+  - Omit: `@param string $name`, `@param int $limit`, `@param Folder $folder`
+  - Keep if: the tag adds a description (`@param string $name The display name`), uses a generic/shape type not expressible in a native hint (`@param array<string, mixed> $options`), uses a PHPDoc-only construct (`@param T $value` with `@template T`), or narrows a union type for static analysis.
+- **This applies to new and touched docblocks**: Do not add bare-type `@param` tags to new methods. When editing an existing docblock, strip bare-type tags at the same time.
+
+## `@throws` Annotations
+
+- **Full chain coverage**: Every method that throws or allows an exception to propagate uncaught must declare `@throws ExceptionClass` in its docblock. This includes callers that do not catch — the tag must bubble up through every public method in the chain until a catch boundary is reached.
+- **Interfaces included**: If an implementing class method throws an exception, the corresponding interface method must also declare `@throws`.
+- **All exception types**: Apply to all exceptions — `\JsonException`, `\RuntimeException`, domain exceptions, etc. — not only checked exceptions.
+- **Example**: If `json_encode()` with `JSON_THROW_ON_ERROR` is called in a private helper, every public method that can reach that helper without a `catch` block must declare `@throws \JsonException`.
+
+## `array` Parameter Documentation
+
+- **Generic syntax required**: Any `array` parameter, property, or return type must be documented in PHPDoc using generics or array shape syntax. Never leave `array` bare in a docblock.
+  - Sequential: `list<T>` or `array<int, T>` (prefer `list<T>` for indexed arrays from `array_map`, `array_values`, etc.)
+  - Associative: `array<string, T>` or an inline array shape `array{key: T, ...}`
+- **Applies everywhere**: `@param array`, `@return array`, and `@var array` must all be typed generically. This applies to new code and to any docblock being touched for other reasons.
+- **Example**: Instead of `@param array $options` write `@param array<string, mixed> $options`.
+
 ## Class Strings
 
 - **Symbolic References**: Prefer `SomeClass::class` over hard-coded fully qualified class-name strings (FQCN) when referring to PHP symbols (classes, interfaces, traits).

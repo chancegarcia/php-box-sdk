@@ -1,9 +1,6 @@
 <?php
 
 /**
- * @package
- * @subpackage
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013-2016 Chance Garcia, chancegarcia.com
  *
@@ -72,7 +69,11 @@ class BoxResponseException extends BoxException
             // attempt to parse response body for error details
             $content = $response->getContent();
             if (!empty($content)) {
-                $decoded = json_decode($content, true);
+                try {
+                    $decoded = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+                } catch (\JsonException) {
+                    $decoded = null;
+                }
                 if (is_array($decoded)) {
                     if (isset($decoded['code'])) {
                         $this->boxCode = $this->sanitize($decoded['code']);

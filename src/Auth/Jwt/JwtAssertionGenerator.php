@@ -12,6 +12,7 @@ class JwtAssertionGenerator implements JwtAssertionGeneratorInterface
     /**
      * @throws RandomException
      * @throws BoxException
+     * @throws \JsonException
      */
     public function generate(JwtAuthConfig $config, string $subjectId, string $subjectType): string
     {
@@ -34,8 +35,8 @@ class JwtAssertionGenerator implements JwtAssertionGeneratorInterface
             'exp' => time() + 60,
         ];
 
-        $encodedHeader = self::base64UrlEncode((string) json_encode($header));
-        $encodedPayload = self::base64UrlEncode((string) json_encode($payload));
+        $encodedHeader = self::base64UrlEncode(json_encode($header, JSON_THROW_ON_ERROR));
+        $encodedPayload = self::base64UrlEncode(json_encode($payload, JSON_THROW_ON_ERROR));
 
         $privateKey = openssl_pkey_get_private($config->privateKey, $config->privateKeyPassphrase ?? '');
 

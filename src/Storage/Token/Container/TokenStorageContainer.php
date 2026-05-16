@@ -6,9 +6,6 @@
  * Date: 9/22/15
  * Time: 4:52 PM
  *
- * @package     Box
- * @subpackage  Box_Storage
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -48,41 +45,26 @@ class TokenStorageContainer implements TokenStorageInterface
      */
     protected array $tokens = [];
 
-    /**
-     * {@inheritdoc}
-     */
     public function retrieveToken(TokenStorageContext $context): ?TokenInterface
     {
         return $this->tokens[$context->getCanonicalKey()] ?? null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function storeToken(TokenInterface $token, TokenStorageContext $context): void
     {
         $this->tokens[$context->getCanonicalKey()] = $token;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function updateToken(TokenInterface $token, TokenStorageContext $context): void
     {
         $this->tokens[$context->getCanonicalKey()] = $token;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function removeToken(TokenStorageContext $context): void
     {
         unset($this->tokens[$context->getCanonicalKey()]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function clear(): void
     {
         $this->tokens = [];

@@ -1,23 +1,16 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-16 01:15 (America/Indiana)
+- **Timestamp**: 2026-05-16 02:07 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
-- **Roadmap Position**: Slice 20 complete. Slice 20.5 complete. Next: Slice 21.
+- **Roadmap Position**: Slice 21 complete. Next: Slice 22.
 - **Test baseline**: 372 tests, 1002 assertions
-- **v1 remaining**: Slice 21 (docblock/legacy tags) → Slice 22 (license/rebrand prep) → Step 17 (release readiness) → Step 18 (doc cleanup) → package/repo rename (user-driven)
+- **v1 remaining**: Slice 22 (license/rebrand prep) → Step 17 (release readiness) → Step 18 (doc cleanup) → package/repo rename (user-driven)
 
 ## Next Action
 
-**Slice 21 — Docblock Quality & Legacy Tag Cleanup** (read `docs/ai/next-session-plan.md` for full scope):
-
-1. `@inheritdoc` correctness audit
-2. `@package` / `@subpackage` removal from `src/` and `tests/`
-3. `ConnectionInterface` / `EntrySource` architectural review
-4. `json_encode` / `json_decode` hardening (`JSON_THROW_ON_ERROR` everywhere in `src/`)
-5. Legacy survivor audit (`Connection::post` `$nameValuePair`/array-params; `FileService`/`FolderService` `method_exists` fallback)
-6. Naming convention & method accuracy audit (PSR-12 camelCase sweep + descriptive method name pass)
+**Slice 22 — License & Rebrand Preparation** (read `docs/ai/next-session-plan.md` for full scope).
 
 Do not prompt about package/repo rename.
 
@@ -25,64 +18,64 @@ Do not prompt about package/repo rename.
 
 ## Completed This Session (2026-05-16)
 
-### Slice 20 — Human Code Review & Cleanup Feedback [COMPLETE ✓]
+### Slice 21 — Docblock Quality & Legacy Tag Cleanup [COMPLETE ✓]
 
-**Item 5 — Type Coverage Audit**
-- `BoxException` / `BoxResponseException`: constructor `$code` → `int|string`; `$boxCode` → `int|string|null`; `$status` → `int|string|null`
-- `Event`: `$type`, `$eventType`, `$sessionId` → `?string`; `$eventId` → `string|int|null`
-- `AdminEvent`: `$streamType` → `string`, `$limit` → `int`, date fields → `?string`
-- `Service` / `ServiceInterface`: `$connection` → `?ConnectionInterface`, `$token` → `?TokenInterface`; all methods fully typed
-- `Collaboration`: `$id` → `string|int|null`, date fields → `DateTimeInterface|string|null`, scalar fields → `?string`
-- `Folder`: scalar fields narrowed, `$size` → `?int`, `$hasCollaborations` → `?bool`
-- `SharedLink` + `Permissions`: all properties were untyped — now fully typed
-- `EventCollection`: `$chunkSize`/`$nextStreamPosition` → `int|string|null`, `$entries` → `?Collection`
-- Intentional `mixed` left with inline comments where Box API is genuinely polymorphic
+**Item 1 — `@inheritdoc` Correctness**
+- All lone `{@inheritdoc}` / `@inheritdoc` docblocks removed (entire block = just the tag): 47 instances across 10 files. Typed signatures make them redundant.
+- Mixed-content docblocks: `@inheritdoc` tag removed, valuable `@throws`/`@return` tags kept.
 
-**Item 6 — Property Hooks**: Deferred to post-v1. Rationale recorded in roadmap and next-session plan.
+**Item 2 — `@package` / `@subpackage` Removal**
+- Removed from all 41 `src/` PHP files via perl one-liner.
+- Empty/redundant class docblocks cleaned up (`/**\n */` and `/** Class X\n *\n */`).
+- PHPCS auto-fixed docblock spacing issues from blank lines left behind.
 
-**Item 7 — BoxClientFactory Namespace Move**
-- `Box\Service\BoxClientFactory` → `Box\Factory\BoxClientFactory`
-- `Box\Contract\BoxClientFactoryInterface` → `Box\Factory\BoxClientFactoryInterface`
-- `createClient()` → `createOAuth2Client()` on class and interface
-- All command files, tests, and `bin/box-sdk` updated
-- Migration guide section 10 added
+**Item 3 — `ConnectionInterface` / `EntrySource` Review**
+- Both confirmed v1-sound. No removals needed.
+- `ConnectionInterface` docblock deprecation language removed (see Item 5).
+- `EntrySource`: `mixed $synced` field retained with comment explaining Box Sync polymorphism.
 
-### Constructor Hydration Cleanup (companion to type audit)
-- `AdminEvent`, `Token`, `Connection`, `AuthenticationResponse` — hydration removed from constructors
-- Hydration moved to: `TokenFactory`, `ConnectionFactory`, `AuthenticationResponseFactory`
-- Storage classes (`FilesystemTokenStorage`, `TokenStorage` PDO) now hydrate explicitly after blank construction
-- Tests updated to use factories where previously passing arrays to constructors
+**Item 4 — `json_encode` / `json_decode` Hardening**
+- `JSON_THROW_ON_ERROR` added to all bare `json_encode`/`json_decode` calls in `src/`:
+  - `JwtAssertionGenerator::generate()` (×2)
+  - `JwtTokenCommand::__invoke()` output
+  - `Service::sendUpdateAndHydrate()`
+  - `FolderService::createFolder()` and `copyFolder()`
+  - `BoxResponse::json()` — now throws `\JsonException` (previously returned `[]` on bad JSON)
+  - `BoxResponseException` constructor — wrapped in `try/catch(\JsonException)` (can't throw from constructor)
+- `BoxResponseTest::testJsonDecodingInvalidJson` updated to expect `\JsonException`.
 
-### `ext-pdo` added to `composer.json` require
-PDO is directly instantiated and type-hinted in `src/Storage/Token/Pdo/` — hard runtime dependency, now declared.
+**Item 5 — Legacy Survivor Audit**
+- `$nameValuePair` parameter removed from `Connection::post()` and `ConnectionInterface::post()`.
+- Array→form-encoded path in `post()` and `put()` kept (used by OAuth2 token endpoints); deprecation warnings removed.
+- `Client.php` collaboration POST updated to pass `json_encode($params, JSON_THROW_ON_ERROR)` directly.
+- `FileService::normalizeSharedLinkPayload()` — dead `method_exists($sharedLink, 'toArray')` fallback removed (both `SharedLink` and `CreateSharedLinkRequest` have `toArray()`).
+- `FolderService::updateFolder()` — `method_exists($sharedLink, 'toArray')` kept (Folder::$sharedLink is `mixed`, guard is live).
 
-### `static fn` style enforcement
-- All arrow functions in `src/` that do not reference `$this`/`self`/`static`/`parent` converted to `static fn`
-- Files touched: `CollaborationService`, `FileService` (×3), `FolderService`, `LoggerFactory`
-- Rule added to global memory (`feedback_code_style.md`) and canonical style doc (`docs/prompts/ai-workflow/php-code-style-guidance.md`)
+**Item 6 — Naming Convention Audit**
+- No snake_case method names or parameters found in `src/`.
+- `$sStatusLine`/`$sHeader` in `StatusLine`/`ResponseHeader` are camelCase (Hungarian prefix, no underscores) — PSR-12 compliant.
+- No public method renames required.
 
-### Slice 20.5 — Enum Wiring & Hydrator Audit [COMPLETE ✓]
+**`@throws` Chain Coverage (user-requested mid-slice)**
+- Added `@throws \JsonException` to every method in the bubble chain up to catch boundaries:
+  - `JwtAssertionGeneratorInterface::generate()` and implementation
+  - `AuthProviderInterface::exchangeAuthorizationCode()` and `refreshToken()`
+  - `JwtProviderInterface::exchangeForEnterpriseToken()` and `exchangeForAppUserToken()`
+  - All `JwtProvider` and `OAuth2Provider` implementations
+  - `FolderServiceInterface`/`FolderService`: `createFolder`, `updateFolder`, `createSharedLink`, `copyFolder`
+  - `CollaborationServiceInterface`/`CollaborationService`: `addCollaboration`, `updateCollaboration`
+  - `FileServiceInterface`/`FileService`: `updateFile`, `createSharedLink`
+  - `GroupServiceInterface`: `createGroup`, `addGroupMember`
+  - `Client`: `exchangeAuthorizationCodeForToken`, `refreshToken`, `addCollaboration`, `createNewBoxFolder`, `updateBoxFolder`, `createSharedLinkForFolder`, `copyBoxFolder`
 
-**Hydrator fix**: Switched `::from()` → `::tryFrom()`; unknown enum values now skip the setter; union types containing `array` pass raw arrays through correctly.
+**Style rules added (user-requested mid-slice)**
+- `@throws` chain coverage rule added to global memory and `php-code-style-guidance.md`
+- `array` generic syntax rule added (all `@param array`, `@return array` must use `list<T>` / `array<K,V>` / shape)
+- `json_encode`/`json_decode` hardening rule added (always `JSON_THROW_ON_ERROR`)
 
-**Enum wiring:**
-- `CollaborationRole` → `Collaboration::$role` (was `?string`)
-- `CollaborationStatus` enum created (`Accepted`, `Pending`, `Rejected`); wired to `Collaboration::$status`; old `in_array` validation removed
-- `SharedLinkAccess` → `SharedLink::$access` (was `?string`)
-- `BoxItemType` — evaluated, left as utility enum (no resource setter to wire to)
-
-**DTOs / narrowing:**
-- `PathCollection` DTO created (`src/Dto/PathCollection.php`); `File::setPathCollection` and `Folder::setPathCollection` coerce raw API arrays internally
-- `File::setSharedLink` narrowed to `?SharedLink`
-
-**Tests**: HydratorTest updated; CollaborationFactoryTest and CollaborationServiceTest updated for enum types; PathCollectionTest and EnumTest additions.
-
-**Migration guide**: Sections 11–13 added.
-
-### Roadmap / planning updates
-- Property hooks deferred to post-v1; rationale recorded in roadmap Deferred section
-- Consistent docblocks added as post-v1 item
-- PHP 8.4 property hooks added as post-v1 item
+**Migration guide** — Sections 14 and 15 added:
+- Section 14: `$nameValuePair` parameter removed from `Connection::post()`
+- Section 15: `BoxResponse::json()` now throws `\JsonException` on malformed JSON
 
 ---
 
@@ -106,3 +99,6 @@ PDO is directly instantiated and type-hinted in `src/Storage/Token/Pdo/` — har
 - Enums: `CollaborationRole`, `CollaborationStatus`, `SharedLinkAccess` wired to resource setters; `BoxItemType` is utility-only.
 - `PathCollection` DTO: `File` and `Folder` coerce raw API arrays in `setPathCollection`.
 - `static fn` over `fn` when closure has no `$this`/`self`/`static`/`parent` reference.
+- `Connection::post()` / `put()`: array params → form-encoded (for OAuth2); string params → passed as-is (for JSON bodies). No `$nameValuePair` parameter.
+- `BoxResponse::json()` throws `\JsonException` on malformed JSON — no silent fallback.
+- All `json_encode`/`json_decode` calls use `JSON_THROW_ON_ERROR`.

@@ -6,9 +6,6 @@
  * Date: 10/9/15
  * Time: 5:51 PM
  *
- * @package     Box
- * @subpackage  Box_Item
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *

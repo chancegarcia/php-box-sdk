@@ -1,9 +1,6 @@
 <?php
 
 /**
- * @package     Box
- * @subpackage  Box_Http_Response
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2016 Chance Garcia, chancegarcia.com
  *
@@ -59,17 +56,11 @@ class ResponseHeader implements ResponseHeaderInterface
         $this->setHeaderLines($aHeader);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getStatusLine(): ?StatusLineInterface
     {
         return $this->statusLine;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setStatusLine(?StatusLineInterface $statusLine = null): ResponseHeaderInterface
     {
         $this->statusLine = $statusLine;
@@ -77,17 +68,11 @@ class ResponseHeader implements ResponseHeaderInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getHeaderLines(): array
     {
         return $this->headerLines;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setHeaderLines(?array $headerLines = null): ResponseHeaderInterface
     {
         $this->headerLines = $headerLines;

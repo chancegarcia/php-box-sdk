@@ -1,9 +1,6 @@
 <?php
 
 /**
- * @package     Box
- * @subpackage  Box_Http_Response
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2016 Chance Garcia, chancegarcia.com
  *
@@ -29,8 +26,6 @@ use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use stdClass;
 
-/**
- */
 class BoxResponse implements BoxResponseInterface
 {
     protected ResponseHeaderInterface $responseHeader;
@@ -93,6 +88,9 @@ class BoxResponse implements BoxResponseInterface
         return (string) $this->psrResponse->getBody();
     }
 
+    /**
+     * @throws \JsonException
+     */
     public function json(bool $assoc = true): mixed
     {
         $content = $this->getContent();
@@ -100,13 +98,7 @@ class BoxResponse implements BoxResponseInterface
             return $assoc ? [] : new stdClass();
         }
 
-        $decoded = json_decode($content, $assoc);
-
-        if (null === $decoded && JSON_ERROR_NONE !== json_last_error()) {
-            return $assoc ? [] : new stdClass();
-        }
-
-        return $decoded;
+        return json_decode($content, $assoc, 512, JSON_THROW_ON_ERROR);
     }
 
     public function getRetryAfter(): ?int

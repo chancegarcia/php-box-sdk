@@ -1,9 +1,6 @@
 <?php
 
 /**
- * @package     Box
- * @subpackage  Box_Connection
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -63,19 +60,15 @@ interface ConnectionInterface extends LoggerAwareInterface
      * POST
      *
      * @param string $uri
-     * @param array|string $params will convert array to string; array will be deprecated in the future; json
-     *                                  encoded string will become the only valid value
-     * @param bool $nameValuePair this will be deprecated/fully removed in the future since params as a json
-     *                                  encoded string will be the expected value
+     * @param array|string $params array values are form-encoded; pass a JSON string for JSON bodies
      *
      * @return BoxResponseInterface
      */
-    public function post(string $uri, array|string $params = [], bool $nameValuePair = false): BoxResponseInterface;
+    public function post(string $uri, array|string $params = []): BoxResponseInterface;
 
     /**
      * @param string $uri
-     * @param array|string $params array will be deprecated in the future;
-     *                             json encoded string will become the only valid value
+     * @param array|string $params array values are form-encoded; pass a JSON string for JSON bodies
      *
      * @return BoxResponseInterface
      */

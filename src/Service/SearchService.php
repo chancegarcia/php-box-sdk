@@ -10,9 +10,6 @@ class SearchService extends Service implements SearchServiceInterface
 {
     public const string ENDPOINT = "https://api.box.com/2.0/search";
 
-    /**
-     * @inheritdoc
-     */
     public function search(?string $query = null, int|string|null $limit = null, int|string|null $offset = null, ?string $type = null): array
     {
         if (null === $query || "" === $query) {

@@ -10,6 +10,7 @@ interface JwtProviderInterface extends AuthProviderInterface
     /**
      * Exchange JWT assertion for an enterprise token.
      *
+     * @throws \JsonException
      * @return TokenInterface
      */
     public function exchangeForEnterpriseToken(): TokenInterface;
@@ -19,6 +20,7 @@ interface JwtProviderInterface extends AuthProviderInterface
      *
      * @param string $userId
      *
+     * @throws \JsonException
      * @return TokenInterface
      */
     public function exchangeForAppUserToken(string $userId): TokenInterface;

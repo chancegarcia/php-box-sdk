@@ -1,9 +1,6 @@
 <?php
 
 /**
- * @package
- * @subpackage
- *
  * @author      Chance Garcia <chance@garcia.codes>
  * @copyright   (C)Copyright 2013-2026 Chance Garcia, chancegarcia.com
  *

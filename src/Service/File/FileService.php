@@ -6,8 +6,6 @@
  * Date: 10/9/15
  * Time: 5:32 PM
  *
- * @package     Box
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -76,6 +74,9 @@ class FileService extends Service implements FileServiceInterface
         return $this->getResourceFromBox($uri, File::class);
     }
 
+    /**
+     * @throws \JsonException
+     */
     public function updateFile(File $file): File
     {
         $uri = self::ENDPOINT . '/' . $file->getId();
@@ -106,10 +107,7 @@ class FileService extends Service implements FileServiceInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @param File $file
-     * @param SharedLink|CreateSharedLinkRequest|array|null $sharedLink
+     * @throws \JsonException
      */
     public function createSharedLink(File $file, SharedLink|CreateSharedLinkRequest|array|null $sharedLink = null): File
     {
@@ -138,16 +136,7 @@ class FileService extends Service implements FileServiceInterface
             return [];
         }
 
-        if ($sharedLink instanceof CreateSharedLinkRequest) {
-            return $sharedLink->toArray();
-        }
-
-        // Fallback for legacy models that might not be fully hydrated to DTOs yet
-        if (method_exists($sharedLink, 'toArray')) {
-            return $sharedLink->toArray();
-        }
-
-        return [];
+        return $sharedLink->toArray();
     }
 
     /**

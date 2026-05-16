@@ -1,9 +1,6 @@
 <?php
 
 /**
- * @package     Box
- * @subpackage  Box_File
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -283,9 +280,6 @@ class File
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExtension(): string
     {
         $name = $this->getName();

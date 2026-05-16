@@ -6,9 +6,6 @@
  * Date: 9/18/15
  * Time: 6:48 PM
  *
- * @package     Box
- * @subpackage  Box_Model
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -41,11 +38,6 @@ use Box\Dto\Event\EventResponse;
 use Box\Service\ServiceInterface;
 use Box\Mapper\EventResponseMapper;
 
-/**
- * Interface UserEventServiceInterface
- *
- * @package Box\Service\Event
- */
 interface UserEventServiceInterface extends ServiceInterface
 {
     public const int LIMIT_MAX = 800;

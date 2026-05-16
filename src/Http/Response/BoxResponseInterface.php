@@ -1,9 +1,6 @@
 <?php
 
 /**
- * @package     Box
- * @subpackage  Box_Http_Response
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2016 Chance Garcia, chancegarcia.com
  *
@@ -43,6 +40,7 @@ interface BoxResponseInterface extends PsrResponseInterface
     /**
      * @param bool $assoc
      *
+     * @throws \JsonException
      * @return mixed
      */
     public function json(bool $assoc = true): mixed;

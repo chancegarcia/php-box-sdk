@@ -6,9 +6,6 @@
  * Date: 9/22/15
  * Time: 2:24 PM
  *
- * @package     Box
- * @subpackage  Box_Storage
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -45,11 +42,6 @@ use Box\Mapper\Hydrator;
 use PDO;
 use PDOException;
 
-/**
- * Class TokenStorage
- *
- * @package Box\Storage\Pdo
- */
 class TokenStorage implements TokenStorageInterface
 {
     protected ?string $dsn = null;
@@ -218,8 +210,6 @@ class TokenStorage implements TokenStorageInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws TokenStorageException
      */
     public function storeToken(TokenInterface $token, TokenStorageContext $context): void
@@ -228,8 +218,6 @@ class TokenStorage implements TokenStorageInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws TokenStorageException
      */
     public function updateToken(TokenInterface $token, TokenStorageContext $context): void
@@ -310,8 +298,6 @@ class TokenStorage implements TokenStorageInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws TokenStorageException
      */
     public function retrieveToken(TokenStorageContext $context): ?TokenInterface
@@ -369,8 +355,6 @@ class TokenStorage implements TokenStorageInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws TokenStorageException
      */
     public function removeToken(TokenStorageContext $context): void
@@ -415,8 +399,6 @@ class TokenStorage implements TokenStorageInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws TokenStorageException
      */
     public function clear(): void

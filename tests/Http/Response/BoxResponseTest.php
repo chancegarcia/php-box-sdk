@@ -56,8 +56,9 @@ class BoxResponseTest extends TestCase
 
     public function testJsonDecodingInvalidJson(): void
     {
+        $this->expectException(\JsonException::class);
         $response = new BoxResponse('invalid');
-        $this->assertEquals([], $response->json());
+        $response->json();
     }
 
     public function testRetryAfterSeconds(): void

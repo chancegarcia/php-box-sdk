@@ -6,9 +6,6 @@
  * Date: 9/18/15
  * Time: 6:22 PM
  *
- * @package     Box
- * @subpackage  Box_Model
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -43,11 +40,6 @@ use Box\Mapper\EventResponseMapper;
 use Box\Service\Service;
 use Psr\Log\LoggerInterface;
 
-/**
- * Class UserEventService
- *
- * @package Box\Service
- */
 class UserEventService extends Service implements UserEventServiceInterface
 {
     public const string ENDPOINT = "https://api.box.com/2.0/events";
@@ -69,25 +61,16 @@ class UserEventService extends Service implements UserEventServiceInterface
 
     private ?EventResponseMapper $eventResponseMapper = null;
 
-    /**
-     * {@inheritdoc}
-     */
     public function getValidStreamTypes(): array
     {
         return $this->validStreamTypes;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getStreamType(): string
     {
         return $this->streamType;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setStreamType(?string $streamType = null): void
     {
         $validStreamTypes = $this->getValidStreamTypes();
@@ -101,17 +84,11 @@ class UserEventService extends Service implements UserEventServiceInterface
         $this->streamType = $streamType;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getLimit(): int
     {
         return $this->limit;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setLimit(string|int|null $limit = null): void
     {
         if (null === $limit) {
@@ -129,17 +106,11 @@ class UserEventService extends Service implements UserEventServiceInterface
         $this->limit = (int) $limit;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getStreamPosition(): string|int
     {
         return $this->streamPosition;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setStreamPosition(string|int|null $streamPosition = null): void
     {
         if (null === $streamPosition) {

@@ -6,9 +6,6 @@
  * Date: 9/18/15
  * Time: 2:55 PM
  *
- * @package     Box
- * @subpackage  Box_Model
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -236,6 +233,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
      * @param class-string<T> $resourceClass
      *
      * @throws BoxException
+     * @throws \JsonException
      * @return T
      *
      * @template T of object
@@ -243,7 +241,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
     protected function sendUpdateAndHydrate(string $uri, array|string $params, string $resourceClass): object
     {
         if (!is_string($params)) {
-            $params = json_encode($params);
+            $params = json_encode($params, JSON_THROW_ON_ERROR);
         }
         $response = $this->getConnection()->put($uri, $params);
         $data = $this->handleBoxResponse($response, 'decoded');

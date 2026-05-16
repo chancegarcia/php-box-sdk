@@ -356,6 +356,49 @@ See the [CLI Test Harness Guide](../user/cli-test-harness.md) for current comman
 
 ---
 
+### 14. `Connection::post()` — `$nameValuePair` Parameter Removed
+
+The third parameter `bool $nameValuePair = false` has been removed from `ConnectionInterface::post()` and `Connection::post()`.
+
+| Before | After |
+|:---|:---|
+| `$connection->post($uri, $params, true)` | `$connection->post($uri, json_encode($params, JSON_THROW_ON_ERROR))` |
+
+If you were passing an array with `$nameValuePair = true`, encode the array yourself and pass the JSON string:
+
+```php
+// Before
+$connection->post('/collaborations', $params, true);
+
+// After
+$connection->post('/collaborations', json_encode($params, JSON_THROW_ON_ERROR));
+```
+
+Array parameters (without the third argument) continue to work as before — they are form-encoded for OAuth2 token requests.
+
+---
+
+### 15. `BoxResponse::json()` — Now Throws `JsonException` on Malformed JSON
+
+Previously, `BoxResponse::json()` returned `[]` when the response body was not valid JSON. It now throws `\JsonException`.
+
+Update any code that depended on the silent fallback:
+
+```php
+// Before — relied on silent [] fallback for bad JSON
+$data = $response->json();
+if (!$data) { ... }
+
+// After — catch JsonException explicitly
+try {
+    $data = $response->json();
+} catch (\JsonException $e) {
+    // handle malformed response
+}
+```
+
+---
+
 ## New Features in v1.0
 
 These are additions — no migration required.

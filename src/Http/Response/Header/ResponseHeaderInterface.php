@@ -1,9 +1,6 @@
 <?php
 
 /**
- * @package     Box
- * @subpackage  Box_Http_Response
- *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2016 Chance Garcia, chancegarcia.com
  *

@@ -11,7 +11,11 @@
       "Bash(grep -rE \"\\(public|private|protected\\)\\\\s+\\(function|\\\\$\\)[^:]*\\\\\\(\" /Users/chance/PhpstormProjects/mine/box-sdk/src/ --include=\"*.php\" -n)",
       "WebSearch",
       "Bash(grep *)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "Bash(xargs -0 perl -pi -e '/^\\\\s+\\\\* @\\(package|subpackage\\)\\\\b/d')",
+      "Bash(perl -ne 'print if /\\\\@package/' src/Client.php)",
+      "Bash(xargs -0 perl -pi -e '$_ = \"\" if /\\\\s*\\\\*\\\\s+@\\(package|subpackage\\)\\\\b/')",
+      "Bash(python3 *)"
     ]
   }
 }

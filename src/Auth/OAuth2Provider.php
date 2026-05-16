@@ -53,6 +53,7 @@ class OAuth2Provider implements OAuth2ProviderInterface
 
     /**
      * @throws BoxException
+     * @throws \JsonException
      */
     public function exchangeAuthorizationCode(string $code): TokenInterface
     {
@@ -79,6 +80,7 @@ class OAuth2Provider implements OAuth2ProviderInterface
 
     /**
      * @throws BoxException
+     * @throws \JsonException
      */
     public function refreshToken(TokenInterface $token, array $options = []): TokenInterface
     {

@@ -23,6 +23,7 @@ interface AuthProviderInterface
      *
      * @param string $code
      *
+     * @throws \JsonException
      * @return TokenInterface
      */
     public function exchangeAuthorizationCode(string $code): TokenInterface;
@@ -33,6 +34,7 @@ interface AuthProviderInterface
      * @param TokenInterface $token
      * @param array $options Additional options (e.g., device_id, device_name)
      *
+     * @throws \JsonException
      * @return TokenInterface
      */
     public function refreshToken(TokenInterface $token, array $options = []): TokenInterface;
