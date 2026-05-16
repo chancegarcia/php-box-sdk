@@ -12,8 +12,6 @@ class EventResponse
 {
     /**
      * @param Collection<int, Event> $entries
-     * @param int $chunkSize
-     * @param string $nextStreamPosition
      */
     public function __construct(
         private readonly Collection $entries,
