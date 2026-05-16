@@ -33,6 +33,7 @@ Do not prompt about package/repo rename.
 - Orphaned `use Box\Exception\BoxException` import removed from `Folder.php`
 - Orphaned `use stdClass` import removed from `AdminEvent.php`
 - Slice 21 expanded with **Legacy Survivor Audit** scope item covering `Connection::post` `$nameValuePair`/array-params "deprecated in future" language and `FileService`/`FolderService` `method_exists($sharedLink, 'toArray')` legacy fallback
+- Slice 21 further expanded with **Naming Convention & Method Accuracy Audit**: PSR-12 camelCase sweep (methods, properties, params) + descriptiveness pass ensuring public method names reflect their operation, not just their return value (reference: `exchangeAuthCodeForAccessToken` pattern); public renames require migration guide entries
 - Roadmap `docs/planning/v1-release-roadmap.md` Slice 20.5 updated: `FolderSyncState` removed from scope with rationale documented
 - Test baseline confirmed unchanged: **368 tests, 992 assertions**
 

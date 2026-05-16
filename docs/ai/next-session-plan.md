@@ -127,6 +127,32 @@ Pre-flight:
 grep -rn "deprecated\|legacy\|nameValuePair\|method_exists" src/ --include="*.php"
 ```
 
+#### Naming Convention & Method Accuracy Audit
+Two related passes over `src/`:
+
+**1. PSR-12 / convention compliance**
+- Methods and properties must be camelCase — grep for underscored names, `get_foo`/`set_foo` style, `$m_`/`$_` prefixes
+- Parameters must be camelCase — scan method signatures for snake_case param names
+- No non-magic double-underscore names
+- Constants already audited in Slice 20.4 — confirm no stragglers
+
+Pre-flight:
+```
+grep -rn "function [a-z_]*_[a-z]" src/ --include="*.php"
+grep -rn "\$[a-z][a-z]*_[a-z]" src/ --include="*.php"
+```
+
+**2. Method name descriptiveness**
+Names must describe the *operation*, not just the return value. A name like `getToken` is misleading when it performs a network exchange; `exchangeAuthCodeForAccessToken` is the standard we're holding (see: `Client` auth flow refactor).
+
+Focus areas:
+- `Client` public API — any method where the name implies a passive read but the body does I/O or mutation
+- `AuthProviderInterface` / `OAuth2Provider` / `JwtProvider` — auth operations are prime candidates for vague getter names
+- `Service` classes — look for `get*` methods that perform writes or multi-step operations
+- `Connection` — any method whose name undersells what it does (e.g., wrapping retry logic, building auth headers)
+
+Any public method rename is a breaking change — add a migration guide entry for each one.
+
 ### Acceptance Criteria
 - No `@package`/`@subpackage` tags remain in `src/` or `tests/`
 - `@inheritdoc` usage is correct and consistent
@@ -135,6 +161,9 @@ grep -rn "deprecated\|legacy\|nameValuePair\|method_exists" src/ --include="*.ph
 - `nameValuePair`/array-params decision made and implemented
 - Legacy `method_exists` fallback in `FileService`/`FolderService` resolved
 - No "will be deprecated in the future" language in a v1 release
+- All public method and property names are camelCase (PSR-12)
+- No public method name misrepresents its operation (no passive-sounding name for I/O-performing methods)
+- Migration guide updated for any public renames
 - `composer review` green
 
 ---
