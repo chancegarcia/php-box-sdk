@@ -78,7 +78,7 @@ class Client implements LoggerAwareInterface
     use LoggerAwareTrait;
     use BoxApiErrorTrait;
 
-    public const SEARCH_URI = "https://api.box.com/2.0/search";
+    public const string SEARCH_URI = "https://api.box.com/2.0/search";
 
     /**
      * @var ConnectionInterface|null
@@ -229,8 +229,8 @@ class Client implements LoggerAwareInterface
     /**
      * @param bool $retrieve
      *
-     * @return array<string|int, Folder>|null
      * @throws BoxException
+     * @return array<string|int, Folder>|null
      */
     public function getFolders(bool $retrieve = true): ?array
     {
@@ -251,9 +251,9 @@ class Client implements LoggerAwareInterface
     /**
      * get membership list of a given group. if limit or offset is numeric, only retrieve specific list page;
      *
-     * @param null $group
-     * @param null $limit leave null to get all; if limit is null but offset is numeric, limit will default to 100
-     * @param null $offset leave null to get all; if limit is null but offset is numeric, limit will default to 100
+     * @param Group|string|int|null $group
+     * @param int|null $limit leave null to get all; if limit is null but offset is numeric, limit will default to 100
+     * @param int|null $offset leave null to get all; if limit is null but offset is numeric, limit will default to 100
      *
      * @throws BoxException
      * @return array returns an array of User objects that are in the group membership
@@ -457,9 +457,8 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @param null|Folder $folder
-     * @param array|null shared link options with
-     * default shared link set to collaborator access, no unshared time or permissions set to
+     * @param Folder|null $folder
+     * @param array|null $params shared link options; default shared link set to collaborator access, no unshared time or permissions set
      *
      * @throws BoxException
      * @return Folder
@@ -501,7 +500,7 @@ class Client implements LoggerAwareInterface
         return $copy;
     }
 
-    // @todo make multiple file upload
+    // Post-v1: add multi-file upload convenience method
 
     /**
      * @param BoxResponseInterface $response
@@ -546,6 +545,10 @@ class Client implements LoggerAwareInterface
         return $fileService->chunkedUpload($file, $parentId);
     }
 
+    /**
+     * @throws BoxException if no authorization code is set
+     * @return TokenInterface
+     */
     public function exchangeAuthorizationCodeForToken(): TokenInterface
     {
         $code = $this->getAuthorizationCode();
@@ -615,7 +618,7 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @param string|null $clientId
+     * @param string $clientId
      *
      * @return void
      */
@@ -633,7 +636,7 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @param string|null $clientSecret
+     * @param string $clientSecret
      *
      * @return void
      */
@@ -982,6 +985,12 @@ class Client implements LoggerAwareInterface
         return $this->eventDispatcher;
     }
 
+    /**
+     * @param ServiceInterface $service
+     *
+     * @throws \RuntimeException if an authenticated service has no access token set
+     * @return ServiceInterface
+     */
     protected function configureService(ServiceInterface $service): ServiceInterface
     {
         $service->setConnection($this->getConnection());

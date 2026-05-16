@@ -58,15 +58,13 @@ use Psr\Log\LoggerInterface;
  * Class Connection
  *
  * @package Box\Model
- *
- * @todo v1: remove client credential synchronization and make Connection the source of truth
  */
 class Connection implements ConnectionInterface
 {
     use LoggerAwareTrait;
     use BoxApiErrorTrait;
 
-    public const TRANSPORT_GUZZLE = 'guzzle';
+    public const string TRANSPORT_GUZZLE = 'guzzle';
 
     protected mixed $responseType = "code";
     protected mixed $state = null;
@@ -251,7 +249,7 @@ class Connection implements ConnectionInterface
      */
     public function postFile(string $uri, string|FileStream $file, string|int $parentId = 0): BoxResponseInterface
     {
-        // @todo allow Content-MD5 header to be set
+        // Post-v1: allow Content-MD5 header to be set
 
         if (empty($parentId) && $parentId !== 0 && $parentId !== '0') {
             throw new BoxException("Invalid parent ID. Parent ID cannot be empty.", BoxException::INVALID_INPUT);

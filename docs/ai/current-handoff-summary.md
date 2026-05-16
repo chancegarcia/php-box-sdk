@@ -1,24 +1,24 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-15 22:00 (America/Indiana)
+- **Timestamp**: 2026-05-15 23:07 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
-- **Roadmap Position**: Slice 19 complete. Slice 20 in progress (items 1–3 done this session). Slices 21 and 22 planned this session.
+- **Roadmap Position**: Slice 20 items 1–4, 8 complete. Items 5, 6, 7 remain.
 - **Test baseline**: 368 tests, 992 assertions
-- **v1 remaining**: Slice 20 remaining items → Slice 21 (docblock/legacy tags) → Slice 22 (license/rebrand prep) → Step 17 (release readiness) → Step 18 (doc cleanup) → package/repo rename (user-driven)
+- **v1 remaining**: Slice 20 items 5–7 → Slice 21 (docblock/legacy tags) → Slice 22 (license/rebrand prep) → Step 17 (release readiness) → Step 18 (doc cleanup) → package/repo rename (user-driven)
 
 ## Next Action
 
 **Slice 20 remaining** (read `docs/ai/next-session-plan.md` for full scope):
 1. ~~`?->` operator conversions~~ ✓
 2. ~~PHPDoc annotation spacing standardized~~ ✓
-3. `@throws` audit — add missing tags; remove false tags; fix missing `$varName` in docblocks
-4. Typed constants audit (`src/`)
-5. Type coverage audit (tighten `mixed`, untyped properties/params/returns; includes BoxException, Client, Event, Collaboration specifics)
+3. ~~`@throws` audit~~ ✓
+4. ~~Typed constants audit~~ ✓
+5. Type coverage audit (tighten `mixed`, untyped properties/params/returns; includes BoxException, Client, Event specifics)
 6. Property hooks on qualifying DTOs/value objects
 7. BoxClientFactory namespace move (`Box\Service` → `Box\Factory`) + `createClient()` → `createOAuth2Client()` rename
-8. v1 `@todo` audit — resolve, defer, or remove all `@todo`/`TODO` in `src/`
+8. ~~v1 `@todo` audit~~ ✓
 
 Do not prompt about package/repo rename.
 

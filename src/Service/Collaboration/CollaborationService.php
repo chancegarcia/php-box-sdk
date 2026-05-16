@@ -11,7 +11,7 @@ use Box\Service\Service;
 
 class CollaborationService extends Service implements CollaborationServiceInterface
 {
-    public const ENDPOINT = "https://api.box.com/2.0/collaborations";
+    public const string ENDPOINT = "https://api.box.com/2.0/collaborations";
 
     /**
      * @throws BoxResponseException

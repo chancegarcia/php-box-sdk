@@ -48,8 +48,8 @@ use Box\Mapper\EventResponseMapper;
  */
 interface UserEventServiceInterface extends ServiceInterface
 {
-    public const LIMIT_MAX = 800;
-    public const LIMIT_DEFAULT = 100;
+    public const int LIMIT_MAX = 800;
+    public const int LIMIT_DEFAULT = 100;
 
     /**
      * @return array<string>

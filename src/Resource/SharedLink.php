@@ -78,10 +78,8 @@ class SharedLink
      * @param DateTimeInterface|string|null $unsharedAt
      *
      * @return void
-     *
-     * @todo v1.0 \DateTimeImmutable|null type
      */
-    public function setUnsharedAt($unsharedAt = null): void
+    public function setUnsharedAt(DateTimeInterface|string|null $unsharedAt = null): void
     {
         $this->unsharedAt = $unsharedAt;
     }

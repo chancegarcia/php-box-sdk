@@ -38,13 +38,13 @@ use stdClass;
 
 class BoxException extends \Exception
 {
-    public const INVALID_CLASS_TYPE = "Invalid Class Type";
-    public const UNKNOWN_CLASS = "Unknown Class";
-    public const INVALID_CLASS = "Invalid Class";
-    public const INVALID_INPUT = "Invalid Input";
-    public const MISSING_ID = "Missing Id";
-    public const BOX_API_ERROR = "Box API Error";
-    public const INVALID_JSON = "Invalid JSON";
+    public const string INVALID_CLASS_TYPE = "Invalid Class Type";
+    public const string UNKNOWN_CLASS = "Unknown Class";
+    public const string INVALID_CLASS = "Invalid Class";
+    public const string INVALID_INPUT = "Invalid Input";
+    public const string MISSING_ID = "Missing Id";
+    public const string BOX_API_ERROR = "Box API Error";
+    public const string INVALID_JSON = "Invalid JSON";
 
     protected mixed $error = null;
     protected mixed $errorDescription = null;
@@ -207,9 +207,6 @@ class BoxException extends \Exception
     /**
      * @param mixed $boxCode
      *
-     * @return self
-     */
-    /**
      * @return void
      */
     public function setBoxCode(mixed $boxCode = null): void

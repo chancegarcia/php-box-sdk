@@ -50,7 +50,7 @@ use Psr\Log\LoggerInterface;
  */
 class UserEventService extends Service implements UserEventServiceInterface
 {
-    public const ENDPOINT = "https://api.box.com/2.0/events";
+    public const string ENDPOINT = "https://api.box.com/2.0/events";
 
     protected array $validStreamTypes = [
         'all'

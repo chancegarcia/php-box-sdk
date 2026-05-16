@@ -53,9 +53,9 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 
 class FileService extends Service implements FileServiceInterface
 {
-    public const ENDPOINT = "https://api.box.com/2.0/files";
-    public const UPLOAD_ENDPOINT = "https://upload.box.com/api/2.0/files/content";
-    public const UPLOAD_SESSION_ENDPOINT = "https://upload.box.com/api/2.0/files/upload-sessions";
+    public const string ENDPOINT = "https://api.box.com/2.0/files";
+    public const string UPLOAD_ENDPOINT = "https://upload.box.com/api/2.0/files/content";
+    public const string UPLOAD_SESSION_ENDPOINT = "https://upload.box.com/api/2.0/files/upload-sessions";
 
     private ?EventDispatcherInterface $eventDispatcher = null;
 

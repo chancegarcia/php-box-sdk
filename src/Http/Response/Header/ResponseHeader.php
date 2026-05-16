@@ -38,11 +38,6 @@ class ResponseHeader implements ResponseHeaderInterface
     protected $headerLines = [];
 
     /**
-     * @todo parse groupings based on the header line keys and the groupings (general, response, entity)
-     * outlined at https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html
-     */
-
-    /**
      * @param string $sHeader
      *
      * @throws BoxException

@@ -4,9 +4,9 @@ namespace Box\Http\Util;
 
 class Redactor
 {
-    public const REDACTED = '[REDACTED]';
+    public const string REDACTED = '[REDACTED]';
 
-    private const SENSITIVE_KEYS = [
+    private const array SENSITIVE_KEYS = [
         'access_token',
         'refresh_token',
         'client_secret',

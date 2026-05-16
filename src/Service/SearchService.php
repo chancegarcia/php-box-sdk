@@ -8,7 +8,7 @@ use Box\Exception\BoxException;
 
 class SearchService extends Service implements SearchServiceInterface
 {
-    public const ENDPOINT = "https://api.box.com/2.0/search";
+    public const string ENDPOINT = "https://api.box.com/2.0/search";
 
     /**
      * @inheritdoc

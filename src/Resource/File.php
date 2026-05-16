@@ -164,10 +164,6 @@ class File
      */
     public function setCreatedBy(mixed $createdBy = null): void
     {
-        if (is_array($createdBy)) {
-            // @todo v1.0 remove array support
-        }
-
         $this->createdBy = $createdBy;
     }
 
@@ -258,10 +254,6 @@ class File
      */
     public function setModifiedBy(mixed $modifiedBy = null): void
     {
-        if (is_array($modifiedBy)) {
-            // @todo v1.0 remove array support
-        }
-
         $this->modifiedBy = $modifiedBy;
     }
 
@@ -331,10 +323,6 @@ class File
      */
     public function setOwnedBy(mixed $ownedBy = null): void
     {
-        if (is_array($ownedBy)) {
-            // @todo v1.0 remove array support
-        }
-
         $this->ownedBy = $ownedBy;
     }
 
@@ -353,10 +341,6 @@ class File
      */
     public function setParent(mixed $parent = null): void
     {
-        if (is_array($parent)) {
-            // @todo v1.0 remove array support
-        }
-
         $this->parent = $parent;
     }
 
@@ -375,10 +359,7 @@ class File
      */
     public function setPathCollection(mixed $pathCollection = null): void
     {
-        if (is_array($pathCollection)) {
-            // @todo v1.0 remove array support once PathCollection DTO is implemented
-        }
-
+        // Post-v1: narrow type and hydrate PathCollection DTO once implemented
         $this->pathCollection = $pathCollection;
     }
 
@@ -469,10 +450,7 @@ class File
      */
     public function setSharedLink(SharedLink|array|null $sharedLink = null): void
     {
-        if (is_array($sharedLink)) {
-            // @todo v1.0 remove array support
-        }
-
+        // Post-v1: remove array support and narrow to ?SharedLink once Hydrator hydrates SharedLink from array
         $this->sharedLink = $sharedLink;
     }
 

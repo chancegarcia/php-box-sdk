@@ -8,7 +8,7 @@ use DateTimeZone;
 
 class WebhookVerifier implements WebhookVerifierInterface
 {
-    private const MAX_AGE_SECONDS = 600;
+    private const int MAX_AGE_SECONDS = 600;
 
     public function __construct(
         private readonly ?string $primaryKey = null,

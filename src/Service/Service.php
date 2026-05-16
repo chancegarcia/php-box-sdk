@@ -71,6 +71,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
     /**
      * {@inheritdoc}
      *
+     * @throws RuntimeException
      * @return ConnectionInterface
      */
     public function getConnection()
@@ -97,6 +98,9 @@ class Service implements ServiceInterface, LoggerAwareInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws RuntimeException
+     * @return TokenInterface
      */
     public function getToken()
     {
@@ -122,6 +126,8 @@ class Service implements ServiceInterface, LoggerAwareInterface
      * @param string $returnType 'decoded', 'flat', 'array', or 'original'
      *
      * @throws BoxResponseException
+     * @throws BadMethodCallException
+     * @throws OutOfBoundsException
      * @return mixed
      */
     public function handleBoxResponse(?BoxResponseInterface $response = null, $returnType = 'decoded')

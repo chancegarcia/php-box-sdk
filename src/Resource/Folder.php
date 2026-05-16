@@ -164,10 +164,8 @@ class Folder
      * @param string|int|null $id
      *
      * @return void
-     *
-     * @todo v1.0 strict string type
      */
-    public function setId($id = null): void
+    public function setId(string|int|null $id = null): void
     {
         $this->id = $id;
     }
@@ -176,10 +174,8 @@ class Folder
      * @param DateTimeInterface|string|null $createdAt
      *
      * @return void
-     *
-     * @todo v1.0 \DateTimeImmutable|null type
      */
-    public function setCreatedAt($createdAt = null): void
+    public function setCreatedAt(DateTimeInterface|string|null $createdAt = null): void
     {
         $this->createdAt = $createdAt;
     }
@@ -266,10 +262,8 @@ class Folder
      * @param string|null $itemStatus
      *
      * @return void
-     *
-     * @todo v1.0 Enum status
      */
-    public function setItemStatus($itemStatus = null): void
+    public function setItemStatus(?string $itemStatus = null): void
     {
         $this->itemStatus = $itemStatus;
     }
@@ -283,10 +277,8 @@ class Folder
      * @param DateTimeInterface|string|null $modifiedAt
      *
      * @return void
-     *
-     * @todo v1.0 \DateTimeImmutable|null type
      */
-    public function setModifiedAt($modifiedAt = null): void
+    public function setModifiedAt(DateTimeInterface|string|null $modifiedAt = null): void
     {
         $this->modifiedAt = $modifiedAt;
     }

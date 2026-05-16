@@ -34,16 +34,35 @@ class JwtProvider implements JwtProviderInterface
         return $this->eventDispatcher;
     }
 
+    /**
+     * @param array<string, mixed> $options
+     *
+     * @throws BoxException always — JWT does not support browser-based authorization flows
+     * @return string
+     */
     public function buildAuthorizationUrl(array $options = []): string
     {
         throw new BoxException('JWT authentication does not support browser-based authorization flows.');
     }
 
+    /**
+     * @param string $code
+     *
+     * @throws BoxException always — JWT does not use authorization codes
+     * @return TokenInterface
+     */
     public function exchangeAuthorizationCode(string $code): TokenInterface
     {
         throw new BoxException('JWT authentication does not use authorization codes.');
     }
 
+    /**
+     * @param TokenInterface $token
+     * @param array<string, mixed> $options
+     *
+     * @throws BoxException
+     * @return TokenInterface
+     */
     public function refreshToken(TokenInterface $token, array $options = []): TokenInterface
     {
         return $this->exchangeAssertion(
@@ -63,6 +82,10 @@ class JwtProvider implements JwtProviderInterface
         $this->connection->post(self::REVOKE_URI, $params);
     }
 
+    /**
+     * @throws BoxException
+     * @return TokenInterface
+     */
     public function exchangeForEnterpriseToken(): TokenInterface
     {
         $token = $this->exchangeAssertion($this->config->enterpriseId, 'enterprise');
@@ -73,6 +96,12 @@ class JwtProvider implements JwtProviderInterface
         return $token;
     }
 
+    /**
+     * @param string $userId
+     *
+     * @throws BoxException
+     * @return TokenInterface
+     */
     public function exchangeForAppUserToken(string $userId): TokenInterface
     {
         $token = $this->exchangeAssertion($userId, 'user');

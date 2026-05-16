@@ -1,58 +1,41 @@
 # Next Session Plan
 
-**Updated**: 2026-05-15 22:00 (America/Indiana)
+**Updated**: 2026-05-15 23:07 (America/Indiana)
 **Branch**: `release-v1.0.0`
 
 ---
 
 ## Start Here
 
-Slice 20 is in progress. The following are **already done** this session:
-- `?->` operator: all `if (null !== $x) { $x->dispatch(...); }` guards converted throughout `src/`
-- PHPDoc annotation spacing: `phpcs.xml.dist` updated (`linesCountBetweenDifferentAnnotationsTypes` → 1); `composer cs:fix` applied globally (370 fixes across 57 files)
+Slice 20 items 1–4 and 8 are complete. **Pick up at item 5: type coverage audit.**
 
-**Pick up at item 3: `@throws` audit.**
+Completed this session:
+- `?->` operator conversions ✓
+- PHPDoc annotation spacing ✓
+- `@throws` audit (missing tags added; false tags removed; docblock param types corrected) ✓
+- Typed constants (`public const string/int/array` across 8 files) ✓
+- v1 `@todo` audit (dead-code if-blocks removed; todos resolved, deferred to post-v1, or converted to `// Post-v1:` markers) ✓
 
 ---
 
 ## Slice 20 Remaining Scope
 
-### ~~1. `?->` conversions~~ ✓ Done
-### ~~2. PHPDoc annotation spacing~~ ✓ Done
-
-### 3. `@throws` Audit
-Audit all public/protected methods in `src/` that throw (directly or via trait error helpers). Add missing `@throws ExceptionClass` tags to their docblocks. Also:
-- Remove **false `@throws`** tags where no throw path exists (e.g. `Client::getFolderItems`).
-- Add **missing `$varName`** to any `@param`, `@return`, or `@throws` tags that are missing the variable.
-
-Pre-flight:
-```
-grep -rn "throw \|->error(" src/ --include="*.php"
-```
-
-Focus areas in priority order: service layer, `Client`, `Connection`, auth providers.
-
-### 4. Typed Constants
-Audit `src/` for untyped class constants. Add PHP 8.3+ type declarations wherever the constant type is a concrete scalar.
-
-```php
-public const string ENDPOINT = 'https://api.box.com/2.0/files';
-```
-
-Pre-flight:
-```
-grep -rn "\bconst \b" src/ --include="*.php" | grep -v "const string\|const int\|const bool\|const float\|const array"
-```
+### ~~1. `?->` conversions~~ ✓
+### ~~2. PHPDoc annotation spacing~~ ✓
+### ~~3. `@throws` audit~~ ✓
+### ~~4. Typed constants~~ ✓
+### ~~8. v1 `@todo` audit~~ ✓
 
 ### 5. Type Coverage Audit
 Review `src/` for untyped or `mixed` properties, parameters, and return types. Tighten where the actual type is known. Intentional `mixed` (e.g., legacy hydration) must be confirmed and documented.
 
-Specific areas flagged during review:
-- **`BoxException`**: at least one setter is docblocked `@return self` but does not actually return `self`. Re-examine all setters for this mismatch.
-- **`BoxException::setCode`**: parameter typed `mixed` — evaluate whether `mixed` is genuinely required or should be narrowed to `int|string`.
-- **`Client`**: at least one `@param` is docblocked as `null` — find and fix.
-- **`Box\Resource\Event`**: numerous `mixed` properties — audit and tighten where type is deterministic.
-- **`Collaboration`**: `@todo` annotations regarding typing — resolve or defer with rationale.
+Specific areas to check:
+- **`BoxException`**: stale `@return self` removed from `setBoxCode` ✓. Remaining: `$error`, `$errorDescription`, `$boxCode`, `$status` all typed `mixed` — evaluate whether any can be narrowed.
+- **`BoxException` constructor `$code`**: typed `mixed` — narrow to `int|string` since non-int codes are stored as `boxCode`.
+- **`Box\Resource\Event`**: numerous `mixed` properties — audit and tighten where type is deterministic from Box API contract.
+- **`Service`**: `$connection` and `$token` properties have no PHP type hints — add them.
+- **`Collaboration`**: several methods have *no type hints at all* (not just `mixed`) — `setAccessibleBy`/`getAccessibleBy` (Box API: `User|Group` mini-object), `setCreatedBy`/`getCreatedBy`, `setItem`/`getItem` (Box API: `File|Folder` mini-object), `setType`/`getType`. Audit the full class for missing types.
+- **Broad pass**: grep `src/Resource/` for methods with no parameter or return type hints — `Collaboration` is a known case but likely not the only one.
 
 ### 6. Property Hooks on DTOs / Value Objects
 Audit `src/Dto/`, `src/Resource/`, `src/Connection/Token/` for get/set method pairs that qualify for PHP 8.4 property hooks. Apply when:
@@ -265,6 +248,40 @@ Use new-brand/box-sdk instead.
 - `docs/planning/release-task-lists.md` has remote URL update checklist item
 - `docs/planning/packagist-rebrand-guide.md` created
 - `composer review` green
+
+---
+
+## After Slice 20
+
+Sequence: **Slice 20.5** → Slice 21 → Slice 22 → Step 17 → Step 18 → rename (user-driven)
+
+### Slice 20.5 — Enum Wiring & Hydrator Audit (next after Slice 20)
+
+See `docs/planning/v1-release-roadmap.md` § Slice 20.5 for full scope. Summary:
+
+1. **Hydrator audit first**: confirm `Hydrator` handles backed enum properties (check `User::setStatus(?UserStatus)` is actually hydrated correctly from a JSON string). Fix Hydrator if needed.
+2. **Wire orphaned enums**: `CollaborationRole` → `Collaboration::setRole`, `SharedLinkAccess` → `SharedLink`, evaluate `BoxItemType`.
+3. **Create missing enums**: `CollaborationStatus` (accepted/pending/rejected), `FolderSyncState` (synced/not_synced/partially_synced).
+4. **Wire new enums**: `Collaboration::setStatus`, `Folder::buildFolderUpdate` — replace `in_array` guards.
+5. Tests, migration guide entry, `composer review`.
+
+---
+
+## After Slice 20
+
+Sequence: **Slice 20.5** → Slice 21 → Slice 22 → Step 17 → Step 18 → rename (user-driven)
+
+### Slice 20.5 — Enum Wiring & Hydrator Audit (next after Slice 20)
+
+See `docs/planning/v1-release-roadmap.md` § Slice 20.5 for full scope. Summary:
+
+1. **Hydrator audit first**: confirm `Hydrator` handles backed enum properties (verify `User::setStatus(?UserStatus)` is correctly hydrated from a JSON string). Fix Hydrator if needed.
+2. **Wire orphaned enums**: `CollaborationRole` → `Collaboration::setRole`, `SharedLinkAccess` → `SharedLink`, evaluate `BoxItemType`.
+3. **Create missing enums**: `CollaborationStatus` (accepted/pending/rejected), `FolderSyncState` (synced/not_synced/partially_synced).
+4. **Wire new enums**: `Collaboration::setStatus`, `Folder::buildFolderUpdate` — replace `in_array` guards.
+5. **`PathCollection` DTO**: Box API confirmed — `path_collection` is `{ total_count, entries: [mini-folder] }`. Create DTO, narrow `File::setPathCollection`, update Folder if applicable.
+6. **`SharedLink` array narrowing**: after Hydrator confirmation, narrow `File::setSharedLink` to `?SharedLink`.
+7. Tests, migration guide entry, `composer review`.
 
 ---
 

@@ -34,5 +34,5 @@ namespace Box\Exception;
 
 class GroupException extends BoxException
 {
-    public const INVALID_NAME = "Invalid Group Name";
+    public const string INVALID_NAME = "Invalid Group Name";
 }
