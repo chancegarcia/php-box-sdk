@@ -1,6 +1,6 @@
 # Next Session Plan
 
-**Updated**: 2026-05-15 23:07 (America/Indiana)
+**Updated**: 2026-05-15 23:40 (America/Indiana)
 **Branch**: `release-v1.0.0`
 
 ---
@@ -114,11 +114,27 @@ Pre-flight:
 grep -rn "json_encode\|json_decode" src/ --include="*.php"
 ```
 
+#### Legacy Survivor Audit
+Two legacy paths survived the earlier purges:
+
+1. **`Connection::post` `$nameValuePair` / array `$params`** — `Connection.php` and `ConnectionInterface.php` carry "will be deprecated in the future" warnings. For v1 that future is now. Decision required: remove the array-params and `$nameValuePair` paths, or document as intentionally supported and drop the deprecated language.
+2. **`FileService`/`FolderService` `method_exists($sharedLink, 'toArray')` fallback** — labeled "Fallback for legacy models." `CreateSharedLinkRequest::toArray()` is real, so the branch is live, but the comment implies dead models. Confirm if the guard is still needed; tighten type and remove comment if not.
+
+Note: `AdminEvent::mapBoxToClass` was removed this session (zero callers, `@deprecated`).
+
+Pre-flight:
+```
+grep -rn "deprecated\|legacy\|nameValuePair\|method_exists" src/ --include="*.php"
+```
+
 ### Acceptance Criteria
 - No `@package`/`@subpackage` tags remain in `src/` or `tests/`
 - `@inheritdoc` usage is correct and consistent
 - `ConnectionInterface`/`EntrySource` decision recorded
 - All `json_encode`/`json_decode` calls use `JSON_THROW_ON_ERROR`
+- `nameValuePair`/array-params decision made and implemented
+- Legacy `method_exists` fallback in `FileService`/`FolderService` resolved
+- No "will be deprecated in the future" language in a v1 release
 - `composer review` green
 
 ---
@@ -277,8 +293,8 @@ See `docs/planning/v1-release-roadmap.md` § Slice 20.5 for full scope. Summary:
 
 1. **Hydrator audit first**: confirm `Hydrator` handles backed enum properties (verify `User::setStatus(?UserStatus)` is correctly hydrated from a JSON string). Fix Hydrator if needed.
 2. **Wire orphaned enums**: `CollaborationRole` → `Collaboration::setRole`, `SharedLinkAccess` → `SharedLink`, evaluate `BoxItemType`.
-3. **Create missing enums**: `CollaborationStatus` (accepted/pending/rejected), `FolderSyncState` (synced/not_synced/partially_synced).
-4. **Wire new enums**: `Collaboration::setStatus`, `Folder::buildFolderUpdate` — replace `in_array` guards.
+3. **Create missing enum**: `CollaborationStatus` (accepted/pending/rejected). **Note**: `FolderSyncState` is out of scope — `sync_state` is a legacy field from the discontinued Box Sync client; `Folder::classArray` docblock already documents this.
+4. **Wire new enum**: `Collaboration::setStatus(?CollaborationStatus)` — replace `in_array` guard.
 5. **`PathCollection` DTO**: Box API confirmed — `path_collection` is `{ total_count, entries: [mini-folder] }`. Create DTO, narrow `File::setPathCollection`, update Folder if applicable.
 6. **`SharedLink` array narrowing**: after Hydrator confirmation, narrow `File::setSharedLink` to `?SharedLink`.
 7. Tests, migration guide entry, `composer review`.

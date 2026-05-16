@@ -1,6 +1,6 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-15 23:07 (America/Indiana)
+- **Timestamp**: 2026-05-15 23:40 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
@@ -21,6 +21,20 @@
 8. ~~v1 `@todo` audit~~ ✓
 
 Do not prompt about package/repo rename.
+
+---
+
+## Completed This Session (2026-05-15) — Late additions
+
+### Legacy survivor cleanup
+- `Folder::classArray()` removed — zero callers; only purpose was building a `sync_state` payload for the discontinued Box Sync client
+- `Folder::setSyncState()` / `getSyncState()` / `$syncState` property removed — same rationale
+- `AdminEvent::mapBoxToClass()` removed — `@deprecated`, zero callers
+- Orphaned `use Box\Exception\BoxException` import removed from `Folder.php`
+- Orphaned `use stdClass` import removed from `AdminEvent.php`
+- Slice 21 expanded with **Legacy Survivor Audit** scope item covering `Connection::post` `$nameValuePair`/array-params "deprecated in future" language and `FileService`/`FolderService` `method_exists($sharedLink, 'toArray')` legacy fallback
+- Roadmap `docs/planning/v1-release-roadmap.md` Slice 20.5 updated: `FolderSyncState` removed from scope with rationale documented
+- Test baseline confirmed unchanged: **368 tests, 992 assertions**
 
 ---
 

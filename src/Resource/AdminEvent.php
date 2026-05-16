@@ -38,7 +38,6 @@
 namespace Box\Resource;
 
 use Box\Mapper\Hydrator;
-use stdClass;
 
 class AdminEvent extends Event
 {
@@ -54,22 +53,6 @@ class AdminEvent extends Event
         if (is_array($options)) {
             (new Hydrator())->hydrate($this, $options);
         }
-    }
-
-    /**
-     * @param array|stdClass $aData
-     *
-     * @deprecated Use Hydrator::hydrate() instead.
-     */
-    public function mapBoxToClass(array|stdClass $aData): void
-    {
-        if (is_array($aData)) {
-            unset($aData['stream_type']);
-        } elseif (is_object($aData)) {
-            unset($aData->stream_type);
-        }
-
-        (new Hydrator())->hydrate($this, $aData);
     }
 
     /**

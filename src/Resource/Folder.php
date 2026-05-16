@@ -32,7 +32,6 @@
 
 namespace Box\Resource;
 
-use Box\Exception\BoxException;
 use Countable;
 use DateTimeInterface;
 
@@ -56,49 +55,9 @@ class Folder
     protected mixed $parent = null;
     protected mixed $itemStatus = null;
     protected mixed $itemCollection = null;
-    protected mixed $syncState = null;
     protected ?bool $canNonOwnersInvite = null;
     protected ?array $allowedInviteRoles = null;
     protected mixed $hasCollaborations = null;
-
-    /**
-     * @param string $syncState
-     *
-     * @throws BoxException
-     * @return array
-     */
-    public function classArray(string $syncState = "synced"): array
-    {
-        $aFolder = [
-            'type' => $this->type,
-            'id' => $this->getId(),
-            'name' => $this->name,
-            'description' => $this->description,
-        ];
-
-        if (
-            !in_array(
-                $syncState,
-                [
-                          "synced",
-                          "not_synced",
-                          "partially_synced"
-                ]
-            )
-        ) {
-            throw new BoxException("invalid sync state value given (" . var_export($syncState, true) . ").\n
-            Expecting one of the following values: synced, not_synced, partially_synced
-            ");
-        }
-
-        $aFolder['parent'] = [
-            "id" => $this->getParentId()
-        ];
-
-        $aFolder['sync_state'] = $syncState;
-
-        return $aFolder;
-    }
 
     /**
      * @return int|string
@@ -379,16 +338,6 @@ class Folder
     public function getSize()
     {
         return $this->size;
-    }
-
-    public function setSyncState($syncState = null)
-    {
-        $this->syncState = $syncState;
-    }
-
-    public function getSyncState()
-    {
-        return $this->syncState;
     }
 
     public function setType($type = null)

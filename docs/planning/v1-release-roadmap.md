@@ -79,6 +79,7 @@ This work assumes the completion of:
 | 16 | [Webhook Verification and Evaluation](#step-16--webhook-verification-and-evaluation) | ✓ |
 | 19 | [Chunked Upload + PSR-14 Events](#slice-19--chunked-upload--psr-14-events) | ✓ |
 | 20 | [Human Code Review & Cleanup Feedback](#slice-20--human-code-review--cleanup-feedback) | Not Started |
+| 20.5 | [Enum Wiring & Hydrator Audit](#slice-205--enum-wiring--hydrator-audit) | Not Started |
 | 21 | [Docblock Quality & Legacy Tag Cleanup](#slice-21--docblock-quality--legacy-tag-cleanup) | Not Started |
 | 22 | [License & Rebrand Preparation](#slice-22--license--rebrand-preparation) | Not Started |
 | 17 | [v1 Release Readiness](#step-17--v1-release-readiness) | Not Started |
@@ -636,6 +637,113 @@ Move `Box\Service\BoxClientFactory` → `Box\Factory\BoxClientFactory`. Rename `
 
 ---
 
+## Slice 20.5 — Enum Wiring & Hydrator Audit
+
+### Status
+- **Not Started**
+
+### Purpose
+Wire the existing orphaned enum classes to their resource setters, create the missing `CollaborationStatus` enum, and verify that the Hydrator handles backed enum properties correctly so API-hydrated objects don't silently break.
+
+> **Note**: `FolderSyncState` is **out of scope**. Box API docs confirm `sync_state` is a legacy field from the discontinued Box Sync client (not Box Drive). It is still accepted by the API but has no meaningful effect in modern integrations. `Folder::classArray` docblock documents this; no enum is warranted.
+
+### Background
+Four enums exist in `src/Enum/`. Only `UserStatus` is wired to a resource (`User::setStatus(?UserStatus)`). The other three are orphaned:
+
+| Enum | Should wire to |
+|---|---|
+| `CollaborationRole` | `Collaboration::setRole` |
+| `SharedLinkAccess` | `SharedLink` (property + setter/getter) |
+| `BoxItemType` | Evaluate — may be documentation-only or used in service layer |
+
+One fixed-set string-validation setter needs an enum created:
+
+| Location | Valid values | New enum |
+|---|---|---|
+| `Collaboration::setStatus` | `accepted`, `pending`, `rejected` | `CollaborationStatus` |
+
+`Folder::classArray`'s `$syncState` parameter is a legacy field from the discontinued Box Sync client — no enum warranted; the docblock already documents this.
+
+### Pre-flight
+
+**Step 1 — Hydrator audit (required before wiring any enum)**
+
+Confirm how the Hydrator handles backed enum properties. `User::setStatus(?UserStatus)` is already wired — test whether the Hydrator correctly calls `UserStatus::from($value)` or fails on a raw string from JSON. If it fails, fix the Hydrator first; all subsequent wiring depends on it.
+
+```
+grep -n "BackedEnum\|from\|tryFrom\|enum" src/Mapper/Hydrator.php
+```
+
+Run `tests/Model/Mapper/HydratorTest.php` with a `User` having a `status` field set to a valid string to verify behavior.
+
+**Step 2 — Wire orphaned enums**
+
+After confirming the Hydrator:
+1. Wire `Collaboration::setRole(?CollaborationRole)` — remove `?string`, update docblock, update callers.
+2. Wire `SharedLink` with `SharedLinkAccess` — evaluate property type and setter/getter.
+3. Evaluate `BoxItemType` — determine if it needs wiring or remains a utility enum.
+
+**Step 3 — Create missing enum**
+
+```php
+// src/Enum/CollaborationStatus.php
+enum CollaborationStatus: string
+{
+    case Accepted = 'accepted';
+    case Pending  = 'pending';
+    case Rejected = 'rejected';
+}
+```
+
+Wire `Collaboration::setStatus(?CollaborationStatus)` — replace string `in_array` validation.
+
+**Step 4 — PathCollection DTO**
+
+Box API returns `path_collection` on both `File` and `Folder` responses as:
+```json
+{ "total_count": 2, "entries": [ { mini-folder }, { mini-folder } ] }
+```
+
+Create `src/Dto/PathCollection.php`:
+```php
+class PathCollection
+{
+    /** @param Folder[] $entries */
+    public function __construct(
+        public readonly int $totalCount,
+        public readonly array $entries,
+    ) {}
+}
+```
+
+- Update `File::setPathCollection` to accept `PathCollection|null` and remove the `// Post-v1:` comment.
+- Update `File::getPathCollection` return type accordingly.
+- Update `Folder` if it also has a `path_collection` field.
+- Verify Hydrator handles nested hydration correctly.
+
+**Step 5 — SharedLink array narrowing**
+
+After confirming the Hydrator correctly hydrates `SharedLink` from array (part of Step 1), narrow `File::setSharedLink` to `?SharedLink` and remove the `// Post-v1:` comment.
+
+**Step 6 — Tests & migration**
+
+- Update any tests passing raw strings to enum-typed setters.
+- Add migration guide entry: callers passing `string` role/status to `Collaboration` setters must switch to the enum.
+- `composer review` must pass.
+
+### Acceptance Criteria
+- `Hydrator` correctly hydrates backed enum properties from API strings (`BackedEnum::tryFrom` or equivalent)
+- `CollaborationRole`, `CollaborationStatus`, `SharedLinkAccess` wired to their resource setters
+- `CollaborationStatus` enum created
+- `BoxItemType` evaluated — decision recorded
+- No raw string `in_array` validation remains in resource setters (excluding `Folder::classArray` `$syncState` — legacy field, no enum warranted)
+- `PathCollection` DTO created; `File::setPathCollection` narrowed
+- `File::setSharedLink` narrowed to `?SharedLink` (pending Hydrator confirmation)
+- `composer review` green
+- Migration guide updated
+
+---
+
 ## Slice 21 — Docblock Quality & Legacy Tag Cleanup
 
 ### Status
@@ -675,11 +783,25 @@ Pre-flight:
 grep -rn "json_encode\|json_decode" src/ --include="*.php"
 ```
 
+#### Legacy Survivor Audit
+Scan `src/` for code or comments that represent pre-v1 legacy paths that survived earlier purges. Specific known items:
+
+- **`Connection::post` `$nameValuePair` / array `$params`**: Both `Connection.php` and `ConnectionInterface.php` carry "will be deprecated in the future" warnings. For a v1 release "future" is now — decide: remove the array-params and `$nameValuePair` paths, or document as intentionally supported and remove the "deprecated" language.
+- **`FileService` / `FolderService` `method_exists($sharedLink, 'toArray')` fallback**: `FileService.php:145` and `FolderService.php:124` contain a guard labeled "Fallback for legacy models that might not be fully hydrated to DTOs yet." `CreateSharedLinkRequest` has `toArray()`, so the branch is live, but the comment implies dead models. Confirm whether the fallback is still needed; remove the comment and tighten the type if not.
+
+Pre-flight:
+```
+grep -rn "deprecated\|legacy\|nameValuePair\|method_exists" src/ --include="*.php"
+```
+
 ### Acceptance Criteria
 - No `@package`/`@subpackage` tags remain in `src/` or `tests/`
 - `@inheritdoc` usage is correct and consistent
 - `ConnectionInterface`/`EntrySource` decision recorded
 - All `json_encode`/`json_decode` calls pass `JSON_THROW_ON_ERROR`
+- `nameValuePair`/array-params decision made and implemented
+- Legacy `method_exists` fallback in `FileService`/`FolderService` resolved
+- No "will be deprecated in the future" language remains in a v1 release
 - `composer review` green
 
 ---
@@ -850,6 +972,8 @@ Move to `docs/archive/prompts/` (Claude Code CLI memory supersedes):
 | JWT / Server-to-Server auth | Required before v1 | Dedicated required v1 step (Steps 14-15) |
 
 ## Deferred / Post-v1 Candidates
+- **Content-MD5 integrity header on file upload**: Box API supports an optional `content-md5` header on `POST /files/content` that Box verifies against the uploaded content. Deferred because computing the MD5 before/during upload adds non-trivial effort for an optional feature. Tracked in `Connection::postFile` via `// Post-v1:` comment.
+- **Multi-file upload convenience method**: No native batch upload endpoint exists in the Box API — multiple files require repeated single-file calls. A PHP loop wrapper on `Client` is trivial but not a v1 gap. Tracked in `Client` via `// Post-v1:` comment.
 - Advanced auto-pagination.
 - Full endpoint parity (all Box APIs).
 - Framework-specific bundles.
