@@ -1,13 +1,15 @@
 # Next Session Plan
 
-**Updated**: 2026-05-16 03:53 (America/Indiana)
+**Updated**: 2026-05-16 04:07 (America/Indiana)
 **Branch**: `release-v1.0.0`
 
 ---
 
 ## Start Here
 
-Slices 20, 20.5, and 21 are complete. PHPCS sniffs for docblock enforcement are wired. **Pick up at Slice 22: License & Rebrand Preparation.**
+Slices 20, 20.5, 21, and the pre-Step-17 polish slice are complete. PHPCS sniffs for docblock enforcement are wired. **Pick up at Slice 22: License & Rebrand Preparation.**
+
+Pre-Step-17 polish covered: `@throws` precision (`uploadFileToBox`), qualifier cleanup in `Client.php`, `ConfigProviderInterface` grouped requirement docs, Hungarian notation removal (`ResponseParser`, `ModelMapper`, `ResponseHeader`, `StatusLine`), `new Foo()->method()` syntax across all factory/service/storage files, `ModelMapper` deleted (inlined into `Hydrator`), style guidance doc updated with `[PHPCS]`/`[Review]` enforcement labels.
 
 ---
 

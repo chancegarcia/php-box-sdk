@@ -1,6 +1,6 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-16 03:53 (America/Indiana)
+- **Timestamp**: 2026-05-16 04:07 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
@@ -52,6 +52,15 @@ Do not prompt about package/repo rename.
 **PHPCS note**
 - `ReferenceUsedNamesOnly` sniff (to enforce no-FQN-when-imported) is a candidate for `phpcs.xml.dist` after the qualifier cleanup is committed. Not yet added.
 - `ForbiddenAnnotations` expansion (`@author`, `@copyright`, `@license`) still deferred until Slice 22 license cleanup is committed.
+
+**Item 7 — `ModelMapper` deleted**
+- `ModelMapper::toClassVar()` was the only caller and was used once in `Hydrator.php`. `toBoxVar()` was dead (zero callers).
+- Inlined as `lcfirst(str_replace('_', '', ucwords($key, '_')))` directly in `Hydrator::hydrate()`.
+- `src/Mapper/ModelMapper.php` deleted. No tests existed for it.
+
+**Item 8 — Factory `@throws ReflectionException` chain (IDE-applied)**
+- IDE auto-applied `@throws ReflectionException` + `use ReflectionException;` to all factory `create*()` methods after the `new Hydrator()->hydrate()` change exposed the missing chain annotation. This is correct per the `@throws` chain coverage rule — `Hydrator::hydrate()` declares `@throws ReflectionException`.
+- Affected: `GroupFactory`, `FolderFactory`, `FileFactory`, `UserFactory`, `TokenFactory`, `CollaborationFactory`, `AuthenticationResponseFactory`, `ConnectionFactory`.
 
 ---
 
