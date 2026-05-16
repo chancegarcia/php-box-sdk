@@ -111,4 +111,6 @@ composer lint      # PHP syntax check
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+Apache 2.0 License. See [LICENSE](LICENSE) for details.
+
+This project was previously distributed under the MIT License. As of v1.0.0 it is relicensed under Apache 2.0.

@@ -52,6 +52,9 @@
                 <element value="@category"/>
                 <element value="@package"/>
                 <element value="@subpackage"/>
+                <element value="@author"/>
+                <element value="@copyright"/>
+                <element value="@license"/>
             </property>
         </properties>
     </rule>
@@ -85,7 +88,6 @@
             <property name="linesCountBetweenDifferentAnnotationsTypes" value="1"/>
             <property name="annotationsGroups" type="array">
                 <element value="@api, @since"/>
-                <element value="@author, @copyright, @license"/>
                 <element value="@var, @param"/>
                 <element value="@throws, @return"/>
             </property>

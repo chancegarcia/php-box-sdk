@@ -3,6 +3,7 @@
 ## v1.0.0
 
 ### Summary
+- Relicensed from MIT to Apache 2.0.
 - Introduced JWT/Server-to-Server (S2S) authentication via `JwtProvider` and `JwtAuthConfig`, supporting enterprise and app-user token exchange without OAuth2 redirects.
 - Added formal token storage with PDO (`TokenStorage`), Filesystem (`FilesystemTokenStorage`), and in-memory (`TokenStorageContainer`) backends behind a unified `TokenStorageInterface`.
 - Added `WebhookVerifier` for HMAC-SHA256 signature verification of incoming Box webhook payloads, with configurable replay-window protection and primary/secondary key rotation support.

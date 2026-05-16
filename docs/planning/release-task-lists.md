@@ -92,6 +92,7 @@ Tasks that must be completed at or immediately before the v1.0.0 tag. These are 
 
 ### Package & Repository Rebrand
 - [ ] **GitHub repo rename** — Rename the repository to match the v1 package name.
-- [ ] **`composer.json` name/URLs** — Update `name`, `homepage`, `support`, and `source` URLs to reflect the new repo/package name.
+- [ ] **`composer.json` name/URLs** — Update `name`, `homepage`, `support.source`, `support.docs`, and `support.issues` URLs to reflect the new repo/package name.
+- [ ] **Remote URL update** — After GitHub rename, update the git remote: `git remote set-url origin <new-url>`. Verify CI badge URLs in `README.md` point to the new repo path.
 - [ ] **Internal docs** — Search `docs/` and `README.md` for hardcoded old repo/package name references and update them.
-- [ ] **Packagist submission** — Submit the renamed package to Packagist after the repo rename.
+- [ ] **Packagist submission** — Submit the renamed package to Packagist after the repo rename. See `docs/planning/packagist-rebrand-guide.md` for step-by-step instructions.

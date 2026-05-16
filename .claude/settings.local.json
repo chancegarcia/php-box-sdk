@@ -15,7 +15,12 @@
       "Bash(xargs -0 perl -pi -e '/^\\\\s+\\\\* @\\(package|subpackage\\)\\\\b/d')",
       "Bash(perl -ne 'print if /\\\\@package/' src/Client.php)",
       "Bash(xargs -0 perl -pi -e '$_ = \"\" if /\\\\s*\\\\*\\\\s+@\\(package|subpackage\\)\\\\b/')",
-      "Bash(python3 *)"
+      "Bash(python3 *)",
+      "Bash(perl -0pe 's|/\\\\*\\\\*\\(?:.|\\\\n\\)*?SOFTWARE\\\\.\\\\n \\\\*/\\\\n\\\\n||' /Users/chance/PhpstormProjects/mine/box-sdk/src/Client.php)",
+      "Bash(perl -0pe 's|/\\\\*\\\\*\\(?:.|\\\\n\\)*?SOFTWARE\\\\.\\\\n \\\\*/\\\\n\\\\n||' /Users/chance/PhpstormProjects/mine/box-sdk/src/Storage/Token/Container/TokenStorageContainer.php)",
+      "Bash(perl -0pe 's|/\\\\*\\\\*.*?SOFTWARE\\\\.\\\\n \\\\*/\\\\n\\\\n||s' /Users/chance/PhpstormProjects/mine/box-sdk/src/Client.php)",
+      "Bash(perl -0pe 's|/\\\\*\\\\*.*?SOFTWARE\\\\.\\\\n \\\\*/\\\\n\\\\n||s' /Users/chance/PhpstormProjects/mine/box-sdk/src/Storage/Token/Container/TokenStorageContainer.php)",
+      "Bash(xargs perl -i -0pe 's|/\\\\*\\\\*.*?SOFTWARE\\\\.\\\\n \\\\*/\\\\n\\\\n||s')"
     ]
   }
 }
