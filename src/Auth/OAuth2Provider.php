@@ -9,7 +9,7 @@ use Box\Exception\BoxException;
 
 class OAuth2Provider implements OAuth2ProviderInterface
 {
-    public const AUTH_URI = 'https://account.box.com/api/oauth2/authorize';
+    public const string AUTH_URI = 'https://account.box.com/api/oauth2/authorize';
 
     public function __construct(
         protected ConnectionInterface $connection,
@@ -51,6 +51,9 @@ class OAuth2Provider implements OAuth2ProviderInterface
         $this->redirectUri = $redirectUri;
     }
 
+    /**
+     * @throws BoxException
+     */
     public function exchangeAuthorizationCode(string $code): TokenInterface
     {
         $params = [
@@ -74,6 +77,9 @@ class OAuth2Provider implements OAuth2ProviderInterface
         return $this->tokenFactory->createToken($data);
     }
 
+    /**
+     * @throws BoxException
+     */
     public function refreshToken(TokenInterface $token, array $options = []): TokenInterface
     {
         $params = array_merge([

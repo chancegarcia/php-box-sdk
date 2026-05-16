@@ -77,6 +77,8 @@ This work assumes the completion of:
 | 15.5 | [Box API Coverage Alignment](#step-155--box-api-coverage-alignment) | ✓ |
 | 15.6 | [API Fixture Realism and Contract Alignment](#step-156--api-fixture-realism-and-contract-alignment) | ✓ |
 | 16 | [Webhook Verification and Evaluation](#step-16--webhook-verification-and-evaluation) | ✓ |
+| 19 | [Chunked Upload + PSR-14 Events](#slice-19--chunked-upload--psr-14-events) | ✓ |
+| 20 | [Human Code Review & Cleanup Feedback](#slice-20--human-code-review--cleanup-feedback) | Not Started |
 | 17 | [v1 Release Readiness](#step-17--v1-release-readiness) | Not Started |
 | 18 | [Documentation Cleanup and Organization](#step-18--documentation-cleanup-and-organization) | Not Started |
 
@@ -570,6 +572,65 @@ Implement Box webhook signature verification and evaluate whether a full `Webhoo
 ### Acceptance Criteria
 - Verification logic implemented and tested with mock signatures.
 - Decision on v1 Webhook management recorded in `decision-index.md`.
+
+---
+
+## Slice 19 — Chunked Upload + PSR-14 Events
+
+### Status
+- **Complete** ✓
+
+### Summary
+Added chunked file upload (low-level session API on `FileService` + `chunkedUpload()` orchestrator on `Client`) and PSR-14 event infrastructure across the full SDK surface. All 9 gates complete:
+
+1. PSR-14 infrastructure ✓
+2. FileStream additions ✓
+3. DTOs ✓
+4. FileService low-level API ✓
+5. Orchestrator ✓
+6. Client facade ✓
+7. Tests ✓
+8. Documentation ✓
+9. Additional PSR-14 events (token lifecycle, `FileUploaded`, `RateLimitHit`, `JwtTokenGenerated`) ✓
+
+Also included: typed return refactor (`array` → typed objects) for 7 service methods; `PagedResult<T>` and `GroupMembership` resources; `api-coverage.md` user doc; migration guide Section 9.
+
+---
+
+## Slice 20 — Human Code Review & Cleanup Feedback
+
+### Status
+- **Not Started**
+
+### Purpose
+Apply cleanup items identified during human code review of Slice 19 output. No new features — correctness, typing, and style alignment only.
+
+### Scope
+
+#### Typed Constants
+Audit `src/` for untyped class constants and add PHP 8.3+ type declarations where possible. Example: `public const string ENDPOINT = '...'`.
+
+#### Type Coverage Audit
+Review `src/` for remaining `mixed`, untyped properties, untyped return types, and untyped parameters. Tighten where the actual type is known and not intentionally `mixed`.
+
+#### Property Hooks
+Audit DTO and value-object classes (`src/Dto/`, `src/Resource/`, `src/Connection/Token/`) for get/set method pairs that qualify for replacement with PHP 8.4 property hooks. Apply where all conditions hold:
+1. Class is a DTO or value object (data-only; no interface method contracts declaring getters/setters)
+2. Property is part of the public API (accessed as `$obj->prop`, not `$obj->getProp()`)
+3. Hook logic is lightweight — normalization, type coercion, or a simple guard; no service calls, no side-effects beyond the property itself
+4. No fluent setter chain (`return $this`) needed
+
+Do not apply hooks where the class implements an interface with getter/setter method contracts, where setters have side-effects, or where complexity warrants a named method.
+
+#### BoxClientFactory Namespace Move *(may be its own slice)*
+Move `Box\Service\BoxClientFactory` → `Box\Factory\BoxClientFactory`. Rename `createClient()` → `createOAuth2Client()`. Update `BoxClientFactoryInterface` in tandem. Update all callers, tests, and migration guide.
+
+### Acceptance Criteria
+- All touched constants have type declarations
+- No unintentional `mixed` in `src/` (documented exceptions acceptable)
+- Qualifying DTOs/VOs use property hooks
+- `composer review` green
+- Migration guide updated if any public API changes
 
 ---
 

@@ -572,6 +572,45 @@ $payload = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
 
 ---
 
+## 14. Events Reference
+
+The SDK dispatches PSR-14 events at key lifecycle boundaries. Inject any PSR-14 `EventDispatcherInterface` via `Client::setEventDispatcher()` — the dispatcher is automatically propagated to the connection and any JWT provider.
+
+```php
+$client->setEventDispatcher($dispatcher);
+```
+
+### Auth events (`Box\Event\Auth`)
+
+| Event class | Payload | When it fires |
+|---|---|---|
+| `TokenExchanged` | `TokenInterface $token` | After `Client::exchangeAuthorizationCodeForToken()` completes |
+| `TokenRefreshed` | `TokenInterface $token` | After `Client::refreshToken()` completes |
+| `TokenRevoked` | `TokenInterface $token` | After `Client::destroyToken()` calls the provider's revoke endpoint |
+| `TokenLoadedFromStorage` | `TokenInterface $token` | After `Client::loadTokenFromStorage()` returns a non-null token |
+| `TokenSavedToStorage` | `TokenInterface $token` | After `Client::saveTokenToStorage()` writes to the configured storage |
+| `JwtTokenGenerated` | `TokenInterface $token` | After `JwtProvider` exchanges a JWT assertion for an access token |
+
+### File events (`Box\Event\File`)
+
+| Event class | Payload | When it fires |
+|---|---|---|
+| `FileUploaded` | `File $file` | After `FileService::uploadFile()` succeeds (standard single-request upload) |
+| `UploadSessionCreated` | `UploadSession $session` | After a chunked upload session is opened |
+| `UploadPartUploaded` | `UploadPart $part`, `int $partNumber`, `int $totalParts` | After each part is confirmed by Box |
+| `UploadSessionCommitted` | `File $file` | After the chunked upload session is committed successfully |
+| `UploadSessionAborted` | `string $sessionId`, `\Throwable $error` | After the session is aborted due to an error |
+
+### HTTP events (`Box\Event\Http`)
+
+| Event class | Payload | When it fires |
+|---|---|---|
+| `RateLimitHit` | `int $retryAfter` | Immediately before a `RateLimitException` (HTTP 429) is thrown; `$retryAfter` is seconds from the `Retry-After` header (0 if absent) |
+
+> **v1.1 note:** `TokenRefreshed` and `RateLimitHit` are the natural hook points for implementing auto-token-refresh and auto-retry loops, which are deferred to v1.1.
+
+---
+
 **See also:**
 - [README.md](../README.md)
 - [CLI Test Harness Guide](cli-test-harness.md)

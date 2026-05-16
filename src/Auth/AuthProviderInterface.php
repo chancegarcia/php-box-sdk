@@ -6,8 +6,8 @@ use Box\Connection\Token\TokenInterface;
 
 interface AuthProviderInterface
 {
-    public const TOKEN_URI  = 'https://api.box.com/oauth2/token';
-    public const REVOKE_URI = 'https://api.box.com/oauth2/revoke';
+    public const string TOKEN_URI  = 'https://api.box.com/oauth2/token';
+    public const string REVOKE_URI = 'https://api.box.com/oauth2/revoke';
 
     /**
      * Build the authorization URL.

@@ -17,6 +17,9 @@ class ClientConfig
     ) {
     }
 
+    /**
+     * @throws BoxException
+     */
     public static function fromArray(array $options): self
     {
         $allowed = ['oAuth2ClientId', 'oAuth2ClientSecret', 'oAuth2RedirectUri', 'oAuth2AuthCode', 'oAuth2State'];

@@ -6,7 +6,6 @@ namespace Box\Tests\Service\Collaboration;
 
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
-use Box\Exception\BoxResponseException;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Dto\PagedResult;
 use Box\Resource\Collaboration;

@@ -80,3 +80,18 @@ This document details the planned tasks for the `v0.11` transition release and t
 - [x] Completed: Remove custom collection classes in favor of Doctrine Collections. *Implementation: `EventResponse` uses Doctrine Collections; `EventResponseMapper` handles mapping.*
 - [-] Deferred: Use PHP Enums for roles, statuses, and types. *Deferred to post-v1.*
 - [-] Deferred: Add handling for Box-specific errors like `item_name_in_use` (409). *Deferred to post-v1.*
+
+---
+
+## v1.0.0 Pre-Release Checklist
+
+Tasks that must be completed at or immediately before the v1.0.0 tag. These are separate from the refactor slices tracked above and from Step 17 documentation gates.
+
+### Legal / Housekeeping
+- [ ] **Copyright dates** — Audit all source files (`src/`, `tests/`, `bin/`) and update copyright year ranges to include 2026.
+
+### Package & Repository Rebrand
+- [ ] **GitHub repo rename** — Rename the repository to match the v1 package name.
+- [ ] **`composer.json` name/URLs** — Update `name`, `homepage`, `support`, and `source` URLs to reflect the new repo/package name.
+- [ ] **Internal docs** — Search `docs/` and `README.md` for hardcoded old repo/package name references and update them.
+- [ ] **Packagist submission** — Submit the renamed package to Packagist after the repo rename.

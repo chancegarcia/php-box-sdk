@@ -47,8 +47,10 @@ use Box\Http\Response\BoxResponseInterface;
 use Box\Http\Transport\GuzzleTransport;
 use Box\Http\Transport\TransportInterface;
 use Box\Mapper\Hydrator;
+use Box\Event\Http\RateLimitHit;
 use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxApiErrorTrait;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -78,6 +80,18 @@ class Connection implements ConnectionInterface
     protected AuthenticationResponseFactoryInterface $authenticationResponseFactory;
 
     private bool $disableSslVerification = false;
+
+    private ?EventDispatcherInterface $eventDispatcher = null;
+
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher): void
+    {
+        $this->eventDispatcher = $dispatcher;
+    }
+
+    public function getEventDispatcher(): ?EventDispatcherInterface
+    {
+        return $this->eventDispatcher;
+    }
 
     public function __construct(?array $options = null, ?AuthenticationResponseFactoryInterface $authenticationResponseFactory = null)
     {
@@ -112,6 +126,9 @@ class Connection implements ConnectionInterface
         return $this->request('GET', $uri);
     }
 
+    /**
+     * @throws ApiException
+     */
     public function request(string $method, string $uri, array $options = []): BoxResponseInterface
     {
         $transport = $this->getTransport();
@@ -132,6 +149,9 @@ class Connection implements ConnectionInterface
         $response = $transport->request($method, $uri, $options);
 
         if (true === ($options['throw_on_error'] ?? false) && !$response->isSuccessful()) {
+            if ((null !== $this->eventDispatcher) && 429 === $response->getStatusCode()) {
+                $this->eventDispatcher->dispatch(new RateLimitHit($response->getRetryAfter() ?? 0));
+            }
             throw $this->createApiException($response);
         }
 

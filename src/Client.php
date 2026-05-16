@@ -32,9 +32,16 @@
 namespace Box;
 
 use Box\Auth\AuthProviderInterface;
+use Box\Auth\Jwt\JwtProvider;
 use Box\Auth\OAuth2Provider;
 use Box\Auth\OAuth2ProviderInterface;
+use Box\Connection\Connection;
 use Box\Connection\ConnectionInterface;
+use Box\Event\Auth\TokenExchanged;
+use Box\Event\Auth\TokenRefreshed;
+use Box\Event\Auth\TokenRevoked;
+use Box\Event\Auth\TokenLoadedFromStorage;
+use Box\Event\Auth\TokenSavedToStorage;
 use Box\Connection\Token\TokenInterface;
 use Box\Dto\PagedResult;
 use Box\Dto\TokenStorageContext;
@@ -489,12 +496,17 @@ class Client implements LoggerAwareInterface
     /**
      * @param string|FileStream $file
      * @param string|int $parentId
-     * @return array
+     * @return File
      * @throws BoxException
      */
-    public function uploadFileToBox(string|FileStream $file, string|int $parentId = 0): array
+    public function uploadFileToBox(string|FileStream $file, string|int $parentId = 0): File
     {
-        $fileService = $this->configureService($this->serviceRegistry->getFileService());
+        $fileService = $this->serviceRegistry->getFileService();
+        $this->configureService($fileService);
+
+        if (null !== $this->eventDispatcher) {
+            $fileService->setEventDispatcher($this->eventDispatcher);
+        }
 
         return $fileService->uploadFile($file, $parentId);
     }
@@ -523,11 +535,16 @@ class Client implements LoggerAwareInterface
         $this->setToken($token);
         $this->saveTokenToStorage($token);
 
+        if (null !== $this->eventDispatcher) {
+            $this->eventDispatcher->dispatch(new TokenExchanged($token));
+        }
+
         return $token;
     }
 
     /**
      * @return TokenInterface
+     * @throws BoxException
      */
     public function refreshToken(): TokenInterface
     {
@@ -547,6 +564,10 @@ class Client implements LoggerAwareInterface
         $this->setToken($newToken);
         $this->saveTokenToStorage($newToken);
 
+        if (null !== $this->eventDispatcher) {
+            $this->eventDispatcher->dispatch(new TokenRefreshed($newToken));
+        }
+
         return $newToken;
     }
 
@@ -558,6 +579,10 @@ class Client implements LoggerAwareInterface
     public function destroyToken(TokenInterface $token): array
     {
         $this->getAuthProvider()->revokeToken($token);
+
+        if (null !== $this->eventDispatcher) {
+            $this->eventDispatcher->dispatch(new TokenRevoked($token));
+        }
 
         return ['success' => true];
     }
@@ -654,6 +679,10 @@ class Client implements LoggerAwareInterface
     public function setAuthProvider(AuthProviderInterface $authProvider): void
     {
         $this->authProvider = $authProvider;
+
+        if ($authProvider instanceof JwtProvider && null !== $this->eventDispatcher) {
+            $authProvider->setEventDispatcher($this->eventDispatcher);
+        }
     }
 
     public function getAuthProvider(): AuthProviderInterface
@@ -710,6 +739,10 @@ class Client implements LoggerAwareInterface
     public function setConnection(?ConnectionInterface $connection = null): void
     {
         $this->connection = $connection;
+
+        if ($connection instanceof Connection && null !== $this->eventDispatcher) {
+            $connection->setEventDispatcher($this->eventDispatcher);
+        }
     }
 
     public function getConnection(): ConnectionInterface
@@ -810,6 +843,10 @@ class Client implements LoggerAwareInterface
 
         if (null !== $token) {
             $this->setToken($token);
+
+            if (null !== $this->eventDispatcher) {
+                $this->eventDispatcher->dispatch(new TokenLoadedFromStorage($token));
+            }
         }
 
         return $token;
@@ -833,6 +870,10 @@ class Client implements LoggerAwareInterface
         }
 
         $storage->storeToken($token, $context);
+
+        if (null !== $this->eventDispatcher) {
+            $this->eventDispatcher->dispatch(new TokenSavedToStorage($token));
+        }
     }
 
     /**
@@ -902,6 +943,14 @@ class Client implements LoggerAwareInterface
     public function setEventDispatcher(EventDispatcherInterface $dispatcher): void
     {
         $this->eventDispatcher = $dispatcher;
+
+        if ($this->connection instanceof Connection) {
+            $this->connection->setEventDispatcher($dispatcher);
+        }
+
+        if ($this->authProvider instanceof JwtProvider) {
+            $this->authProvider->setEventDispatcher($dispatcher);
+        }
     }
 
     public function getEventDispatcher(): ?EventDispatcherInterface

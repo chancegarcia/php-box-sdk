@@ -4,13 +4,17 @@ namespace Box\Auth\Jwt;
 
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
+use Box\Event\Auth\JwtTokenGenerated;
 use Box\Exception\BoxException;
 use Box\Factory\TokenFactoryInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 class JwtProvider implements JwtProviderInterface
 {
     private ?string $lastSubjectId = null;
     private ?string $lastSubjectType = null;
+
+    private ?EventDispatcherInterface $eventDispatcher = null;
 
     public function __construct(
         protected ConnectionInterface $connection,
@@ -18,6 +22,16 @@ class JwtProvider implements JwtProviderInterface
         protected JwtAuthConfig $config,
         protected JwtAssertionGeneratorInterface $assertionGenerator
     ) {
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher): void
+    {
+        $this->eventDispatcher = $dispatcher;
+    }
+
+    public function getEventDispatcher(): ?EventDispatcherInterface
+    {
+        return $this->eventDispatcher;
     }
 
     public function buildAuthorizationUrl(array $options = []): string
@@ -87,6 +101,12 @@ class JwtProvider implements JwtProviderInterface
             throw new BoxException('Invalid response from Box API during JWT assertion exchange');
         }
 
-        return $this->tokenFactory->createToken($data);
+        $token = $this->tokenFactory->createToken($data);
+
+        if (null !== $this->eventDispatcher) {
+            $this->eventDispatcher->dispatch(new JwtTokenGenerated($token));
+        }
+
+        return $token;
     }
 }

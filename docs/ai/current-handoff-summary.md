@@ -1,24 +1,22 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-15 05:10 (America/Indiana)
+- **Timestamp**: 2026-05-15 20:25 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
-- **Roadmap Position**: Slice 19 Gates 1–8 complete. Gate 9 is next.
-- **Test baseline**: 342 tests, 958 assertions
-- **v1 remaining**: Slice 19 Gate 9 (additional PSR-14 events) → BoxClientFactory namespace + rename slice → package/repo rename (user-driven)
+- **Roadmap Position**: Slice 19 all 9 gates complete. Slice 20 is next.
+- **Test baseline**: 368 tests, 992 assertions
+- **v1 remaining**: Slice 20 (review cleanup) → Step 17 (release readiness) → Step 18 (doc cleanup) → package/repo rename (user-driven)
 
 ## Next Action
 
-**Gate 9** — additional PSR-14 events (token lifecycle, FileUploaded, RateLimitHit, JwtTokenGenerated).
+**Slice 20** — human code review & cleanup feedback:
+1. Typed constants audit (`src/`)
+2. Type coverage audit (tighten `mixed`, untyped properties/params/returns)
+3. Property hooks on qualifying DTOs/value objects
+4. BoxClientFactory namespace move (`Box\Service` → `Box\Factory`) + `createClient()` → `createOAuth2Client()` rename
 
-Read `docs/ai/next-session-plan.md` for full Gate 9 scope.
-
-**Before executing**, verify two things in source:
-1. Where the 429 boundary lives (probably `Service::handleBoxResponse` — grep for `429` or `RateLimitException`)
-2. How `JwtProvider` will receive the dispatcher — does it already see the `Client`'s dispatcher, or does it need injection?
-
-**Tooling note**: run phpcbf via `composer cs:fix`, not `./vendor/bin/phpcbf` directly — the composer shortcut is pre-approved in `.claude/settings.local.json`.
+Read `docs/ai/next-session-plan.md` for full Slice 20 scope and pre-flight commands.
 
 Do not prompt about package/repo rename.
 
@@ -26,52 +24,46 @@ Do not prompt about package/repo rename.
 
 ## Completed This Session (2026-05-15)
 
-### Pre-Gate-9 Documentation
-- **`docs/user/api-coverage.md`** — Created; lists every supported Box API endpoint per service class with Method, HTTP, Box Endpoint, Notes columns. Includes chunked upload low-level session API sub-section. Search entry notes why raw array return is deferred (heterogeneous results, no discriminated union).
-- **`docs/README.md`** — Added link to `api-coverage.md` under User Documentation.
+### Pre-release task list
+- **`docs/planning/release-task-lists.md`** — Added `v1.0.0 Pre-Release Checklist` section (separate from v1 refactor steps): copyright date audit, GitHub repo rename, composer.json name/URL update, internal doc update, Packagist submission.
 
-### Typed Return Refactor (raw `array` → typed objects across 7 service methods)
+### Gate 9 — Additional PSR-14 Events (complete)
 
-New types:
-- **`src/Dto/PagedResult.php`** — `@template T of object` readonly DTO; properties: `entries` (`T[]`), `totalCount`, `offset`, `limit`.
-- **`src/Resource/GroupMembership.php`** — new resource; properties: `type`, `id`, `user`, `group`, `role`, `createdAt`, `modifiedAt`.
-- **`Service::hydratePagedResult(array $data, string $entryClass): PagedResult`** — protected helper on base `Service`; used by all 5 collection methods.
+**New event classes:**
 
-Methods updated (return type before → after):
-
-| Method | Before | After |
+| Class | Namespace | Payload |
 |---|---|---|
-| `FileService::uploadFile()` | `array` | `File` |
-| `FolderService::updateFolder()` | `array` | `Folder` |
-| `UserService::listUsers()` | `array` | `PagedResult<User>` |
-| `GroupService::listGroups()` | `array` | `PagedResult<Group>` |
-| `GroupService::addGroupMember()` | `array` | `GroupMembership` |
-| `GroupService::getGroupMembershipList()` | `array` | `PagedResult<GroupMembership>` |
-| `CollaborationService::getFolderCollaborations()` | `array` | `PagedResult<Collaboration>` |
+| `TokenExchanged` | `Box\Event\Auth` | `TokenInterface $token` |
+| `TokenRefreshed` | `Box\Event\Auth` | `TokenInterface $token` |
+| `TokenRevoked` | `Box\Event\Auth` | `TokenInterface $token` |
+| `TokenLoadedFromStorage` | `Box\Event\Auth` | `TokenInterface $token` |
+| `TokenSavedToStorage` | `Box\Event\Auth` | `TokenInterface $token` |
+| `JwtTokenGenerated` | `Box\Event\Auth` | `TokenInterface $token` |
+| `FileUploaded` | `Box\Event\File` | `File $file` |
+| `RateLimitHit` | `Box\Event\Http` | `int $retryAfter` |
 
-`FolderService::getFolderCollaborations()` **removed** — was a duplicate; `CollaborationService` is canonical. `FolderServiceInterface` updated to match.
+**Wiring:**
+- `Client.php` — fires `TokenExchanged`, `TokenRefreshed`, `TokenRevoked`, `TokenLoadedFromStorage`, `TokenSavedToStorage`; propagates dispatcher to `Connection` and `JwtProvider` in `setEventDispatcher()`, `setConnection()`, and `setAuthProvider()`
+- `FileService::uploadFile()` — fires `FileUploaded` after hydrating the result
+- `Connection::request()` — fires `RateLimitHit` before throwing `RateLimitException` on 429; optional `setEventDispatcher()` added to `Connection` (not to `ConnectionInterface`)
+- `JwtProvider::exchangeAssertion()` — fires `JwtTokenGenerated` after `tokenFactory->createToken()`; optional `setEventDispatcher()` added to `JwtProvider`
 
-`Client.php` updated: `updateBoxFolder()` → `Folder`; `getFolderCollaborations()` → `PagedResult<Collaboration>`.
+**Also fixed:** `Client::uploadFileToBox()` return type corrected from `array` to `File` (mismatch introduced in the previous session's typed return refactor); dispatcher now propagated to FileService in `uploadFileToBox()` matching the pattern in `chunkedUpload()`.
 
-### Migration Guide Updated
-- **`docs/migration/upgrading-0.11-to-1.0.md`** — Added Section 9 (Service Method Return Type Changes) with full table, `PagedResult<T>` and `GroupMembership` introductions, `getFolderCollaborations` removal note, and Client facade updates. "What Stayed the Same" corrected to distinguish single-resource reads (unchanged) from collection/mutating methods (updated).
+**Tests added (26 new assertions):**
+- `tests/Event/EventConstructionTest.php` — 9 construction tests for all 8 new event classes
+- `tests/Service/File/FileUploadedEventTest.php` — 3 tests for FileUploaded dispatch
+- `tests/Connection/RateLimitHitEventTest.php` — 4 tests for RateLimitHit dispatch
+- `tests/Auth/Jwt/JwtTokenGeneratedEventTest.php` — 3 tests for JwtTokenGenerated dispatch
+- `tests/Client/TokenLifecycleEventTest.php` — 6 tests for token lifecycle events
 
-### Legacy Regression Tests Deleted
-- `tests/Resource/LegacyRemovalTest.php` — deleted (tested that old `Box\Model\*` classes don't exist)
-- `tests/Resource/UserMigrationTest.php` — deleted (tested that old `Box\User\*` classes don't exist)
-- `testServiceDoesNotDependOnLegacyUserModel` removed from `UserServiceTest`
-
-Tests that cover **current** behavior retained and updated to assert typed returns.
-
-Two tests with "legacy" in their name were verified to test current valid behavior and are intentionally kept:
-- `BoxResponseTest::testConstructFromLegacyInputs` — tests `BoxResponse` constructed from raw content+header strings (supported constructor path)
-- `FileServiceTest::testCreateSharedLinkWithLegacySharedLink` — tests passing a `SharedLink` object to `createSharedLink()` (valid current type in the signature)
+**Docs:** Added §14 Events Reference to `docs/user/programmatic-usage.md` — full table of all dispatched events, payloads, and fire conditions; includes v1.1 note for auto-retry/auto-refresh hooks.
 
 ---
 
-## Slice 19 — Chunked Upload + PSR-14 Events
+## Slice 19 — Chunked Upload + PSR-14 Events [COMPLETE ✓]
 
-9-gate plan in `docs/ai/next-session-plan.md`. Gates in order:
+All 9 gates:
 1. PSR-14 infrastructure ✅
 2. FileStream additions ✅
 3. DTOs ✅
@@ -80,7 +72,7 @@ Two tests with "legacy" in their name were verified to test current valid behavi
 6. Client facade ✅
 7. Tests ✅
 8. Documentation ✅
-9. Additional PSR-14 events — token lifecycle, FileUploaded, RateLimitHit, JwtTokenGenerated
+9. Additional PSR-14 events ✅
 
 ---
 
@@ -94,19 +86,19 @@ Two tests with "legacy" in their name were verified to test current valid behavi
 - JWT CLI: `box:jwt:token` (enterprise) / `box:jwt:token --user-id=<ID>` (app user).
 - `BoxApiErrorTrait::error()` return type is `never` — always throws.
 - Webhook signing: `Box\Webhook\WebhookVerifier`; formula `base64(HMAC-SHA256(body + timestamp, key))`; CRUD deferred.
-- PSR-14: Optional `EventDispatcherInterface` injection on `Client` — same pattern as PSR-3 logger.
+- PSR-14: Optional `EventDispatcherInterface` injection on `Client` — same pattern as PSR-3 logger. Dispatcher propagated to `Connection` and `JwtProvider` via `instanceof` checks (not interface-enforced — pragmatic for v1).
 - Chunked upload: low-level session API public on `FileService`; orchestrator on `FileService` + `Client` facade.
 - Chunked upload part SHA1: `base64_encode(sha1($chunk, true))` — raw binary flag required.
 - Chunked upload whole-file SHA1: incremental via `hash_init/update/final`.
-- Auto-retry / auto-token-refresh: **not implemented**; deferred to v1.1. Only `RateLimitException` exists.
-- `ArrayConfigProvider`: good idea, deferred to v1.1 (confirmed this session).
-- `SearchService::search` returns raw `array` — intentional; Box returns heterogeneous entries (files, folders, web links) that cannot be strongly typed; deferred to future minor release.
-- `PagedResult<T>` (`Box\Dto\PagedResult`) and `GroupMembership` (`Box\Resource\GroupMembership`) are new in this session.
+- Auto-retry / auto-token-refresh: **not implemented**; deferred to v1.1. `RateLimitHit` and `TokenRefreshed` events are the hook points.
+- `ArrayConfigProvider`: good idea, deferred to v1.1.
+- `SearchService::search` returns raw `array` — intentional; Box returns heterogeneous entries.
+- `PagedResult<T>` (`Box\Dto\PagedResult`) and `GroupMembership` (`Box\Resource\GroupMembership`) added in previous session.
 
 ---
 
 ## Deferred (Post-Slice-19)
-- `llms.txt` — deferred to v1.1 or v1.2. Do not add to Gate 8.
-- **PHPDoc quality audit + PHPStan level bump** — audit `T[]` annotations, upgrade to `list<T>` or `array<K, V>`; bump PHPStan level after. Full codebase review required. Post-v1.
-- **`BoxClientFactory` namespace move** — currently `Box\Service\BoxClientFactory`; belongs in `Box\Factory`. Breaking change. Slot as own slice after Slice 19.
+- `llms.txt` — deferred to v1.1 or v1.2.
+- **PHPDoc quality audit + PHPStan level bump** — post-v1.
+- **`BoxClientFactory` namespace move** — currently `Box\Service\BoxClientFactory`; belongs in `Box\Factory`. Breaking change. Own slice after Slice 19.
 - **`createOAuth2Client()` rename** — rename `BoxClientFactory::createClient()` to `createOAuth2Client()`. Same slice as namespace move. `BoxClientFactoryInterface` must update in tandem.

@@ -90,7 +90,6 @@ class FolderService extends Service implements FolderServiceInterface
     /**
      * @param Folder $folder
      * @param string|bool|null $ifMatch
-     *
      * @return Folder
      * @throws BoxResponseException
      * @throws JsonException

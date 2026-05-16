@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace Box\Auth\Jwt;
 
 use Box\Exception\BoxException;
+use Random\RandomException;
 
 class JwtAssertionGenerator implements JwtAssertionGeneratorInterface
 {
+    /**
+     * @throws RandomException
+     * @throws BoxException
+     */
     public function generate(JwtAuthConfig $config, string $subjectId, string $subjectType): string
     {
         if ('enterprise' !== $subjectType && 'user' !== $subjectType) {

@@ -38,6 +38,7 @@ namespace Box\Service\File;
 use Box\Dto\File\Request\CreateSharedLinkRequest;
 use Box\Dto\File\UploadPart;
 use Box\Dto\File\UploadSession;
+use Box\Event\File\FileUploaded;
 use Box\Event\File\UploadPartUploaded;
 use Box\Event\File\UploadSessionAborted;
 use Box\Event\File\UploadSessionCommitted;
@@ -150,7 +151,6 @@ class FileService extends Service implements FileServiceInterface
     /**
      * @param string|FileStream $file
      * @param string|int $parentId
-     *
      * @return File
      * @throws BoxResponseException
      */
@@ -160,7 +160,13 @@ class FileService extends Service implements FileServiceInterface
         $response = $this->getConnection()->postFile($uri, $file, $parentId);
         $data = $this->handleBoxResponse($response, 'flat');
 
-        return $this->hydrate(File::class, $data['entries'][0]);
+        $uploadedFile = $this->hydrate(File::class, $data['entries'][0]);
+
+        if (null !== $this->eventDispatcher) {
+            $this->eventDispatcher->dispatch(new FileUploaded($uploadedFile));
+        }
+
+        return $uploadedFile;
     }
 
     /**

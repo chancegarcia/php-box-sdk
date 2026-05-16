@@ -1,74 +1,66 @@
 # Next Session Plan
 
-**Updated**: 2026-05-15 05:10 (America/Indiana)
+**Updated**: 2026-05-15 20:25 (America/Indiana)
 **Branch**: `release-v1.0.0`
 
 ---
 
 ## Start Here
 
-`docs/user/api-coverage.md` is done. Gates 1–8 are complete. Pre-Gate-9 cleanup verified complete (search note, migration guide, legacy tests).
+Slice 19 is complete. All 9 gates done.
 
-**Only task: Gate 9** — additional PSR-14 events.
-
-**Before executing**, verify two things in source:
-1. Where the 429 boundary lives — grep for `429` or `RateLimitException` in `src/`. Likely `Service::handleBoxResponse`.
-2. How `JwtProvider` will receive the event dispatcher — does it already see the `Client`'s dispatcher, or does it need injection?
-
-**Tooling**: use `composer cs:fix` (not `./vendor/bin/phpcbf`) — pre-approved in `.claude/settings.local.json`.
+**Slice 20 is next** — human code review & cleanup feedback. The BoxClientFactory namespace move is part of Slice 20 scope (or may be broken out as its own slice if it grows).
 
 ---
 
-## Gate 9: Additional PSR-14 Events
+## Slice 20 Scope
 
-Extend the event infrastructure beyond chunked upload to cover the rest of the SDK surface. Event classes go in `src/Event/` under the namespace that matches the firing site.
+### 1. Typed Constants
+Audit `src/` for untyped class constants. Add PHP 8.3+ type declarations wherever the constant has a concrete scalar type. Example:
+```php
+public const string ENDPOINT = 'https://api.box.com/2.0/files';
+```
+Pre-flight: `grep -rn "const " src/ --include="*.php" | grep -v "const string\|const int\|const bool\|const float\|const array"` to find candidates.
 
-**Token lifecycle** — `src/Event/Auth/` — wire into `Client.php`:
-- `TokenExchanged` — holds `TokenInterface $token`; fired after `exchangeAuthorizationCodeForToken()` succeeds
-- `TokenRefreshed` — holds `TokenInterface $token`; fired after `refreshToken()` succeeds; primary hook point for v1.1 auto-refresh
-- `TokenRevoked` — holds `TokenInterface $token`; fired after `destroyToken()` succeeds
-- `TokenLoadedFromStorage` — holds `TokenInterface $token`; fired after `loadTokenFromStorage()` returns a token
-- `TokenSavedToStorage` — holds `TokenInterface $token`; fired after `saveTokenToStorage()` writes
+### 2. Type Coverage Audit
+Review `src/` for untyped or `mixed` properties, parameters, and return types. Tighten where the actual type is known. Documented exceptions (e.g., intentional `mixed` for legacy hydration) are acceptable — just confirm they're intentional.
 
-**Standard file upload** — `src/Event/File/` — wire into `FileService::uploadFile()`:
-- `FileUploaded` — holds `\Box\Resource\File $file`; gives consumers a uniform event surface across both upload paths
+### 3. Property Hooks on DTOs / Value Objects
+Audit classes in `src/Dto/`, `src/Resource/`, `src/Connection/Token/` for simple get/set pairs that qualify for PHP 8.4 property hooks. Apply when:
+- Class is data-only (no interface method contracts declaring getters/setters)
+- Property is public API (`$obj->prop` access is natural)
+- Hook logic is lightweight (normalize/coerce/guard — no service calls, no side-effects)
+- No fluent setter chain needed
 
-**Rate limiting** — `src/Event/Http/` — wire into the 429 exception boundary in `Connection` (or `Service`):
-- `RateLimitHit` — holds `int $retryAfter`; observability now, natural hook for v1.1 auto-retry loop
+Skip: any class implementing an interface with getter/setter method signatures.
 
-**JWT token generation** — `src/Event/Auth/` — wire into `JwtProvider::getToken()`:
-- `JwtTokenGenerated` — holds `TokenInterface $token`; audit trail for enterprise S2S deployments
+### 4. BoxClientFactory Namespace Move
+Move `Box\Service\BoxClientFactory` → `Box\Factory\BoxClientFactory`. Rename `createClient()` → `createOAuth2Client()`. Update `BoxClientFactoryInterface`. Update all callers, tests, migration guide.
 
-**Tests**: construction tests for each new event class; wire-up tests confirming events are dispatched (mock dispatcher, assert `dispatch()` called with correct event type).
+**Pre-flight:**
+```
+grep -rn "BoxClientFactory\|createClient\b" src/ tests/ bin/ --include="*.php"
+```
 
-**Docs**: add an "Events reference" section to `programmatic-usage.md` listing all dispatched events, their payload, and when they fire.
+---
+
+## After Slice 20
+
+- Step 17: v1 Release Readiness (docs, changelog, `composer.json` version bump, security scan)
+- Step 18: Documentation Cleanup and Organization
+- Package/repo rename (user-driven — user will ping when ready)
 
 ---
 
 ## Resolved Questions (do not re-open)
 
-### Q1: EnvConfigProvider framing
-`EnvConfigProvider` is environment-variable-driven, not CLI-exclusive. Any app populating `$_ENV`/`$_SERVER` (Symfony DotEnv, Docker env, etc.) can use it. CLI-only vars: `BOX_UPLOAD_FILE_PATH`, `BOX_UPLOAD_FOLDER_ID`, `BOX_JSON_FORMATTER`.
-
-`ArrayConfigProvider` (accepts a plain array): good idea, confirmed deferred to v1.1.
-
-### Q2: Auto-Retry + Auto-Token-Refresh
-Not implemented. Deferred to v1.1. Only `RateLimitException` (wired to 429) exists.
-
-### Q3: CHANGELOG v0.11.4 / v0.11.5
-Removed both entries. Work was never tagged or released; v1.0.0 entry covers it.
-
-### Q4: SearchService raw array return
-Intentional. Box search returns heterogeneous entries (files, folders, web links) that cannot be strongly typed without a discriminated union. Typed return deferred to a future minor release. Noted in `docs/user/api-coverage.md`.
-
-### Q5: FolderService::getFolderCollaborations
-Removed from `FolderService` and `FolderServiceInterface`. `CollaborationService::getFolderCollaborations()` is the canonical home. Migration guide updated (Section 9).
+All Slice 19 resolved questions carry forward — see `current-handoff-summary.md`.
 
 ---
 
-## Acceptance Criteria for Slice 19
+## Acceptance Criteria for This Slice
 
-- Slice 19 all 9 gates complete
+- `BoxClientFactory` lives in `Box\Factory`, `createOAuth2Client()` is the public API
+- `BoxClientFactoryInterface` updated in tandem
+- Migration guide updated with the breaking change
 - `composer review` green
-- `programmatic-usage.md` chunked upload + doc gaps + events reference filled
-- API coverage matrix updated to reflect chunked upload as ✅
