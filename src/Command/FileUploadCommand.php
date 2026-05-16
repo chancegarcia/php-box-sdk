@@ -2,7 +2,7 @@
 
 namespace Box\Command;
 
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Exception\BoxResponseException;
 use Box\Service\File\FileService;
@@ -53,7 +53,7 @@ class FileUploadCommand extends AbstractBoxCommand
         $io = new SymfonyStyle($input, $output);
         $this->logger->info('Starting file upload command');
 
-        $client = $this->clientFactory->createClient();
+        $client = $this->clientFactory->createOAuth2Client();
 
         $filePath = $input->getArgument('file-path') ?? $this->configProvider->getUploadFilePath();
 

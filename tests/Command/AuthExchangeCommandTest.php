@@ -5,7 +5,7 @@ namespace Box\Tests\Command;
 use Box\Client;
 use Box\Command\AuthExchangeCommand;
 use Box\Connection\Token\Token;
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Logger\ConfigNormalizer;
 use Box\Logger\LoggerFactory;
@@ -30,7 +30,7 @@ class AuthExchangeCommandTest extends TestCase
         $this->loggerFactory = new LoggerFactory(new ConfigNormalizer());
         $this->client = $this->createMock(Client::class);
 
-        $this->clientFactory->method('createClient')->willReturn($this->client);
+        $this->clientFactory->method('createOAuth2Client')->willReturn($this->client);
     }
 
     public function testExecuteSuccessfulWithArgument(): void

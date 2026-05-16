@@ -8,7 +8,7 @@ use Box\Exception\BoxException;
 use PHPUnit\Framework\TestCase;
 use Box\Connection\Token\TokenInterface;
 use Box\Connection\ConnectionInterface;
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Service\ConsoleOutputFormatter;
 use Box\Service\DefaultJsonFormatter;
@@ -57,7 +57,7 @@ class ReproIssueTest extends TestCase
         $client = $this->createMock(Client::class);
         $connection = $this->createMock(ConnectionInterface::class);
 
-        $clientFactory->method('createClient')->willReturn($client);
+        $clientFactory->method('createOAuth2Client')->willReturn($client);
         $client->method('getConnection')->willReturn($connection);
         $configProvider->method('getOAuth2AccessToken')->willReturn('fake_token');
 

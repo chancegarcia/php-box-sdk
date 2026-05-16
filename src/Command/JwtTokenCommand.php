@@ -4,7 +4,7 @@ namespace Box\Command;
 
 use Box\Auth\Jwt\JwtAuthConfig;
 use Box\Auth\Jwt\JwtProviderInterface;
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Exception\BoxException;
 use Box\Logger\LoggerFactory;

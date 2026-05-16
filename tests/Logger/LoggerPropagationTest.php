@@ -3,9 +3,9 @@
 namespace Box\Tests\Logger;
 
 use Box\Client;
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactory;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
-use Box\Service\BoxClientFactory;
 use Box\Connection\ConnectionInterface;
 use Box\Resource\Folder;
 use Box\Resource\Collaboration;
@@ -27,7 +27,7 @@ class LoggerPropagationTest extends TestCase
         $factory = new BoxClientFactory($configProvider);
         $factory->setLogger($logger);
 
-        $client = $factory->createClient();
+        $client = $factory->createOAuth2Client();
 
         $this->assertInstanceOf(Client::class, $client);
         $this->assertSame($logger, $client->getLogger());

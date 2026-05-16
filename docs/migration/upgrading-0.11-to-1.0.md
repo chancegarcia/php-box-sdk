@@ -32,6 +32,7 @@ Use this as a checklist. Each item links to the full section below.
 | Removed factory interfaces | Check if you implement them | [Factory Interfaces](#6-factory-interfaces) |
 | Removed model base classes | Check if you extend them | [Removed Classes](#7-removed-classes-and-interfaces) |
 | CLI `--transport` option | Remove from scripts | [CLI Changes](#8-cli-changes) |
+| `BoxClientFactory` namespace and method rename | Low — find & replace | [BoxClientFactory Move](#10-boxclientfactory-move) |
 
 ---
 
@@ -234,6 +235,38 @@ The `Client` facade methods for these operations (`updateBoxFolder()`, `getFolde
 
 ---
 
+### 10. BoxClientFactory Move
+
+`BoxClientFactory` has moved from `Box\Service` to `Box\Factory`, and its interface has moved from `Box\Contract` to `Box\Factory`. The OAuth2 client creation method has also been renamed for clarity.
+
+| Before (v0.11 / early v1.0) | After (v1.0) |
+|:---|:---|
+| `Box\Service\BoxClientFactory` | `Box\Factory\BoxClientFactory` |
+| `Box\Contract\BoxClientFactoryInterface` | `Box\Factory\BoxClientFactoryInterface` |
+| `BoxClientFactory::createClient()` | `BoxClientFactory::createOAuth2Client()` |
+
+**Before:**
+```php
+use Box\Service\BoxClientFactory;
+use Box\Contract\BoxClientFactoryInterface;
+
+$factory = new BoxClientFactory($configProvider);
+$client  = $factory->createClient();
+```
+
+**After:**
+```php
+use Box\Factory\BoxClientFactory;
+use Box\Factory\BoxClientFactoryInterface;
+
+$factory = new BoxClientFactory($configProvider);
+$client  = $factory->createOAuth2Client();
+```
+
+The `createJwtClient()` and `createClientForCurrentMode()` methods are unchanged.
+
+---
+
 ### 8. CLI Changes
 
 **`--transport` option removed.** Guzzle is now the only HTTP transport. Remove `--transport=guzzle` or `--transport=curl` from any scripts.
@@ -253,11 +286,11 @@ These are additions — no migration required.
 v1.0 introduces `BoxClientFactory` as the recommended way to build a client. It reads from environment variables and wires everything correctly:
 
 ```php
-use Box\Service\BoxClientFactory;
+use Box\Factory\BoxClientFactory;
 use Box\Service\EnvConfigProvider;
 
 $factory = new BoxClientFactory(new EnvConfigProvider());
-$client  = $factory->createClient(); // OAuth2
+$client  = $factory->createOAuth2Client(); // OAuth2
 // or
 $client  = $factory->createClientForCurrentMode(); // JWT when BOX_AUTH_MODE=jwt
 ```

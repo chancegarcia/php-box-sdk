@@ -6,7 +6,7 @@ use Box\Client;
 use Box\Command\AuthExchangeCommand;
 use Box\Command\AuthRefreshCommand;
 use Box\Connection\Token\Token;
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Dto\TokenStorageContext;
 use Box\Logger\ConfigNormalizer;
@@ -34,7 +34,7 @@ class AuthStorageIntegrationTest extends TestCase
         $this->loggerFactory = new LoggerFactory(new ConfigNormalizer());
         $this->client = $this->createMock(Client::class);
 
-        $this->clientFactory->method('createClient')->willReturn($this->client);
+        $this->clientFactory->method('createOAuth2Client')->willReturn($this->client);
     }
 
     public function testAuthExchangeWithStorage(): void

@@ -15,7 +15,7 @@ use Box\Storage\Token\Filesystem\FilesystemTokenStorage;
 use Box\Storage\Token\Pdo\TokenStorage as PdoTokenStorage;
 use Exception;
 use InvalidArgumentException;
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 
 abstract class AbstractBoxCommand extends Command

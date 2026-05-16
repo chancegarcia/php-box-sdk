@@ -617,13 +617,7 @@ Audit `src/` for untyped class constants and add PHP 8.3+ type declarations wher
 Review `src/` for remaining `mixed`, untyped properties, untyped return types, and untyped parameters. Tighten where the actual type is known and not intentionally `mixed`.
 
 #### Property Hooks
-Audit DTO and value-object classes (`src/Dto/`, `src/Resource/`, `src/Connection/Token/`) for get/set method pairs that qualify for replacement with PHP 8.4 property hooks. Apply where all conditions hold:
-1. Class is a DTO or value object (data-only; no interface method contracts declaring getters/setters)
-2. Property is part of the public API (accessed as `$obj->prop`, not `$obj->getProp()`)
-3. Hook logic is lightweight — normalization, type coercion, or a simple guard; no service calls, no side-effects beyond the property itself
-4. No fluent setter chain (`return $this`) needed
-
-Do not apply hooks where the class implements an interface with getter/setter method contracts, where setters have side-effects, or where complexity warrants a named method.
+Deferred to post-v1. Rationale: applying hooks to resource classes would break the existing `getX()`/`setX()` public API surface; the `Hydrator` populates objects via setter methods and its behaviour with hooked properties is untested; and the DTO classes that would benefit most already use constructor promotion with `readonly`. The ergonomic gain does not justify the breaking-change and compatibility risk this close to release.
 
 #### BoxClientFactory Namespace Move *(may be its own slice)*
 Move `Box\Service\BoxClientFactory` → `Box\Factory\BoxClientFactory`. Rename `createClient()` → `createOAuth2Client()`. Update `BoxClientFactoryInterface` in tandem. Update all callers, tests, and migration guide.
@@ -985,3 +979,4 @@ Move to `docs/archive/prompts/` (Claude Code CLI memory supersedes):
   this would require either a DI container (which resolves commands without the bridge) or a
   significant restructure of the base class. Revisit if a DI container is added post-v1.
 - **Docblock consistency and polish pass**: v1 acceptance bar is accuracy — `@throws` tags present and correct, param/return types matching actual types. A full consistency pass (uniform style, complete `@param` descriptions on all public methods, `@return` descriptions, prose summaries) is deferred to a post-v1 maintenance cycle.
+- **PHP 8.4 property hooks**: Deferred because applying hooks to resource classes breaks the existing `getX()`/`setX()` public API, Hydrator compatibility with hooked properties is untested, and DTO classes that would benefit most already use `readonly` constructor promotion.

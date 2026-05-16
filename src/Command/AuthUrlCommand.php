@@ -2,7 +2,7 @@
 
 namespace Box\Command;
 
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Logger\LoggerFactory;
 use Box\Service\ConsoleOutputFormatter;
@@ -39,7 +39,7 @@ class AuthUrlCommand extends AbstractBoxCommand
         $io = new SymfonyStyle($input, $output);
         $this->logger->info('Generating authorization URL');
 
-        $client = $this->clientFactory->createClient();
+        $client = $this->clientFactory->createOAuth2Client();
 
         $options = [];
         $redirectUri = $input->getOption('redirect-uri') ?? $this->configProvider->getOAuth2RedirectUri();

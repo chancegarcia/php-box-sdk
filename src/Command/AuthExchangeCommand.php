@@ -2,7 +2,7 @@
 
 namespace Box\Command;
 
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Exception\BoxResponseException;
 use Box\Logger\LoggerFactory;
@@ -43,7 +43,7 @@ class AuthExchangeCommand extends AbstractBoxCommand
         $io = new SymfonyStyle($input, $output);
         $this->logger->info('Starting token exchange command');
 
-        $client = $this->clientFactory->createClient();
+        $client = $this->clientFactory->createOAuth2Client();
         $this->applyStorageOption($input, $client);
 
         $code = $input->getArgument('code') ?? $this->configProvider->getOAuth2AuthCode();

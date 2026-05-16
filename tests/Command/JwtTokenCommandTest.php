@@ -5,7 +5,7 @@ namespace Box\Tests\Command;
 use Box\Auth\Jwt\JwtProviderInterface;
 use Box\Client;
 use Box\Command\JwtTokenCommand;
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Logger\LoggerFactory;
 use Box\Service\ConsoleOutputFormatter;

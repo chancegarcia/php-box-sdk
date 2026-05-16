@@ -37,14 +37,8 @@ Specific areas to check:
 - **`Collaboration`**: several methods have *no type hints at all* (not just `mixed`) — `setAccessibleBy`/`getAccessibleBy` (Box API: `User|Group` mini-object), `setCreatedBy`/`getCreatedBy`, `setItem`/`getItem` (Box API: `File|Folder` mini-object), `setType`/`getType`. Audit the full class for missing types.
 - **Broad pass**: grep `src/Resource/` for methods with no parameter or return type hints — `Collaboration` is a known case but likely not the only one.
 
-### 6. Property Hooks on DTOs / Value Objects
-Audit `src/Dto/`, `src/Resource/`, `src/Connection/Token/` for get/set method pairs that qualify for PHP 8.4 property hooks. Apply when:
-- Class is data-only (no interface method contracts declaring getters/setters)
-- Property is public API (`$obj->prop` access is natural)
-- Hook logic is lightweight: normalization, coercion, or a simple guard — no service calls, no side-effects beyond the property
-- No fluent setter chain needed
-
-Skip any class implementing an interface with getter/setter method signatures.
+### ~~6. Property Hooks on DTOs / Value Objects~~ — Deferred to post-v1
+Applying hooks to resource classes breaks the existing `getX()`/`setX()` public API. Hydrator compatibility with hooked properties is untested. DTO classes that would benefit most already use `readonly` constructor promotion. Risk outweighs ergonomic gain at this stage.
 
 ### 7. BoxClientFactory Namespace Move
 Move `Box\Service\BoxClientFactory` → `Box\Factory\BoxClientFactory`. Rename `createClient()` → `createOAuth2Client()`. Update `BoxClientFactoryInterface`. Update all callers, tests, migration guide.

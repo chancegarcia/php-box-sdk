@@ -7,13 +7,13 @@ use Box\Auth\Jwt\JwtProviderInterface;
 use Box\Auth\OAuth2ProviderInterface;
 use Box\Client;
 use Box\Contract\ConfigProviderInterface;
-use Box\Service\BoxClientFactory;
+use Box\Factory\BoxClientFactory;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 class BoxClientFactoryTest extends TestCase
 {
-    public function testCreateClientWithGenericConfigProvider(): void
+    public function testCreateOAuth2ClientWithGenericConfigProvider(): void
     {
         $configProvider = $this->createMock(ConfigProviderInterface::class);
         $configProvider->method('getOAuth2ClientId')->willReturn('test-client-id');
@@ -23,7 +23,7 @@ class BoxClientFactoryTest extends TestCase
         $configProvider->method('getOAuth2AuthCode')->willReturn('test-auth-code');
 
         $factory = new BoxClientFactory($configProvider);
-        $client = $factory->createClient();
+        $client = $factory->createOAuth2Client();
 
         $this->assertInstanceOf(Client::class, $client);
         $this->assertEquals('test-client-id', $client->getClientId());
@@ -31,14 +31,14 @@ class BoxClientFactoryTest extends TestCase
         $this->assertEquals('test-auth-code', $client->getAuthorizationCode());
     }
 
-    public function testCreateClientWithLogger(): void
+    public function testCreateOAuth2ClientWithLogger(): void
     {
         $configProvider = $this->createMock(ConfigProviderInterface::class);
         $logger = $this->createMock(LoggerInterface::class);
 
         $factory = new BoxClientFactory($configProvider);
         $factory->setLogger($logger);
-        $client = $factory->createClient();
+        $client = $factory->createOAuth2Client();
 
         $this->assertInstanceOf(Client::class, $client);
     }

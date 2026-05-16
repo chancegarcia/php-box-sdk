@@ -1,15 +1,14 @@
 <?php
 
-namespace Box\Service;
+namespace Box\Factory;
 
 use Box\Auth\Jwt\JwtAuthConfig;
 use Box\Auth\Jwt\JwtAssertionGenerator;
 use Box\Auth\Jwt\JwtProvider;
 use Box\Client;
 use Box\ClientConfig;
-use Box\Contract\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
-use Box\Factory\TokenFactory;
+use Box\Exception\BoxException;
 use Psr\Log\LoggerInterface;
 
 class BoxClientFactory implements BoxClientFactoryInterface
@@ -26,7 +25,7 @@ class BoxClientFactory implements BoxClientFactoryInterface
         $this->logger = $logger;
     }
 
-    public function createClient(): Client
+    public function createOAuth2Client(): Client
     {
         $config = new ClientConfig();
         $config->setOAuth2ClientId($this->configProvider->getOAuth2ClientId());
@@ -75,6 +74,10 @@ class BoxClientFactory implements BoxClientFactoryInterface
         return $client;
     }
 
+    /**
+     * @return Client
+     * @throws BoxException
+     */
     public function createClientForCurrentMode(): Client
     {
         if ('jwt' === $this->configProvider->getAuthMode()) {
@@ -90,6 +93,6 @@ class BoxClientFactory implements BoxClientFactoryInterface
             return $this->createJwtClient($config);
         }
 
-        return $this->createClient();
+        return $this->createOAuth2Client();
     }
 }

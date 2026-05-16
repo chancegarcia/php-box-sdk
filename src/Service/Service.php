@@ -62,8 +62,8 @@ class Service implements ServiceInterface, LoggerAwareInterface
     protected ?TokenInterface $token = null;
 
     /**
-     * @return ConnectionInterface
      * @throws RuntimeException
+     * @return ConnectionInterface
      */
     public function getConnection(): ConnectionInterface
     {

@@ -2,7 +2,7 @@
 
 namespace Box\Command;
 
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Exception\BoxResponseException;
 use Box\Logger\LoggerFactory;
@@ -42,7 +42,7 @@ class AuthRefreshCommand extends AbstractBoxCommand
         $io = new SymfonyStyle($input, $output);
         $this->logger->info('Starting token refresh command');
 
-        $client = $this->clientFactory->createClient();
+        $client = $this->clientFactory->createOAuth2Client();
         $this->applyStorageOption($input, $client);
 
         $refreshTokenValue = $this->configProvider->getOAuth2RefreshToken();

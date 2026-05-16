@@ -1,6 +1,6 @@
 <?php
 
-namespace Box\Contract;
+namespace Box\Factory;
 
 use Box\Auth\Jwt\JwtAuthConfig;
 use Box\Client;
@@ -8,7 +8,7 @@ use Psr\Log\LoggerInterface;
 
 interface BoxClientFactoryInterface
 {
-    public function createClient(): Client;
+    public function createOAuth2Client(): Client;
 
     public function createJwtClient(JwtAuthConfig $config): Client;
 

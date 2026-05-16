@@ -3,7 +3,7 @@
 namespace Box\Tests\Command;
 
 use Box\Command\FileUploadCommand;
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Client;
 use Box\Logger\ConfigNormalizer;
@@ -36,7 +36,7 @@ class FileUploadCommandTest extends TestCase
         $this->client = $this->createMock(Client::class);
         $this->connection = $this->createMock(ConnectionInterface::class);
 
-        $this->clientFactory->method('createClient')->willReturn($this->client);
+        $this->clientFactory->method('createOAuth2Client')->willReturn($this->client);
         $this->client->method('getConnection')->willReturn($this->connection);
 
         $this->testFile = sys_get_temp_dir() . '/test_upload.txt';
