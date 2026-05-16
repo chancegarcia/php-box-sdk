@@ -1,134 +1,72 @@
 # Next Session Plan
 
-**Updated**: 2026-05-15 23:40 (America/Indiana)
+**Updated**: 2026-05-16 01:15 (America/Indiana)
 **Branch**: `release-v1.0.0`
 
 ---
 
 ## Start Here
 
-Slice 20 items 1–4 and 8 are complete. **Pick up at item 5: type coverage audit.**
-
-Completed this session:
-- `?->` operator conversions ✓
-- PHPDoc annotation spacing ✓
-- `@throws` audit (missing tags added; false tags removed; docblock param types corrected) ✓
-- Typed constants (`public const string/int/array` across 8 files) ✓
-- v1 `@todo` audit (dead-code if-blocks removed; todos resolved, deferred to post-v1, or converted to `// Post-v1:` markers) ✓
-
----
-
-## Slice 20 Remaining Scope
-
-### ~~1. `?->` conversions~~ ✓
-### ~~2. PHPDoc annotation spacing~~ ✓
-### ~~3. `@throws` audit~~ ✓
-### ~~4. Typed constants~~ ✓
-### ~~8. v1 `@todo` audit~~ ✓
-
-### 5. Type Coverage Audit
-Review `src/` for untyped or `mixed` properties, parameters, and return types. Tighten where the actual type is known. Intentional `mixed` (e.g., legacy hydration) must be confirmed and documented.
-
-Specific areas to check:
-- **`BoxException`**: stale `@return self` removed from `setBoxCode` ✓. Remaining: `$error`, `$errorDescription`, `$boxCode`, `$status` all typed `mixed` — evaluate whether any can be narrowed.
-- **`BoxException` constructor `$code`**: typed `mixed` — narrow to `int|string` since non-int codes are stored as `boxCode`.
-- **`Box\Resource\Event`**: numerous `mixed` properties — audit and tighten where type is deterministic from Box API contract.
-- **`Service`**: `$connection` and `$token` properties have no PHP type hints — add them.
-- **`Collaboration`**: several methods have *no type hints at all* (not just `mixed`) — `setAccessibleBy`/`getAccessibleBy` (Box API: `User|Group` mini-object), `setCreatedBy`/`getCreatedBy`, `setItem`/`getItem` (Box API: `File|Folder` mini-object), `setType`/`getType`. Audit the full class for missing types.
-- **Broad pass**: grep `src/Resource/` for methods with no parameter or return type hints — `Collaboration` is a known case but likely not the only one.
-
-### ~~6. Property Hooks on DTOs / Value Objects~~ — Deferred to post-v1
-Applying hooks to resource classes breaks the existing `getX()`/`setX()` public API. Hydrator compatibility with hooked properties is untested. DTO classes that would benefit most already use `readonly` constructor promotion. Risk outweighs ergonomic gain at this stage.
-
-### 7. BoxClientFactory Namespace Move
-Move `Box\Service\BoxClientFactory` → `Box\Factory\BoxClientFactory`. Rename `createClient()` → `createOAuth2Client()`. Update `BoxClientFactoryInterface`. Update all callers, tests, migration guide.
-
-Pre-flight:
-```
-grep -rn "BoxClientFactory\|createClient\b" src/ tests/ bin/ --include="*.php"
-```
-
-### 8. v1 `@todo` Audit
-Grep `src/` for `@todo` and `TODO` comments. For each:
-- If the work is done: remove the comment.
-- If it is a v1 blocker: create a tracking entry and resolve in Slice 20 or the appropriate slice.
-- If it is post-v1: replace with a `// Post-v1:` comment or remove if obvious from context.
-
-Pre-flight:
-```
-grep -rn "@todo\|TODO" src/ --include="*.php"
-```
-
-Specific areas to check: `File::setPathCollection`, `File::setSharedLink` (may have v1 todos that were either completed or lost to documentation drift — confirm current state before acting).
+Slices 20 and 20.5 are complete. **Pick up at Slice 21: Docblock Quality & Legacy Tag Cleanup.**
 
 ---
 
 ## Slice 21 — Docblock Quality & Legacy Tag Cleanup
 
 ### Purpose
-Address remaining docblock quality issues and legacy annotation patterns that were not in scope for Slice 20's type/throws audit.
+Address remaining docblock quality issues and legacy annotation patterns not covered by earlier slices. No new features — correctness and consistency only.
 
 ### Scope
 
-#### `@inheritdoc` Correctness
-Audit all uses of `@inheritDoc` and `{@inheritdoc}` across `src/`. Ensure:
-- Only used on methods that actually override or implement a parent/interface method.
-- Remove or replace with explicit docblocks where the tag is wrong, awkward, or misleading.
-- Lowercase/uppercase form is consistent with PHPCS expectations.
+#### 1. `@inheritdoc` Correctness
+Audit all `@inheritDoc` / `{@inheritdoc}` uses in `src/`. Ensure each is on a method that actually overrides or implements a parent/interface method. Remove or replace where wrong or awkward.
 
 Pre-flight:
 ```
 grep -rn "@inheritdoc\|{@inheritDoc}" src/ --include="*.php"
 ```
 
-#### `@package` / `@subpackage` Removal
-Remove **all** `@package` and `@subpackage` tags from every file in `src/` and `tests/`.
+#### 2. `@package` / `@subpackage` Removal
+Remove all `@package` and `@subpackage` tags from `src/` and `tests/`.
 
-**Decision**: Do not replace with `@psalm-package`/`@psalm-subpackage`. PSR-4 namespaces already provide the grouping structure; these tags are redundant. `@psalm-package` is a Psalm visibility modifier, not a documentation-grouping tag, and we use PHPStan not Psalm.
+**Decision**: Do not replace with `@psalm-package`/`@psalm-subpackage`. PSR-4 namespaces serve this purpose. `@psalm-package` is a Psalm visibility modifier, not a grouping tag. We use PHPStan, not Psalm.
 
 Pre-flight:
 ```
-grep -rn "@package\|@subpackage" src/ tests/ --include="*.php"
+grep -rln "@package\|@subpackage" src/ tests/ --include="*.php"
 ```
 
-#### `ConnectionInterface` / `EntrySource` Architectural Review
-Re-read `ConnectionInterface` and `EntrySource` with fresh eyes. There are inline notes (deprecation hints, removal candidates) in parameter docs from earlier refactors. Determine for each:
-- Is the symbol still architecturally sound for v1?
-- If deprecation or removal is warranted, do it now rather than carrying a docblock note into the release.
-- Document the decision; if deferred, explain why.
+#### 3. `ConnectionInterface` / `EntrySource` Architectural Review
+Re-examine `ConnectionInterface` and `EntrySource` with current eyes. Inline deprecation/removal notes were added during earlier refactors. Determine for each symbol whether it is still v1-sound, should be removed now, or should be deferred with a documented rationale.
 
-#### `json_encode` / `json_decode` Hardening
-Grep `src/` for all `json_encode` and `json_decode` calls. Harden each:
-- `json_encode`: pass `JSON_THROW_ON_ERROR`; handle failure explicitly.
-- `json_decode`: pass `JSON_THROW_ON_ERROR`; narrow the return type assertion.
-- Catch `JsonException` at the appropriate boundary and translate to a domain exception where needed.
+#### 4. `json_encode` / `json_decode` Hardening
+Audit all `json_encode` and `json_decode` calls in `src/`. Add `JSON_THROW_ON_ERROR` to every call. Catch `JsonException` at appropriate boundaries and translate to domain exceptions where needed.
 
 Pre-flight:
 ```
 grep -rn "json_encode\|json_decode" src/ --include="*.php"
 ```
 
-#### Legacy Survivor Audit
-Two legacy paths survived the earlier purges:
+#### 5. Legacy Survivor Audit
+Scan `src/` for code or comments representing pre-v1 legacy paths that survived earlier purges. Specific known items:
 
-1. **`Connection::post` `$nameValuePair` / array `$params`** — `Connection.php` and `ConnectionInterface.php` carry "will be deprecated in the future" warnings. For v1 that future is now. Decision required: remove the array-params and `$nameValuePair` paths, or document as intentionally supported and drop the deprecated language.
-2. **`FileService`/`FolderService` `method_exists($sharedLink, 'toArray')` fallback** — labeled "Fallback for legacy models." `CreateSharedLinkRequest::toArray()` is real, so the branch is live, but the comment implies dead models. Confirm if the guard is still needed; tighten type and remove comment if not.
-
-Note: `AdminEvent::mapBoxToClass` was removed this session (zero callers, `@deprecated`).
+- **`Connection::post` `$nameValuePair` / array `$params`**: Both `Connection.php` and `ConnectionInterface.php` carry "will be deprecated in the future" warnings. For a v1 release "future" is now — decide: remove the array-params and `$nameValuePair` paths, or document as intentionally supported and remove the deprecated language.
+- **`FileService` / `FolderService` `method_exists($sharedLink, 'toArray')` fallback**: Guard labeled "Fallback for legacy models." `CreateSharedLinkRequest` has `toArray()` so the branch is live, but the comment implies dead models. Confirm whether the fallback is still needed; remove the comment and tighten the type if not.
 
 Pre-flight:
 ```
 grep -rn "deprecated\|legacy\|nameValuePair\|method_exists" src/ --include="*.php"
 ```
 
-#### Naming Convention & Method Accuracy Audit
-Two related passes over `src/`:
+**Decision for `$nameValuePair` / array-params**: Read `Connection::post` and `ConnectionInterface` to understand the current callers. If no callers pass a `$nameValuePair`, remove the path and the "deprecated" language. If callers still use it, document as intentionally supported and drop the deprecated language. Do not carry "will be deprecated in the future" into a v1 release.
 
-**1. PSR-12 / convention compliance**
-- Methods and properties must be camelCase — grep for underscored names, `get_foo`/`set_foo` style, `$m_`/`$_` prefixes
+#### 6. Naming Convention & Method Accuracy Audit
+Two passes:
+
+**PSR-12 / convention compliance**
+- Methods and properties must be camelCase — grep for underscored names
 - Parameters must be camelCase — scan method signatures for snake_case param names
 - No non-magic double-underscore names
-- Constants already audited in Slice 20.4 — confirm no stragglers
 
 Pre-flight:
 ```
@@ -136,14 +74,12 @@ grep -rn "function [a-z_]*_[a-z]" src/ --include="*.php"
 grep -rn "\$[a-z][a-z]*_[a-z]" src/ --include="*.php"
 ```
 
-**2. Method name descriptiveness**
-Names must describe the *operation*, not just the return value. A name like `getToken` is misleading when it performs a network exchange; `exchangeAuthCodeForAccessToken` is the standard we're holding (see: `Client` auth flow refactor).
-
-Focus areas:
-- `Client` public API — any method where the name implies a passive read but the body does I/O or mutation
+**Method name descriptiveness**
+Names must describe the *operation*, not just the return value. Focus areas:
+- `Client` public API — any method where the name implies passive read but the body does I/O or mutation
 - `AuthProviderInterface` / `OAuth2Provider` / `JwtProvider` — auth operations are prime candidates for vague getter names
 - `Service` classes — look for `get*` methods that perform writes or multi-step operations
-- `Connection` — any method whose name undersells what it does (e.g., wrapping retry logic, building auth headers)
+- `Connection` — any method whose name undersells what it does
 
 Any public method rename is a breaking change — add a migration guide entry for each one.
 
@@ -151,199 +87,46 @@ Any public method rename is a breaking change — add a migration guide entry fo
 - No `@package`/`@subpackage` tags remain in `src/` or `tests/`
 - `@inheritdoc` usage is correct and consistent
 - `ConnectionInterface`/`EntrySource` decision recorded
-- All `json_encode`/`json_decode` calls use `JSON_THROW_ON_ERROR`
+- All `json_encode`/`json_decode` calls pass `JSON_THROW_ON_ERROR`
 - `nameValuePair`/array-params decision made and implemented
 - Legacy `method_exists` fallback in `FileService`/`FolderService` resolved
-- No "will be deprecated in the future" language in a v1 release
+- No "will be deprecated in the future" language remains in a v1 release
 - All public method and property names are camelCase (PSR-12)
-- No public method name misrepresents its operation (no passive-sounding name for I/O-performing methods)
+- No public method name misrepresents its operation
 - Migration guide updated for any public renames
 - `composer review` green
 
 ---
 
-## Slice 22 — License & Rebrand Preparation
+## After Slice 21
 
-### Purpose
-Transition the license from MIT to Apache-2.0, clean up file-level license headers, add the rebrand/relicense note to user-facing docs, and document the Packagist transition process.
+Sequence: Slice 22 → Step 17 → Step 18 → rename (user-driven)
 
-### Scope
+### Slice 22 — License & Rebrand Preparation
+- Replace `LICENSE` with Apache 2.0 text
+- `composer.json` `"license"` → `"Apache-2.0"`
+- Remove all per-file MIT license blocks from `src/` and `tests/`
+- Add relicense note to `README.md` and `CHANGELOG.md`
+- Add remote URL update item to `docs/planning/release-task-lists.md`
+- Create `docs/planning/packagist-rebrand-guide.md`
 
-#### LICENSE File
-Replace `LICENSE` content with the full Apache 2.0 license text.
+### Step 17 — v1 Release Readiness
+- Full `composer review` gate
+- Docs gate: migration guide, CHANGELOG, `docs/README.md` status drift
+- Release metadata: `composer.json` version `1.0.0`, keyword/description review
+- Security scan: grep for accidentally committed credentials
 
-#### `composer.json` License Field
-Change `"license": "MIT"` → `"license": "Apache-2.0"`.
-
-#### File-Level License Headers
-**Decision**: Remove per-file copyright/license blocks entirely. Apache 2.0 does not require per-file notices; the root `LICENSE` file satisfies the license. This is standard modern practice (Symfony, Laravel, Doctrine). Do not add `@license Apache-2.0` docblock tags as a replacement — the root file is sufficient.
-
-Pre-flight (find all files with a license block):
-```
-grep -rln "MIT License\|MIT license\|@license" src/ tests/ --include="*.php"
-```
-
-#### README & CHANGELOG Note
-In both `README.md` and `CHANGELOG.md`, add the following note in the appropriate v1.0.0 section:
-
-> Note: Starting with v1.0.0, this SDK has been rebranded and transitioned from the MIT License to the Apache 2.0 License to provide better patent and trademark protections.
-
-#### Remote URL Update Task
-Add a checklist item in `docs/planning/release-task-lists.md` to update the remote repository URL to the new rebranded repo after the rename is performed (user-driven; do not perform the rename here).
-
-#### Packagist Transition Guide
-Create `docs/planning/packagist-rebrand-guide.md` documenting the full Packagist transition process for the rebrand. Content:
-
-```markdown
-# Packagist Transition Guide: Rebranding & Relicensing
-
-When transitioning an open-source PHP package to a new brand, a new repository, and a new
-license (e.g., MIT to Apache 2.0) for a `v1.0.0` release, follow this standard protocol.
-This ensures that legacy users are not broken, while successfully redirecting traffic to
-your new rebranded package.
-
----
-
-## Step 1: Prepare the New Codebase
-
-Before publishing to Packagist, ensure your renamed repository contains the updated
-licensing information.
-
-1. **Update `LICENSE`**: Replace the content of your existing `LICENSE` file with the full
-   text of the Apache 2.0 license.
-2. **Update `composer.json`**: Update the metadata to reflect the new package name, new
-   repository URL, and the new license type.
-
-```json
-{
-    "name": "new-brand/box-sdk",
-    "description": "Rebranded and refactored Box.com API SDK",
-    "license": "Apache-2.0",
-    "support": {
-        "issues": "https://github.com/new-organization/new-repo/issues",
-        "source": "https://github.com/new-organization/new-repo"
-    },
-    "autoload": {
-        "psr-4": {
-            "NewBrand\\BoxSdk\\": "src/"
-        }
-    }
-}
-```
-
-3. **Tag the Release**: Tag your new refactored codebase as `v1.0.0` (or your chosen stable
-   version string) and push the tag to GitHub.
-
----
-
-## Step 2: Publish the New Package on Packagist
-
-1. Log in to [Packagist.org](https://packagist.org/).
-2. Click the **Submit** button in the top navigation bar.
-3. Paste the URL of your new, renamed GitHub repository
-   (e.g., `https://github.com/new-organization/new-repo`) into the repository URL field.
-4. Click **Check** and then **Submit** to finalize creation.
-5. Set up the GitHub Webhook for Packagist on your new repository so that future releases
-   sync automatically.
-
----
-
-## Step 3: Deprecate the Old Package (The "Abandonment" Protocol)
-
-To prevent breaking existing software stacks that rely on your `v0.11` release, **do not
-delete** the old package. Instead, use Packagist's built-in abandonment mechanism.
-
-1. Navigate to the Packagist page of your **old package**
-   (e.g., `https://packagist.org/packages/old-brand/old-sdk`).
-2. Click the **Abandon** button located near the top right of the package management interface.
-3. A prompt will appear asking for a replacement package.
-4. Enter the exact name of your **new package** (e.g., `new-brand/box-sdk`).
-5. Confirm the action.
-
----
-
-## What Happens Next?
-
-- **Zero Downtime for Legacy Users**: Existing projects running `composer install` with a
-  lockfile targeting `old-brand/old-sdk` will continue to download the `v0.11` code seamlessly.
-- **Proactive Warning Notices**: If a developer runs `composer update` or tries to execute
-  `composer require old-brand/old-sdk` in a new project, Composer will output a clear warning:
-
-```text
-Package old-brand/old-sdk is abandoned, you should avoid using it.
-Use new-brand/box-sdk instead.
-```
-
-- **Search Engine Optimization**: Packagist will visually mark the old page as abandoned and
-  display a prominent link pointing directly to your new package, preserving your project's
-  discovery footprint.
-```
-
-### Acceptance Criteria
-- `LICENSE` contains Apache 2.0 text
-- `composer.json` `"license"` is `"Apache-2.0"`
-- All per-file MIT license blocks removed
-- README and CHANGELOG include the v1 relicense note
-- `docs/planning/release-task-lists.md` has remote URL update checklist item
-- `docs/planning/packagist-rebrand-guide.md` created
-- `composer review` green
-
----
-
-## After Slice 20
-
-Sequence: **Slice 20.5** → Slice 21 → Slice 22 → Step 17 → Step 18 → rename (user-driven)
-
-### Slice 20.5 — Enum Wiring & Hydrator Audit (next after Slice 20)
-
-See `docs/planning/v1-release-roadmap.md` § Slice 20.5 for full scope. Summary:
-
-1. **Hydrator audit first**: confirm `Hydrator` handles backed enum properties (check `User::setStatus(?UserStatus)` is actually hydrated correctly from a JSON string). Fix Hydrator if needed.
-2. **Wire orphaned enums**: `CollaborationRole` → `Collaboration::setRole`, `SharedLinkAccess` → `SharedLink`, evaluate `BoxItemType`.
-3. **Create missing enums**: `CollaborationStatus` (accepted/pending/rejected), `FolderSyncState` (synced/not_synced/partially_synced).
-4. **Wire new enums**: `Collaboration::setStatus`, `Folder::buildFolderUpdate` — replace `in_array` guards.
-5. Tests, migration guide entry, `composer review`.
-
----
-
-## After Slice 20
-
-Sequence: **Slice 20.5** → Slice 21 → Slice 22 → Step 17 → Step 18 → rename (user-driven)
-
-### Slice 20.5 — Enum Wiring & Hydrator Audit (next after Slice 20)
-
-See `docs/planning/v1-release-roadmap.md` § Slice 20.5 for full scope. Summary:
-
-1. **Hydrator audit first**: confirm `Hydrator` handles backed enum properties (verify `User::setStatus(?UserStatus)` is correctly hydrated from a JSON string). Fix Hydrator if needed.
-2. **Wire orphaned enums**: `CollaborationRole` → `Collaboration::setRole`, `SharedLinkAccess` → `SharedLink`, evaluate `BoxItemType`.
-3. **Create missing enum**: `CollaborationStatus` (accepted/pending/rejected). **Note**: `FolderSyncState` is out of scope — `sync_state` is a legacy field from the discontinued Box Sync client; `Folder::classArray` docblock already documents this.
-4. **Wire new enum**: `Collaboration::setStatus(?CollaborationStatus)` — replace `in_array` guard.
-5. **`PathCollection` DTO**: Box API confirmed — `path_collection` is `{ total_count, entries: [mini-folder] }`. Create DTO, narrow `File::setPathCollection`, update Folder if applicable.
-6. **`SharedLink` array narrowing**: after Hydrator confirmation, narrow `File::setSharedLink` to `?SharedLink`.
-7. Tests, migration guide entry, `composer review`.
-
----
-
-## After Slice 22
-
-- Step 17: v1 Release Readiness (docs, changelog, `composer.json` version bump, security scan)
-- Step 18: Documentation Cleanup and Organization
-- Package/repo rename (user-driven — user will ping when ready)
+### Step 18 — Documentation Cleanup and Organization
+- Archive completed step trackers to `docs/archive/`
+- Retire superseded planning files
+- Fix `docs/README.md` to reflect final v1 state
 
 ---
 
 ## Resolved Questions (do not re-open)
-
-All Slice 19 resolved questions carry forward — see `current-handoff-summary.md`.
-
-**`@package`/`@subpackage`**: Remove entirely; do not replace with `@psalm-package`/`@psalm-subpackage`. Namespaces serve this purpose. `@psalm-package` is a Psalm visibility modifier, not a grouping tag.
-
-**File-level license headers**: Remove entirely. Apache 2.0 does not require per-file notices. Root `LICENSE` file is sufficient.
-
----
-
-## Acceptance Criteria for Slice 20
-
-- All Slice 20 items complete or explicitly deferred with rationale
-- `composer review` green
-- Migration guide updated for any breaking API changes (BoxClientFactory move)
+- `@package`/`@subpackage`: Remove entirely; do not replace with `@psalm-*` tags.
+- File-level license headers: Remove entirely for Apache 2.0. Root `LICENSE` file is sufficient.
+- Property hooks: Deferred to post-v1 (breaking API surface, Hydrator compatibility untested).
+- `BoxClientFactory`: now `Box\Factory\BoxClientFactory`; method is `createOAuth2Client()`.
+- Constructor hydration: belongs in factories, not resource/model constructors.
+- `static fn`: use whenever closure has no `$this`/`self`/`static`/`parent` reference.

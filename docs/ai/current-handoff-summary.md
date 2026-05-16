@@ -1,95 +1,88 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-15 23:40 (America/Indiana)
+- **Timestamp**: 2026-05-16 01:15 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
-- **Roadmap Position**: Slice 20 items 1–4, 8 complete. Items 5, 6, 7 remain.
-- **Test baseline**: 368 tests, 992 assertions
-- **v1 remaining**: Slice 20 items 5–7 → Slice 21 (docblock/legacy tags) → Slice 22 (license/rebrand prep) → Step 17 (release readiness) → Step 18 (doc cleanup) → package/repo rename (user-driven)
+- **Roadmap Position**: Slice 20 complete. Slice 20.5 complete. Next: Slice 21.
+- **Test baseline**: 372 tests, 1002 assertions
+- **v1 remaining**: Slice 21 (docblock/legacy tags) → Slice 22 (license/rebrand prep) → Step 17 (release readiness) → Step 18 (doc cleanup) → package/repo rename (user-driven)
 
 ## Next Action
 
-**Slice 20 remaining** (read `docs/ai/next-session-plan.md` for full scope):
-1. ~~`?->` operator conversions~~ ✓
-2. ~~PHPDoc annotation spacing standardized~~ ✓
-3. ~~`@throws` audit~~ ✓
-4. ~~Typed constants audit~~ ✓
-5. Type coverage audit (tighten `mixed`, untyped properties/params/returns; includes BoxException, Client, Event specifics)
-6. Property hooks on qualifying DTOs/value objects
-7. BoxClientFactory namespace move (`Box\Service` → `Box\Factory`) + `createClient()` → `createOAuth2Client()` rename
-8. ~~v1 `@todo` audit~~ ✓
+**Slice 21 — Docblock Quality & Legacy Tag Cleanup** (read `docs/ai/next-session-plan.md` for full scope):
+
+1. `@inheritdoc` correctness audit
+2. `@package` / `@subpackage` removal from `src/` and `tests/`
+3. `ConnectionInterface` / `EntrySource` architectural review
+4. `json_encode` / `json_decode` hardening (`JSON_THROW_ON_ERROR` everywhere in `src/`)
+5. Legacy survivor audit (`Connection::post` `$nameValuePair`/array-params; `FileService`/`FolderService` `method_exists` fallback)
+6. Naming convention & method accuracy audit (PSR-12 camelCase sweep + descriptive method name pass)
 
 Do not prompt about package/repo rename.
 
 ---
 
-## Completed This Session (2026-05-15) — Late additions
+## Completed This Session (2026-05-16)
 
-### Legacy survivor cleanup
-- `Folder::classArray()` removed — zero callers; only purpose was building a `sync_state` payload for the discontinued Box Sync client
-- `Folder::setSyncState()` / `getSyncState()` / `$syncState` property removed — same rationale
-- `AdminEvent::mapBoxToClass()` removed — `@deprecated`, zero callers
-- Orphaned `use Box\Exception\BoxException` import removed from `Folder.php`
-- Orphaned `use stdClass` import removed from `AdminEvent.php`
-- Slice 21 expanded with **Legacy Survivor Audit** scope item covering `Connection::post` `$nameValuePair`/array-params "deprecated in future" language and `FileService`/`FolderService` `method_exists($sharedLink, 'toArray')` legacy fallback
-- Slice 21 further expanded with **Naming Convention & Method Accuracy Audit**: PSR-12 camelCase sweep (methods, properties, params) + descriptiveness pass ensuring public method names reflect their operation, not just their return value (reference: `exchangeAuthCodeForAccessToken` pattern); public renames require migration guide entries
-- Roadmap `docs/planning/v1-release-roadmap.md` Slice 20.5 updated: `FolderSyncState` removed from scope with rationale documented
-- Test baseline confirmed unchanged: **368 tests, 992 assertions**
+### Slice 20 — Human Code Review & Cleanup Feedback [COMPLETE ✓]
 
----
+**Item 5 — Type Coverage Audit**
+- `BoxException` / `BoxResponseException`: constructor `$code` → `int|string`; `$boxCode` → `int|string|null`; `$status` → `int|string|null`
+- `Event`: `$type`, `$eventType`, `$sessionId` → `?string`; `$eventId` → `string|int|null`
+- `AdminEvent`: `$streamType` → `string`, `$limit` → `int`, date fields → `?string`
+- `Service` / `ServiceInterface`: `$connection` → `?ConnectionInterface`, `$token` → `?TokenInterface`; all methods fully typed
+- `Collaboration`: `$id` → `string|int|null`, date fields → `DateTimeInterface|string|null`, scalar fields → `?string`
+- `Folder`: scalar fields narrowed, `$size` → `?int`, `$hasCollaborations` → `?bool`
+- `SharedLink` + `Permissions`: all properties were untyped — now fully typed
+- `EventCollection`: `$chunkSize`/`$nextStreamPosition` → `int|string|null`, `$entries` → `?Collection`
+- Intentional `mixed` left with inline comments where Box API is genuinely polymorphic
 
-## Completed This Session (2026-05-15)
+**Item 6 — Property Hooks**: Deferred to post-v1. Rationale recorded in roadmap and next-session plan.
 
-### Pre-release task list
-- **`docs/planning/release-task-lists.md`** — Added `v1.0.0 Pre-Release Checklist` section (separate from v1 refactor steps): copyright date audit, GitHub repo rename, composer.json name/URL update, internal doc update, Packagist submission.
+**Item 7 — BoxClientFactory Namespace Move**
+- `Box\Service\BoxClientFactory` → `Box\Factory\BoxClientFactory`
+- `Box\Contract\BoxClientFactoryInterface` → `Box\Factory\BoxClientFactoryInterface`
+- `createClient()` → `createOAuth2Client()` on class and interface
+- All command files, tests, and `bin/box-sdk` updated
+- Migration guide section 10 added
 
-### Gate 9 — Additional PSR-14 Events (complete)
+### Constructor Hydration Cleanup (companion to type audit)
+- `AdminEvent`, `Token`, `Connection`, `AuthenticationResponse` — hydration removed from constructors
+- Hydration moved to: `TokenFactory`, `ConnectionFactory`, `AuthenticationResponseFactory`
+- Storage classes (`FilesystemTokenStorage`, `TokenStorage` PDO) now hydrate explicitly after blank construction
+- Tests updated to use factories where previously passing arrays to constructors
 
-**New event classes:**
+### `ext-pdo` added to `composer.json` require
+PDO is directly instantiated and type-hinted in `src/Storage/Token/Pdo/` — hard runtime dependency, now declared.
 
-| Class | Namespace | Payload |
-|---|---|---|
-| `TokenExchanged` | `Box\Event\Auth` | `TokenInterface $token` |
-| `TokenRefreshed` | `Box\Event\Auth` | `TokenInterface $token` |
-| `TokenRevoked` | `Box\Event\Auth` | `TokenInterface $token` |
-| `TokenLoadedFromStorage` | `Box\Event\Auth` | `TokenInterface $token` |
-| `TokenSavedToStorage` | `Box\Event\Auth` | `TokenInterface $token` |
-| `JwtTokenGenerated` | `Box\Event\Auth` | `TokenInterface $token` |
-| `FileUploaded` | `Box\Event\File` | `File $file` |
-| `RateLimitHit` | `Box\Event\Http` | `int $retryAfter` |
+### `static fn` style enforcement
+- All arrow functions in `src/` that do not reference `$this`/`self`/`static`/`parent` converted to `static fn`
+- Files touched: `CollaborationService`, `FileService` (×3), `FolderService`, `LoggerFactory`
+- Rule added to global memory (`feedback_code_style.md`) and canonical style doc (`docs/prompts/ai-workflow/php-code-style-guidance.md`)
 
-**Wiring:**
-- `Client.php` — fires `TokenExchanged`, `TokenRefreshed`, `TokenRevoked`, `TokenLoadedFromStorage`, `TokenSavedToStorage`; propagates dispatcher to `Connection` and `JwtProvider` in `setEventDispatcher()`, `setConnection()`, and `setAuthProvider()`
-- `FileService::uploadFile()` — fires `FileUploaded` after hydrating the result
-- `Connection::request()` — fires `RateLimitHit` before throwing `RateLimitException` on 429; optional `setEventDispatcher()` added to `Connection` (not to `ConnectionInterface`)
-- `JwtProvider::exchangeAssertion()` — fires `JwtTokenGenerated` after `tokenFactory->createToken()`; optional `setEventDispatcher()` added to `JwtProvider`
+### Slice 20.5 — Enum Wiring & Hydrator Audit [COMPLETE ✓]
 
-**Also fixed:** `Client::uploadFileToBox()` return type corrected from `array` to `File` (mismatch introduced in the previous session's typed return refactor); dispatcher now propagated to FileService in `uploadFileToBox()` matching the pattern in `chunkedUpload()`.
+**Hydrator fix**: Switched `::from()` → `::tryFrom()`; unknown enum values now skip the setter; union types containing `array` pass raw arrays through correctly.
 
-**Tests added (26 new assertions):**
-- `tests/Event/EventConstructionTest.php` — 9 construction tests for all 8 new event classes
-- `tests/Service/File/FileUploadedEventTest.php` — 3 tests for FileUploaded dispatch
-- `tests/Connection/RateLimitHitEventTest.php` — 4 tests for RateLimitHit dispatch
-- `tests/Auth/Jwt/JwtTokenGeneratedEventTest.php` — 3 tests for JwtTokenGenerated dispatch
-- `tests/Client/TokenLifecycleEventTest.php` — 6 tests for token lifecycle events
+**Enum wiring:**
+- `CollaborationRole` → `Collaboration::$role` (was `?string`)
+- `CollaborationStatus` enum created (`Accepted`, `Pending`, `Rejected`); wired to `Collaboration::$status`; old `in_array` validation removed
+- `SharedLinkAccess` → `SharedLink::$access` (was `?string`)
+- `BoxItemType` — evaluated, left as utility enum (no resource setter to wire to)
 
-**Docs:** Added §14 Events Reference to `docs/user/programmatic-usage.md` — full table of all dispatched events, payloads, and fire conditions; includes v1.1 note for auto-retry/auto-refresh hooks.
+**DTOs / narrowing:**
+- `PathCollection` DTO created (`src/Dto/PathCollection.php`); `File::setPathCollection` and `Folder::setPathCollection` coerce raw API arrays internally
+- `File::setSharedLink` narrowed to `?SharedLink`
 
----
+**Tests**: HydratorTest updated; CollaborationFactoryTest and CollaborationServiceTest updated for enum types; PathCollectionTest and EnumTest additions.
 
-## Slice 19 — Chunked Upload + PSR-14 Events [COMPLETE ✓]
+**Migration guide**: Sections 11–13 added.
 
-All 9 gates:
-1. PSR-14 infrastructure ✅
-2. FileStream additions ✅
-3. DTOs ✅
-4. FileService low-level API ✅
-5. Orchestrator ✅
-6. Client facade ✅
-7. Tests ✅
-8. Documentation ✅
-9. Additional PSR-14 events ✅
+### Roadmap / planning updates
+- Property hooks deferred to post-v1; rationale recorded in roadmap Deferred section
+- Consistent docblocks added as post-v1 item
+- PHP 8.4 property hooks added as post-v1 item
 
 ---
 
@@ -103,19 +96,13 @@ All 9 gates:
 - JWT CLI: `box:jwt:token` (enterprise) / `box:jwt:token --user-id=<ID>` (app user).
 - `BoxApiErrorTrait::error()` return type is `never` — always throws.
 - Webhook signing: `Box\Webhook\WebhookVerifier`; formula `base64(HMAC-SHA256(body + timestamp, key))`; CRUD deferred.
-- PSR-14: Optional `EventDispatcherInterface` injection on `Client` — same pattern as PSR-3 logger. Dispatcher propagated to `Connection` and `JwtProvider` via `instanceof` checks (not interface-enforced — pragmatic for v1).
+- PSR-14: Optional `EventDispatcherInterface` injection on `Client` — propagated to `Connection` and `JwtProvider` via `instanceof` checks.
 - Chunked upload: low-level session API public on `FileService`; orchestrator on `FileService` + `Client` facade.
-- Chunked upload part SHA1: `base64_encode(sha1($chunk, true))` — raw binary flag required.
-- Chunked upload whole-file SHA1: incremental via `hash_init/update/final`.
-- Auto-retry / auto-token-refresh: **not implemented**; deferred to v1.1. `RateLimitHit` and `TokenRefreshed` events are the hook points.
-- `ArrayConfigProvider`: good idea, deferred to v1.1.
+- Auto-retry / auto-token-refresh: deferred to v1.1.
 - `SearchService::search` returns raw `array` — intentional; Box returns heterogeneous entries.
-- `PagedResult<T>` (`Box\Dto\PagedResult`) and `GroupMembership` (`Box\Resource\GroupMembership`) added in previous session.
-
----
-
-## Deferred (Post-Slice-19)
-- `llms.txt` — deferred to v1.1 or v1.2.
-- **PHPDoc quality audit + PHPStan level bump** — post-v1.
-- **`BoxClientFactory` namespace move** — currently `Box\Service\BoxClientFactory`; belongs in `Box\Factory`. Breaking change. Own slice after Slice 19.
-- **`createOAuth2Client()` rename** — rename `BoxClientFactory::createClient()` to `createOAuth2Client()`. Same slice as namespace move. `BoxClientFactoryInterface` must update in tandem.
+- `PagedResult<T>` and `GroupMembership` in previous sessions.
+- `BoxClientFactory`: now `Box\Factory\BoxClientFactory`; `createOAuth2Client()` (was `createClient()`).
+- Constructors: `Token`, `Connection`, `AuthenticationResponse`, `AdminEvent` no longer self-hydrate — hydration belongs in factories.
+- Enums: `CollaborationRole`, `CollaborationStatus`, `SharedLinkAccess` wired to resource setters; `BoxItemType` is utility-only.
+- `PathCollection` DTO: `File` and `Folder` coerce raw API arrays in `setPathCollection`.
+- `static fn` over `fn` when closure has no `$this`/`self`/`static`/`parent` reference.
