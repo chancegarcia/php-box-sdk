@@ -79,6 +79,8 @@ This work assumes the completion of:
 | 16 | [Webhook Verification and Evaluation](#step-16--webhook-verification-and-evaluation) | ✓ |
 | 19 | [Chunked Upload + PSR-14 Events](#slice-19--chunked-upload--psr-14-events) | ✓ |
 | 20 | [Human Code Review & Cleanup Feedback](#slice-20--human-code-review--cleanup-feedback) | Not Started |
+| 21 | [Docblock Quality & Legacy Tag Cleanup](#slice-21--docblock-quality--legacy-tag-cleanup) | Not Started |
+| 22 | [License & Rebrand Preparation](#slice-22--license--rebrand-preparation) | Not Started |
 | 17 | [v1 Release Readiness](#step-17--v1-release-readiness) | Not Started |
 | 18 | [Documentation Cleanup and Organization](#step-18--documentation-cleanup-and-organization) | Not Started |
 
@@ -631,6 +633,100 @@ Move `Box\Service\BoxClientFactory` → `Box\Factory\BoxClientFactory`. Rename `
 - Qualifying DTOs/VOs use property hooks
 - `composer review` green
 - Migration guide updated if any public API changes
+
+---
+
+## Slice 21 — Docblock Quality & Legacy Tag Cleanup
+
+### Status
+- **Not Started**
+
+### Purpose
+Address remaining docblock quality issues and legacy annotation patterns not covered by Slice 20's type/throws audit. No new features — correctness and consistency only.
+
+### Scope
+
+#### `@inheritdoc` Correctness
+Audit all `@inheritDoc` / `{@inheritdoc}` uses in `src/`. Ensure each is on a method that actually overrides or implements a parent/interface method. Remove or replace where wrong or awkward.
+
+Pre-flight:
+```
+grep -rn "@inheritdoc\|{@inheritDoc}" src/ --include="*.php"
+```
+
+#### `@package` / `@subpackage` Removal
+Remove all `@package` and `@subpackage` tags from `src/` and `tests/`.
+
+**Decision**: Do not replace with `@psalm-package`/`@psalm-subpackage`. PSR-4 namespaces serve this purpose. `@psalm-package` is a Psalm visibility modifier, not a grouping tag. We use PHPStan, not Psalm.
+
+Pre-flight:
+```
+grep -rln "@package\|@subpackage" src/ tests/ --include="*.php"
+```
+
+#### `ConnectionInterface` / `EntrySource` Architectural Review
+Re-examine `ConnectionInterface` and `EntrySource` with current eyes. Inline deprecation/removal notes were added during earlier refactors. Determine for each symbol whether it is still v1-sound, should be removed now, or should be deferred with a documented rationale.
+
+#### `json_encode` / `json_decode` Hardening
+Audit all `json_encode` and `json_decode` calls in `src/`. Add `JSON_THROW_ON_ERROR` to every call. Catch `JsonException` at appropriate boundaries and translate to domain exceptions where needed.
+
+Pre-flight:
+```
+grep -rn "json_encode\|json_decode" src/ --include="*.php"
+```
+
+### Acceptance Criteria
+- No `@package`/`@subpackage` tags remain in `src/` or `tests/`
+- `@inheritdoc` usage is correct and consistent
+- `ConnectionInterface`/`EntrySource` decision recorded
+- All `json_encode`/`json_decode` calls pass `JSON_THROW_ON_ERROR`
+- `composer review` green
+
+---
+
+## Slice 22 — License & Rebrand Preparation
+
+### Status
+- **Not Started**
+
+### Purpose
+Transition the license from MIT to Apache-2.0, clean up per-file license headers, add the relicense note to user-facing docs, create the Packagist transition guide, and add the remote URL update task to the pre-release checklist.
+
+### Scope
+
+#### LICENSE File
+Replace `LICENSE` content with the full Apache 2.0 license text.
+
+#### `composer.json`
+Change `"license": "MIT"` → `"license": "Apache-2.0"`.
+
+#### File-Level License Header Removal
+**Decision**: Remove per-file copyright/license blocks entirely. Apache 2.0 does not require per-file notices; the root `LICENSE` file satisfies the license. Do not add `@license Apache-2.0` tags as a replacement.
+
+Pre-flight:
+```
+grep -rln "MIT License\|MIT license\|@license" src/ tests/ --include="*.php"
+```
+
+#### README & CHANGELOG Note
+Add the following to the v1.0.0 section of both `README.md` and `CHANGELOG.md`:
+
+> Note: Starting with v1.0.0, this SDK has been rebranded and transitioned from the MIT License to the Apache 2.0 License to provide better patent and trademark protections.
+
+#### Remote URL Update Task
+Add a checklist item in `docs/planning/release-task-lists.md` to update the remote repository URL to the new branded repo (performed by the user at rename time — not performed in this slice).
+
+#### Packagist Transition Guide
+Create `docs/planning/packagist-rebrand-guide.md` documenting the full Packagist abandonment/redirect process for the rebrand. See `docs/ai/next-session-plan.md` § Slice 22 for full content.
+
+### Acceptance Criteria
+- `LICENSE` contains Apache 2.0 text
+- `composer.json` `"license"` is `"Apache-2.0"`
+- All per-file MIT license blocks removed from `src/` and `tests/`
+- README and CHANGELOG include the v1 relicense note
+- `docs/planning/release-task-lists.md` has a remote URL update item
+- `docs/planning/packagist-rebrand-guide.md` created
+- `composer review` green
 
 ---
 

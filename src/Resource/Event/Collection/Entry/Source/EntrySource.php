@@ -8,6 +8,7 @@
  *
  * @package     Box
  * @subpackage  Box_Model
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -68,6 +69,7 @@ class EntrySource
 
     /**
      * @param string|int|null $sequenceId
+     *
      * @return void
      */
     public function setSequenceId(string|int|null $sequenceId): void
@@ -85,6 +87,7 @@ class EntrySource
 
     /**
      * @param string $type
+     *
      * @return void
      */
     public function setType(string $type): void
@@ -102,6 +105,7 @@ class EntrySource
 
     /**
      * @param string|int|null $id
+     *
      * @return void
      */
     public function setId(string|int|null $id): void
@@ -119,6 +123,7 @@ class EntrySource
 
     /**
      * @param string|null $etag
+     *
      * @return void
      */
     public function setEtag(?string $etag): void
@@ -136,6 +141,7 @@ class EntrySource
 
     /**
      * @param string|null $name
+     *
      * @return void
      */
     public function setName(?string $name): void
@@ -153,6 +159,7 @@ class EntrySource
 
     /**
      * @param DateTimeInterface|string|null $createdAt
+     *
      * @return void
      */
     public function setCreatedAt(DateTimeInterface|string|null $createdAt): void
@@ -170,6 +177,7 @@ class EntrySource
 
     /**
      * @param DateTimeInterface|string|null $modifiedAt
+     *
      * @return void
      */
     public function setModifiedAt(DateTimeInterface|string|null $modifiedAt): void
@@ -187,6 +195,7 @@ class EntrySource
 
     /**
      * @param string|null $description
+     *
      * @return void
      */
     public function setDescription(?string $description): void
@@ -204,6 +213,7 @@ class EntrySource
 
     /**
      * @param int|null $size
+     *
      * @return void
      */
     public function setSize(?int $size): void
@@ -221,6 +231,7 @@ class EntrySource
 
     /**
      * @param string|null $createdBy
+     *
      * @return void
      */
     public function setCreatedBy(?string $createdBy): void
@@ -238,6 +249,7 @@ class EntrySource
 
     /**
      * @param string|null $modifiedBy
+     *
      * @return void
      */
     public function setModifiedBy(?string $modifiedBy): void
@@ -255,6 +267,7 @@ class EntrySource
 
     /**
      * @param string|null $ownedBy
+     *
      * @return void
      */
     public function setOwnedBy(?string $ownedBy): void
@@ -272,6 +285,7 @@ class EntrySource
 
     /**
      * @param string|null $sharedLink
+     *
      * @return void
      */
     public function setSharedLink(?string $sharedLink): void
@@ -289,6 +303,7 @@ class EntrySource
 
     /**
      * @param Folder|array|null $parent
+     *
      * @return void
      */
     public function setParent(Folder|array|null $parent): void
@@ -306,6 +321,7 @@ class EntrySource
 
     /**
      * @param string|null $itemStatus
+     *
      * @return void
      */
     public function setItemStatus(?string $itemStatus): void
@@ -323,6 +339,7 @@ class EntrySource
 
     /**
      * @param mixed $synced
+     *
      * @return void
      */
     public function setSynced(mixed $synced): void

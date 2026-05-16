@@ -22,8 +22,9 @@ class FolderService extends Service implements FolderServiceInterface
 
     /**
      * @param string|int $id
-     * @return Folder
+     *
      * @throws \Box\Exception\BoxException
+     * @return Folder
      */
     public function getFolder(string|int $id): Folder
     {
@@ -90,9 +91,10 @@ class FolderService extends Service implements FolderServiceInterface
     /**
      * @param Folder $folder
      * @param string|bool|null $ifMatch
-     * @return Folder
+     *
      * @throws BoxResponseException
      * @throws JsonException
+     * @return Folder
      */
     public function updateFolder(Folder $folder, string|bool|null $ifMatch = null): Folder
     {

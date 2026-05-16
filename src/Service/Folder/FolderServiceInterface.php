@@ -11,18 +11,21 @@ interface FolderServiceInterface extends AuthenticatedServiceInterface
      * @param string|int $folderId
      * @param int $limit
      * @param int $offset
+     *
      * @return string
      */
     public function getFolderItemsUri(string|int $folderId, int $limit = 100, int $offset = 0): string;
 
     /**
      * @param string|int $id
+     *
      * @return Folder
      */
     public function getFolder(string|int $id): Folder;
 
     /**
      * @param string $sharedUri
+     *
      * @return Folder|false
      */
     public function getFolderBySharedUri(string $sharedUri): Folder|false;
@@ -31,6 +34,7 @@ interface FolderServiceInterface extends AuthenticatedServiceInterface
      * @param string|int $id
      * @param int $limit
      * @param int $offset
+     *
      * @return Folder
      */
     public function getFolderItems(string|int $id, int $limit = 100, int $offset = 0): Folder;
@@ -39,6 +43,7 @@ interface FolderServiceInterface extends AuthenticatedServiceInterface
      * @param string $name
      * @param string|int $parentId
      * @param array $options
+     *
      * @return Folder
      */
     public function createFolder(string $name, string|int $parentId = 0, array $options = []): Folder;
@@ -48,6 +53,7 @@ interface FolderServiceInterface extends AuthenticatedServiceInterface
     /**
      * @param string $id
      * @param bool $recursive
+     *
      * @return void
      */
     public function deleteFolder(string $id, bool $recursive = false): void;
@@ -55,6 +61,7 @@ interface FolderServiceInterface extends AuthenticatedServiceInterface
     /**
      * @param Folder $folder
      * @param array|null $params
+     *
      * @return Folder
      */
     public function createSharedLink(Folder $folder, ?array $params = null): Folder;
@@ -63,6 +70,7 @@ interface FolderServiceInterface extends AuthenticatedServiceInterface
      * @param Folder $originalFolder
      * @param Folder $parent
      * @param string|null $name
+     *
      * @return Folder
      */
     public function copyFolder(Folder $originalFolder, Folder $parent, ?string $name = null): Folder;

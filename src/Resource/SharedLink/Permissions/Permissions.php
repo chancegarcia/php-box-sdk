@@ -8,6 +8,7 @@
  *
  * @package     Box
  * @subpackage  Box_Item
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -51,6 +52,7 @@ class Permissions
 
     /**
      * @param bool|null $canDownload
+     *
      * @return void
      */
     public function setCanDownload($canDownload = null): void
@@ -68,6 +70,7 @@ class Permissions
 
     /**
      * @param bool|null $canPreview
+     *
      * @return void
      */
     public function setCanPreview($canPreview = null): void

@@ -8,6 +8,7 @@
  *
  * @package     Box
  * @subpackage  Box_Item
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -57,6 +58,7 @@ class SharedLink
 
     /**
      * @param string|null $access
+     *
      * @return void
      */
     public function setAccess($access = null): void
@@ -74,7 +76,9 @@ class SharedLink
 
     /**
      * @param DateTimeInterface|string|null $unsharedAt
+     *
      * @return void
+     *
      * @todo v1.0 \DateTimeImmutable|null type
      */
     public function setUnsharedAt($unsharedAt = null): void
@@ -92,6 +96,7 @@ class SharedLink
 
     /**
      * @param string|null $password
+     *
      * @return void
      */
     public function setPassword($password = null): void
@@ -109,6 +114,7 @@ class SharedLink
 
     /**
      * @param Permissions|null $permissions
+     *
      * @return void
      */
     public function setPermissions(?Permissions $permissions = null): void
@@ -126,6 +132,7 @@ class SharedLink
 
     /**
      * @param string|null $effectiveAccess
+     *
      * @return void
      */
     public function setEffectiveAccess($effectiveAccess = null): void

@@ -8,6 +8,7 @@
  *
  * @package     Box
  * @subpackage  Box_Model
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -61,6 +62,7 @@ class EventCollection
 
     /**
      * @param mixed $originalEntries
+     *
      * @return void
      */
     public function setOriginalEntries($originalEntries = null): void
@@ -78,6 +80,7 @@ class EventCollection
 
     /**
      * @param mixed $chunkSize
+     *
      * @return void
      */
     public function setChunkSize($chunkSize = null): void
@@ -95,6 +98,7 @@ class EventCollection
 
     /**
      * @param mixed $nextStreamPosition
+     *
      * @return void
      */
     public function setNextStreamPosition($nextStreamPosition = null): void
@@ -112,6 +116,8 @@ class EventCollection
 
     /**
      * @param Collection|array|null $entries
+     *
+     * @throws BoxException
      * @return void
      */
     public function setEntries($entries = null): void

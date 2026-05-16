@@ -3,6 +3,7 @@
 /**
  * @package     Box
  * @subpackage  Box_Http_Response
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2016 Chance Garcia, chancegarcia.com
  *
@@ -43,6 +44,7 @@ class ResponseHeader implements ResponseHeaderInterface
 
     /**
      * @param string $sHeader
+     *
      * @throws BoxException
      */
     public function __construct($sHeader = '', $statusLineClass = StatusLine::class)

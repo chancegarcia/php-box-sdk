@@ -3,6 +3,7 @@
 /**
  * @package     Box
  * @subpackage  Box_Http_Response
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2016 Chance Garcia, chancegarcia.com
  *
@@ -28,6 +29,7 @@ interface StatusLineInterface
 
     /**
      * @param string|null $httpVersion
+     *
      * @return void
      */
     public function setHttpVersion(?string $httpVersion = null): void;
@@ -39,6 +41,7 @@ interface StatusLineInterface
 
     /**
      * @param int|null $statusCode
+     *
      * @return void
      */
     public function setStatusCode(?int $statusCode = null): void;
@@ -50,6 +53,7 @@ interface StatusLineInterface
 
     /**
      * @param string|null $reasonPhrase
+     *
      * @return void
      */
     public function setReasonPhrase(?string $reasonPhrase = null): void;
@@ -61,6 +65,7 @@ interface StatusLineInterface
 
     /**
      * @param string|null $httpVersionPrefix
+     *
      * @return void
      */
     public function setHttpVersionPrefix(?string $httpVersionPrefix = null): void;
@@ -72,6 +77,7 @@ interface StatusLineInterface
 
     /**
      * @param string|null $httpVersionNumber
+     *
      * @return void
      */
     public function setHttpVersionNumber(?string $httpVersionNumber = null): void;

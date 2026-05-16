@@ -8,6 +8,7 @@
  *
  * @package     Box
  * @subpackage  Box_Storage
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -442,6 +443,7 @@ class TokenStorage implements TokenStorageInterface
      * Helper for nullable column comparison in WHERE clause.
      *
      * @param string $column
+     *
      * @return string
      */
     protected function getNullableColumnSql(string $column): string

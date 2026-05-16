@@ -3,6 +3,7 @@
 /**
  * @package     Box
  * @subpackage  Box_Connection
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -44,6 +45,7 @@ interface ConnectionInterface extends LoggerAwareInterface
      * @param string $method HTTP method (GET, POST, PUT, DELETE, …)
      * @param string $uri
      * @param array $options Guzzle-compatible options: 'body', 'headers', 'multipart', etc.
+     *
      * @return BoxResponseInterface
      */
     public function request(string $method, string $uri, array $options = []): BoxResponseInterface;
@@ -52,6 +54,7 @@ interface ConnectionInterface extends LoggerAwareInterface
      * GET
      *
      * @param string $uri
+     *
      * @return BoxResponseInterface
      */
     public function query(string $uri): BoxResponseInterface;
@@ -64,6 +67,7 @@ interface ConnectionInterface extends LoggerAwareInterface
      *                                  encoded string will become the only valid value
      * @param bool $nameValuePair this will be deprecated/fully removed in the future since params as a json
      *                                  encoded string will be the expected value
+     *
      * @return BoxResponseInterface
      */
     public function post(string $uri, array|string $params = [], bool $nameValuePair = false): BoxResponseInterface;
@@ -72,6 +76,7 @@ interface ConnectionInterface extends LoggerAwareInterface
      * @param string $uri
      * @param array|string $params array will be deprecated in the future;
      *                             json encoded string will become the only valid value
+     *
      * @return BoxResponseInterface
      */
     public function put(string $uri, array|string $params = []): BoxResponseInterface;
@@ -80,12 +85,14 @@ interface ConnectionInterface extends LoggerAwareInterface
      * DELETE
      *
      * @param string $uri
+     *
      * @return BoxResponseInterface
      */
     public function delete(string $uri): BoxResponseInterface;
 
     /**
      * @param string $file file/path to file
+     *
      * @return mixed
      */
     public function getMimeType(string $file): mixed;
@@ -94,6 +101,7 @@ interface ConnectionInterface extends LoggerAwareInterface
      * @param string $uri
      * @param string|FileStream $file file/path to file or FileStream object
      * @param string|int $parentId
+     *
      * @return array|BoxResponseInterface
      */
     public function postFile(

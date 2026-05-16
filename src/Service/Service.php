@@ -8,6 +8,7 @@
  *
  * @package     Box
  * @subpackage  Box_Model
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -86,6 +87,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
 
     /**
      * @param ConnectionInterface|null $connection
+     *
      * @return void
      */
     public function setConnection($connection = null)
@@ -107,6 +109,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
 
     /**
      * @param Token|TokenInterface $token
+     *
      * @return void
      */
     public function setToken($token = null)
@@ -117,8 +120,9 @@ class Service implements ServiceInterface, LoggerAwareInterface
     /**
      * @param ?BoxResponseInterface $response
      * @param string $returnType 'decoded', 'flat', 'array', or 'original'
-     * @return mixed
+     *
      * @throws BoxResponseException
+     * @return mixed
      */
     public function handleBoxResponse(?BoxResponseInterface $response = null, $returnType = 'decoded')
     {
@@ -150,6 +154,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
 
     /**
      * @param BoxResponseInterface $response
+     *
      * @return BoxResponseException
      */
     protected function processResponseError(BoxResponseInterface $response): BoxResponseException
@@ -170,6 +175,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
      * Send a DELETE request and discard the (typically 204) response.
      *
      * @param string $uri
+     *
      * @throws BoxResponseException
      */
     protected function sendDeleteToBox(string $uri): void
@@ -181,10 +187,12 @@ class Service implements ServiceInterface, LoggerAwareInterface
     /**
      * Hydrate a decoded payload into a class.
      *
-     * @template T of object
      * @param class-string<T> $targetClass
      * @param array|stdClass $data
+     *
      * @return T
+     *
+     * @template T of object
      */
     protected function hydrate(string $targetClass, array|stdClass $data): object
     {
@@ -195,11 +203,13 @@ class Service implements ServiceInterface, LoggerAwareInterface
     /**
      * Helper to get and hydrate a resource from Box.
      *
-     * @template T of object
      * @param string $uri
      * @param class-string<T> $resourceClass
-     * @return T
+     *
      * @throws BoxException
+     * @return T
+     *
+     * @template T of object
      */
     protected function getResourceFromBox(string $uri, string $resourceClass): object
     {
@@ -212,10 +222,12 @@ class Service implements ServiceInterface, LoggerAwareInterface
     /**
      * Hydrate a Box paged-collection response into a typed PagedResult.
      *
-     * @template T of object
      * @param array $data Flat response array with 'entries', 'total_count', 'offset', 'limit'
      * @param class-string<T> $entryClass
+     *
      * @return PagedResult<T>
+     *
+     * @template T of object
      */
     protected function hydratePagedResult(array $data, string $entryClass): PagedResult
     {
@@ -235,12 +247,14 @@ class Service implements ServiceInterface, LoggerAwareInterface
     /**
      * Helper to send an update to Box and hydrate the response.
      *
-     * @template T of object
      * @param string $uri
      * @param array|string $params
      * @param class-string<T> $resourceClass
-     * @return T
+     *
      * @throws BoxException
+     * @return T
+     *
+     * @template T of object
      */
     protected function sendUpdateAndHydrate(string $uri, array|string $params, string $resourceClass): object
     {

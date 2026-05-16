@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Exception;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionNamedType;
 use ReflectionProperty;
 use ReflectionType;
@@ -16,10 +17,13 @@ use stdClass;
 class Hydrator
 {
     /**
-     * @template T of object
      * @param class-string<T>|T $target
      * @param array|stdClass $data
+     *
+     * @throws ReflectionException
      * @return T
+     *
+     * @template T of object
      */
     public function hydrate(string|object $target, array|stdClass $data): object
     {

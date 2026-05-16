@@ -3,6 +3,7 @@
 /**
  * @package     Box_Group
  * @subpackage  Box_Group_Exception
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2014 Chance Garcia, chancegarcia.com
  *

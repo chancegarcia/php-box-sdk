@@ -8,6 +8,7 @@
  *
  * @package     Box
  * @subpackage  Box_Model
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -60,6 +61,7 @@ class Event
 
     /**
      * @param mixed $type
+     *
      * @return void
      */
     public function setType(mixed $type = null): void
@@ -77,6 +79,7 @@ class Event
 
     /**
      * @param mixed $eventId
+     *
      * @return void
      */
     public function setEventId(mixed $eventId = null): void
@@ -94,6 +97,7 @@ class Event
 
     /**
      * @param mixed $createdBy
+     *
      * @return void
      */
     public function setCreatedBy(mixed $createdBy = null): void
@@ -111,6 +115,7 @@ class Event
 
     /**
      * @param mixed $eventType
+     *
      * @return void
      */
     public function setEventType(mixed $eventType = null): void
@@ -128,6 +133,7 @@ class Event
 
     /**
      * @param mixed $sessionId
+     *
      * @return void
      */
     public function setSessionId(mixed $sessionId = null): void
@@ -145,6 +151,7 @@ class Event
 
     /**
      * @param mixed $source
+     *
      * @return void
      */
     public function setSource(mixed $source = null): void

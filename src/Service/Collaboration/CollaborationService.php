@@ -14,9 +14,10 @@ class CollaborationService extends Service implements CollaborationServiceInterf
     public const ENDPOINT = "https://api.box.com/2.0/collaborations";
 
     /**
-     * @inheritdoc
-     * @return PagedResult<Collaboration>
      * @throws BoxResponseException
+     * @return PagedResult<Collaboration>
+     *
+     * @inheritdoc
      */
     public function getFolderCollaborations(Folder $folder): PagedResult
     {

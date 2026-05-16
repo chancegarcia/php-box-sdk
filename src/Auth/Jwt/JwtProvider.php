@@ -102,10 +102,7 @@ class JwtProvider implements JwtProviderInterface
         }
 
         $token = $this->tokenFactory->createToken($data);
-
-        if (null !== $this->eventDispatcher) {
-            $this->eventDispatcher->dispatch(new JwtTokenGenerated($token));
-        }
+        $this->eventDispatcher?->dispatch(new JwtTokenGenerated($token));
 
         return $token;
     }

@@ -8,6 +8,7 @@
  *
  * @package     Box
  * @subpackage  Box_Model
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *

@@ -18,8 +18,9 @@ class GroupService extends Service implements GroupServiceInterface
     /**
      * @param int $limit
      * @param int $offset
-     * @return PagedResult<Group>
+     *
      * @throws BoxResponseException
+     * @return PagedResult<Group>
      */
     public function listGroups(int $limit = 100, int $offset = 0): PagedResult
     {
@@ -67,8 +68,9 @@ class GroupService extends Service implements GroupServiceInterface
      * @param string|int $groupId
      * @param int|string $limit
      * @param int|string $offset
-     * @return PagedResult<GroupMembership>
+     *
      * @throws BoxResponseException
+     * @return PagedResult<GroupMembership>
      */
     public function getGroupMembershipList(string|int $groupId, int|string $limit = 100, int|string $offset = 0): PagedResult
     {
@@ -82,6 +84,7 @@ class GroupService extends Service implements GroupServiceInterface
      * @param string|int $groupId
      * @param int|string $limit
      * @param int|string $offset
+     *
      * @return string
      */
     public function getMembershipListUri(string|int $groupId, int|string $limit = 100, int|string $offset = 0): string

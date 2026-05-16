@@ -8,6 +8,7 @@
  *
  * @package     Box
  * @subpackage  Box_Model
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -57,6 +58,7 @@ class AdminEvent extends Event
 
     /**
      * @param array|stdClass $aData
+     *
      * @deprecated Use Hydrator::hydrate() instead.
      */
     public function mapBoxToClass(array|stdClass $aData): void
@@ -88,6 +90,7 @@ class AdminEvent extends Event
 
     /**
      * @param mixed $limit
+     *
      * @return void
      */
     public function setLimit(mixed $limit = null): void
@@ -105,6 +108,7 @@ class AdminEvent extends Event
 
     /**
      * @param mixed $streamPosition
+     *
      * @return void
      */
     public function setStreamPosition(mixed $streamPosition = null): void
@@ -122,6 +126,7 @@ class AdminEvent extends Event
 
     /**
      * @param mixed $createdAfter
+     *
      * @return void
      */
     public function setCreatedAfter(mixed $createdAfter = null): void
@@ -139,6 +144,7 @@ class AdminEvent extends Event
 
     /**
      * @param mixed $createdBefore
+     *
      * @return void
      */
     public function setCreatedBefore(mixed $createdBefore = null): void

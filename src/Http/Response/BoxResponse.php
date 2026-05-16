@@ -3,6 +3,7 @@
 /**
  * @package     Box
  * @subpackage  Box_Http_Response
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2016 Chance Garcia, chancegarcia.com
  *
@@ -167,6 +168,7 @@ class BoxResponse implements BoxResponseInterface
     /**
      * @param string $name
      * @param string|string[] $value
+     *
      * @return static
      */
     public function withHeader(string $name, $value): static
@@ -180,6 +182,7 @@ class BoxResponse implements BoxResponseInterface
     /**
      * @param string $name
      * @param string|string[] $value
+     *
      * @return static
      */
     public function withAddedHeader(string $name, $value): static

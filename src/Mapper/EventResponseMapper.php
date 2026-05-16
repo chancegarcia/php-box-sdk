@@ -20,6 +20,7 @@ final class EventResponseMapper
 
     /**
      * @param array|stdClass|ArrayAccess<string, mixed> $data
+     *
      * @throws BoxException
      */
     public function map(array|stdClass|ArrayAccess $data): EventResponse

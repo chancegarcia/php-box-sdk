@@ -3,6 +3,7 @@
 /**
  * @package     Box
  * @subpackage  Box_Client
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -84,7 +85,8 @@ class Client implements LoggerAwareInterface
      */
     protected ?ConnectionInterface $connection = null;
     /**
-     * @var array of folder items indexed by the folder ID
+     * @var array|null $folders array of folder items indexed by the folder ID
+     *
      * @internal should just be an array of any folder known/retrieved by the client. does not need to be recursive
      *     since folders know their parents and items
      */
@@ -139,6 +141,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param array|null $options
+     *
      * @return Folder
      */
     public function getNewFolder(?array $options = null): Folder
@@ -148,6 +151,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param array|null $options
+     *
      * @return User
      */
     public function getNewUser(?array $options = null): User
@@ -157,6 +161,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param array|null $options
+     *
      * @return Group
      */
     public function getNewGroup(?array $options = null): Group
@@ -166,6 +171,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param array|null $options
+     *
      * @return Collaboration
      */
     public function getNewCollaboration(?array $options = null): Collaboration
@@ -175,6 +181,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param array|null $options
+     *
      * @return File
      */
     public function getNewFile(?array $options = null): File
@@ -185,6 +192,7 @@ class Client implements LoggerAwareInterface
     /**
      * @param string|int $id use 0 for returning all folders
      * @param bool $retrieve if no folder is found, attempt to retrieve from box
+     *
      * @return Folder|null returns null if no such folder exists and retrieve is false
      */
     public function getFolder(string|int $id = 0, bool $retrieve = true): ?Folder
@@ -220,7 +228,9 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param bool $retrieve
+     *
      * @return array<string|int, Folder>|null
+     * @throws BoxException
      */
     public function getFolders(bool $retrieve = true): ?array
     {
@@ -244,8 +254,9 @@ class Client implements LoggerAwareInterface
      * @param null $group
      * @param null $limit leave null to get all; if limit is null but offset is numeric, limit will default to 100
      * @param null $offset leave null to get all; if limit is null but offset is numeric, limit will default to 100
+     *
+     * @throws BoxException
      * @return array returns an array of User objects that are in the group membership
-     * @throws \Box\Exception\BoxException
      */
     public function getGroupMembershipList(Group|string|int|null $group = null, ?int $limit = null, ?int $offset = null): array
     {
@@ -322,8 +333,9 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param string|int $id
-     * @return Folder
+     *
      * @throws BoxException
+     * @return Folder
      */
     public function getFolderFromBox(string|int $id = 0): Folder
     {
@@ -336,6 +348,7 @@ class Client implements LoggerAwareInterface
      * @param Folder $folder
      * @param int $limit
      * @param int $offset
+     *
      * @return Folder
      */
     public function getBoxFolderItems(Folder $folder, int $limit = 100, int $offset = 0): Folder
@@ -347,8 +360,9 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param string|int $id
-     * @return array
+     *
      * @throws BoxException
+     * @return array
      */
     public function getFolderItems(string|int $id = 0): array
     {
@@ -364,8 +378,9 @@ class Client implements LoggerAwareInterface
      * @param string $name
      * @param string|int $parentFolderId
      * @param array|null $options
-     * @return Folder
+     *
      * @throws BoxException
+     * @return Folder
      */
     public function createNewBoxFolder(string $name, string|int $parentFolderId = 0, ?array $options = []): Folder
     {
@@ -377,6 +392,7 @@ class Client implements LoggerAwareInterface
     /**
      * @param Folder $folder
      * @param string|bool $ifMatchHeader etag string or true to use folder's current etag
+     *
      * @return Folder
      */
     public function updateBoxFolder(Folder $folder, string|bool $ifMatchHeader = false): Folder
@@ -388,8 +404,9 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param Folder $folder
-     * @return PagedResult<Collaboration>
+     *
      * @throws BoxException
+     * @return PagedResult<Collaboration>
      */
     public function getFolderCollaborations(Folder $folder): PagedResult
     {
@@ -403,8 +420,9 @@ class Client implements LoggerAwareInterface
      * @param User|Group $collaborator
      * @param string $role see {@link http://developers.box.com/docs/#collaborations box documentation for all possible
      *     roles} default is viewer
-     * @return Collaboration
+     *
      * @throws BoxException
+     * @return Collaboration
      */
     public function addCollaboration(Folder $folder, User|Group $collaborator, string $role = 'viewer'): Collaboration
     {
@@ -442,8 +460,9 @@ class Client implements LoggerAwareInterface
      * @param null|Folder $folder
      * @param array|null shared link options with
      * default shared link set to collaborator access, no unshared time or permissions set to
-     * @return Folder
+     *
      * @throws BoxException
+     * @return Folder
      */
     public function createSharedLinkForFolder(?Folder $folder = null, ?array $params = null): Folder
     {
@@ -463,9 +482,11 @@ class Client implements LoggerAwareInterface
      * @param Folder $parent
      * @param string|null $name
      * @param bool $addToFolders
-     * @return Folder
+     *
      * @throws \Exception
      * @throws BoxException
+     * @return Folder
+     *
      * @internal param $destinationId
      */
     public function copyBoxFolder(Folder $originalFolder, Folder $parent, ?string $name = null, bool $addToFolders = true): Folder
@@ -484,8 +505,9 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param BoxResponseInterface $response
-     * @return array
+     *
      * @throws BoxException
+     * @return array
      */
     public function parseResponse(BoxResponseInterface $response): array
     {
@@ -496,8 +518,9 @@ class Client implements LoggerAwareInterface
     /**
      * @param string|FileStream $file
      * @param string|int $parentId
-     * @return File
+     *
      * @throws BoxException
+     * @return File
      */
     public function uploadFileToBox(string|FileStream $file, string|int $parentId = 0): File
     {
@@ -535,16 +558,14 @@ class Client implements LoggerAwareInterface
         $this->setToken($token);
         $this->saveTokenToStorage($token);
 
-        if (null !== $this->eventDispatcher) {
-            $this->eventDispatcher->dispatch(new TokenExchanged($token));
-        }
+        $this->eventDispatcher?->dispatch(new TokenExchanged($token));
 
         return $token;
     }
 
     /**
-     * @return TokenInterface
      * @throws BoxException
+     * @return TokenInterface
      */
     public function refreshToken(): TokenInterface
     {
@@ -564,25 +585,21 @@ class Client implements LoggerAwareInterface
         $this->setToken($newToken);
         $this->saveTokenToStorage($newToken);
 
-        if (null !== $this->eventDispatcher) {
-            $this->eventDispatcher->dispatch(new TokenRefreshed($newToken));
-        }
+        $this->eventDispatcher?->dispatch(new TokenRefreshed($newToken));
 
         return $newToken;
     }
 
     /**
      * @param TokenInterface $token
-     * @return array
+     *
      * @throws BoxException
+     * @return array
      */
     public function destroyToken(TokenInterface $token): array
     {
         $this->getAuthProvider()->revokeToken($token);
-
-        if (null !== $this->eventDispatcher) {
-            $this->eventDispatcher->dispatch(new TokenRevoked($token));
-        }
+        $this->eventDispatcher?->dispatch(new TokenRevoked($token));
 
         return ['success' => true];
     }
@@ -599,6 +616,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param string|null $clientId
+     *
      * @return void
      */
     public function setClientId(string $clientId = ''): void
@@ -616,6 +634,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param string|null $clientSecret
+     *
      * @return void
      */
     public function setClientSecret(string $clientSecret = ''): void
@@ -633,6 +652,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param string|null $authorizationCode
+     *
      * @return void
      */
     public function setAuthorizationCode(?string $authorizationCode = null): void
@@ -763,6 +783,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param array<string|int, File>|null $files
+     *
      * @return void
      */
     public function setFiles(?array $files = null): void
@@ -778,6 +799,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param array<string|int, Folder>|null $folders
+     *
      * @return void
      */
     public function setFolders(?array $folders = null): void
@@ -788,6 +810,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param array<int, Collaboration>|null $collaborations
+     *
      * @return void
      */
     public function setCollaborations(?array $collaborations = null): void
@@ -828,6 +851,7 @@ class Client implements LoggerAwareInterface
      * If successful, the loaded token is set on the Client.
      *
      * @param TokenStorageContext|null $context
+     *
      * @return TokenInterface|null
      */
     public function loadTokenFromStorage(?TokenStorageContext $context = null): ?TokenInterface
@@ -844,9 +868,7 @@ class Client implements LoggerAwareInterface
         if (null !== $token) {
             $this->setToken($token);
 
-            if (null !== $this->eventDispatcher) {
-                $this->eventDispatcher->dispatch(new TokenLoadedFromStorage($token));
-            }
+            $this->eventDispatcher?->dispatch(new TokenLoadedFromStorage($token));
         }
 
         return $token;
@@ -857,6 +879,7 @@ class Client implements LoggerAwareInterface
      *
      * @param TokenInterface|null $token If null, the current Client token is used.
      * @param TokenStorageContext|null $context If null, the configured Client context is used.
+     *
      * @return void
      */
     public function saveTokenToStorage(?TokenInterface $token = null, ?TokenStorageContext $context = null): void
@@ -870,16 +893,14 @@ class Client implements LoggerAwareInterface
         }
 
         $storage->storeToken($token, $context);
-
-        if (null !== $this->eventDispatcher) {
-            $this->eventDispatcher->dispatch(new TokenSavedToStorage($token));
-        }
+        $this->eventDispatcher?->dispatch(new TokenSavedToStorage($token));
     }
 
     /**
      * Remove token from configured storage using provided or configured context.
      *
      * @param TokenStorageContext|null $context If null, the configured Client context is used.
+     *
      * @return void
      */
     public function removeTokenFromStorage(?TokenStorageContext $context = null): void
@@ -896,6 +917,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param Folder|null $root
+     *
      * @return void
      */
     public function setRoot(?Folder $root = null): void
@@ -913,8 +935,9 @@ class Client implements LoggerAwareInterface
 
     /**
      * @param string $uri
-     * @return array
+     *
      * @throws BoxException
+     * @return array
      */
     public function query(string $uri): array
     {
@@ -930,8 +953,9 @@ class Client implements LoggerAwareInterface
      * @param int|null $limit
      * @param int|null $offset
      * @param string|null $type
-     * @return array
+     *
      * @throws BoxException
+     * @return array
      */
     public function search(?string $query = null, ?int $limit = null, ?int $offset = null, ?string $type = null): array
     {

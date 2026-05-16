@@ -18,6 +18,7 @@ interface JwtProviderInterface extends AuthProviderInterface
      * Exchange JWT assertion for an app user token.
      *
      * @param string $userId
+     *
      * @return TokenInterface
      */
     public function exchangeForAppUserToken(string $userId): TokenInterface;

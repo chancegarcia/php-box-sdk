@@ -3,6 +3,7 @@
 /**
  * @package
  * @subpackage
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013-2016 Chance Garcia, chancegarcia.com
  *
@@ -38,8 +39,9 @@ class ResponseParser
     /**
      * @param string $sStatusLine
      * @param bool $associative  if true, then returns with keys: httpVersion, statusCode, reasonPhrase
-     * @return array if non-associative, return in order: httpVersion, statusCode, reasonPhrase
+     *
      * @throws BoxException
+     * @return array if non-associative, return in order: httpVersion, statusCode, reasonPhrase
      */
     public static function parseHeaderStatusLine(string $sStatusLine = '', bool $associative = true): array
     {
@@ -79,6 +81,7 @@ class ResponseParser
     /**
      * @param string $sHeaders
      * @param bool $replace
+     *
      * @return array
      */
     public static function parseHeader(string $sHeaders = '', bool $replace = false): array

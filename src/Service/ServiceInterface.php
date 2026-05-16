@@ -8,6 +8,7 @@
  *
  * @package     Box
  * @subpackage  Box_Model
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -50,6 +51,7 @@ interface ServiceInterface
 
     /**
      * @param ConnectionInterface|null $connection
+     *
      * @return void
      */
     public function setConnection($connection = null);
@@ -61,6 +63,7 @@ interface ServiceInterface
 
     /**
      * @param TokenInterface|null $token
+     *
      * @return void
      */
     public function setToken($token = null);
@@ -68,9 +71,10 @@ interface ServiceInterface
     /**
      * @param BoxResponseInterface|null $response
      * @param string $returnType 'decoded', 'flat', 'array', or 'original'
-     * @return mixed
+     *
      * @throws \Box\Exception\BoxException
      * @throws BadMethodCallException
+     * @return mixed
      */
     public function handleBoxResponse(?BoxResponseInterface $response = null, $returnType = 'decoded');
 }

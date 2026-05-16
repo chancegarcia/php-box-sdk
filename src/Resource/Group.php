@@ -3,6 +3,7 @@
 /**
  * @package     Box
  * @subpackage  Box_Group
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2014 Chance Garcia, chancegarcia.com
  *
@@ -44,6 +45,7 @@ class Group
 
     /**
      * @param string|int|null $id
+     *
      * @return void
      */
     public function setId(string|int|null $id = null): void
@@ -58,6 +60,7 @@ class Group
 
     /**
      * @param DateTimeInterface|string|null $createdAt
+     *
      * @return void
      */
     public function setCreatedAt(DateTimeInterface|string|null $createdAt = null): void
@@ -75,6 +78,7 @@ class Group
 
     /**
      * @param DateTimeInterface|string|null $modifiedAt
+     *
      * @return void
      */
     public function setModifiedAt(DateTimeInterface|string|null $modifiedAt = null): void
@@ -92,6 +96,7 @@ class Group
 
     /**
      * @param string|null $name
+     *
      * @throws GroupException
      * @return void
      */

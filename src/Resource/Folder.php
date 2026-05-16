@@ -3,6 +3,7 @@
 /**
  * @package     Box
  * @subpackage  Box_Resource
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -62,8 +63,9 @@ class Folder
 
     /**
      * @param string $syncState
-     * @return array
+     *
      * @throws BoxException
+     * @return array
      */
     public function classArray(string $syncState = "synced"): array
     {
@@ -160,7 +162,9 @@ class Folder
 
     /**
      * @param string|int|null $id
+     *
      * @return void
+     *
      * @todo v1.0 strict string type
      */
     public function setId($id = null): void
@@ -170,7 +174,9 @@ class Folder
 
     /**
      * @param DateTimeInterface|string|null $createdAt
+     *
      * @return void
+     *
      * @todo v1.0 \DateTimeImmutable|null type
      */
     public function setCreatedAt($createdAt = null): void
@@ -198,6 +204,7 @@ class Folder
 
     /**
      * @param string|null $description
+     *
      * @return void
      */
     public function setDescription($description = null): void
@@ -212,6 +219,7 @@ class Folder
 
     /**
      * @param string|null $etag
+     *
      * @return void
      */
     public function setEtag($etag = null): void
@@ -256,7 +264,9 @@ class Folder
 
     /**
      * @param string|null $itemStatus
+     *
      * @return void
+     *
      * @todo v1.0 Enum status
      */
     public function setItemStatus($itemStatus = null): void
@@ -271,7 +281,9 @@ class Folder
 
     /**
      * @param DateTimeInterface|string|null $modifiedAt
+     *
      * @return void
+     *
      * @todo v1.0 \DateTimeImmutable|null type
      */
     public function setModifiedAt($modifiedAt = null): void
@@ -299,6 +311,7 @@ class Folder
 
     /**
      * @param string|null $name
+     *
      * @return void
      */
     public function setName($name = null): void
@@ -363,6 +376,7 @@ class Folder
 
     /**
      * @param int|null $size
+     *
      * @return void
      */
     public function setSize($size = null): void

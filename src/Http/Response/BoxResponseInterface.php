@@ -3,6 +3,7 @@
 /**
  * @package     Box
  * @subpackage  Box_Http_Response
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2016 Chance Garcia, chancegarcia.com
  *
@@ -41,6 +42,7 @@ interface BoxResponseInterface extends PsrResponseInterface
 
     /**
      * @param bool $assoc
+     *
      * @return mixed
      */
     public function json(bool $assoc = true): mixed;
@@ -52,18 +54,21 @@ interface BoxResponseInterface extends PsrResponseInterface
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public function hasHeader(string $name): bool;
 
     /**
      * @param string $name
+     *
      * @return array
      */
     public function getHeader(string $name): array;
 
     /**
      * @param string $name
+     *
      * @return string
      */
     public function getHeaderLine(string $name): string;
@@ -81,6 +86,7 @@ interface BoxResponseInterface extends PsrResponseInterface
      * Sets the HTTP protocol version (1.0 or 1.1).
      *
      * @param string $version The HTTP protocol version
+     *
      * @return static
      */
     public function setProtocolVersion(string $version): static;

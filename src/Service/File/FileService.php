@@ -7,6 +7,7 @@
  * Time: 5:32 PM
  *
  * @package     Box
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -128,6 +129,7 @@ class FileService extends Service implements FileServiceInterface
 
     /**
      * @param SharedLink|CreateSharedLinkRequest|null $sharedLink
+     *
      * @return array
      */
     private function normalizeSharedLinkPayload(SharedLink|CreateSharedLinkRequest|null $sharedLink): array
@@ -151,8 +153,9 @@ class FileService extends Service implements FileServiceInterface
     /**
      * @param string|FileStream $file
      * @param string|int $parentId
-     * @return File
+     *
      * @throws BoxResponseException
+     * @return File
      */
     public function uploadFile(string|FileStream $file, string|int $parentId): File
     {
@@ -162,9 +165,7 @@ class FileService extends Service implements FileServiceInterface
 
         $uploadedFile = $this->hydrate(File::class, $data['entries'][0]);
 
-        if (null !== $this->eventDispatcher) {
-            $this->eventDispatcher->dispatch(new FileUploaded($uploadedFile));
-        }
+        $this->eventDispatcher?->dispatch(new FileUploaded($uploadedFile));
 
         return $uploadedFile;
     }
@@ -233,8 +234,8 @@ class FileService extends Service implements FileServiceInterface
     }
 
     /**
-     * @return UploadPart[]
      * @throws BoxResponseException
+     * @return UploadPart[]
      */
     public function listUploadSessionParts(string $sessionId): array
     {
@@ -289,6 +290,7 @@ class FileService extends Service implements FileServiceInterface
      * @param string|FileStream $file Local path or open FileStream
      * @param string|int $parentId Box folder ID to upload into
      * @param int|null $partSize Override chunk size; defaults to Box-recommended session part size
+     *
      * @throws \Throwable
      */
     public function chunkedUpload(string|FileStream $file, string|int $parentId, ?int $partSize = null): File
@@ -299,11 +301,7 @@ class FileService extends Service implements FileServiceInterface
 
         $fileSize = $file->getSize();
         $session = $this->createUploadSession($parentId, $file->getFilename(), $fileSize);
-        $dispatcher = $this->getEventDispatcher();
-
-        if (null !== $dispatcher) {
-            $dispatcher->dispatch(new UploadSessionCreated($session));
-        }
+        $this->getEventDispatcher()?->dispatch(new UploadSessionCreated($session));
 
         $actualPartSize = $partSize ?? $session->partSize;
         $hashCtx = hash_init('sha1');
@@ -322,9 +320,7 @@ class FileService extends Service implements FileServiceInterface
                 $part = $this->uploadPart($session->sessionId, $chunk, $offset, $fileSize);
                 $partNumber++;
 
-                if (null !== $dispatcher) {
-                    $dispatcher->dispatch(new UploadPartUploaded($part, $partNumber, $session->totalParts));
-                }
+                $this->getEventDispatcher()?->dispatch(new UploadPartUploaded($part, $partNumber, $session->totalParts));
 
                 $parts[] = $part;
                 $offset += strlen($chunk);
@@ -333,17 +329,13 @@ class FileService extends Service implements FileServiceInterface
             $fileSha1 = base64_encode(hash_final($hashCtx, true));
             $committed = $this->commitUploadSession($session->sessionId, $parts, $fileSha1);
 
-            if (null !== $dispatcher) {
-                $dispatcher->dispatch(new UploadSessionCommitted($committed));
-            }
+            $this->getEventDispatcher()?->dispatch(new UploadSessionCommitted($committed));
 
             return $committed;
         } catch (\Throwable $e) {
             $this->abortUploadSession($session->sessionId);
 
-            if (null !== $dispatcher) {
-                $dispatcher->dispatch(new UploadSessionAborted($session->sessionId, $e));
-            }
+            $this->getEventDispatcher()?->dispatch(new UploadSessionAborted($session->sessionId, $e));
 
             throw $e;
         }

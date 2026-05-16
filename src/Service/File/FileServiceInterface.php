@@ -7,6 +7,7 @@
  * Time: 5:32 PM
  *
  * @package     Box
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -57,6 +58,7 @@ interface FileServiceInterface extends AuthenticatedServiceInterface
     /**
      * @param File $file
      * @param SharedLink|CreateSharedLinkRequest|array|null $sharedLink shared link object used to set box permissions
+     *
      * @return File
      */
     public function createSharedLink(File $file, SharedLink|CreateSharedLinkRequest|array|null $sharedLink = null): File;

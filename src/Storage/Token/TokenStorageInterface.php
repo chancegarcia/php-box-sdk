@@ -8,6 +8,7 @@
  *
  * @package     Box
  * @subpackage  Box_Storage
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -47,6 +48,7 @@ interface TokenStorageInterface
      *
      * @param TokenInterface $token
      * @param TokenStorageContext $context
+     *
      * @return void
      */
     public function storeToken(TokenInterface $token, TokenStorageContext $context): void;
@@ -56,6 +58,7 @@ interface TokenStorageInterface
      *
      * @param TokenInterface $token
      * @param TokenStorageContext $context
+     *
      * @return void
      */
     public function updateToken(TokenInterface $token, TokenStorageContext $context): void;
@@ -64,6 +67,7 @@ interface TokenStorageInterface
      * Retrieve token from storage for a given context.
      *
      * @param TokenStorageContext $context
+     *
      * @return TokenInterface|null Returns null if no token is found for the context.
      */
     public function retrieveToken(TokenStorageContext $context): ?TokenInterface;
@@ -72,6 +76,7 @@ interface TokenStorageInterface
      * Remove token from storage for a given context.
      *
      * @param TokenStorageContext $context
+     *
      * @return void
      */
     public function removeToken(TokenStorageContext $context): void;

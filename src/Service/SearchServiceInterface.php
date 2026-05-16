@@ -13,6 +13,7 @@ interface SearchServiceInterface extends AuthenticatedServiceInterface
      * @param int|string|null $limit
      * @param int|string|null $offset
      * @param string|null $type
+     *
      * @return array
      */
     public function search(?string $query = null, int|string|null $limit = null, int|string|null $offset = null, ?string $type = null): array;

@@ -8,6 +8,7 @@
  *
  * @package     Box
  * @subpackage  Box_Model
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -62,6 +63,7 @@ interface UserEventServiceInterface extends ServiceInterface
 
     /**
      * @param string|null $streamType
+     *
      * @return void
      */
     public function setStreamType(?string $streamType = null): void;
@@ -73,6 +75,7 @@ interface UserEventServiceInterface extends ServiceInterface
 
     /**
      * @param string|int|null $limit set null to reset to default value
+     *
      * @return void
      */
     public function setLimit(string|int|null $limit = null): void;
@@ -84,6 +87,7 @@ interface UserEventServiceInterface extends ServiceInterface
 
     /**
      * @param string|int|null $streamPosition
+     *
      * @return void
      */
     public function setStreamPosition(string|int|null $streamPosition = null): void;

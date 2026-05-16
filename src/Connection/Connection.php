@@ -3,6 +3,7 @@
 /**
  * @package     Box
  * @subpackage  Box_Connection
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -57,6 +58,7 @@ use Psr\Log\LoggerInterface;
  * Class Connection
  *
  * @package Box\Model
+ *
  * @todo v1: remove client credential synchronization and make Connection the source of truth
  */
 class Connection implements ConnectionInterface
@@ -149,8 +151,8 @@ class Connection implements ConnectionInterface
         $response = $transport->request($method, $uri, $options);
 
         if (true === ($options['throw_on_error'] ?? false) && !$response->isSuccessful()) {
-            if ((null !== $this->eventDispatcher) && 429 === $response->getStatusCode()) {
-                $this->eventDispatcher->dispatch(new RateLimitHit($response->getRetryAfter() ?? 0));
+            if (429 === $response->getStatusCode()) {
+                $this->eventDispatcher?->dispatch(new RateLimitHit($response->getRetryAfter() ?? 0));
             }
             throw $this->createApiException($response);
         }
@@ -243,8 +245,9 @@ class Connection implements ConnectionInterface
      * @param string $uri
      * @param string|FileStream $file
      * @param string|int $parentId
-     * @return BoxResponseInterface
+     *
      * @throws \Box\Exception\BoxException
+     * @return BoxResponseInterface
      */
     public function postFile(string $uri, string|FileStream $file, string|int $parentId = 0): BoxResponseInterface
     {

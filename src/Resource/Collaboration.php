@@ -3,6 +3,7 @@
 /**
  * @package     Box
  * @subpackage  Box_Collaboration
+ *
  * @author      Chance Garcia
  * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
  *
@@ -55,7 +56,9 @@ class Collaboration
 
     /**
      * @param string|int|null $id
+     *
      * @return void
+     *
      * @todo v1.0 strict string type
      */
     public function setId(mixed $id = null): void
@@ -75,7 +78,9 @@ class Collaboration
 
     /**
      * @param DateTimeInterface|string|null $acknowledgedAt
+     *
      * @return void
+     *
      * @todo v1.0 \DateTimeImmutable|null type
      */
     public function setAcknowledgedAt($acknowledgedAt = null): void
@@ -93,7 +98,9 @@ class Collaboration
 
     /**
      * @param DateTimeInterface|string|null $createdAt
+     *
      * @return void
+     *
      * @todo v1.0 \DateTimeImmutable|null type
      */
     public function setCreatedAt($createdAt = null): void
@@ -121,7 +128,9 @@ class Collaboration
 
     /**
      * @param DateTimeInterface|string|null $expiresAt
+     *
      * @return void
+     *
      * @todo v1.0 \DateTimeImmutable|null type
      */
     public function setExpiresAt($expiresAt = null): void
@@ -149,7 +158,9 @@ class Collaboration
 
     /**
      * @param DateTimeInterface|string|null $modifiedAt
+     *
      * @return void
+     *
      * @todo v1.0 \DateTimeImmutable|null type
      */
     public function setModifiedAt($modifiedAt = null): void
@@ -167,7 +178,9 @@ class Collaboration
 
     /**
      * @param string|null $role
+     *
      * @return void
+     *
      * @todo v1.0 Enum role
      */
     public function setRole($role = null): void
@@ -182,7 +195,9 @@ class Collaboration
 
     /**
      * @param string|null $status
+     *
      * @return void
+     *
      * @todo v1.0 Enum status
      */
     public function setStatus($status = null): void
