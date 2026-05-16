@@ -1,4 +1,6 @@
-# v1.0 Planning
+# v1.0 Planning — Historical
+
+> **Historical document.** v1.0.0 is complete. Canonical architecture references are in `strategy-and-contracts.md`, `architecture-rules.md`, and `decision-index.md`.
 
 This document tracks detailed architectural decisions, typing rules, and implementation goals for the v1.0 release of the Box PHP SDK.
 

@@ -31,7 +31,7 @@ Welcome to the documentation for the Box PHP SDK.
 ### [v1.0 Architecture and Strategy](planning/v1/)
 - **[Strategy and Contracts](planning/v1/strategy-and-contracts.md) (Canonical)**: Core v1.0 architecture and strategy.
 - [Architecture Rules](planning/v1/architecture-rules.md): Coding and structure rules for v1.0.
-- [v1.0 Overview](planning/v1/overview.md) (Historical): High-level goals and typing standards.
+- [v1.0 Overview](archive/planning/v1-overview.md) (Historical): High-level goals and typing standards.
 - [Test Coverage Plan](planning/v1/test-coverage-plan.md): Quality and testing strategy.
 - [API Coverage Audit](planning/v1/api-coverage-audit.md): Assessment of Box API endpoint coverage.
 

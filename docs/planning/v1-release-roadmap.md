@@ -82,8 +82,8 @@ This work assumes the completion of:
 | 20.5 | [Enum Wiring & Hydrator Audit](#slice-205--enum-wiring--hydrator-audit) | ✓ |
 | 21 | [Docblock Quality & Legacy Tag Cleanup](#slice-21--docblock-quality--legacy-tag-cleanup) | ✓ |
 | 22 | [License & Rebrand Preparation](#slice-22--license--rebrand-preparation) | ✓ |
-| 17 | [v1 Release Readiness](#step-17--v1-release-readiness) | In Progress |
-| 18 | [Documentation Cleanup and Organization](#step-18--documentation-cleanup-and-organization) | Not Started |
+| 17 | [v1 Release Readiness](#step-17--v1-release-readiness) | ✓ |
+| 18 | [Documentation Cleanup and Organization](#step-18--documentation-cleanup-and-organization) | In Progress |
 
 ## Remaining v1 Sequence
 

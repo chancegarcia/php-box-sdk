@@ -74,11 +74,11 @@ This document details the planned tasks for the `v0.11` transition release and t
 ### Auth & Features
 - [x] Completed: Add JWT authentication support. *Implementation: `JwtProvider`, `JwtAuthConfig`, `JwtAssertionGenerator`; `box:jwt:token` CLI command; `BOX_AUTH_MODE=jwt` env switch.*
 - [x] Completed: Complete Token Storage support (Filesystem, PDO, In-Memory). *Implementation: `FilesystemTokenStorage`, `Pdo\TokenStorage`, `TokenStorageContainer` behind `TokenStorageInterface`.*
-- [-] Deferred: Add chunked upload support. *Rationale: Handle very large files reliably. Deferred to post-v1.*
+- [x] Completed: Add chunked upload support. *Implementation: `FileService` chunked upload session API + `Client::chunkedUpload()` orchestrator (Slice 19).*
 
 ### Models & Mapping
 - [x] Completed: Remove custom collection classes in favor of Doctrine Collections. *Implementation: `EventResponse` uses Doctrine Collections; `EventResponseMapper` handles mapping.*
-- [-] Deferred: Use PHP Enums for roles, statuses, and types. *Deferred to post-v1.*
+- [x] Completed: Wire PHP Enums for roles, statuses, and types. *Implementation: `CollaborationRole`, `CollaborationStatus`, `SharedLinkAccess` wired to resource setters; `CollaborationStatus` enum created (Slice 20.5).*
 - [-] Deferred: Add handling for Box-specific errors like `item_name_in_use` (409). *Deferred to post-v1.*
 
 ---
@@ -88,7 +88,7 @@ This document details the planned tasks for the `v0.11` transition release and t
 Tasks that must be completed at or immediately before the v1.0.0 tag. These are separate from the refactor slices tracked above and from Step 17 documentation gates.
 
 ### Legal / Housekeeping
-- [ ] **Copyright dates** — Audit all source files (`src/`, `tests/`, `bin/`) and update copyright year ranges to include 2026.
+- [x] **Copyright dates** — Per-file copyright/license blocks removed in Slice 22. Root `LICENSE` file carries `2013–2026 Chance Garcia`. No per-file notices remain to update.
 
 ### Package & Repository Rebrand
 - [ ] **GitHub repo rename** — Rename the repository to match the v1 package name.
