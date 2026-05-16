@@ -29,28 +29,20 @@
 
 namespace Box\Http\Response;
 
-use Box\Exception\BoxException;
-
 class ResponseParser
 {
     /**
      * @param bool $associative  if true, then returns with keys: httpVersion, statusCode, reasonPhrase
      *
-     * @throws BoxException
      * @return array if non-associative, return in order: httpVersion, statusCode, reasonPhrase
      */
-    public static function parseHeaderStatusLine(string $sStatusLine = '', bool $associative = true): array
+    public static function parseHeaderStatusLine(string $statusLine = '', bool $associative = true): array
     {
-
-        if (!is_string($sStatusLine)) {
-            throw new \InvalidArgumentException("string value expected for parsing. given: " . gettype($sStatusLine));
-        }
-
-        if ('' === $sStatusLine) {
+        if ('' === $statusLine) {
             return $associative ? [] : ['', 0, ''];
         }
 
-        $parts = explode(" ", $sStatusLine, 3);
+        $parts = explode(" ", $statusLine, 3);
         $httpVersion = $parts[0] ?? '';
         $statusCode = $parts[1] ?? 0;
         $reasonPhrase = $parts[2] ?? '';
@@ -58,32 +50,28 @@ class ResponseParser
         $code = filter_var($statusCode, FILTER_VALIDATE_INT);
 
         if (true === $associative) {
-            $statusLine = [
+            $result = [
                 'httpVersion' => $httpVersion,
                 'statusCode' => $code,
                 'reasonPhrase' => $reasonPhrase,
             ];
         } else {
-            $statusLine = [
+            $result = [
                 $httpVersion,
                 $code,
                 $reasonPhrase,
             ];
         }
 
-        return $statusLine;
+        return $result;
     }
 
-    public static function parseHeader(string $sHeaders = '', bool $replace = false): array
+    public static function parseHeader(string $headers = '', bool $replace = false): array
     {
-        if (!is_string($sHeaders)) {
-            throw new \InvalidArgumentException("string value expected for parsing. given: " . gettype($sHeaders));
-        }
-
         $finalHeaders = [];
-        $aHeaders = preg_split('/\r\n|\r|\n/', $sHeaders);
+        $headerLines = preg_split('/\r\n|\r|\n/', $headers);
         $headerLineKey = 0;
-        foreach ($aHeaders as $headerLineValue) {
+        foreach ($headerLines as $headerLineValue) {
             $headerLineValue = trim($headerLineValue);
             if ('' === $headerLineValue) {
                 continue;
@@ -102,9 +90,9 @@ class ResponseParser
             }
 
             // rest of the lines are headers
-            $aLine = explode(":", $headerLineValue, 2);
-            if (2 === count($aLine)) {
-                list($key, $value) = array_map("trim", $aLine);
+            $lineParts = explode(":", $headerLineValue, 2);
+            if (2 === count($lineParts)) {
+                list($key, $value) = array_map("trim", $lineParts);
                 if (true === $replace || !array_key_exists($key, $finalHeaders)) {
                     $finalHeaders[$key] = $value;
                 } else {
@@ -143,11 +131,11 @@ class ResponseParser
                 $tempValue = trim($tempValue, '"');
             }
 
-            $aKey = explode(" ", $tempkey);
-            if (count($aKey) > 1) {
+            $keyParts = explode(" ", $tempkey);
+            if (count($keyParts) > 1) {
                 // Handle scheme (e.g. "Bearer error")
-                $scheme = array_shift($aKey);
-                $key = array_shift($aKey);
+                $scheme = array_shift($keyParts);
+                $key = array_shift($keyParts);
                 $parsed['scheme'] = $scheme;
                 $parsed[$key] = $tempValue;
             } else {

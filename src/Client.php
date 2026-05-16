@@ -44,6 +44,7 @@ use Box\Connection\Token\TokenInterface;
 use Box\Dto\PagedResult;
 use Box\Dto\TokenStorageContext;
 use Box\Exception\BoxException;
+use Box\Exception\BoxResponseException;
 use Box\Resource\Collaboration;
 use Box\Resource\File;
 use Box\Resource\Folder;
@@ -66,6 +67,7 @@ use Box\Factory\TokenFactoryInterface;
 use JsonException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use ReflectionException;
+use RuntimeException;
 
 class Client implements LoggerAwareInterface
 {
@@ -152,6 +154,7 @@ class Client implements LoggerAwareInterface
     /**
      * @param string|int $id use 0 for returning all folders
      * @param bool $retrieve if no folder is found, attempt to retrieve from box
+     *
      * @throws BoxException
      * @return Folder|null returns null if no such folder exists and retrieve is false
      */
@@ -236,9 +239,9 @@ class Client implements LoggerAwareInterface
      * @param int|null $limit leave null to get all; if limit is null but offset is numeric, limit will default to 100
      * @param int|null $offset leave null to get all; if limit is null but offset is numeric, limit will default to 100
      *
-     * @return array returns an array of User objects that are in the group membership
      * @throws ReflectionException
      * @throws BoxException
+     * @return array returns an array of User objects that are in the group membership
      */
     public function getGroupMembershipList(Group|string|int|null $group = null, ?int $limit = null, ?int $offset = null): array
     {
@@ -292,7 +295,7 @@ class Client implements LoggerAwareInterface
         foreach ($entries as $entry) {
             $userData = $entry['user'];
             $user = $this->getNewUser();
-            (new Hydrator())->hydrate($user, $userData);
+            new Hydrator()->hydrate($user, $userData);
             $members[] = $user;
         }
 
@@ -347,7 +350,7 @@ class Client implements LoggerAwareInterface
      * @param array|null $options
      *
      * @throws BoxException
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function createNewBoxFolder(string $name, string|int $parentFolderId = 0, ?array $options = []): Folder
     {
@@ -359,7 +362,7 @@ class Client implements LoggerAwareInterface
     /**
      * @param string|bool $ifMatchHeader etag string or true to use folder's current etag
      *
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function updateBoxFolder(Folder $folder, string|bool $ifMatchHeader = false): Folder
     {
@@ -384,7 +387,8 @@ class Client implements LoggerAwareInterface
      *     roles} default is viewer
      *
      * @throws BoxException
-     * @throws \JsonException
+     * @throws JsonException
+     * @throws ReflectionException
      */
     public function addCollaboration(Folder $folder, User|Group $collaborator, string $role = 'viewer'): Collaboration
     {
@@ -412,7 +416,7 @@ class Client implements LoggerAwareInterface
         $data = $this->parseResponse($response);
 
         $collaboration = $this->getNewCollaboration();
-        (new Hydrator())->hydrate($collaboration, $data);
+        new Hydrator()->hydrate($collaboration, $data);
 
         return $collaboration;
     }
@@ -421,7 +425,7 @@ class Client implements LoggerAwareInterface
      * @param array|null $params shared link options; default shared link set to collaborator access, no unshared time or permissions set
      *
      * @throws BoxException
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function createSharedLinkForFolder(?Folder $folder = null, ?array $params = null): Folder
     {
@@ -439,7 +443,7 @@ class Client implements LoggerAwareInterface
     /**
      * @throws \Exception
      * @throws BoxException
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function copyBoxFolder(Folder $originalFolder, Folder $parent, ?string $name = null, bool $addToFolders = true): Folder
     {
@@ -465,7 +469,8 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @throws BoxException
+     * @throws BoxResponseException
+     * @throws RuntimeException
      */
     public function uploadFileToBox(string|FileStream $file, string|int $parentId = 0): File
     {
@@ -493,7 +498,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @throws BoxException if no authorization code is set
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function exchangeAuthorizationCodeForToken(): TokenInterface
     {
@@ -514,7 +519,7 @@ class Client implements LoggerAwareInterface
 
     /**
      * @throws BoxException
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function refreshToken(): TokenInterface
     {
@@ -874,7 +879,7 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * @throws \RuntimeException if an authenticated service has no access token set
+     * @throws RuntimeException if an authenticated service has no access token set
      */
     protected function configureService(ServiceInterface $service): ServiceInterface
     {
@@ -883,13 +888,13 @@ class Client implements LoggerAwareInterface
         if ($service instanceof AuthenticatedServiceInterface) {
             $token = $this->getToken();
             if (null === $token->getAccessToken()) {
-                throw new \RuntimeException("Access token is not set for authenticated service: " . $service::class);
+                throw new RuntimeException("Access token is not set for authenticated service: " . $service::class);
             }
             $service->setToken($token);
         } else {
             try {
                 $service->setToken($this->getToken());
-            } catch (\RuntimeException $e) {
+            } catch (RuntimeException $e) {
                 // Token not set on client, skip setting it on service
             }
         }

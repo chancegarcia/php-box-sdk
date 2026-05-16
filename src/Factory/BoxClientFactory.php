@@ -39,7 +39,7 @@ class BoxClientFactory implements BoxClientFactoryInterface
         $accessToken = $this->configProvider->getOAuth2AccessToken();
         $refreshToken = $this->configProvider->getOAuth2RefreshToken();
         if (null !== $accessToken) {
-            $token = (new TokenFactory())->createToken();
+            $token = new TokenFactory()->createToken();
             $token->setAccessToken($accessToken);
             if (null !== $refreshToken) {
                 $token->setRefreshToken($refreshToken);

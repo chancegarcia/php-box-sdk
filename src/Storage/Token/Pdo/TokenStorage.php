@@ -41,6 +41,7 @@ use Box\Exception\TokenStorageException;
 use Box\Mapper\Hydrator;
 use PDO;
 use PDOException;
+use ReflectionException;
 
 class TokenStorage implements TokenStorageInterface
 {
@@ -257,6 +258,7 @@ class TokenStorage implements TokenStorageInterface
 
     /**
      * @throws TokenStorageException
+     * @throws ReflectionException
      */
     public function retrieveToken(TokenStorageContext $context): ?TokenInterface
     {
@@ -301,7 +303,7 @@ class TokenStorage implements TokenStorageInterface
             }
 
             $token = new Token();
-            (new Hydrator())->hydrate($token, $row);
+            new Hydrator()->hydrate($token, $row);
 
             return $token;
         } catch (PDOException $e) {

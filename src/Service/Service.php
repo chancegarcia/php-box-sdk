@@ -167,7 +167,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
     protected function hydrate(string $targetClass, array|stdClass $data): object
     {
         /** @var T */
-        return (new Hydrator())->hydrate($targetClass, $data);
+        return new Hydrator()->hydrate($targetClass, $data);
     }
 
     /**

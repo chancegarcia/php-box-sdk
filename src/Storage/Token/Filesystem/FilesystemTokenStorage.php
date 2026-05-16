@@ -55,7 +55,7 @@ class FilesystemTokenStorage implements TokenStorageInterface
         }
 
         $token = new Token();
-        (new Hydrator())->hydrate($token, $map[$key]);
+        new Hydrator()->hydrate($token, $map[$key]);
 
         return $token;
     }

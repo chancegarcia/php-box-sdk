@@ -73,7 +73,6 @@ interface ConnectionInterface extends LoggerAwareInterface
 
     /**
      * @param string|FileStream $file file/path to file or FileStream object
-     *
      */
     public function postFile(
         string $uri,

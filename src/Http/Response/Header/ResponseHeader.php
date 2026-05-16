@@ -35,14 +35,12 @@ class ResponseHeader implements ResponseHeaderInterface
     protected $headerLines = [];
 
     /**
-     * @param string $sHeader
-     *
      * @throws BoxException
      */
-    public function __construct($sHeader = '', $statusLineClass = StatusLine::class)
+    public function __construct(string $header = '', string $statusLineClass = StatusLine::class)
     {
-        $aHeader = ResponseParser::parseHeader($sHeader);
-        $sStatusLine = array_shift($aHeader);
+        $parsedHeader = ResponseParser::parseHeader($header);
+        $rawStatusLine = array_shift($parsedHeader);
         if ($statusLineClass !== StatusLine::class && !is_subclass_of($statusLineClass, StatusLineInterface::class)) {
             $msg = "status line class must be an instance of " . StatusLineInterface::class . " ("
                 . $statusLineClass
@@ -50,10 +48,10 @@ class ResponseHeader implements ResponseHeaderInterface
             throw new BoxException($msg, BoxException::INVALID_CLASS_TYPE);
         }
 
-        $oStatusLine = new $statusLineClass($sStatusLine);
+        $statusLineObj = new $statusLineClass($rawStatusLine);
 
-        $this->setStatusLine($oStatusLine);
-        $this->setHeaderLines($aHeader);
+        $this->setStatusLine($statusLineObj);
+        $this->setHeaderLines($parsedHeader);
     }
 
     public function getStatusLine(): ?StatusLineInterface
@@ -80,12 +78,11 @@ class ResponseHeader implements ResponseHeaderInterface
         return $this;
     }
 
-    public static function parseHeader($sHeaders = '', $replace = true)
+    public static function parseHeader(string $headers = '', bool $replace = true): array
     {
         $finalHeaders = [];
-        $aHeaders = explode(PHP_EOL, $sHeaders);
-        ;
-        foreach ($aHeaders as $headerLineKey => $headerLineValue) {
+        $headerLines = explode(PHP_EOL, $headers);
+        foreach ($headerLines as $headerLineKey => $headerLineValue) {
             // based on protocols found on https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html
             // first line is Status Line
             if (0 === $headerLineKey) {

@@ -1,6 +1,6 @@
 # Next Session Plan
 
-**Updated**: 2026-05-16 02:48 (America/Indiana)
+**Updated**: 2026-05-16 03:53 (America/Indiana)
 **Branch**: `release-v1.0.0`
 
 ---
@@ -49,6 +49,12 @@ Sequence: Step 17 → Step 18 → rename (user-driven)
 - Retire superseded planning files
 - Fix `docs/README.md` to reflect final v1 state
 - Update `v1-release-roadmap.md` status for Slices 20, 20.5, 21, 22 (currently show "Not Started" — stale)
+
+---
+
+## Pending After Next Commit
+
+- **`ReferenceUsedNamesOnly` PHPCS sniff** — Add `SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly` to `phpcs.xml.dist` to enforce "no FQN when class is imported." Evaluate after the qualifier-cleanup commit is in; the sniff needs tuning (`allowPartialUses`, global-namespace exclusions). Add `@author`, `@copyright`, `@license` to `ForbiddenAnnotations` after Slice 22 license cleanup is committed.
 
 ---
 

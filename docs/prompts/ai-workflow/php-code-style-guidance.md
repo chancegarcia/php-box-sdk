@@ -98,6 +98,41 @@ This document outlines the preferred PHP code style and validation expectations 
     - `composer review` (Full suite)
 - **Direct Binaries**: Do not substitute direct `vendor/bin/*` commands (like `vendor/bin/phpunit`) for project scripts unless investigating a specific tooling issue.
 
+## Enforcement Labels
+
+Rules in this document are tagged with one of:
+
+- **[PHPCS]** — enforced in `phpcs.xml.dist`; violations fail `composer cs:check` and are auto-fixable via `composer cs:fix`.
+- **[Review]** — documented here and enforced by human code review; no automated enforcement exists or is practical.
+
+When a new rule is added, explicitly decide which label applies and configure PHPCS if the rule is automatable.
+
+## Variable Naming
+
+- **No Hungarian notation [Review]**: Do not prefix variable names with a type indicator (`$sName`, `$aItems`, `$oObject`, `$iCount`). This convention predates PHP type hints and adds noise without value. Use descriptive names without a type prefix: `$name`, `$items`, `$object`, `$count`.
+- **No type-prefix parameters [Review]**: The same rule applies to method parameters. `string $sStatusLine` → `string $statusLine`.
+
+## `new` Without Parentheses
+
+- **Prefer `new Foo()->method()` over `(new Foo())->method()` [Review]**: PHP 8.4 allows chaining directly on `new` expressions without wrapping in parentheses. The parenthesised form is a pre-8.4 workaround — remove it when touching existing code or writing new code targeting PHP 8.4+.
+- Example: `new Hydrator()->hydrate($obj, $data)` not `(new Hydrator())->hydrate($obj, $data)`.
+
+## `use` Imports and FQN Consistency
+
+- **Use imported names, not FQN, in code and docblocks [PHPCS candidate]**: If a class is declared in a `use` statement, reference it by its short name everywhere — in code, `@throws`, `@param`, and `@return` tags. Do not prefix an imported name with `\`. Conversely, if a global-namespace class (e.g. `\RuntimeException`) is used more than once, import it with `use RuntimeException;` and drop the backslash.
+- This rule is a PHPCS candidate via `SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly`; enforcement will be added after the manual qualifier-cleanup pass is committed.
+
+## `@throws` Precision
+
+- **Use the most specific exception type [Review]**: `@throws` annotations must name the actual exception type (or the most specific known subtype) that can escape the method, not a supertype. Writing `@throws BoxException` when the method can only throw `BoxResponseException` (a subtype) is misleading to callers and static analysis. Use the concrete type.
+- This is separate from the chain-coverage rule (which governs completeness); this rule governs precision.
+
+## `mixed` Type Justification
+
+- **Document why `mixed` cannot be tightened [Review]**: Whenever `mixed` appears as a parameter type, return type, or property type, add a brief inline comment explaining why a more specific type is not possible. Acceptable reasons include: the value is sourced directly from raw JSON with no schema guarantee, or the method is part of a hydration/reflection mechanism that operates on arbitrary objects.
+- Example: `mixed $synced // Box Sync status is polymorphic: string|bool|null depending on account type`
+- Do not use `mixed` to defer a typing decision. If the type is known, declare it.
+
 ## Adaptation Note
 
 This document is a reusable starting point. It should be reviewed and updated to match the specific rules of the receiving project. Local project guidelines always take precedence.

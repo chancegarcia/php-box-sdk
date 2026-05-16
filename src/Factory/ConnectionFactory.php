@@ -7,9 +7,13 @@ use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
 use Box\Exception\BoxException;
 use Box\Mapper\Hydrator;
+use ReflectionException;
 
 class ConnectionFactory implements ConnectionFactoryInterface
 {
+    /**
+     * @throws ReflectionException
+     */
     public function createConnection(?array $options = null): ConnectionInterface
     {
         $connection = new Connection();
@@ -20,7 +24,7 @@ class ConnectionFactory implements ConnectionFactoryInterface
                 unset($options['transport']);
             }
 
-            (new Hydrator())->hydrate($connection, $options);
+            new Hydrator()->hydrate($connection, $options);
 
             if ($transport) {
                 $connection->setTransportName($transport);

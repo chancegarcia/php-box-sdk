@@ -34,7 +34,7 @@ class Hydrator
         $data = (array) $data;
 
         foreach ($data as $key => $value) {
-            $camelKey = ModelMapper::toClassVar($key);
+            $camelKey = lcfirst(str_replace('_', '', ucwords($key, '_')));
             $setter = 'set' . ucfirst($camelKey);
 
             if (method_exists($target, $setter)) {

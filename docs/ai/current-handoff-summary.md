@@ -1,10 +1,10 @@
 # AI Handoff Summary
 
-- **Timestamp**: 2026-05-16 02:48 (America/Indiana)
+- **Timestamp**: 2026-05-16 03:53 (America/Indiana)
 - **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
 
 ## Status
-- **Roadmap Position**: Slice 21 complete. PHPCS sniff additions complete. Next: Slice 22.
+- **Roadmap Position**: Pre-Step-17 Polish slice complete. Next: Slice 22.
 - **Test baseline**: 372 tests, 1002 assertions
 - **v1 remaining**: Slice 22 (license/rebrand prep) → Step 17 (release readiness) → Step 18 (doc cleanup) → package/repo rename (user-driven)
 
@@ -17,6 +17,43 @@ Do not prompt about package/repo rename.
 ---
 
 ## Completed This Session (2026-05-16)
+
+### Pre-Step-17 Polish [COMPLETE ✓]
+
+**Item 1 — `@throws` precision (`uploadFileToBox`)**
+- `uploadFileToBox` corrected: `@throws BoxException` → `@throws BoxResponseException` + `@throws RuntimeException` (both are accurate to the actual call chain).
+- `use Box\Exception\BoxResponseException;` and `use RuntimeException;` added to `Client.php` imports.
+- Follow-on: a full `@throws` chain audit across Client (including `configureService()` callers missing `@throws RuntimeException`) is deferred post-v1.
+
+**Item 2 — Qualifier consistency in `Client.php`**
+- All `\JsonException` in docblocks replaced with `JsonException` (already imported).
+- All `\RuntimeException` in code and docblocks replaced with `RuntimeException` (now imported).
+
+**Item 3 — `ConfigProviderInterface` conditional requirement docs**
+- Interface rewritten with grouped comment headers: always-required, OAuth2-required, JWT-required, optional PDO storage, optional filesystem storage, optional general.
+- No behavioral change; pure developer-experience improvement.
+
+**Item 4 — Hungarian notation cleanup**
+- `ResponseParser.php`: `$sStatusLine` → `$statusLine` (param), `$statusLine` local → `$result`, `$sHeaders` → `$headers` (param), `$aHeaders` → `$headerLines`, `$aLine` → `$lineParts`, `$aKey` → `$keyParts`.
+- `ModelMapper.php`: `$aTokens` → `$tokens`, `$sFirst` → `$first` (both methods).
+- `ResponseHeader.php`: constructor params typed (`string $header`, `string $statusLineClass`); locals `$aHeader` → `$parsedHeader`, `$sStatusLine` → `$rawStatusLine`, `$oStatusLine` → `$statusLineObj`; `parseHeader()` typed and `$aHeaders` → `$headerLines`.
+- `StatusLine.php`: param `$sStatusLine` → `string $statusLine`, dead `is_string()` guard removed.
+- Dead `is_string()` guards removed in `ResponseParser::parseHeaderStatusLine` and `ResponseParser::parseHeader` (params are typed `string`).
+- Style rule added: No Hungarian / type-prefix variable names [Review].
+
+**Item 5 — `new` without parentheses (PHP 8.4+)**
+- All `(new Hydrator())->hydrate(...)` → `new Hydrator()->hydrate(...)` across: all 8 Factory classes, `Service::hydrate()`, `PdoTokenStorage`, `FilesystemTokenStorage`, `Client` (2 sites).
+- `BoxClientFactory`: `(new TokenFactory())->createToken()` → `new TokenFactory()->createToken()`.
+- Style rule added: prefer `new Foo()->method()` over `(new Foo())->method()` [Review].
+
+**Item 6 — Style guidance doc updated**
+- `docs/prompts/ai-workflow/php-code-style-guidance.md`: Added Enforcement Labels section (`[PHPCS]`/`[Review]`), Variable Naming, new-without-parentheses, FQN/qualifier consistency (PHPCS candidate), `@throws` precision, and `mixed` justification sections.
+
+**PHPCS note**
+- `ReferenceUsedNamesOnly` sniff (to enforce no-FQN-when-imported) is a candidate for `phpcs.xml.dist` after the qualifier cleanup is committed. Not yet added.
+- `ForbiddenAnnotations` expansion (`@author`, `@copyright`, `@license`) still deferred until Slice 22 license cleanup is committed.
+
+---
 
 ### Slice 21 — Docblock Quality & Legacy Tag Cleanup [COMPLETE ✓]
 

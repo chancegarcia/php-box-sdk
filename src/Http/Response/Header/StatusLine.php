@@ -27,16 +27,12 @@ class StatusLine implements StatusLineInterface
     protected $statusCode = 200;
     protected $reasonPhrase = "OK";
 
-    public function __construct($sStatusLine = '')
+    public function __construct(string $statusLine = '')
     {
-        if (!is_string($sStatusLine)) {
-            throw new \InvalidArgumentException("string value expected for parsing. given: " . gettype($sStatusLine));
-        }
+        if (!empty($statusLine)) {
+            [$httpVersion, $statusCode, $reasonPhrase] = ResponseParser::parseHeaderStatusLine($statusLine, false);
 
-        if (!empty($sStatusLine)) {
-            list($httpVersion, $statusCode, $reasonPhrase) = ResponseParser::parseHeaderStatusLine($sStatusLine, false);
-
-            list($httpVersionPrefix, $httpVersionNumber) = explode("/", $httpVersion);
+            [$httpVersionPrefix, $httpVersionNumber] = explode("/", $httpVersion);
             $code = filter_var($statusCode, FILTER_VALIDATE_INT);
 
             $this->httpVersion = $httpVersion;
