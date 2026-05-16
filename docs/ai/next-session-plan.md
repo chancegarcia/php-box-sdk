@@ -58,7 +58,7 @@ Pre-flight:
 grep -rn "deprecated\|legacy\|nameValuePair\|method_exists" src/ --include="*.php"
 ```
 
-**Decision for `$nameValuePair` / array-params**: Read `Connection::post` and `ConnectionInterface` to understand the current callers. If no callers pass a `$nameValuePair`, remove the path and the "deprecated" language. If callers still use it, document as intentionally supported and drop the deprecated language. Do not carry "will be deprecated in the future" into a v1 release.
+**Decision for `$nameValuePair` / array-params**: Read `Connection::post` and `ConnectionInterface` to understand the current callers. If no callers pass a `$nameValuePair`, remove the path and the "deprecated" language. If callers still use it, **leave the deprecation tag as-is and flag it in the completion report for human review** — do not remove or change the deprecated language in that case.
 
 #### 6. Naming Convention & Method Accuracy Audit
 Two passes:
