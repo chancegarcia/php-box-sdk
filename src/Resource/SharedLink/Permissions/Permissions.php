@@ -39,41 +39,25 @@ namespace Box\Resource\SharedLink\Permissions;
 
 class Permissions
 {
-    protected $canDownload;
-    protected $canPreview;
+    protected ?bool $canDownload = null;
+    protected ?bool $canPreview = null;
 
-    /**
-     * @return bool|null
-     */
-    public function getCanDownload()
+    public function getCanDownload(): ?bool
     {
         return $this->canDownload;
     }
 
-    /**
-     * @param bool|null $canDownload
-     *
-     * @return void
-     */
-    public function setCanDownload($canDownload = null): void
+    public function setCanDownload(?bool $canDownload = null): void
     {
         $this->canDownload = $canDownload;
     }
 
-    /**
-     * @return bool|null
-     */
-    public function getCanPreview()
+    public function getCanPreview(): ?bool
     {
         return $this->canPreview;
     }
 
-    /**
-     * @param bool|null $canPreview
-     *
-     * @return void
-     */
-    public function setCanPreview($canPreview = null): void
+    public function setCanPreview(?bool $canPreview = null): void
     {
         $this->canPreview = $canPreview;
     }

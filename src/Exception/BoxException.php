@@ -46,20 +46,23 @@ class BoxException extends \Exception
     public const string BOX_API_ERROR = "Box API Error";
     public const string INVALID_JSON = "Invalid JSON";
 
+    // mixed: Box API error payloads can be string, array, or stdClass depending on the endpoint
     protected mixed $error = null;
+    // mixed: Box API error descriptions can be string, array, or stdClass depending on the endpoint
     protected mixed $errorDescription = null;
     protected array $context = [];
-    protected mixed $boxCode = null;
-    protected mixed $status = null;
+    protected int|string|null $boxCode = null;
+    // int|string: normally an HTTP status int, but BoxApiErrorTrait also passes a string error code
+    protected int|string|null $status = null;
 
     protected static ?Redactor $redactor = null;
 
     /**
      * @param string $message
-     * @param mixed|null $code
+     * @param int|string $code
      * @param \Throwable|null $previous
      */
-    public function __construct(string $message = "", mixed $code = 0, ?\Throwable $previous = null)
+    public function __construct(string $message = "", int|string $code = 0, ?\Throwable $previous = null)
     {
         $message = $this->redact($message);
         if (is_int($code)) {
@@ -196,20 +199,12 @@ class BoxException extends \Exception
         return $this->context;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getBoxCode(): mixed
+    public function getBoxCode(): int|string|null
     {
         return $this->boxCode;
     }
 
-    /**
-     * @param mixed $boxCode
-     *
-     * @return void
-     */
-    public function setBoxCode(mixed $boxCode = null): void
+    public function setBoxCode(int|string|null $boxCode = null): void
     {
         $this->boxCode = $boxCode;
     }
@@ -230,12 +225,12 @@ class BoxException extends \Exception
         $this->boxResponse = $boxResponse;
     }
 
-    public function setStatus(mixed $status): void
+    public function setStatus(int|string|null $status): void
     {
         $this->status = $status;
     }
 
-    public function getStatus(): mixed
+    public function getStatus(): int|string|null
     {
         return $this->status;
     }

@@ -4,11 +4,18 @@ namespace Box\Factory;
 
 use Box\Connection\Token\Token;
 use Box\Connection\Token\TokenInterface;
+use Box\Mapper\Hydrator;
 
 class TokenFactory implements TokenFactoryInterface
 {
     public function createToken(?array $options = null): TokenInterface
     {
-        return new Token($options);
+        $token = new Token();
+
+        if (is_array($options)) {
+            (new Hydrator())->hydrate($token, $options);
+        }
+
+        return $token;
     }
 }

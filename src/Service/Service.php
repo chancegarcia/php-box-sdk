@@ -42,7 +42,6 @@ use Box\Exception\BoxResponseException;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Exception\BoxException;
 use Box\Connection\ConnectionInterface;
-use Box\Connection\Token\Token;
 use Box\Connection\Token\TokenInterface;
 use Box\Logger\LoggerAwareInterface;
 use Box\Trait\LoggerAwareTrait;
@@ -58,23 +57,15 @@ class Service implements ServiceInterface, LoggerAwareInterface
     use LoggerAwareTrait;
     use BoxApiErrorTrait;
 
-    /**
-     * @var ConnectionInterface|null
-     */
-    protected $connection;
+    protected ?ConnectionInterface $connection = null;
+
+    protected ?TokenInterface $token = null;
 
     /**
-     * @var TokenInterface|null
-     */
-    protected $token;
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws RuntimeException
      * @return ConnectionInterface
+     * @throws RuntimeException
      */
-    public function getConnection()
+    public function getConnection(): ConnectionInterface
     {
         if (!$this->connection instanceof ConnectionInterface) {
             throw new RuntimeException("ConnectionInterface not found");
@@ -86,23 +77,15 @@ class Service implements ServiceInterface, LoggerAwareInterface
         return $this->connection;
     }
 
-    /**
-     * @param ConnectionInterface|null $connection
-     *
-     * @return void
-     */
-    public function setConnection($connection = null)
+    public function setConnection(?ConnectionInterface $connection = null): void
     {
         $this->connection = $connection;
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws RuntimeException
-     * @return TokenInterface
      */
-    public function getToken()
+    public function getToken(): TokenInterface
     {
         if (!$this->token instanceof TokenInterface) {
             throw new \RuntimeException('TokenInterface not found');
@@ -111,12 +94,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
         return $this->token;
     }
 
-    /**
-     * @param Token|TokenInterface $token
-     *
-     * @return void
-     */
-    public function setToken($token = null)
+    public function setToken(?TokenInterface $token = null): void
     {
         $this->token = $token;
     }
@@ -130,7 +108,7 @@ class Service implements ServiceInterface, LoggerAwareInterface
      * @throws OutOfBoundsException
      * @return mixed
      */
-    public function handleBoxResponse(?BoxResponseInterface $response = null, $returnType = 'decoded')
+    public function handleBoxResponse(?BoxResponseInterface $response = null, string $returnType = 'decoded'): mixed
     {
         if (!$response instanceof BoxResponseInterface) {
             throw new BadMethodCallException("expecting instance of " . BoxResponseInterface::class . ". received: " . gettype($response));

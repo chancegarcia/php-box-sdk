@@ -51,7 +51,7 @@ class BoxResponseException extends BoxException
      * @param Exception|null $previous
      * @param BoxResponseInterface|null $response
      */
-    public function __construct(string $message = "", mixed $code = 0, ?Exception $previous = null, ?BoxResponseInterface $response = null)
+    public function __construct(string $message = "", int|string $code = 0, ?Exception $previous = null, ?BoxResponseInterface $response = null)
     {
         parent::__construct($message, $code, $previous);
 

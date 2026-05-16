@@ -57,7 +57,8 @@ class EntrySource
     protected ?string $sharedLink = null;
     protected Folder|array|null $parent = null;
     protected ?string $itemStatus = null;
-    protected $synced;
+    // mixed: the 'synced' field is a deprecated Box Sync field that may be bool, null, or absent
+    protected mixed $synced = null;
 
     /**
      * @return string|int|null

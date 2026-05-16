@@ -42,34 +42,23 @@ use DateTimeInterface;
 
 class SharedLink
 {
-    protected $access;
-    protected $unsharedAt;
-    protected $password;
-    protected $permissions;
-    protected $effectiveAccess;
+    protected ?string $access = null;
+    protected DateTimeInterface|string|null $unsharedAt = null;
+    protected ?string $password = null;
+    protected ?Permissions $permissions = null;
+    protected ?string $effectiveAccess = null;
 
-    /**
-     * @return string|null
-     */
-    public function getAccess()
+    public function getAccess(): ?string
     {
         return $this->access;
     }
 
-    /**
-     * @param string|null $access
-     *
-     * @return void
-     */
-    public function setAccess($access = null): void
+    public function setAccess(?string $access = null): void
     {
         $this->access = $access;
     }
 
-    /**
-     * @return DateTimeInterface|string|null
-     */
-    public function getUnsharedAt()
+    public function getUnsharedAt(): DateTimeInterface|string|null
     {
         return $this->unsharedAt;
     }
@@ -84,28 +73,17 @@ class SharedLink
         $this->unsharedAt = $unsharedAt;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    /**
-     * @param string|null $password
-     *
-     * @return void
-     */
-    public function setPassword($password = null): void
+    public function setPassword(?string $password = null): void
     {
         $this->password = $password;
     }
 
-    /**
-     * @return Permissions|null
-     */
-    public function getPermissions()
+    public function getPermissions(): ?Permissions
     {
         return $this->permissions;
     }
@@ -120,20 +98,12 @@ class SharedLink
         $this->permissions = $permissions;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getEffectiveAccess()
+    public function getEffectiveAccess(): ?string
     {
         return $this->effectiveAccess;
     }
 
-    /**
-     * @param string|null $effectiveAccess
-     *
-     * @return void
-     */
-    public function setEffectiveAccess($effectiveAccess = null): void
+    public function setEffectiveAccess(?string $effectiveAccess = null): void
     {
         $this->effectiveAccess = $effectiveAccess;
     }

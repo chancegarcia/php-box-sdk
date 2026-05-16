@@ -37,100 +37,56 @@
 
 namespace Box\Resource;
 
-use Box\Mapper\Hydrator;
-
 class AdminEvent extends Event
 {
-    private mixed $streamType = "admin_logs";
+    private string $streamType = "admin_logs";
 
-    protected mixed $limit = 100;
-    protected mixed $streamPosition = null;
-    protected mixed $createdAfter = null;
-    protected mixed $createdBefore = null;
+    protected int $limit = 100;
+    protected ?string $streamPosition = null;
+    protected ?string $createdAfter = null;
+    protected ?string $createdBefore = null;
 
-    public function __construct(?array $options = null)
-    {
-        if (is_array($options)) {
-            (new Hydrator())->hydrate($this, $options);
-        }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getStreamType(): mixed
+    public function getStreamType(): string
     {
         return $this->streamType;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getLimit(): mixed
+    public function getLimit(): int
     {
         return $this->limit;
     }
 
-    /**
-     * @param mixed $limit
-     *
-     * @return void
-     */
-    public function setLimit(mixed $limit = null): void
+    public function setLimit(int $limit = 100): void
     {
         $this->limit = $limit;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getStreamPosition(): mixed
+    public function getStreamPosition(): ?string
     {
         return $this->streamPosition;
     }
 
-    /**
-     * @param mixed $streamPosition
-     *
-     * @return void
-     */
-    public function setStreamPosition(mixed $streamPosition = null): void
+    public function setStreamPosition(?string $streamPosition = null): void
     {
         $this->streamPosition = $streamPosition;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCreatedAfter(): mixed
+    public function getCreatedAfter(): ?string
     {
         return $this->createdAfter;
     }
 
-    /**
-     * @param mixed $createdAfter
-     *
-     * @return void
-     */
-    public function setCreatedAfter(mixed $createdAfter = null): void
+    public function setCreatedAfter(?string $createdAfter = null): void
     {
         $this->createdAfter = $createdAfter;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCreatedBefore(): mixed
+    public function getCreatedBefore(): ?string
     {
         return $this->createdBefore;
     }
 
-    /**
-     * @param mixed $createdBefore
-     *
-     * @return void
-     */
-    public function setCreatedBefore(mixed $createdBefore = null): void
+    public function setCreatedBefore(?string $createdBefore = null): void
     {
         $this->createdBefore = $createdBefore;
     }

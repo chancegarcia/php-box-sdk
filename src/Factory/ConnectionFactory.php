@@ -6,12 +6,28 @@ use Box\Connection\Connection;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
 use Box\Exception\BoxException;
+use Box\Mapper\Hydrator;
 
 class ConnectionFactory implements ConnectionFactoryInterface
 {
     public function createConnection(?array $options = null): ConnectionInterface
     {
-        return new Connection($options);
+        $connection = new Connection();
+
+        if (is_array($options)) {
+            $transport = $options['transport'] ?? null;
+            if ($transport) {
+                unset($options['transport']);
+            }
+
+            (new Hydrator())->hydrate($connection, $options);
+
+            if ($transport) {
+                $connection->setTransportName($transport);
+            }
+        }
+
+        return $connection;
     }
 
     public function createAuthorizedConnection(array $options): ConnectionInterface

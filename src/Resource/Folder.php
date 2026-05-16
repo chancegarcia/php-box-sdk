@@ -39,30 +39,35 @@ class Folder
 {
     protected string $type = "folder";
     protected string|int|null $id = null;
-    protected mixed $sequenceId = null;
-    protected mixed $etag = null;
-    protected mixed $name = null;
-    protected mixed $createdAt = null;
-    protected mixed $modifiedAt = null;
-    protected mixed $description = null;
-    protected mixed $size = null;
+    protected string|int|null $sequenceId = null;
+    protected ?string $etag = null;
+    protected ?string $name = null;
+    protected DateTimeInterface|string|null $createdAt = null;
+    protected DateTimeInterface|string|null $modifiedAt = null;
+    protected ?string $description = null;
+    protected ?int $size = null;
+    // mixed: path_collection is a heterogeneous structure from the Box API, not yet modeled as a DTO
     protected mixed $pathCollection = null;
+    // mixed: hydrator may deliver a User as array or object depending on API response shape
     protected mixed $createdBy = null;
+    // mixed: hydrator may deliver a User as array or object depending on API response shape
     protected mixed $modifiedBy = null;
+    // mixed: hydrator may deliver a User as array or object depending on API response shape
     protected mixed $ownedBy = null;
+    // mixed: hydrator may deliver a SharedLink as array or object depending on API response shape
     protected mixed $sharedLink = null;
+    // mixed: folder_upload_email is an optional nested object from the Box API
     protected mixed $folderUploadEmail = null;
+    // mixed: hydrator may deliver a Folder as array or object depending on API response shape
     protected mixed $parent = null;
-    protected mixed $itemStatus = null;
+    protected ?string $itemStatus = null;
+    // mixed: item_collection is a paginated collection structure from the Box API, not yet modeled as a DTO
     protected mixed $itemCollection = null;
     protected ?bool $canNonOwnersInvite = null;
     protected ?array $allowedInviteRoles = null;
-    protected mixed $hasCollaborations = null;
+    protected ?bool $hasCollaborations = null;
 
-    /**
-     * @return int|string
-     */
-    public function getParentId()
+    public function getParentId(): string|int
     {
         $parent = $this->getParent();
 
@@ -139,20 +144,17 @@ class Folder
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return DateTimeInterface|string|null
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): DateTimeInterface|string|null
     {
         return $this->createdAt;
     }
 
-    public function setCreatedBy($createdBy = null)
+    public function setCreatedBy(mixed $createdBy = null): void
     {
         $this->createdBy = $createdBy;
     }
 
-    public function getCreatedBy()
+    public function getCreatedBy(): mixed
     {
         return $this->createdBy;
     }
@@ -162,12 +164,12 @@ class Folder
      *
      * @return void
      */
-    public function setDescription($description = null): void
+    public function setDescription(?string $description = null): void
     {
         $this->description = $description;
     }
 
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -177,42 +179,42 @@ class Folder
      *
      * @return void
      */
-    public function setEtag($etag = null): void
+    public function setEtag(?string $etag = null): void
     {
         $this->etag = $etag;
     }
 
-    public function getEtag()
+    public function getEtag(): ?string
     {
         return $this->etag;
     }
 
-    public function setFolderUploadEmail($folderUploadEmail = null)
+    public function setFolderUploadEmail(mixed $folderUploadEmail = null): void
     {
         $this->folderUploadEmail = $folderUploadEmail;
     }
 
-    public function getFolderUploadEmail()
+    public function getFolderUploadEmail(): mixed
     {
         return $this->folderUploadEmail;
     }
 
-    public function setHasCollaborations($hasCollaborations = null)
+    public function setHasCollaborations(?bool $hasCollaborations = null): void
     {
         $this->hasCollaborations = $hasCollaborations;
     }
 
-    public function getHasCollaborations()
+    public function getHasCollaborations(): ?bool
     {
         return $this->hasCollaborations;
     }
 
-    public function setItemCollection($itemCollection = null)
+    public function setItemCollection(mixed $itemCollection = null): void
     {
         $this->itemCollection = $itemCollection;
     }
 
-    public function getItemCollection()
+    public function getItemCollection(): mixed
     {
         return $this->itemCollection;
     }
@@ -227,7 +229,7 @@ class Folder
         $this->itemStatus = $itemStatus;
     }
 
-    public function getItemStatus()
+    public function getItemStatus(): ?string
     {
         return $this->itemStatus;
     }
@@ -245,17 +247,17 @@ class Folder
     /**
      * @return DateTimeInterface|string|null
      */
-    public function getModifiedAt()
+    public function getModifiedAt(): DateTimeInterface|string|null
     {
         return $this->modifiedAt;
     }
 
-    public function setModifiedBy($modifiedBy = null)
+    public function setModifiedBy(mixed $modifiedBy = null): void
     {
         $this->modifiedBy = $modifiedBy;
     }
 
-    public function getModifiedBy()
+    public function getModifiedBy(): mixed
     {
         return $this->modifiedBy;
     }
@@ -265,62 +267,62 @@ class Folder
      *
      * @return void
      */
-    public function setName($name = null): void
+    public function setName(?string $name = null): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setOwnedBy($ownedBy = null)
+    public function setOwnedBy(mixed $ownedBy = null): void
     {
         $this->ownedBy = $ownedBy;
     }
 
-    public function getOwnedBy()
+    public function getOwnedBy(): mixed
     {
         return $this->ownedBy;
     }
 
-    public function setParent($parent = null)
+    public function setParent(mixed $parent = null): void
     {
         $this->parent = $parent;
     }
 
-    public function getParent()
+    public function getParent(): mixed
     {
         return $this->parent;
     }
 
-    public function setPathCollection($pathCollection = null)
+    public function setPathCollection(mixed $pathCollection = null): void
     {
         $this->pathCollection = $pathCollection;
     }
 
-    public function getPathCollection()
+    public function getPathCollection(): mixed
     {
         return $this->pathCollection;
     }
 
-    public function setSequenceId($sequenceId = null)
+    public function setSequenceId(string|int|null $sequenceId = null): void
     {
         $this->sequenceId = $sequenceId;
     }
 
-    public function getSequenceId()
+    public function getSequenceId(): string|int|null
     {
         return $this->sequenceId;
     }
 
-    public function setSharedLink($sharedLink = null)
+    public function setSharedLink(mixed $sharedLink = null): void
     {
         $this->sharedLink = $sharedLink;
     }
 
-    public function getSharedLink()
+    public function getSharedLink(): mixed
     {
         return $this->sharedLink;
     }
@@ -330,22 +332,22 @@ class Folder
      *
      * @return void
      */
-    public function setSize($size = null): void
+    public function setSize(?int $size = null): void
     {
         $this->size = $size;
     }
 
-    public function getSize()
+    public function getSize(): ?int
     {
         return $this->size;
     }
 
-    public function setType($type = null)
+    public function setType(string $type = 'folder'): void
     {
         $this->type = $type;
     }
 
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }

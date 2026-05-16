@@ -44,6 +44,7 @@
         "psr/event-dispatcher": "^1.0",
         "ext-fileinfo": "*",
         "ext-openssl": "*",
+        "ext-pdo": "*",
         "symfony/dotenv": "^7.4|^8",
         "symfony/console": "^7.4|^8",
         "monolog/monolog": "^3.0",

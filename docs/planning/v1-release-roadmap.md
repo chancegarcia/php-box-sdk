@@ -984,3 +984,4 @@ Move to `docs/archive/prompts/` (Claude Code CLI memory supersedes):
   overrides `execute()` as a bridge, and its `configure()` registers shared options. Enabling
   this would require either a DI container (which resolves commands without the bridge) or a
   significant restructure of the base class. Revisit if a DI container is added post-v1.
+- **Docblock consistency and polish pass**: v1 acceptance bar is accuracy — `@throws` tags present and correct, param/return types matching actual types. A full consistency pass (uniform style, complete `@param` descriptions on all public methods, `@return` descriptions, prose summaries) is deferred to a post-v1 maintenance cycle.

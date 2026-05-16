@@ -8,6 +8,7 @@ use Box\Connection\Token\Token;
 use Box\Connection\Token\TokenInterface;
 use Box\Dto\TokenStorageContext;
 use Box\Exception\TokenStorageException;
+use Box\Mapper\Hydrator;
 use Box\Storage\Token\TokenStorageInterface;
 use JsonException;
 
@@ -17,6 +18,15 @@ class FilesystemTokenStorage implements TokenStorageInterface
     {
     }
 
+    /**
+     * Stores a token in the token storage using the provided context.
+     *
+     * @param TokenInterface $token The token to be stored.
+     * @param TokenStorageContext $context The context defining where and how the token should be stored.
+     *
+     * @throws TokenStorageException
+     * @return void
+     */
     public function storeToken(TokenInterface $token, TokenStorageContext $context): void
     {
         $map = $this->loadMap();
@@ -24,11 +34,25 @@ class FilesystemTokenStorage implements TokenStorageInterface
         $this->saveMap($map);
     }
 
+    /**
+     * @param TokenInterface $token
+     * @param TokenStorageContext $context
+     *
+     * @throws TokenStorageException
+     * @return void
+     */
     public function updateToken(TokenInterface $token, TokenStorageContext $context): void
     {
         $this->storeToken($token, $context);
     }
 
+    /**
+     * @param TokenStorageContext $context
+     *
+     * @throws TokenStorageException
+     * @throws \ReflectionException
+     * @return TokenInterface|null
+     */
     public function retrieveToken(TokenStorageContext $context): ?TokenInterface
     {
         $map = $this->loadMap();
@@ -38,9 +62,18 @@ class FilesystemTokenStorage implements TokenStorageInterface
             return null;
         }
 
-        return new Token($map[$key]);
+        $token = new Token();
+        (new Hydrator())->hydrate($token, $map[$key]);
+
+        return $token;
     }
 
+    /**
+     * @param TokenStorageContext $context
+     *
+     * @throws TokenStorageException
+     * @return void
+     */
     public function removeToken(TokenStorageContext $context): void
     {
         $map = $this->loadMap();
@@ -54,11 +87,20 @@ class FilesystemTokenStorage implements TokenStorageInterface
         $this->saveMap($map);
     }
 
+    /**
+     * @throws TokenStorageException
+     * @return void
+     */
     public function clear(): void
     {
         $this->saveMap([]);
     }
 
+    /**
+     * @param TokenInterface $token
+     *
+     * @return array
+     */
     private function tokenToArray(TokenInterface $token): array
     {
         return [
@@ -70,6 +112,10 @@ class FilesystemTokenStorage implements TokenStorageInterface
         ];
     }
 
+    /**
+     * @throws TokenStorageException
+     * @return array
+     */
     private function loadMap(): array
     {
         if (!file_exists($this->filePath)) {
@@ -95,6 +141,12 @@ class FilesystemTokenStorage implements TokenStorageInterface
         return is_array($data) ? $data : [];
     }
 
+    /**
+     * @param array $map
+     *
+     * @throws TokenStorageException
+     * @return void
+     */
     private function saveMap(array $map): void
     {
         try {

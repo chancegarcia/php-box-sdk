@@ -32,17 +32,10 @@
 
 namespace Box\Connection\Response;
 
-use Box\Mapper\Hydrator;
 use Box\Connection\Response\AuthenticationResponseInterface;
 
 class AuthenticationResponse implements AuthenticationResponseInterface
 {
-    public function __construct(?array $options = null)
-    {
-        if (is_array($options)) {
-            (new Hydrator())->hydrate($this, $options);
-        }
-    }
     protected $responseType;
     protected $accessToken;
     protected $expiresIn;

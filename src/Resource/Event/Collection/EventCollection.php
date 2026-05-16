@@ -43,84 +43,52 @@ use Doctrine\Common\Collections\Collection;
 
 class EventCollection
 {
-    protected $chunkSize;
-    protected $nextStreamPosition;
+    protected int|string|null $chunkSize = null;
+    protected int|string|null $nextStreamPosition = null;
 
-    /**
-     * @var Collection
-     */
-    protected $entries;
-    protected $originalEntries;
+    protected ?Collection $entries = null;
+    // mixed: raw entries array before conversion to Collection; preserved for reference
+    protected mixed $originalEntries = null;
 
-    /**
-     * @return mixed
-     */
     public function getOriginalEntries(): mixed
     {
         return $this->originalEntries;
     }
 
-    /**
-     * @param mixed $originalEntries
-     *
-     * @return void
-     */
-    public function setOriginalEntries($originalEntries = null): void
+    public function setOriginalEntries(mixed $originalEntries = null): void
     {
         $this->originalEntries = $originalEntries;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getChunkSize(): mixed
+    public function getChunkSize(): int|string|null
     {
         return $this->chunkSize;
     }
 
-    /**
-     * @param mixed $chunkSize
-     *
-     * @return void
-     */
-    public function setChunkSize($chunkSize = null): void
+    public function setChunkSize(int|string|null $chunkSize = null): void
     {
         $this->chunkSize = $chunkSize;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getNextStreamPosition(): mixed
+    public function getNextStreamPosition(): int|string|null
     {
         return $this->nextStreamPosition;
     }
 
-    /**
-     * @param mixed $nextStreamPosition
-     *
-     * @return void
-     */
-    public function setNextStreamPosition($nextStreamPosition = null): void
+    public function setNextStreamPosition(int|string|null $nextStreamPosition = null): void
     {
         $this->nextStreamPosition = $nextStreamPosition;
     }
 
-    /**
-     * @return Collection
-     */
-    public function getEntries(): Collection
+    public function getEntries(): ?Collection
     {
         return $this->entries;
     }
 
     /**
-     * @param Collection|array|null $entries
-     *
      * @throws BoxException
-     * @return void
      */
-    public function setEntries($entries = null): void
+    public function setEntries(Collection|array|null $entries = null): void
     {
         if (is_array($entries)) {
             $this->originalEntries = $entries;

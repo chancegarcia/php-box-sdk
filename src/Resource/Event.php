@@ -39,121 +39,75 @@ namespace Box\Resource;
 
 class Event
 {
-    protected mixed $type = null;
+    protected ?string $type = null;
 
-    protected mixed $eventId = null;
+    protected string|int|null $eventId = null;
 
+    // mixed: hydrator may deliver a User array or User object depending on API response shape
     protected mixed $createdBy = null;
 
-    protected mixed $eventType = null;
+    protected ?string $eventType = null;
 
-    protected mixed $sessionId = null;
+    protected ?string $sessionId = null;
 
+    // mixed: source can be a File, Folder, User, Comment, or other resource type depending on the event
     protected mixed $source = null;
 
-    /**
-     * @return mixed
-     */
-    public function getType(): mixed
+    public function getType(): ?string
     {
         return $this->type;
     }
 
-    /**
-     * @param mixed $type
-     *
-     * @return void
-     */
-    public function setType(mixed $type = null): void
+    public function setType(?string $type = null): void
     {
         $this->type = $type;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getEventId(): mixed
+    public function getEventId(): string|int|null
     {
         return $this->eventId;
     }
 
-    /**
-     * @param mixed $eventId
-     *
-     * @return void
-     */
-    public function setEventId(mixed $eventId = null): void
+    public function setEventId(string|int|null $eventId = null): void
     {
         $this->eventId = $eventId;
     }
 
-    /**
-     * @return mixed
-     */
     public function getCreatedBy(): mixed
     {
         return $this->createdBy;
     }
 
-    /**
-     * @param mixed $createdBy
-     *
-     * @return void
-     */
     public function setCreatedBy(mixed $createdBy = null): void
     {
         $this->createdBy = $createdBy;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getEventType(): mixed
+    public function getEventType(): ?string
     {
         return $this->eventType;
     }
 
-    /**
-     * @param mixed $eventType
-     *
-     * @return void
-     */
-    public function setEventType(mixed $eventType = null): void
+    public function setEventType(?string $eventType = null): void
     {
         $this->eventType = $eventType;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getSessionId(): mixed
+    public function getSessionId(): ?string
     {
         return $this->sessionId;
     }
 
-    /**
-     * @param mixed $sessionId
-     *
-     * @return void
-     */
-    public function setSessionId(mixed $sessionId = null): void
+    public function setSessionId(?string $sessionId = null): void
     {
         $this->sessionId = $sessionId;
     }
 
-    /**
-     * @return mixed
-     */
     public function getSource(): mixed
     {
         return $this->source;
     }
 
-    /**
-     * @param mixed $source
-     *
-     * @return void
-     */
     public function setSource(mixed $source = null): void
     {
         $this->source = $source;

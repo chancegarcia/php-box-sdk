@@ -32,16 +32,8 @@
 
 namespace Box\Connection\Token;
 
-use Box\Mapper\Hydrator;
-
 class Token implements TokenInterface
 {
-    public function __construct(?array $options = null)
-    {
-        if (is_array($options)) {
-            (new Hydrator())->hydrate($this, $options);
-        }
-    }
     protected mixed $accessToken = null;
     protected mixed $refreshToken = null;
     protected mixed $grantType = "authorization_code";

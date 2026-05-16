@@ -10,7 +10,9 @@ class GroupMembership
 {
     protected string $type = 'group_membership';
     protected string|int|null $id = null;
+    // mixed: hydrator may deliver a User as array or object depending on API response shape
     protected mixed $user = null;
+    // mixed: hydrator may deliver a Group as array or object depending on API response shape
     protected mixed $group = null;
     protected ?string $role = null;
     protected DateTimeInterface|string|null $createdAt = null;

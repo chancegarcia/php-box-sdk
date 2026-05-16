@@ -41,7 +41,7 @@ use Box\Connection\Token\Token;
 use Box\Connection\Token\TokenInterface;
 use Box\Dto\TokenStorageContext;
 use Box\Exception\TokenStorageException;
-use Box\Storage\Token\Pdo\TokenStorageInterface;
+use Box\Mapper\Hydrator;
 use PDO;
 use PDOException;
 
@@ -356,9 +356,10 @@ class TokenStorage implements TokenStorageInterface
                 return null;
             }
 
-            // Hydrate token. Token constructor accepts array.
-            // We need to map DB columns back to what Token expects in its array (which matches $tokenMap keys usually)
-            return new Token($row);
+            $token = new Token();
+            (new Hydrator())->hydrate($token, $row);
+
+            return $token;
         } catch (PDOException $e) {
             $exception = new TokenStorageException("Failed to retrieve token: " . $e->getMessage(), 0, $e);
             $exception->setTokenStorage($this);

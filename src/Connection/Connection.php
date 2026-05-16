@@ -47,7 +47,6 @@ use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Http\Transport\GuzzleTransport;
 use Box\Http\Transport\TransportInterface;
-use Box\Mapper\Hydrator;
 use Box\Event\Http\RateLimitHit;
 use Box\Trait\LoggerAwareTrait;
 use Box\Trait\BoxApiErrorTrait;
@@ -93,28 +92,8 @@ class Connection implements ConnectionInterface
         return $this->eventDispatcher;
     }
 
-    public function __construct(?array $options = null, ?AuthenticationResponseFactoryInterface $authenticationResponseFactory = null)
+    public function __construct(?AuthenticationResponseFactoryInterface $authenticationResponseFactory = null)
     {
-        if (is_array($options)) {
-            $transport = $options['transport'] ?? null;
-            if ($transport) {
-                unset($options['transport']);
-            }
-
-            (new Hydrator())->hydrate($this, $options);
-
-            if ($transport) {
-                $this->setTransportName($transport);
-            }
-
-            if (array_key_exists('disableSslVerification', $options) && is_bool($options['disableSslVerification'])) {
-                $this->disableSslVerification = $options['disableSslVerification'];
-            }
-            if (isset($options['accessToken'])) {
-                $this->setAccessToken($options['accessToken']);
-            }
-        }
-
         $this->authenticationResponseFactory = $authenticationResponseFactory ?? new AuthenticationResponseFactory();
     }
 

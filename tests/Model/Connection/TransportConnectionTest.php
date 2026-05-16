@@ -2,6 +2,7 @@
 
 namespace Box\Tests\Model\Connection;
 
+use Box\Factory\ConnectionFactory;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Connection\Connection;
 use Box\Http\Transport\TransportInterface;
@@ -23,7 +24,7 @@ class TransportConnectionTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $client = new GuzzleClient(['handler' => $handlerStack]);
 
-        $connection = new Connection([
+        $connection = (new ConnectionFactory())->createConnection([
             'transport' => Connection::TRANSPORT_GUZZLE,
             'accessToken' => 'fake_token'
         ]);

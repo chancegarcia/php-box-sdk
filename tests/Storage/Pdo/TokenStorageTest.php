@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Box\Tests\Storage\Pdo;
 
-use Box\Connection\Token\Token;
 use Box\Dto\TokenStorageContext;
+use Box\Factory\TokenFactory;
 use Box\Storage\Token\Pdo\TokenStorage;
 use PHPUnit\Framework\TestCase;
 use PDO;
@@ -54,7 +54,7 @@ class TokenStorageTest extends TestCase
     public function testStoreAndRetrieveToken(): void
     {
         $context = new TokenStorageContext('user1', 'ent1', 'client1');
-        $token = new Token([
+        $token = (new TokenFactory())->createToken([
             'access_token' => 'access-123',
             'refresh_token' => 'refresh-456',
             'expires_in' => 3600,
@@ -75,8 +75,8 @@ class TokenStorageTest extends TestCase
     public function testStoreAnotherTokenForSameContextReplacesActiveToken(): void
     {
         $context = new TokenStorageContext('user1');
-        $token1 = new Token(['access_token' => 'token-1']);
-        $token2 = new Token(['access_token' => 'token-2']);
+        $token1 = (new TokenFactory())->createToken(['access_token' => 'token-1']);
+        $token2 = (new TokenFactory())->createToken(['access_token' => 'token-2']);
 
         $this->storage->storeToken($token1, $context);
         $this->storage->storeToken($token2, $context);
@@ -94,8 +94,8 @@ class TokenStorageTest extends TestCase
         $context1 = new TokenStorageContext('user1');
         $context2 = new TokenStorageContext('user2');
 
-        $token1 = new Token(['access_token' => 'token-1']);
-        $token2 = new Token(['access_token' => 'token-2']);
+        $token1 = (new TokenFactory())->createToken(['access_token' => 'token-1']);
+        $token2 = (new TokenFactory())->createToken(['access_token' => 'token-2']);
 
         $this->storage->storeToken($token1, $context1);
         $this->storage->storeToken($token2, $context2);
@@ -109,7 +109,7 @@ class TokenStorageTest extends TestCase
         $context1 = new TokenStorageContext('user1', 'ent1', 'client1');
         $context2 = new TokenStorageContext('user1', 'ent1', 'client1');
 
-        $token = new Token(['access_token' => 'token-abc']);
+        $token = (new TokenFactory())->createToken(['access_token' => 'token-abc']);
         $this->storage->storeToken($token, $context1);
 
         $retrieved = $this->storage->retrieveToken($context2);
@@ -120,7 +120,7 @@ class TokenStorageTest extends TestCase
     public function testRemoveToken(): void
     {
         $context = new TokenStorageContext('user1');
-        $token = new Token(['access_token' => 'token-1']);
+        $token = (new TokenFactory())->createToken(['access_token' => 'token-1']);
 
         $this->storage->storeToken($token, $context);
         $this->assertNotNull($this->storage->retrieveToken($context));
@@ -138,8 +138,8 @@ class TokenStorageTest extends TestCase
 
     public function testClearStorage(): void
     {
-        $this->storage->storeToken(new Token(['access_token' => 't1']), new TokenStorageContext('u1'));
-        $this->storage->storeToken(new Token(['access_token' => 't2']), new TokenStorageContext('u2'));
+        $this->storage->storeToken((new TokenFactory())->createToken(['access_token' => 't1']), new TokenStorageContext('u1'));
+        $this->storage->storeToken((new TokenFactory())->createToken(['access_token' => 't2']), new TokenStorageContext('u2'));
 
         $this->storage->clear();
 
@@ -151,12 +151,12 @@ class TokenStorageTest extends TestCase
     {
         // Only enterpriseId
         $context1 = new TokenStorageContext(null, 'ent1', null);
-        $token1 = new Token(['access_token' => 'token-ent']);
+        $token1 = (new TokenFactory())->createToken(['access_token' => 'token-ent']);
         $this->storage->storeToken($token1, $context1);
 
         // Only clientId
         $context2 = new TokenStorageContext(null, null, 'client1');
-        $token2 = new Token(['access_token' => 'token-client']);
+        $token2 = (new TokenFactory())->createToken(['access_token' => 'token-client']);
         $this->storage->storeToken($token2, $context2);
 
         $this->assertEquals('token-ent', $this->storage->retrieveToken($context1)->getAccessToken());
@@ -164,7 +164,7 @@ class TokenStorageTest extends TestCase
 
         // Verify no collision with full null context (if supported, though usually at least one field should be set)
         $context3 = new TokenStorageContext(null, null, null);
-        $token3 = new Token(['access_token' => 'token-null']);
+        $token3 = (new TokenFactory())->createToken(['access_token' => 'token-null']);
         $this->storage->storeToken($token3, $context3);
 
         $this->assertEquals('token-null', $this->storage->retrieveToken($context3)->getAccessToken());

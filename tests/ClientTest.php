@@ -17,6 +17,7 @@ use Box\Resource\Group;
 use Box\Exception\BoxException;
 use Box\Connection\Token\Token;
 use Box\Factory\FolderFactory;
+use Box\Factory\TokenFactory;
 use Box\Service\Folder\FolderService;
 use Box\Http\Response\Header\ResponseHeaderInterface;
 use Box\Http\Response\Header\StatusLineInterface;
@@ -148,7 +149,7 @@ class ClientTest extends TestCase
         $token = $this->createMock(TokenInterface::class);
         $token->method('getRefreshToken')->willReturn('old_refresh');
 
-        $newToken = new Token([
+        $newToken = (new TokenFactory())->createToken([
             'access_token' => 'new_access',
             'refresh_token' => 'new_refresh',
             'expires_in' => 3600,

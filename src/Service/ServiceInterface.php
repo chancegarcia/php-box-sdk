@@ -37,6 +37,7 @@
 
 namespace Box\Service;
 
+use Box\Exception\BoxException;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Connection\ConnectionInterface;
 use Box\Connection\Token\TokenInterface;
@@ -44,37 +45,21 @@ use BadMethodCallException;
 
 interface ServiceInterface
 {
-    /**
-     * @return ConnectionInterface
-     */
-    public function getConnection();
+    public function getConnection(): ConnectionInterface;
 
-    /**
-     * @param ConnectionInterface|null $connection
-     *
-     * @return void
-     */
-    public function setConnection($connection = null);
+    public function setConnection(?ConnectionInterface $connection = null): void;
 
-    /**
-     * @return TokenInterface
-     */
-    public function getToken();
+    public function getToken(): TokenInterface;
 
-    /**
-     * @param TokenInterface|null $token
-     *
-     * @return void
-     */
-    public function setToken($token = null);
+    public function setToken(?TokenInterface $token = null): void;
 
     /**
      * @param BoxResponseInterface|null $response
      * @param string $returnType 'decoded', 'flat', 'array', or 'original'
      *
-     * @throws \Box\Exception\BoxException
+     * @throws BoxException
      * @throws BadMethodCallException
      * @return mixed
      */
-    public function handleBoxResponse(?BoxResponseInterface $response = null, $returnType = 'decoded');
+    public function handleBoxResponse(?BoxResponseInterface $response = null, string $returnType = 'decoded'): mixed;
 }

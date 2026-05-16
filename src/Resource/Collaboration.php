@@ -37,19 +37,22 @@ use DateTimeInterface;
 
 class Collaboration
 {
-    protected mixed $id = null;
-    protected mixed $type = 'collaboration';
+    protected string|int|null $id = null;
+    protected string $type = 'collaboration';
+    // mixed: hydrator may deliver a User or Group as array or object depending on API response shape
     protected mixed $createdBy = null;
-    protected mixed $createdAt = null;
-    protected mixed $modifiedAt = null;
-    protected mixed $expiresAt = null;
-    protected mixed $status = null;
+    protected DateTimeInterface|string|null $createdAt = null;
+    protected DateTimeInterface|string|null $modifiedAt = null;
+    protected DateTimeInterface|string|null $expiresAt = null;
+    protected ?string $status = null;
+    // mixed: accessible_by can be a User or Group; hydrator may deliver an array or object
     protected mixed $accessibleBy = null;
-    protected mixed $role = null;
-    protected mixed $acknowledgedAt = null;
+    protected ?string $role = null;
+    protected DateTimeInterface|string|null $acknowledgedAt = null;
+    // mixed: item can be a File or Folder; hydrator may deliver an array or object
     protected mixed $item = null;
 
-    public function getId(): mixed
+    public function getId(): string|int|null
     {
         return $this->id;
     }
@@ -64,12 +67,12 @@ class Collaboration
         $this->id = $id;
     }
 
-    public function setAccessibleBy($accessibleBy = null)
+    public function setAccessibleBy(mixed $accessibleBy = null): void
     {
         $this->accessibleBy = $accessibleBy;
     }
 
-    public function getAccessibleBy()
+    public function getAccessibleBy(): mixed
     {
         return $this->accessibleBy;
     }
@@ -84,10 +87,7 @@ class Collaboration
         $this->acknowledgedAt = $acknowledgedAt;
     }
 
-    /**
-     * @return DateTimeInterface|string|null
-     */
-    public function getAcknowledgedAt()
+    public function getAcknowledgedAt(): DateTimeInterface|string|null
     {
         return $this->acknowledgedAt;
     }
@@ -102,20 +102,17 @@ class Collaboration
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return DateTimeInterface|string|null
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): DateTimeInterface|string|null
     {
         return $this->createdAt;
     }
 
-    public function setCreatedBy($createdBy = null)
+    public function setCreatedBy(mixed $createdBy = null): void
     {
         $this->createdBy = $createdBy;
     }
 
-    public function getCreatedBy()
+    public function getCreatedBy(): mixed
     {
         return $this->createdBy;
     }
@@ -130,20 +127,17 @@ class Collaboration
         $this->expiresAt = $expiresAt;
     }
 
-    /**
-     * @return DateTimeInterface|string|null
-     */
-    public function getExpiresAt()
+    public function getExpiresAt(): DateTimeInterface|string|null
     {
         return $this->expiresAt;
     }
 
-    public function setItem($item = null)
+    public function setItem(mixed $item = null): void
     {
         $this->item = $item;
     }
 
-    public function getItem()
+    public function getItem(): mixed
     {
         return $this->item;
     }
@@ -158,10 +152,7 @@ class Collaboration
         $this->modifiedAt = $modifiedAt;
     }
 
-    /**
-     * @return DateTimeInterface|string|null
-     */
-    public function getModifiedAt()
+    public function getModifiedAt(): DateTimeInterface|string|null
     {
         return $this->modifiedAt;
     }
@@ -176,7 +167,7 @@ class Collaboration
         $this->role = $role;
     }
 
-    public function getRole()
+    public function getRole(): ?string
     {
         return $this->role;
     }
@@ -211,17 +202,17 @@ class Collaboration
         $this->status = $status;
     }
 
-    public function getStatus()
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    public function setType($type = null)
+    public function setType(string $type = 'collaboration'): void
     {
         $this->type = $type;
     }
 
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
