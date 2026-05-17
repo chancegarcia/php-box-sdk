@@ -2,7 +2,8 @@
 
 ## Project
 PHP 8.4+ SDK for the Box API v2. Repository: `chancegarcia/box-api-v2-sdk`.
-Currently working toward the **v1.0.0 release** on branch `release-v1.0.0`.
+Namespace: `Box\` from `src/`; tests: `Box\Tests\` from `tests/`.
+v1.0.0 complete. Package/repo rename pending (human-managed).
 
 ## Workflow Template
 - Version: 2.0
@@ -19,8 +20,8 @@ This project uses **Claude Code CLI** for implementation (describe-approve-execu
 - Story/task transition requires explicit human approval — do not begin a new story or task without it.
 
 ## Key Docs to Read First
-- `docs/ai/current-handoff-summary.md` — current state and active slice
-- `docs/planning/v1-release-roadmap.md` — step and slice tracker with decisions
+- `docs/ai/current-handoff-summary.md` — current state and active task
+- `docs/planning/v1-release-roadmap.md` — story and task tracker with decisions
 - `docs/ai-workflow/single-repository-workflow.md` — workflow rules
 
 ## Validation Commands
@@ -31,7 +32,7 @@ composer cs:check      # PHP_CodeSniffer
 composer lint          # PHP syntax check
 composer review        # all of the above
 ```
-Always run `composer review` after any implementation slice before confirming completion.
+Always run `composer review` after any implementation task before confirming completion.
 
 ## Timestamps
 Use `America/Indiana/Indianapolis` local time for all doc timestamps.
@@ -39,11 +40,9 @@ Use `America/Indiana/Indianapolis` local time for all doc timestamps.
 TZ="America/Indiana/Indianapolis" date "+%Y-%m-%d %H:%M:%S"
 ```
 
-## Current Status (as of 2026-05-14)
-- **Slices complete**: 15.1, 15.2, 15.3, 15.4, 15.4.1, 15.4.2, 15.4.3, 15.4.4, 15.5, 15.6, 16
-- **Next slice**: 17 — v1 Release Readiness
-- **Upcoming**: 17, 18 (docs cleanup)
-- **Test baseline**: 334 tests, 902 assertions
+## Current Status (as of 2026-05-17)
+- **v1.0.0 ready to tag** — all stories and tasks complete (through Task 22)
+- **Test baseline**: 372 tests, 1002 assertions
 
 ## Key Architectural Decisions
 - **Auth providers**: `OAuth2Provider` and `JwtProvider` both implement `AuthProviderInterface`.
@@ -55,3 +54,7 @@ TZ="America/Indiana/Indianapolis" date "+%Y-%m-%d %H:%M:%S"
 - **No DI container**: Commands wired manually in `bin/box-sdk`.
 - **No plan mode**: Use default mode for all tasks.
 - **Webhook verification**: `Box\Webhook\WebhookVerifier`; signing formula `base64(HMAC-SHA256(body + timestamp, key))`; webhook CRUD management deferred to post-v1.
+- **Namespace pattern**: Primary resources use flat `Box\Resource\{Name}` (e.g., `Box\Resource\File`); never double-nested primaries (e.g., `Box\Resource\File\File`). Sub-namespaces only for subordinate types (collections, entries, permissions).
+- **Box IDs**: Treat as `string|int` where the Box API supports both — Box IDs may be large numeric strings.
+- **Hydration**: Centralized in mapper/hydrator classes; do not duplicate mapping logic across models.
+- **CLI**: Keep commands thin; move SDK logic into services. Mask tokens and credentials in all command output.

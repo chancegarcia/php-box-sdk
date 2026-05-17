@@ -17,7 +17,7 @@ This guide assumes the new package name and repo URL are known. Do not begin unt
 ## Step 1 — Rename the GitHub repository
 
 1. Go to **Settings → General** on the GitHub repository page.
-2. Under **Repository name**, enter the new name (e.g. `box-sdk`).
+2. Under **Repository name**, enter the new name (e.g. `php-box-sdk`).
 3. Click **Rename**. GitHub automatically creates a redirect from the old URL.
 
 ---
@@ -39,7 +39,7 @@ Update the following fields to use the new package name and repo URL:
 
 ```json
 {
-    "name": "<new-vendor>/<new-package>",
+    "name": "chancegarcia/php-box-sdk",
     "homepage": "<new-github-url>",
     "support": {
         "docs": "https://developer.box.com/reference",
@@ -93,14 +93,14 @@ git push origin v1.0.0
 If the old package already exists on Packagist under the old name, mark it as **abandoned** and point consumers to the new package name:
 1. Go to the old package page on Packagist.
 2. Click **Edit** → **Mark as abandoned**.
-3. Set the replacement package name to `<new-vendor>/<new-package>`.
+3. Set the replacement package name to `chancegarcia/php-box-sdk`.
 
 ---
 
 ## Step 8 — Verify
 
 ```bash
-composer require <new-vendor>/<new-package>:^1.0
+composer require chancegarcia/php-box-sdk:^1.0
 ```
 
 Confirm the correct version resolves and installs.

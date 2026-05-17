@@ -26,16 +26,16 @@ This work assumes the completion of:
 - **Step 8: Service Layer Hardening** (Service normalization) ✓
 - **Step 9: Legacy Architecture Removal** (Removal of `BaseModel`, `mapBoxToClass`, etc.) ✓
 
-## Remaining Step List & Status
+## Remaining Story List & Status
 
-| Step | Title | Status |
+| Story | Title | Status |
 | :--- | :--- | :--- |
 | 10 | [Resource Namespace and Interface Rationalization](#step-10--resource-namespace-and-interface-rationalization) | ✓ |
 | 11 | [Factory Modernization and Service Boundaries](#step-11--factory-modernization-and-service-boundaries) | ✓ |
 
 ### Status Table
 
-| Slice | Title | Status |
+| Task | Title | Status |
 | :--- | :--- | :--- |
 | 11.0 | [Factory, Construction, Hydration, and Service-Boundary Audit](11-factory-service-boundary-audit.md) | ✓ |
 | 11.1 | Factory Interface Decision Pass | ✓ |
@@ -128,7 +128,7 @@ Audit and migrate remaining domain resource classes into the final v1 resource n
 
 ### Status Table
 
-| Slice | Title | Status |
+| Task | Title | Status |
 | :--- | :--- | :--- |
 | 10.0 | [Tracker and Resource Surface Audit](10-resource-namespace-interface-rationalization.md#slice-100--tracker-and-resource-surface-audit) | ✓ |
 | 10.1 | [User Resource Validation](10-resource-namespace-interface-rationalization.md#slice-101--user-resource-validation) | ✓ |
@@ -219,7 +219,7 @@ Audit and modernize factory patterns and service boundaries after interface rati
 
 #### Slices
 
-| Slice | Title | Status |
+| Task | Title | Status |
 | :--- | :--- | :--- |
 | 12.0 | [Token Storage Audit and Planning](docs/audits/12-token-storage-completion-audit.md) | ✓ |
 | 12.1 | Storage Contract Finalization | ✓ |
@@ -285,7 +285,7 @@ Move auth lifecycle responsibilities out of `Client` into a dedicated provider/b
 
 ### Status Table
 
-| Slice | Title | Status |
+| Task | Title | Status |
 | :--- | :--- | :--- |
 | 13.0 | Auth Lifecycle/Auth Provider Extraction Discovery | ✓ |
 | 13.1 | Roadmap Step Naming and Documentation Drift Cleanup | ✓ |
@@ -348,7 +348,7 @@ Evaluate requirements and dependencies for implementing Box JWT/S2S authenticati
 
 #### Slice Status
 
-| Slice | Title | Status |
+| Task | Title | Status |
 | :--- | :--- | :--- |
 | 15.1 | Dependency and Core JWT Support | ✓ |
 | 15.2 | JwtProvider Implementation | ✓ |
