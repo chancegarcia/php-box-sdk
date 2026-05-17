@@ -1,62 +1,101 @@
-# AI Handoff Summary
+# Handoff Summary
 
-- **Timestamp**: 2026-05-16 15:28 (America/Indiana)
-- **Project**: `chancegarcia/box-api-v2-sdk` (PHP 8.4+)
+## Project
+- Repository: box-api-v2-sdk (`chancegarcia/box-api-v2-sdk`)
+- Primary language/tooling: PHP 8.4+, Symfony 7.4, `composer review`
+- Current branch: release-v1.0.0
+- Next Step Status: Pending Approval
 
-## Status
-- **Roadmap Position**: Steps 17 and 18 complete. Ready to tag v1.0.0.
-- **Test baseline**: 372 tests, 1002 assertions
-- **v1 remaining**: `git tag v1.0.0` (human), package/repo rename (human, when ready)
-
-## Next Action
-
-Tag v1.0.0 when ready. Next session is likely workflow refinement (polishing `docs/prompts/ai-workflow/` in a dedicated repo), but may also be bug fixes or early v1.1 work.
-
-Do not prompt about package/repo rename.
+## Current Work Item
+- Epic: v1.0.0 release (nearly done) + v2.0 workflow migration
+- Story: Workflow migration — update to v2.0 AI workflow
+- Task completed this session: Structural workflow setup (ai-workflow coordination repo)
+- Commit hash: (not yet committed — see below)
 
 ---
 
-## Completed This Session (2026-05-16)
+## Carried Over From Previous Session (2026-05-16)
 
-### Step 17 — v1 Release Readiness [COMPLETE ✓]
-- Migration guide "At a Glance" table: sections 14 & 15 added.
-- `CHANGELOG.md`: `Box\Service\BoxClientFactory` → `Box\Factory\BoxClientFactory`; test count corrected to 372/1002.
-- `composer.json` version `1.0.0` confirmed; description and keywords confirmed.
-- Security scan: clean.
-- `docs/README.md` status updated.
-- Roadmap: slices 20–22 and Step 17 marked Complete.
+**v1.0.0 is ready to tag.** Steps 17 and 18 are complete.
 
-### Step 18 — Documentation Cleanup [COMPLETE ✓]
-- Deleted: `docs/audits/box-api-endpoint-coverage.md`, `docs/planning/v1/api-coverage-audit.md`, `docs/prompts/generic-phpstorm-ai-chat-prompt-delivery-format.md`, `docs/ai/current-task-summary.md`.
-- `git mv docs/planning/v1/overview.md` → `docs/archive/planning/v1-overview.md`; both nav links updated.
-- `docs/planning/README.md`: status corrected; broken api-coverage-audit link removed.
-- `docs/planning/release-task-lists.md`: chunked upload and enum wiring corrected from "Deferred" to "Completed"; copyright dates pre-release item marked resolved.
-- `docs/planning/v1-release-roadmap.md`: Step 17 → Complete, Step 18 → Complete.
-- AI workflow prompts (`docs/prompts/ai-workflow/`) retained intentionally for cross-project reuse.
+- Test baseline: **372 tests, 1002 assertions** (CLAUDE.md still shows old 334/902 — fix this)
+- Remaining v1 action: `git tag v1.0.0` (human, when ready)
+- Package/repo rename is pending (human decision; do not prompt)
 
-### API Coverage Matrix Restructured
-- `docs/audits/api-coverage-matrix.md` rewritten: endpoint-driven rows, `Service / Method` column, `(TBD)` suggested names for unimplemented endpoints, stubs for all deferred families (Comments, Tasks, Metadata, Webhooks, Collections, Web Links, Trash, Watermarks, Zip Downloads, Folder Locks, File Versions).
-- Chunked upload corrected from ⏸ Deferred to ✅ Implemented (Slice 19).
-- Coverage summary table added at top. Goal: 90–100% Box API parity long-term.
-
-### AI Workflow Evolution Doc Created
-- `docs/prompts/ai-workflow/workflow-evolution.md` added: briefing for the Claude session that will refine the workflow templates in a dedicated repo.
-- `multi-agent-collaboration.md` and `multi-agent-topic-handoff-template.md` marked for retirement — two-agent model is retired.
+### Post-v1 Notes (carry forward)
+- **Retry/backoff**: `Retry-After` header parsed on `BoxResponseException`. Retry loop
+  deferred post-v1. Consider exposing configurable backoff strategy.
+- **409 `item_name_in_use`**: `ConflictException` maps all 409s. Consider named constant
+  or helper method for `item_name_in_use` as a v1.1 quality-of-life addition.
+- **API coverage goal**: 90–100% Box API parity long-term; `docs/audits/api-coverage-matrix.md`
+  is the living tracker.
 
 ---
 
-## Post-v1 Notes (carry forward)
+## Workflow Migration Changes (2026-05-16, from ai-workflow coordination repo)
 
-### Retry / exponential backoff customization
-When retry-on-rate-limit or auth-refresh retry is implemented, consider exposing a way for callers to customize the backoff strategy (max attempts, base delay, multiplier). `Retry-After` header is already parsed and surfaced on `BoxResponseException`. The retry loop itself is deferred post-v1.
+These changes are staged/pending but **not yet committed**:
 
-### 409 `item_name_in_use`
-`ConflictException` (extends `ApiException`) maps all 409s. No specific sub-handling for `item_name_in_use`. Callers can inspect `$e->getResponse()->json()['code']` today. A named constant or helper method would be a low-effort v1.1 quality-of-life addition.
+- **CLAUDE.md** updated:
+  - Added `## Workflow Template` version block (v2.0, 2026-05-16)
+  - Workflow description: "slice" → "task", "step" → "story"
+  - Current status section still shows old state — needs update (see Deeper Work)
+
+- **docs/ai-workflow/** archived and replaced:
+  - Archived via `git mv`: `multi-agent-collaboration.md`,
+    `multi-agent-topic-handoff-template.md`, `workflow-evolution.md`
+    → `docs/ai-workflow/archive/`
+  - Replaced with v2.0 templates (all main files + `original/README.md`, `session-start.md`)
+
+- **.gitignore** updated:
+  - Added `docs/ai/*.md` (session files gitignored going forward)
+  - Added `docs/planning/drafts/`
+
+- **docs/ai/.gitkeep** added
+- **docs/planning/drafts/.gitkeep** added
+
+## Critical: docs/ai/ Commit State
+
+`docs/ai/` contains **committed** files that are now covered by the gitignore:
+- `current-handoff-summary.md` — this file
+- `next-session-plan.md`
+- `ai-assistant-planning-context.md` — NOT a session file; consider moving to `docs/`
+- `claude-code-cli-setup.md` — NOT a session file; consider moving to `docs/`
+
+Adding `docs/ai/*.md` to .gitignore does NOT untrack already-committed files.
+**Decision needed**: `git rm --cached docs/ai/current-handoff-summary.md docs/ai/next-session-plan.md`
+to make them gitignored local-only going forward. For `ai-assistant-planning-context.md`
+and `claude-code-cli-setup.md`: move to `docs/` or untrack.
 
 ---
 
-## Key Decisions Made This Session
-- **AI workflow prompts retained** — kept for cross-project reuse; user will copy to a dedicated repo and refine.
-- **Multi-agent model retired** — JetBrains AI / Junie used opportunistically while subscription is active, not as a primary executor.
-- **`docs/archive/` nesting policy** — archive may be more nested than main `docs/`; primary value is decision rationale. Docs retired when completely irrelevant. Future: consider compressing archive docs for context efficiency (raise opportunistically, not proactively).
-- **API coverage goal** — long-term target is 90–100% Box API parity; matrix is the living tracker.
+## Deeper Work (for local Claude session)
+
+1. **Merge .junie/guidelines.md into CLAUDE.md**:
+   - `.junie/guidelines.md` has extensive PHP-specific SDK guidelines.
+   - Compare against `docs/ai-workflow/php-code-style-guidance.md` — avoid
+     duplicating what's covered there.
+   - Merge only what is project-specific (SDK-level decisions, Box-specific patterns).
+   - Retire `.junie/guidelines.md` after verified merge.
+
+2. **Terminology pass on docs/planning/**:
+   - Update tracker headers/tables: "slice" → "Task", "step" → "Story",
+     "sub-slice" → "Subtask". Do NOT change existing slice IDs (15.1, 17, etc.).
+   - Update CLAUDE.md current status: "slices" → "tasks", correct test count to 372/1002.
+
+3. **docs/ai/ commit state resolution** (see Critical section above).
+
+---
+
+## Validation Baseline
+- Command: `composer review`
+- Result at session close: 372 tests, 1002 assertions — all passing
+- (No code changed in the workflow migration pass)
+
+## Active Constraints and Preferences
+- All human commits; AI stages and proposes messages.
+- Timestamp locale: `America/Indiana/Indianapolis`
+- Canonical validation: `composer review` (never substitute individual vendor/bin/* calls)
+
+## Security Notes
+- No Box API credentials in code, tests, or docs.

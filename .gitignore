@@ -24,3 +24,10 @@ var/tmp/*
 
 var/log/*
 !var/log/.gitkeep
+
+# AI session files (gitignored — Claude Code reads/writes these directly)
+docs/ai/*.md
+docs/planning/drafts/
+
+# Machine-specific Claude Code permissions
+.claude/settings.local.json

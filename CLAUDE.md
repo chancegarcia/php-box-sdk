@@ -4,19 +4,24 @@
 PHP 8.4+ SDK for the Box API v2. Repository: `chancegarcia/box-api-v2-sdk`.
 Currently working toward the **v1.0.0 release** on branch `release-v1.0.0`.
 
+## Workflow Template
+- Version: 2.0
+- Copied: 2026-05-16
+- Customizations: PHP 8.4 SDK conventions, Box API architecture decisions, timestamp locale
+
 ## Workflow
-This project uses **Claude Code CLI** for implementation.
+This project uses **Claude Code CLI** for implementation (describe-approve-execute).
 
 - **Claude's role**: Describe the plan in chat → human approves → Claude executes directly.
-- **Human's role**: Review the plan, approve, review diffs, commit completed slices, approve step transitions.
+- **Human's role**: Review the plan, approve, review diffs, commit completed tasks, approve story transitions.
 - **All commits** are made by the human reviewer, never by Claude.
 - **No prompt MD files**: Plans are described in chat and executed immediately. Prompt files are not written to disk unless explicitly requested.
-- Step transition requires explicit human approval — do not begin a new step or slice without it.
+- Story/task transition requires explicit human approval — do not begin a new story or task without it.
 
 ## Key Docs to Read First
 - `docs/ai/current-handoff-summary.md` — current state and active slice
 - `docs/planning/v1-release-roadmap.md` — step and slice tracker with decisions
-- `docs/prompts/ai-workflow/single-repository-workflow.md` — workflow rules
+- `docs/ai-workflow/single-repository-workflow.md` — workflow rules
 
 ## Validation Commands
 ```
