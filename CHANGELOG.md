@@ -4,16 +4,11 @@
 
 ### Summary
 - Relicensed from MIT to Apache 2.0.
-- Introduced JWT/Server-to-Server (S2S) authentication via `JwtProvider` and `JwtAuthConfig`, supporting enterprise and app-user token exchange without OAuth2 redirects.
-- Added formal token storage with PDO (`TokenStorage`), Filesystem (`FilesystemTokenStorage`), and in-memory (`TokenStorageContainer`) backends behind a unified `TokenStorageInterface`.
-- Added `WebhookVerifier` for HMAC-SHA256 signature verification of incoming Box webhook payloads, with configurable replay-window protection and primary/secondary key rotation support.
-- Completed resource namespace rationalization: all resource classes now live under `Box\Resource`; one-class mirror interfaces removed.
-- Completed legacy architecture removal: `Box\Model` base classes, traits, and v0.11 shims have been fully removed.
-- Hardened the service layer with `BoxClientFactory`, `ClientServiceRegistry`, and the `AuthenticatedServiceInterface` boundary.
-- Normalized HTTP transport to Guzzle only; removed `--transport` CLI option.
-- Replaced `BoxLoggerTrait` with `BoxApiErrorTrait` (unified error-throw-and-log implementation).
-- Modernized all auth providers: `OAuth2Provider` and `JwtProvider` both implement `AuthProviderInterface`.
-- Updated CLI storage options: `--storage-type filesystem` (default) or `--storage-type pdo`; added `box:jwt:token` command for JWT flows.
+- JWT/Server-to-Server (S2S) authentication via `JwtProvider` and `JwtAuthConfig`: enterprise and app-user token exchange without OAuth2 redirects.
+- Formal token storage with PDO (`TokenStorage`), Filesystem (`FilesystemTokenStorage`), and in-memory (`TokenStorageContainer`) backends behind a unified `TokenStorageInterface`.
+- `WebhookVerifier` for HMAC-SHA256 signature verification of incoming Box webhook payloads, with configurable replay-window protection and signing key rotation support.
+- Chunked file upload via `FileService` session API and `Client::chunkedUpload()`; optional PSR-14 event dispatching for auth, upload, and rate-limit lifecycle events.
+- Full architectural overhaul: `Box\Model` legacy layer removed, resources rationalized to `Box\Resource`, Guzzle is the only supported transport.
 
 ### Developer Details
 
@@ -66,6 +61,21 @@
     - Yoda conditionals applied consistently across auth and webhook classes.
     - PHPStan level-0 clean; 372 tests, 1002 assertions.
 
+- **Chunked Upload**:
+    - `FileService` low-level session API: `createUploadSession()`, `uploadPart()`, `listUploadSessionParts()`, `commitUploadSession()`, `abortUploadSession()`.
+    - `FileService::chunkedUpload(string|FileStream $file, string|int $parentId)` and `Client::chunkedUpload(string|FileStream $file, string|int $parentId): File` handle part-splitting and session management automatically.
+
+- **PSR-14 Event Dispatcher**:
+    - Inject a `Psr\EventDispatcher\EventDispatcherInterface` via `Client::setEventDispatcher()` to subscribe to SDK lifecycle events; omitting the dispatcher has no behavioral impact.
+    - Auth events: `TokenExchanged`, `TokenRefreshed`, `TokenRevoked`, `TokenLoadedFromStorage`, `TokenSavedToStorage`, `JwtTokenGenerated`.
+    - File events: `FileUploaded`, `UploadSessionCreated`, `UploadPartUploaded`, `UploadSessionCommitted`, `UploadSessionAborted`.
+    - HTTP event: `RateLimitHit`.
+
+- **PHP Enum Wiring**:
+    - `Collaboration::setRole()` now requires `CollaborationRole` (cases: `Editor`, `Viewer`, `Previewer`, `Uploader`, `PreviewerUploader`, `ViewerUploader`, `CoOwner`, `Owner`).
+    - Added `CollaborationStatus` enum (`Accepted`, `Pending`, `Rejected`); `Collaboration::setStatus()` now requires it.
+    - `SharedLink::setAccess()` now requires `SharedLinkAccess` (`Open`, `Company`, `Collaborators`).
+
 ### Breaking Changes
 - **Namespace**: All resources moved to `Box\Resource`. Update all imports.
 - **Interfaces removed**: Mirror resource interfaces, mirror factory interfaces, and legacy model interfaces are gone. Use concrete classes.
@@ -74,8 +84,30 @@
 - **CLI**: `--transport` option removed. `--storage-type memory` removed; use `filesystem` or `pdo`.
 - **`UserEventService::getEvents()`**: Now returns `EventResponse` DTO instead of array.
 - **`BoxApiErrorTrait::error()`**: Return type is now `never`. Any code checking the return value will break (there is no return value — it always throws).
+- **Enum-typed setters**: `Collaboration::setRole()`, `Collaboration::setStatus()`, and `SharedLink::setAccess()` now require backed enum values (`CollaborationRole`, `CollaborationStatus`, `SharedLinkAccess`). Passing a raw string causes a type error.
 
 ### Migration Notes
+- **Enum-typed setters** (`Collaboration`, `SharedLink`): Replace raw string arguments with the appropriate backed enum.
+    - *Before*:
+
+      ~~~~php
+      $collaboration->setRole('editor');
+      $collaboration->setStatus('accepted');
+      $sharedLink->setAccess('open');
+      ~~~~
+
+    - *After*:
+
+      ~~~~php
+      use Box\Enum\CollaborationRole;
+      use Box\Enum\CollaborationStatus;
+      use Box\Enum\SharedLinkAccess;
+
+      $collaboration->setRole(CollaborationRole::Editor);
+      $collaboration->setStatus(CollaborationStatus::Accepted);
+      $sharedLink->setAccess(SharedLinkAccess::Open);
+      ~~~~
+
 See [Upgrading from 0.11 to 1.0](docs/migration/upgrading-0.11-to-1.0.md) for full migration details.
 
 ## v0.11.3
