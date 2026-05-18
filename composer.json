@@ -83,6 +83,9 @@
         ],
         "qa": "@review"
     },
+    "bin": [
+        "bin/box-sdk"
+    ],
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
