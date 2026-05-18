@@ -1,71 +1,61 @@
 <?php
 
-/**
- * @package     Box
- * @subpackage  Box_Http_Response
- * @author      Chance Garcia
- * @copyright   (C)Copyright 2016 Chance Garcia, chancegarcia.com
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- */
-
 namespace Box\Http\Response;
 
 use Box\Exception\BoxException;
 use Box\Http\Response\Header\ResponseHeader;
 use Box\Http\Response\Header\ResponseHeaderInterface;
 use Box\Http\Response\Header\StatusLineInterface;
-use GuzzleHttp\Psr7\Utils;
+use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use Symfony\Component\HttpFoundation\Response;
+use stdClass;
 
-/**
- * @todo v1: Deprecate BoxResponse and move toward PSR-7 ResponseInterface directly
- * @todo v1: Replace getContent() with getBody()
- * @todo v1: Replace getResponseHeader() with PSR-7 header methods
- * @todo v1: Remove inheritance from Symfony HttpFoundation Response if no longer needed
- */
-class BoxResponse extends Response implements BoxResponseInterface
+class BoxResponse implements BoxResponseInterface
 {
-    /**
-     * @var ResponseHeaderInterface
-     */
     protected ResponseHeaderInterface $responseHeader;
-
-    /**
-     * @var PsrResponseInterface|null
-     */
-    protected ?PsrResponseInterface $psrResponse = null;
+    protected PsrResponseInterface $psrResponse;
 
     /**
      * @throws BoxException
      */
     public function __construct(mixed $content = '', string $header = '', ?PsrResponseInterface $psrResponse = null)
     {
-        $this->psrResponse = $psrResponse;
-        $this->responseHeader = new ResponseHeader($header);
+        if (null !== $psrResponse) {
+            $this->psrResponse = $psrResponse;
+        } else {
+            $this->responseHeader = new ResponseHeader($header);
+            $statusLine = $this->responseHeader->getStatusLine();
+            $status = ($statusLine instanceof StatusLineInterface) ? $statusLine->getStatusCode() : 200;
+            $headers = $this->responseHeader->getHeaderLines();
+            $version = ($statusLine instanceof StatusLineInterface) ? $statusLine->getHttpVersionNumber() : '1.1';
 
-        $statusLine = $this->responseHeader->getStatusLine();
-        // 200 is parent default
-        $status = ($statusLine instanceof StatusLineInterface) ? $statusLine->getStatusCode() : 200;
-        $headers = $this->responseHeader->getHeaderLines();
-        $content = $content ?: '';
-
-        parent::__construct($content, $status, $headers);
-
-        if ($statusLine instanceof StatusLineInterface) {
-            $this->setProtocolVersion($statusLine->getHttpVersionNumber());
+            $this->psrResponse = new GuzzleResponse($status, $headers, $content, $version);
         }
+
+        // Re-sync responseHeader from psrResponse if it was passed in or just created
+        if (!isset($this->responseHeader)) {
+            $this->syncResponseHeader();
+        }
+    }
+
+    private function syncResponseHeader(): void
+    {
+        $statusLine = sprintf(
+            "HTTP/%s %s %s",
+            $this->psrResponse->getProtocolVersion(),
+            $this->psrResponse->getStatusCode(),
+            $this->psrResponse->getReasonPhrase()
+        );
+
+        $headerString = $statusLine . "\r\n";
+        foreach ($this->psrResponse->getHeaders() as $name => $values) {
+            foreach ($values as $value) {
+                $headerString .= "$name: $value\r\n";
+            }
+        }
+        $headerString .= "\r\n";
+        $this->responseHeader = new ResponseHeader($headerString);
     }
 
     public function getPsrResponse(): ?PsrResponseInterface
@@ -73,97 +63,205 @@ class BoxResponse extends Response implements BoxResponseInterface
         return $this->psrResponse;
     }
 
+    public function getResponseHeader(): ResponseHeaderInterface
+    {
+        return $this->responseHeader;
+    }
+
+    public function getContent(): string
+    {
+        return (string) $this->psrResponse->getBody();
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    public function json(bool $assoc = true): mixed
+    {
+        $content = $this->getContent();
+        if ('' === $content) {
+            return $assoc ? [] : new stdClass();
+        }
+
+        return json_decode($content, $assoc, 512, JSON_THROW_ON_ERROR);
+    }
+
+    public function getRetryAfter(): ?int
+    {
+        if (!$this->hasHeader('Retry-After')) {
+            return null;
+        }
+
+        $value = $this->getHeaderLine('Retry-After');
+
+        if (preg_match('/^\d+$/', $value)) {
+            return (int) $value;
+        }
+
+        $timestamp = strtotime($value);
+        if (false === $timestamp) {
+            return null;
+        }
+
+        $now = time();
+        $diff = $timestamp - $now;
+
+        return max(0, $diff);
+    }
+
     public function getProtocolVersion(): string
     {
-        return parent::getProtocolVersion();
+        return $this->psrResponse->getProtocolVersion();
     }
 
     public function withProtocolVersion(string $version): static
     {
         $new = clone $this;
-        $new->setProtocolVersion($version);
+        $new->psrResponse = $this->psrResponse->withProtocolVersion($version);
+        $new->syncResponseHeader();
         return $new;
     }
 
     public function getHeaders(): array
     {
-        $headers = $this->headers->all();
-        // PSR-7 headers are array of strings
-        foreach ($headers as $name => $values) {
-            if (!is_array($values)) {
-                $headers[$name] = [$values];
-            }
-        }
-        return $headers;
+        return $this->psrResponse->getHeaders();
+    }
+
+    public function hasHeader(string $name): bool
+    {
+        return $this->psrResponse->hasHeader($name);
     }
 
     public function getHeader(string $name): array
     {
-        $values = $this->headers->all(strtolower($name));
-        return is_array($values) ? $values : [$values];
+        return $this->psrResponse->getHeader($name);
     }
 
     public function getHeaderLine(string $name): string
     {
-        return implode(', ', $this->getHeader($name));
+        return $this->psrResponse->getHeaderLine($name);
     }
 
+    /**
+     * @param string|string[] $value
+     *
+     * @return static
+     */
     public function withHeader(string $name, $value): static
     {
         $new = clone $this;
-        $new->headers->set($name, $value);
+        $new->psrResponse = $this->psrResponse->withHeader($name, $value);
+        $new->syncResponseHeader();
         return $new;
     }
 
+    /**
+     * @param string|string[] $value
+     *
+     * @return static
+     */
     public function withAddedHeader(string $name, $value): static
     {
         $new = clone $this;
-        $new->headers->set($name, $value, false);
+        $new->psrResponse = $this->psrResponse->withAddedHeader($name, $value);
+        $new->syncResponseHeader();
         return $new;
     }
 
     public function withoutHeader(string $name): static
     {
         $new = clone $this;
-        $new->headers->remove($name);
+        $new->psrResponse = $this->psrResponse->withoutHeader($name);
+        $new->syncResponseHeader();
         return $new;
     }
 
     public function getBody(): StreamInterface
     {
-        return Utils::streamFor($this->getContent());
+        return $this->psrResponse->getBody();
     }
 
     public function withBody(StreamInterface $body): static
     {
         $new = clone $this;
-        $new->setContent((string)$body);
+        $new->psrResponse = $this->psrResponse->withBody($body);
         return $new;
     }
 
-    public function getReasonPhrase(): string
+    public function getStatusCode(): int
     {
-        return Response::$statusTexts[$this->getStatusCode()] ?? '';
+        return $this->psrResponse->getStatusCode();
     }
 
     public function withStatus(int $code, string $reasonPhrase = ''): static
     {
         $new = clone $this;
-        $new->setStatusCode($code);
-        // Symfony Response handles reason phrase internally if we don't set it explicitly
+        $new->psrResponse = $this->psrResponse->withStatus($code, $reasonPhrase);
+        $new->syncResponseHeader();
         return $new;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getResponseHeader(): ResponseHeaderInterface
+    public function getReasonPhrase(): string
     {
-        return $this->responseHeader;
+        return $this->psrResponse->getReasonPhrase();
     }
 
-    public function hasHeader(string $name): bool
+    // Compatibility methods for Symfony-like behavior
+
+    public function isInvalid(): bool
     {
-        return $this->headers->has($name);
+        return $this->getStatusCode() < 100 || $this->getStatusCode() >= 600;
+    }
+
+    public function isInformational(): bool
+    {
+        return $this->getStatusCode() >= 100 && $this->getStatusCode() < 200;
+    }
+
+    public function isSuccessful(): bool
+    {
+        return $this->getStatusCode() >= 200 && $this->getStatusCode() < 300;
+    }
+
+    public function isRedirection(): bool
+    {
+        return $this->getStatusCode() >= 300 && $this->getStatusCode() < 400;
+    }
+
+    public function isClientError(): bool
+    {
+        return $this->getStatusCode() >= 400 && $this->getStatusCode() < 500;
+    }
+
+    public function isServerError(): bool
+    {
+        return $this->getStatusCode() >= 500 && $this->getStatusCode() < 600;
+    }
+
+    public function isOk(): bool
+    {
+        return 200 === $this->getStatusCode();
+    }
+
+    public function isForbidden(): bool
+    {
+        return 403 === $this->getStatusCode();
+    }
+
+    public function isNotFound(): bool
+    {
+        return 404 === $this->getStatusCode();
+    }
+
+    public function isEmpty(): bool
+    {
+        return in_array($this->getStatusCode(), [204, 304]);
+    }
+
+    public function setProtocolVersion(string $version): static
+    {
+        $this->psrResponse = $this->psrResponse->withProtocolVersion($version);
+        $this->syncResponseHeader();
+        return $this;
     }
 }

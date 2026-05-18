@@ -69,7 +69,7 @@ class BoxResponseExceptionTest extends TestCase
         $e->addContext(['access_token' => 'secret123', 'foo' => 'bar'], 'tokens');
 
         $context = $e->getContext('tokens');
-        $this->assertEquals('********', $context['access_token']);
+        $this->assertEquals('[REDACTED]', $context['access_token']);
         $this->assertEquals('bar', $context['foo']);
     }
 

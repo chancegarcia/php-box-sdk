@@ -10,7 +10,6 @@ use Monolog\Handler\FilterHandler;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Level;
 use Psr\Log\LoggerInterface;
-use InvalidArgumentException;
 
 class LoggerFactory
 {
@@ -77,7 +76,7 @@ class LoggerFactory
         $handler->setFormatter($formatter);
 
         if (!empty($handlerConfig['levels'])) {
-            $levels = array_map(fn($l) => Level::fromName(ucfirst($l)), $handlerConfig['levels']);
+            $levels = array_map(static fn($l) => Level::fromName(ucfirst($l)), $handlerConfig['levels']);
             return new FilterHandler($handler, $levels);
         }
 

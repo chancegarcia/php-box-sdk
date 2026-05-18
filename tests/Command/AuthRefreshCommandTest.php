@@ -5,7 +5,7 @@ namespace Box\Tests\Command;
 use Box\Client;
 use Box\Command\AuthRefreshCommand;
 use Box\Connection\Token\Token;
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Logger\ConfigNormalizer;
 use Box\Logger\LoggerFactory;
@@ -30,13 +30,13 @@ class AuthRefreshCommandTest extends TestCase
         $this->loggerFactory = new LoggerFactory(new ConfigNormalizer());
         $this->client = $this->createMock(Client::class);
 
-        $this->clientFactory->method('createClient')->willReturn($this->client);
+        $this->clientFactory->method('createOAuth2Client')->willReturn($this->client);
     }
 
     public function testRefreshTokenOptionIsNotAvailable(): void
     {
         $application = new Application();
-        $application->add(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:refresh-token');
         $this->assertFalse($command->getDefinition()->hasOption('refresh-token'));
@@ -48,7 +48,7 @@ class AuthRefreshCommandTest extends TestCase
         $newToken = new Token();
         $newToken->setAccessToken('new_access_token');
 
-        $this->configProvider->method('getRefreshToken')->willReturn($refreshToken);
+        $this->configProvider->method('getOAuth2RefreshToken')->willReturn($refreshToken);
 
         $this->client->expects($this->once())
             ->method('setToken')
@@ -61,7 +61,7 @@ class AuthRefreshCommandTest extends TestCase
             ->willReturn($newToken);
 
         $application = new Application();
-        $application->add(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);
@@ -74,17 +74,19 @@ class AuthRefreshCommandTest extends TestCase
 
     public function testExecuteFailsWhenRefreshTokenIsMissingInConfig(): void
     {
-        $this->configProvider->method('getRefreshToken')->willReturn(null);
+        $this->configProvider->method('getOAuth2RefreshToken')->willReturn(null);
 
         $application = new Application();
-        $application->add(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
 
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('Refresh token is required. Set BOX_REFRESH_TOKEN env.', $output);
+        $this->assertStringContainsString('Refresh token is required.', $output);
+        $this->assertStringContainsString('BOX_REFRESH_TOKEN env', $output);
+        $this->assertStringContainsString('enable storage', $output);
         $this->assertEquals(1, $commandTester->getStatusCode());
     }
 }

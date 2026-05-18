@@ -5,7 +5,7 @@ namespace Box\Tests\Command;
 use Box\Client;
 use Box\Command\AuthExchangeCommand;
 use Box\Connection\Token\Token;
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Logger\ConfigNormalizer;
 use Box\Logger\LoggerFactory;
@@ -30,7 +30,7 @@ class AuthExchangeCommandTest extends TestCase
         $this->loggerFactory = new LoggerFactory(new ConfigNormalizer());
         $this->client = $this->createMock(Client::class);
 
-        $this->clientFactory->method('createClient')->willReturn($this->client);
+        $this->clientFactory->method('createOAuth2Client')->willReturn($this->client);
     }
 
     public function testExecuteSuccessfulWithArgument(): void
@@ -40,15 +40,11 @@ class AuthExchangeCommandTest extends TestCase
         $token->setAccessToken('test_access_token');
 
         $this->client->expects($this->once())
-            ->method('setAuthorizationCode')
-            ->with($code);
-
-        $this->client->expects($this->once())
-            ->method('getAccessToken')
+            ->method('exchangeAuthorizationCodeForToken')
             ->willReturn($token);
 
         $application = new Application();
-        $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:exchange-code');
         $commandTester = new CommandTester($command);
@@ -65,18 +61,14 @@ class AuthExchangeCommandTest extends TestCase
         $token = new Token();
         $token->setAccessToken('test_access_token');
 
-        $this->configProvider->method('getAuthCode')->willReturn($code);
+        $this->configProvider->method('getOAuth2AuthCode')->willReturn($code);
 
         $this->client->expects($this->once())
-            ->method('setAuthorizationCode')
-            ->with($code);
-
-        $this->client->expects($this->once())
-            ->method('getAccessToken')
+            ->method('exchangeAuthorizationCodeForToken')
             ->willReturn($token);
 
         $application = new Application();
-        $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:exchange-code');
         $commandTester = new CommandTester($command);
@@ -89,10 +81,10 @@ class AuthExchangeCommandTest extends TestCase
 
     public function testExecuteFailsWhenCodeIsMissing(): void
     {
-        $this->configProvider->method('getAuthCode')->willReturn(null);
+        $this->configProvider->method('getOAuth2AuthCode')->willReturn(null);
 
         $application = new Application();
-        $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:exchange-code');
         $commandTester = new CommandTester($command);

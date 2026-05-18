@@ -1,23 +1,5 @@
 <?php
 
-/**
- * @package     Box
- * @subpackage  Box_Http_Response
- * @author      Chance Garcia
- * @copyright   (C)Copyright 2016 Chance Garcia, chancegarcia.com
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- */
-
 namespace Box\Http\Response\Header;
 
 use Box\Http\Response\ResponseParser;
@@ -30,16 +12,12 @@ class StatusLine implements StatusLineInterface
     protected $statusCode = 200;
     protected $reasonPhrase = "OK";
 
-    public function __construct($sStatusLine = '')
+    public function __construct(string $statusLine = '')
     {
-        if (!is_string($sStatusLine)) {
-            throw new \InvalidArgumentException("string value expected for parsing. given: " . gettype($sStatusLine));
-        }
+        if (!empty($statusLine)) {
+            [$httpVersion, $statusCode, $reasonPhrase] = ResponseParser::parseHeaderStatusLine($statusLine, false);
 
-        if (!empty($sStatusLine)) {
-            list($httpVersion, $statusCode, $reasonPhrase) = ResponseParser::parseHeaderStatusLine($sStatusLine, false);
-
-            list($httpVersionPrefix, $httpVersionNumber) = explode("/", $httpVersion);
+            [$httpVersionPrefix, $httpVersionNumber] = explode("/", $httpVersion);
             $code = filter_var($statusCode, FILTER_VALIDATE_INT);
 
             $this->httpVersion = $httpVersion;
@@ -50,93 +28,53 @@ class StatusLine implements StatusLineInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getHttpVersionPrefix(): string
     {
         return $this->httpVersionPrefix;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setHttpVersionPrefix(?string $httpVersionPrefix = null): StatusLineInterface
+    public function setHttpVersionPrefix(?string $httpVersionPrefix = null): void
     {
         $this->httpVersionPrefix = $httpVersionPrefix;
-
-        return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getHttpVersionNumber(): string
     {
         return $this->httpVersionNumber;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setHttpVersionNumber(?string $httpVersionNumber = null): StatusLineInterface
+    public function setHttpVersionNumber(?string $httpVersionNumber = null): void
     {
         $this->httpVersionNumber = $httpVersionNumber;
-
-        return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getHttpVersion(): string
     {
         return $this->httpVersion;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setHttpVersion(?string $httpVersion = null): StatusLineInterface
+    public function setHttpVersion(?string $httpVersion = null): void
     {
         $this->httpVersion = $httpVersion;
-
-        return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setStatusCode(?int $statusCode = null): StatusLineInterface
+    public function setStatusCode(?int $statusCode = null): void
     {
         $this->statusCode = $statusCode;
-
-        return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getReasonPhrase(): string
     {
         return $this->reasonPhrase;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setReasonPhrase(?string $reasonPhrase = null): StatusLineInterface
+    public function setReasonPhrase(?string $reasonPhrase = null): void
     {
         $this->reasonPhrase = $reasonPhrase;
-
-        return $this;
     }
 }

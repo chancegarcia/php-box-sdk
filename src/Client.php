@@ -1,168 +1,142 @@
 <?php
 
-/**
- * @package     Box
- * @subpackage  Box_Client
- * @author      Chance Garcia
- * @copyright   (C)Copyright 2013 Chance Garcia, chancegarcia.com
- *
- *    The MIT License (MIT)
- *
- * Copyright (c) 2013-2016 Chance Garcia
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
-
 namespace Box;
 
-use Box\Collaboration\Collaboration;
-use Box\Collaboration\CollaborationInterface;
+use Box\Auth\AuthProviderInterface;
+use Box\Auth\Jwt\JwtProvider;
+use Box\Auth\OAuth2Provider;
+use Box\Auth\OAuth2ProviderInterface;
 use Box\Connection\Connection;
 use Box\Connection\ConnectionInterface;
-use Box\Connection\Token\Token;
+use Box\Event\Auth\TokenExchanged;
+use Box\Event\Auth\TokenRefreshed;
+use Box\Event\Auth\TokenRevoked;
+use Box\Event\Auth\TokenLoadedFromStorage;
+use Box\Event\Auth\TokenSavedToStorage;
 use Box\Connection\Token\TokenInterface;
+use Box\Dto\PagedResult;
+use Box\Dto\TokenStorageContext;
 use Box\Exception\BoxException;
-use Box\File\File;
-use Box\File\FileInterface;
-use Box\Folder\Folder;
-use Box\Folder\FolderInterface;
-use Box\Group\GroupInterface;
+use Box\Exception\BoxResponseException;
+use Box\Resource\Collaboration;
+use Box\Resource\File;
+use Box\Resource\Folder;
+use Box\Resource\User;
+use Box\Resource\Group;
+use Box\Service\Collaboration\CollaborationService;
+use Box\Service\AuthenticatedServiceInterface;
+use Box\Service\ClientServiceRegistry;
+use Box\Service\ClientServiceRegistryInterface;
+use Box\Service\ServiceInterface;
+use Box\Storage\Token\TokenStorageInterface;
 use Box\Http\FileStream;
 use Box\Http\Response\BoxResponseInterface;
-use Box\Model\Model;
-use Box\Model\ModelInterface;
-use Box\User\UserInterface;
+use Box\Mapper\Hydrator;
+use Box\Logger\LoggerAwareInterface;
+use Box\Trait\LoggerAwareTrait;
+use Box\Trait\BoxApiErrorTrait;
+use Box\Factory\TokenFactory;
+use Box\Factory\TokenFactoryInterface;
 use JsonException;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use ReflectionException;
+use RuntimeException;
 
-/**
- * Class Client
- * @package Box
- */
-class Client extends Model
+class Client implements LoggerAwareInterface
 {
-    const AUTH_URI = "https://account.box.com/api/oauth2/authorize";
-    const TOKEN_URI = "https://www.box.com/api/oauth2/token";
-    const REVOKE_URI = "https://www.box.com/api/oauth2/revoke";
-    const SEARCH_URI = "https://api.box.com/2.0/search";
+    use LoggerAwareTrait;
+    use BoxApiErrorTrait;
 
-    protected mixed $state = null;
+    public const string SEARCH_URI = "https://api.box.com/2.0/search";
 
     /**
-     * @var Connection|ConnectionInterface|null
+     * @var ConnectionInterface|null
      */
     protected ?ConnectionInterface $connection = null;
     /**
-     * @var array of folder items indexed by the folder ID
+     * @var array|null $folders array of folder items indexed by the folder ID
+     *
      * @internal should just be an array of any folder known/retrieved by the client. does not need to be recursive
      *     since folders know their parents and items
      */
-    protected mixed $folders = null;
-    protected mixed $files = null;
+    protected ?array $folders = null;
+    protected ?array $files = null;
     /**
      * @var array of collaborations
      */
-    protected mixed $collaborations = null;
+    protected ?array $collaborations = null;
 
     /**
      * @var Folder|null
      */
-    protected ?FolderInterface $root = null;
+    protected ?Folder $root = null;
 
-    /**
-     * @var Token|TokenInterface|null
-     */
     protected ?TokenInterface $token = null;
 
-    protected mixed $authorizationCode = null;
-    protected mixed $clientId = null;
-    protected mixed $clientSecret = null;
-    protected mixed $redirectUri = null;
+    protected ?string $authorizationCode = null;
+    protected ?string $clientId = null;
+    protected ?string $clientSecret = null;
 
-    protected mixed $deviceId = null;
-    protected mixed $deviceName = null;
+    protected ?TokenStorageInterface $tokenStorage = null;
+    protected ?TokenStorageContext $tokenStorageContext = null;
 
+    protected ClientServiceRegistryInterface $serviceRegistry;
 
-    /**
-     * allow for class injection by using an interface for these classes
-     */
-    protected string $folderClass = \Box\Folder\Folder::class;
-    protected string $fileClass = \Box\File\File::class;
-    protected string $connectionClass = \Box\Connection\Connection::class;
-    protected string $tokenClass = \Box\Connection\Token\Token::class;
-    protected string $collaborationClass = \Box\Collaboration\Collaboration::class;
-    protected string $userClass = \Box\User\User::class;
-    protected string $groupClass = \Box\Group\Group::class;
+    protected ?AuthProviderInterface $authProvider = null;
 
+    protected ?TokenFactoryInterface $tokenFactory = null;
 
-    /**
-     * @param mixed $options
-     *
-     * @return Folder|FolderInterface
-     */
-    public function getNewFolder(mixed $options = null): Folder|FolderInterface
+    protected ?ClientConfig $config = null;
+
+    private ?EventDispatcherInterface $eventDispatcher = null;
+
+    public function __construct(
+        ?ClientConfig $config = null,
+        ?ClientServiceRegistryInterface $serviceRegistry = null
+    ) {
+        $this->config = $config;
+        if (null !== $config) {
+            $this->applyConfig($config);
+        }
+        $this->serviceRegistry = $serviceRegistry ?? new ClientServiceRegistry();
+    }
+
+    protected function applyConfig(ClientConfig $config): void
     {
-        return $this->getNewClass('Folder', $options);
+        $this->clientId = $config->getOAuth2ClientId();
+        $this->clientSecret = $config->getOAuth2ClientSecret();
+        $this->authorizationCode = $config->getOAuth2AuthCode();
     }
 
     /**
-     * @param mixed $options
-     *
-     * @return \Box\User\User|\Box\User\UserInterface
+     * @param array|null $options
      */
-    public function getNewUser(mixed $options = null): \Box\User\User|\Box\User\UserInterface
+    public function getNewFolder(?array $options = null): Folder
     {
-        return $this->getNewClass('User', $options);
+        return $this->serviceRegistry->getFolderFactory()->createFolder($options);
     }
 
     /**
-     * @param mixed $options
-     *
-     * @return \Box\Group\Group|\Box\Group\GroupInterface
+     * @param array|null $options
      */
-    public function getNewGroup(mixed $options = null): \Box\Group\Group|\Box\Group\GroupInterface
+    public function getNewUser(?array $options = null): User
     {
-        return $this->getNewClass('Group', $options);
-    }
-
-    /**
-     * @param mixed $options
-     *
-     * @return \Box\Collaboration\Collaboration|\Box\Collaboration\CollaborationInterface
-     */
-    public function getNewCollaboration(mixed $options = null): \Box\Collaboration\Collaboration|\Box\Collaboration\CollaborationInterface
-    {
-        return $this->getNewClass('Collaboration', $options);
+        return $this->serviceRegistry->getUserFactory()->createUser($options);
     }
 
     /**
      * @param string|int $id use 0 for returning all folders
      * @param bool $retrieve if no folder is found, attempt to retrieve from box
      *
-     * @return array|null|Folder returns null if no such folder exists and retrieve is false
+     * @throws BoxException
+     * @return Folder|null returns null if no such folder exists and retrieve is false
      */
-    public function getFolder(string|int $id = 0, bool $retrieve = true): array|null|FolderInterface|Folder
+    public function getFolder(string|int $id = 0, bool $retrieve = true): ?Folder
     {
         $folders = $this->getFolders($retrieve);
 
-        if (0 == $id) {
-            return $folders;
+        if (0 === $id) {
+            return $folders[0] ?? null;
         }
 
         if (!array_key_exists($id, $folders)) {
@@ -173,20 +147,50 @@ class Client extends Model
             $this->addFolder($folder);
         }
 
-
-        $folder = $folders[ $id ];
-
-        return $folder;
+        return $folders[$id] ?? null;
     }
 
-    public function addFolder(mixed $folder): void
+    /**
+     * @param array|null $options
+     */
+    public function getNewGroup(?array $options = null): Group
     {
-        $folders = $this->getFolders();
-        $folders[] = $folder;
+        return $this->serviceRegistry->getGroupFactory()->createGroup($options);
+    }
+
+    /**
+     * @param array|null $options
+     */
+    public function getNewCollaboration(?array $options = null): Collaboration
+    {
+        return $this->serviceRegistry->getCollaborationFactory()->createCollaboration($options);
+    }
+
+    /**
+     * @param array|null $options
+     */
+    public function getNewFile(?array $options = null): File
+    {
+        return $this->serviceRegistry->getFileFactory()->createFile($options);
+    }
+
+    public function addFolder(Folder $folder): void
+    {
+        $folders = $this->getFolders(false) ?? [];
+        $id = $folder->getId();
+        if ($id) {
+            $folders[$id] = $folder;
+        } else {
+            $folders[] = $folder;
+        }
         $this->setFolders($folders);
     }
 
-    public function getFolders(bool $retrieve = true): mixed
+    /**
+     * @throws BoxException
+     * @return array<string|int, Folder>|null
+     */
+    public function getFolders(bool $retrieve = true): ?array
     {
         if (!$retrieve) {
             return $this->folders;
@@ -199,77 +203,72 @@ class Client extends Model
         }
 
         // not sure if I should add recursive parsing of folder/items. stubbing out for now.
-        return null;
+        return $this->folders ?? [];
     }
 
     /**
      * get membership list of a given group. if limit or offset is numeric, only retrieve specific list page;
      *
-     * @param null $group
-     * @param null $limit leave null to get all; if limit is null but offset is numeric, limit will default to 100
-     * @param null $offset leave null to get all; if limit is null but offset is numeric, limit will default to 100
+     * @param int|null $limit leave null to get all; if limit is null but offset is numeric, limit will default to 100
+     * @param int|null $offset leave null to get all; if limit is null but offset is numeric, limit will default to 100
      *
+     * @throws ReflectionException
+     * @throws BoxException
      * @return array returns an array of User objects that are in the group membership
-     * @return array returns an array of User objects that are in the group membership
-     * @throws \Box\Exception\BoxException
      */
-    public function getGroupMembershipList($group = null, $limit = null, $offset = null)
+    public function getGroupMembershipList(Group|string|int|null $group = null, ?int $limit = null, ?int $offset = null): array
     {
         if (is_numeric($group)) {
-            $groupId = $group;
+            $groupId = (string) $group;
             $group = $this->getNewGroup();
             $group->setId($groupId);
         }
 
-        if (!$group instanceof GroupInterface) {
+        if (!$group instanceof Group) {
             throw new BoxException("Group object expected", BoxException::INVALID_INPUT);
         }
 
-        $members = [];
-        $entries = [];
+        $groupService = $this->configureService($this->serviceRegistry->getGroupService());
 
         if (is_numeric($limit) || is_numeric($offset)) {
             if (!is_numeric($limit)) {
                 $limit = 100;
             }
 
-            $uri = $group->getMembershipListUri($limit, $offset);
-
-            $data = $this->query($uri);
-
+            $data = $groupService->getGroupMembershipList($group->getId(), $limit, (int) ($offset ?? 0));
             $entries = $data['entries'];
         } else {
             $limit = 100;
             $offset = 0;
 
-            $uri = $group->getMembershipListUri($limit, $offset);
+            $data = $groupService->getGroupMembershipList($group->getId(), $limit, $offset);
 
-            $data = $this->query($uri);
-
-            $totalMembers = $data['total_count'];
+            $totalMembers = $data['total_count'] ?? count($data['entries']);
 
             $entries = $data['entries'];
 
             $currentTotal = count($entries);
 
             while ($currentTotal < $totalMembers) {
-                if (0 != $offset) {
-                    $nextPage = $group->getMembershipListUri($limit, $offset);
-                    $data = $this->query($nextPage);
-                    $moreEntries = $data['entries'];
-                    $entries = array_merge($entries, $moreEntries);
-
-                    $currentTotal = count($entries);
+                $offset += $limit;
+                $data = $groupService->getGroupMembershipList($group->getId(), $limit, $offset);
+                $moreEntries = $data['entries'];
+                foreach ($moreEntries as $moreEntry) {
+                    $entries[] = $moreEntry;
                 }
 
-                $offset += $limit;
+                $currentTotal = count($entries);
+                if (empty($moreEntries)) {
+                    break;
+                }
             }
         }
 
+        $members = [];
         foreach ($entries as $entry) {
             $userData = $entry['user'];
             $user = $this->getNewUser();
-            $user->mapBoxToClass($userData);
+            new Hydrator()->hydrate($user, $userData);
             $members[] = $user;
         }
 
@@ -279,87 +278,41 @@ class Client extends Model
     /**
      * @throws BoxException
      */
-    public function getFolderBySharedUri($sharedUri = null)
+    public function getFolderBySharedUri(?string $sharedUri = null): ?Folder
     {
-        if (!is_string($sharedUri)) {
+        if (null === $sharedUri) {
             throw new BoxException('shared uri must be a string value', BoxException::INVALID_INPUT);
         }
 
-        $uri = Folder::SHARED_ITEM_URI;
-        $sSharedLinkHeader = "BoxApi: shared_link=" . $sharedUri;
-        $aSharedLinkHeader = [$sSharedLinkHeader];
+        $folderService = $this->configureService($this->serviceRegistry->getFolderService());
 
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection, $aSharedLinkHeader);
-
-        $response = $connection->query($uri);
-
-        $jsonData = $this->parseResponse($response);
-
-        if (is_array($jsonData) && array_key_exists('type', $jsonData) && 'folder' === $jsonData['type']) {
-            $folder = $this->getNewFolder();
-            $folder->mapBoxToClass($jsonData);
-        } else {
-            if (is_array($jsonData) && array_key_exists('type', $jsonData) && 'error' === $jsonData['type']) {
-                $errorData['error'] = $jsonData['message'];
-                $errorData['error_description'] = $jsonData;
-                $this->error($errorData, null, $response);
-            } else {
-                $folder = false;
-            }
-        }
-
-        return $folder;
+        return $folderService->getFolderBySharedUri($sharedUri);
     }
 
     /**
-     * @param string|int $id
-     * @return FolderInterface|Folder
      * @throws BoxException
      */
-    public function getFolderFromBox($id = 0): FolderInterface|Folder
+    public function getFolderFromBox(string|int $id = 0): Folder
     {
-        $uri = Folder::URI . '/' . $id; // all class constant URIs do not end in a slash
+        $folderService = $this->configureService($this->serviceRegistry->getFolderService());
 
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
+        return $folderService->getFolder($id);
+    }
 
-        $response = $connection->query($uri);
+    public function getBoxFolderItems(Folder $folder, int $limit = 100, int $offset = 0): Folder
+    {
+        $folderService = $this->configureService($this->serviceRegistry->getFolderService());
 
-        $jsonData = $this->parseResponse($response);
-
-        $folder = $this->getNewFolder();
-        $folder->mapBoxToClass($jsonData);
-
-        return $folder;
+        return $folderService->getFolderItems($folder->getId(), $limit, $offset);
     }
 
     /**
-     * @param \Box\Folder\Folder|\Box\Folder\FolderInterface $folder
-     * @param int $limit
-     * @param int $offset
-     *
-     * @return \Box\Folder\Folder|\Box\Folder\FolderInterface
-     */
-    public function getBoxFolderItems($folder, $limit = 100, $offset = 0)
-    {
-        $uri = $folder->getBoxFolderItemsUri($limit, $offset);
-        $data = $this->query($uri);
-
-        $folder->setItemCollection($data);
-
-        return $folder;
-    }
-
-    /**
-     * @param string|int $id
-     * @return array
      * @throws BoxException
      */
-    public function getFolderItems($id = 0)
+    public function getFolderItems(string|int $id = 0): array
     {
         /**
-         * @var Folder|FolderInterface $folder
+         * @var Folder $folder
          */
         $folder = $this->getFolder($id);
 
@@ -367,123 +320,52 @@ class Client extends Model
     }
 
     /**
-     * @param string $name
-     * @param string|int $parentFolderId
-     * @param array $options
+     * @param array|null $options
      *
-     * @return Folder|FolderInterface
      * @throws BoxException
+     * @throws JsonException
      */
-    public function createNewBoxFolder($name, $parentFolderId = 0, array $options = [])
+    public function createNewBoxFolder(string $name, string|int $parentFolderId = 0, ?array $options = []): Folder
     {
-        $uri = Folder::URI;
+        $folderService = $this->configureService($this->serviceRegistry->getFolderService());
 
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
-
-        $params = [
-            'name' => $name,
-            'parent' => ['id' => (string)$parentFolderId]
-        ];
-
-        $params = array_merge_recursive($params, $options);
-
-        $response = $connection->post($uri, $params, true);
-
-        $jsonData = $this->parseResponse($response);
-
-        $folder = $this->getNewFolder();
-        $folder->mapBoxToClass($jsonData);
-
-        return $folder;
+        return $folderService->createFolder($name, $parentFolderId, $options);
     }
 
     /**
-     * @param Folder|FolderInterface $folder
      * @param string|bool $ifMatchHeader etag string or true to use folder's current etag
      *
-     * @throws BoxException
-     * @return array updated folder data
+     * @throws JsonException
      */
-    public function updateBoxFolder($folder, $ifMatchHeader = false)
+    public function updateBoxFolder(Folder $folder, string|bool $ifMatchHeader = false): Folder
     {
-        if (!$folder instanceof FolderInterface) {
-            $err['error'] = 'sdk_unexpected_type';
-            $err['error_description'] = "expecting FolderInterface class. given (" . get_debug_type($folder) . ")";
-            $this->error($err);
-        }
+        $folderService = $this->configureService($this->serviceRegistry->getFolderService());
 
-        $uri = Folder::URI . '/' . $folder->getId();
-
-        $params = $folder->toBoxArray();
-        // Only certain fields should be sent for update, but toBoxArray() with removeEmpty()
-        // will at least avoid sending nulls. Usually name, description, parent, shared_link, etc.
-        // We'll keep it simple for now as per instructions to "Implement only if there is a clear existing connection method or established request pattern."
-
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
-
-        if (true === $ifMatchHeader) {
-            $ifMatchHeader = $folder->getEtag();
-        }
-
-        if (is_string($ifMatchHeader) && !empty($ifMatchHeader)) {
-            $connection->addHeader('If-Match', $ifMatchHeader);
-        }
-
-        $response = $connection->put($uri, $params, true);
-
-        return $this->parseResponse($response);
+        return $folderService->updateFolder($folder, $ifMatchHeader);
     }
 
     /**
-     * @param null|\Box\Folder\Folder|\Box\Folder\FolderInterface $folder
-     *
-     * @return mixed raw json data as an array
      * @throws BoxException
+     * @return PagedResult<Collaboration>
      */
-    public function getFolderCollaborations($folder = null)
+    public function getFolderCollaborations(Folder $folder): PagedResult
     {
-        if (!$folder instanceof FolderInterface) {
-            $err['error'] = 'sdk_unexpected_type';
-            $err['error_description'] = "expecting FolderInterface class. given (" . var_export($folder, true) . ")";
-            $this->error($err);
-        }
-        $folderId = $folder->getId();
-        $uri = Folder::URI . '/' . $folderId . '/collaborations';
+        $collaborationService = $this->configureService($this->serviceRegistry->getCollaborationService());
 
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
-
-        $response = $connection->query($uri);
-
-        return $this->parseResponse($response);
+        return $collaborationService->getFolderCollaborations($folder);
     }
 
     /**
-     * @param null|\Box\Folder\Folder|\Box\Folder\FolderInterface $folder
-     * @param null|\Box\User\User|\Box\User\UserInterface|\Box\Group\GroupInterface $collaborator
      * @param string $role see {@link http://developers.box.com/docs/#collaborations box documentation for all possible
      *     roles} default is viewer
      *
-     * @return \Box\Collaboration\Collaboration|\Box\Collaboration\CollaborationInterface
      * @throws BoxException
+     * @throws JsonException
+     * @throws ReflectionException
      */
-    public function addCollaboration($folder = null, $collaborator = null, $role = 'viewer')
+    public function addCollaboration(Folder $folder, User|Group $collaborator, string $role = 'viewer'): Collaboration
     {
-        if (!$folder instanceof FolderInterface) {
-            $err['error'] = 'sdk_unexpected_type';
-            $err['error_description'] = "expecting FolderInterface class. given (" . var_export($folder, true) . ")";
-            $this->error($err);
-        }
-
-        if (!$collaborator instanceof UserInterface && !$collaborator instanceof GroupInterface) {
-            $err['error'] = 'sdk_unexpected_type';
-            $err['error_description'] = "expecting UserInterface class. given (" . var_export($collaborator, true) . ")";
-            $this->error($err);
-        }
-
-        $uri = Collaboration::URI;
+        $uri = CollaborationService::ENDPOINT;
 
         $folderId = $folder->getId();
         $collaboratorId = $collaborator->getId();
@@ -500,435 +382,253 @@ class Client extends Model
             'role' => $role
         ];
 
-        // can be refactored a bit more but the json encode works in the connection class
         $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
 
-        $response = $connection->post($uri, $params, true);
+        $response = $connection->post($uri, json_encode($params, JSON_THROW_ON_ERROR));
 
         $data = $this->parseResponse($response);
 
         $collaboration = $this->getNewCollaboration();
-        $collaboration->mapBoxToClass($data);
+        new Hydrator()->hydrate($collaboration, $data);
 
         return $collaboration;
     }
 
     /**
-     * @param null|\Box\Folder\Folder|\Box\Folder\FolderInterface $folder
-     * @param array|null shared link options with
-     * default shared link set to collaborator access, no unshared time or permissions set to
+     * @param array|null $params shared link options; default shared link set to collaborator access, no unshared time or permissions set
      *
-     * @return \Box\Folder\Folder|\Box\Folder\FolderInterface
      * @throws BoxException
+     * @throws JsonException
      */
-    public function createSharedLinkForFolder($folder = null, $params = null)
+    public function createSharedLinkForFolder(?Folder $folder = null, ?array $params = null): Folder
     {
-        if (!$folder instanceof FolderInterface) {
+        if (!$folder instanceof Folder) {
             $err['error'] = 'sdk_unexpected_type';
-            $err['error_description'] = "expecting FolderInterface class. given (" . var_export($folder, true) . ")";
+            $err['error_description'] = "expecting Folder class. given (" . var_export($folder, true) . ")";
             $this->error($err);
         }
 
-        $uri = Folder::URI;
+        $folderService = $this->configureService($this->serviceRegistry->getFolderService());
 
-        $folderId = $folder->getId();
-
-        $uri .= "/" . $folderId;
-
-        if (!is_array($params)) {
-            $params = [
-                'shared_link' => [
-                    'access' => 'collaborators'
-                ]
-            ];
-        }
-
-        // can be refactored a bit more but the json encode works in the connection class
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
-
-        $response = $connection->put($uri, $params, true);
-
-        $data = $this->parseResponse($response);
-
-        $updatedFolder = $this->getNewFolder();
-        $updatedFolder->mapBoxToClass($data);
-
-        return $updatedFolder;
+        return $folderService->createSharedLink($folder, $params);
     }
 
     /**
-     * @param Folder $originalFolder
-     * @param Folder|array $parent
-     * @param string $name
-     * @param bool $addToFolders
-     *
-     * @return \Box\Folder\Folder|\Box\Folder\FolderInterface
-     * @throws Exception*@throws BoxException
+     * @throws \Exception
      * @throws BoxException
-     * @internal param $destinationId
+     * @throws JsonException
      */
-    public function copyBoxFolder($originalFolder, $parent, $name = null, $addToFolders = true)
+    public function copyBoxFolder(Folder $originalFolder, Folder $parent, ?string $name = null, bool $addToFolders = true): Folder
     {
-        if (!$originalFolder instanceof FolderInterface) {
-            $this->error([
-                'error' => 'Folder or FolderInterface expected',
-                'error_description' => $originalFolder
-            ]);
-        }
+        $folderService = $this->configureService($this->serviceRegistry->getFolderService());
+        $copy = $folderService->copyFolder($originalFolder, $parent, $name);
 
-        $uri = Folder::URI . '/' . $originalFolder->getId() . '/copy';
-        $this->debug("copy uri: " . $uri, [__METHOD__, __LINE__]);
-        $this->debug("initial parent: " . var_export($parent, true), [__METHOD__, __LINE__]);
-
-        if (is_array($parent)) {
-            $folder = $this->getNewFolder();
-            $folder->mapBoxToClass($parent);
-            $parent = $folder;
-        }
-
-        if (!$parent instanceof FolderInterface) {
-            $this->error([
-                'error' => 'Folder or FolderInterface expected',
-                'error_description' => $parent
-            ]);
-        }
-
-        $params['parent'] = ['id' => $parent->getId()];
-        if (null !== $name) {
-            $params['name'] = $name;
-        }
-
-        $this->debug("params: " . var_export($params, true), [__METHOD__, __LINE__]);
-
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
-
-        $response = $connection->post($uri, $params, true);
-        $this->debug("response header: " . var_export($response->getResponseHeader(), true), [__METHOD__, __LINE__]);
-
-        $data = $this->parseResponse($response);
-
-        $copy = $this->getNewFolder();
-        $copy->mapBoxToClass($data);
-
-        if (true === $addToFolders && $copy instanceof Folder) {
+        if (true === $addToFolders) {
             $this->addFolder($copy);
         }
 
         return $copy;
     }
 
-    // @todo make multiple file upload
+    // Post-v1: add multi-file upload convenience method
 
     /**
-     * @param BoxResponseInterface $response
-     * @return array
-     * @throws BoxException
+     * @throws JsonException
      */
     public function parseResponse(BoxResponseInterface $response): array
     {
-        return parent::parseResponse($response);
+        $data = $response->json(true);
+        return is_array($data) ? $data : [];
     }
 
     /**
-     * @param string|FileStream $file
-     * @param string|int $parentId
-     * @return array
-     * @throws BoxException
+     * @throws BoxResponseException
+     * @throws RuntimeException
      */
-    public function uploadFileToBox(string|FileStream $file, string|int $parentId = 0): array
+    public function uploadFileToBox(string|FileStream $file, string|int $parentId = 0): File
     {
-        $accessToken = $this->getToken()->getAccessToken();
-        if (empty($accessToken) || trim($accessToken) === '') {
-            throw new BoxException('BOX_ACCESS_TOKEN is required for upload.', BoxException::INVALID_INPUT);
+        $fileService = $this->serviceRegistry->getFileService();
+        $this->configureService($fileService);
+
+        if (null !== $this->eventDispatcher) {
+            $fileService->setEventDispatcher($this->eventDispatcher);
         }
 
-        $uri = File::UPLOAD_URI;
-
-        $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
-
-        $response = $connection->postFile($uri, $file, $parentId);
-
-        return $this->parseResponse($response);
+        return $fileService->uploadFile($file, $parentId);
     }
 
-    public function exchangeAuthorizationCodeForToken()
+    public function chunkedUpload(string|FileStream $file, string|int $parentId): File
     {
-        return $this->getAccessToken();
-    }
+        $fileService = $this->serviceRegistry->getFileService();
+        $this->configureService($fileService);
 
-    public function getAccessToken()
-    {
-        $connection = $this->getConnection();
-        $params['grant_type'] = 'authorization_code';
-        $params['code'] = $this->getAuthorizationCode();
-        $params['client_id'] = $this->getClientId();
-        $params['client_secret'] = $this->getClientSecret();
+        if (null !== $this->eventDispatcher) {
+            $fileService->setEventDispatcher($this->eventDispatcher);
+        }
 
-        $redirectUri = $this->getRedirectUri();
-
-        $response = $connection->post(self::TOKEN_URI, $params);
-        $data = $this->parseResponse($response);
-
-        $token = $this->getToken();
-        $this->setTokenData($token, $data);
-
-        return $token;
+        return $fileService->chunkedUpload($file, $parentId);
     }
 
     /**
-     * @return \Box\Connection\Token\Token|\Box\Connection\Token\TokenInterface
+     * @throws BoxException if no authorization code is set
+     * @throws JsonException
      */
-    public function refreshToken()
+    public function exchangeAuthorizationCodeForToken(): TokenInterface
     {
-        // outside script will set token via getAccessToken
-        $token = $this->getToken();
-
-        $params['refresh_token'] = $token->getRefreshToken();
-        $params['client_id'] = $this->getClientId();
-        $params['client_secret'] = $this->getClientSecret();
-        $params['grant_type'] = 'refresh_token';
-
-        $deviceId = $this->getDeviceId();
-        if (null !== $deviceId) {
-            $params['device_id'] = $deviceId;
+        $code = $this->getAuthorizationCode();
+        if (null === $code) {
+            throw new BoxException('Authorization code is required for exchange.', BoxException::INVALID_INPUT);
         }
 
-        $deviceName = $this->getDeviceName();
-        if (null !== $deviceName) {
-            $params['device_name'] = $deviceName;
-        }
-
-        $connection = $this->getConnection();
-
-        $response = $connection->post(self::TOKEN_URI, $params);
-
-        $data = $this->parseResponse($response);
-
-        $this->setTokenData($token, $data);
+        $token = $this->getAuthProvider()->exchangeAuthorizationCode($code);
 
         $this->setToken($token);
+        $this->saveTokenToStorage($token);
+
+        $this->eventDispatcher?->dispatch(new TokenExchanged($token));
 
         return $token;
     }
 
-    public function getAuthorizationHeader()
+    /**
+     * @throws BoxException
+     * @throws JsonException
+     */
+    public function refreshToken(): TokenInterface
     {
         $token = $this->getToken();
 
-        return "Authorization: Bearer " . $token->getAccessToken();
-    }
-
-    /**
-     * @param $token \Box\Connection\Token\TokenInterface
-     * @param $data
-     */
-    public function setTokenData($token, $data): void
-    {
-        $token->setAccessToken($data['access_token']);
-        $token->setExpiresIn($data['expires_in']);
-        $token->setTokenType($data['token_type']);
-        $token->setRefreshToken($data['refresh_token']);
-    }
-
-    /**
-     * @param $token \Box\Connection\Token\TokenInterface|\Box\Connection\Token\Token
-     *
-     * @return mixed
-     */
-    public function destroyToken($token)
-    {
-        $params['client_id'] = $this->getClientId();
-        $params['client_secret'] = $this->getClientSecret();
-        // The access_token or refresh_token to be destroyed. Only one is required, though both will be destroyed.
-        $params['token'] = $token->getAccessToken();
-
-        $connection = $this->getConnection();
-
-        $response = $connection->post(self::REVOKE_URI, $params);
-
-        return $this->parseResponse($response);
-    }
-
-    public function auth()
-    {
-        // build get query to auth uri
-        $query = $this->buildAuthQuery();
-
-        // send get query to auth uri (auth uri will redirect to app redirect uri)
-        $connection = $this->getConnection();
-
-        // can't get return data b/c of redirect
-        $connection->query($query);
-    }
-
-    public function buildAuthQuery()
-    {
-        $uri = self::AUTH_URI . '?';
-        $params = [];
-
-        $params['response_type'] = "code";
-
-        $clientId = $this->getClientId();
-        $params['client_id'] = $clientId;
-
-        $state = $this->getState();
-        if (null !== $state) {
-            $params['state'] = $state;
+        if (
+            $this->getAuthProvider() instanceof OAuth2ProviderInterface
+            && null === $token->getRefreshToken()
+        ) {
+            throw new BoxException(
+                'Cannot refresh token: no refresh token available. OAuth2 requires a refresh token to renew access.'
+            );
         }
 
-        $query = $this->buildQuery($params); // buildQuery does urlencode
-        $uri .= $query;
+        $newToken = $this->getAuthProvider()->refreshToken($token, []);
 
-        $redirectUri = $this->getRedirectUri();
+        $this->setToken($newToken);
+        $this->saveTokenToStorage($newToken);
 
-        if (null !== $redirectUri) {
-            $redirectUri = urlencode($redirectUri);
-            $uri .= "&redirect_uri=" . $redirectUri;
-        }
+        $this->eventDispatcher?->dispatch(new TokenRefreshed($newToken));
 
-        return $uri;
+        return $newToken;
     }
 
     /**
-     * @param      $connection Connection
-     * @param null|array $additionalHeaders
-     *
      * @throws BoxException
      */
-    public function setConnectionAuthHeader($connection, $additionalHeaders = null): void
+    public function destroyToken(TokenInterface $token): array
     {
-        $authorizationHeader = $this->getAuthorizationHeader();
+        $this->getAuthProvider()->revokeToken($token);
+        $this->eventDispatcher?->dispatch(new TokenRevoked($token));
 
-        if (str_ends_with($authorizationHeader, ' ')) {
-             throw new BoxException('BOX_ACCESS_TOKEN is required for upload.', BoxException::INVALID_INPUT);
-        }
-
-        // SYNC: ensure connection has the access token
-        if ($connection instanceof ConnectionInterface) {
-            $connection->setAccessToken($this->getToken()->getAccessToken());
-        }
-
-        if (null !== $additionalHeaders && !is_array($additionalHeaders)) {
-            throw new BoxException('additional headers must be in array format', BoxException::INVALID_INPUT);
-        }
-
-        if (is_array($additionalHeaders)) {
-            foreach ($additionalHeaders as $name => $value) {
-                if (is_int($name)) {
-                    // if it's "Name: Value" string
-                    $parts = explode(':', $value, 2);
-                    if (count($parts) === 2) {
-                        $connection->addHeader(trim($parts[0]), trim($parts[1]));
-                    }
-                } else {
-                    $connection->addHeader($name, $value);
-                }
-            }
-        }
-
-        // header opt will require a merge with other headers to not overwrite.
-        // @todo refactor to allow additional headers with auth header
-        // For compatibility, we still call setCurlOpts if it's a CurlTransport or if someone depends on it
-        $headers = [$authorizationHeader];
-        if (is_array($additionalHeaders)) {
-            $headers = array_merge($headers, $additionalHeaders);
-        }
-        $connection->setCurlOpts(['CURLOPT_HTTPHEADER' => $headers]);
+        return ['success' => true];
     }
 
-    /**
-     * @param mixed $clientId
-     * @return void
-     */
-    public function setClientId($clientId = null): void
+    public function buildAuthorizationUrl(array $options = []): string
+    {
+        $state = $this->config?->getOAuth2State();
+        if (null !== $state && !isset($options['state'])) {
+            $options['state'] = $state;
+        }
+
+        return $this->getAuthProvider()->buildAuthorizationUrl($options);
+    }
+
+    public function setClientId(string $clientId = ''): void
     {
         $this->clientId = $clientId;
-        if ($this->connection instanceof ConnectionInterface) {
-            $this->connection->setClientId($clientId);
+        if ($this->authProvider instanceof OAuth2ProviderInterface) {
+            $this->authProvider->setClientId($clientId);
         }
     }
 
-    public function getClientId()
+    public function getClientId(): ?string
     {
         return $this->clientId;
     }
 
-    /**
-     * @param mixed $clientSecret
-     * @return void
-     */
-    public function setClientSecret($clientSecret = null): void
+    public function setClientSecret(string $clientSecret = ''): void
     {
         $this->clientSecret = $clientSecret;
-        if ($this->connection instanceof ConnectionInterface) {
-            $this->connection->setClientSecret($clientSecret);
+        if ($this->authProvider instanceof OAuth2ProviderInterface) {
+            $this->authProvider->setClientSecret($clientSecret);
         }
     }
 
-    public function getClientSecret()
+    public function getClientSecret(): ?string
     {
         return $this->clientSecret;
     }
 
-    /**
-     * @param mixed $redirectUri
-     * @return void
-     */
-    public function setRedirectUri($redirectUri = null): void
-    {
-        $this->redirectUri = $redirectUri;
-        if ($this->connection instanceof ConnectionInterface) {
-            $this->connection->setRedirectUri($redirectUri);
-        }
-    }
-
-    public function getRedirectUri()
-    {
-        return $this->redirectUri;
-    }
-
-
-    /**
-     * @param mixed $authorizationCode
-     * @return void
-     */
-    public function setAuthorizationCode($authorizationCode = null): void
+    public function setAuthorizationCode(?string $authorizationCode = null): void
     {
         $this->authorizationCode = $authorizationCode;
     }
 
-    public function getAuthorizationCode()
+    public function getAuthorizationCode(): ?string
     {
         return $this->authorizationCode;
     }
 
-    /**
-     * @param mixed $token
-     * @return void
-     */
-    public function setToken($token = null): void
+    public function setToken(?TokenInterface $token = null): void
     {
         $this->token = $token;
     }
 
-    public function getToken()
+    public function getToken(): TokenInterface
     {
         if (null === $this->token) {
-            $tokenClass = $this->getTokenClass();
-            $token = new $tokenClass();
-            $this->token = $token;
+            $this->token = $this->getTokenFactory()->createToken();
+            if ($this->logger && method_exists($this->token, 'setLogger')) {
+                $this->token->setLogger($this->logger);
+            }
         }
 
         return $this->token;
     }
 
-    /**
-     * @return bool
-     */
+    public function setTokenFactory(TokenFactoryInterface $tokenFactory): void
+    {
+        $this->tokenFactory = $tokenFactory;
+    }
+
+    public function getTokenFactory(): TokenFactoryInterface
+    {
+        if (null === $this->tokenFactory) {
+            $this->tokenFactory = new TokenFactory();
+        }
+
+        return $this->tokenFactory;
+    }
+
+    public function setAuthProvider(AuthProviderInterface $authProvider): void
+    {
+        $this->authProvider = $authProvider;
+
+        if ($authProvider instanceof JwtProvider && null !== $this->eventDispatcher) {
+            $authProvider->setEventDispatcher($this->eventDispatcher);
+        }
+    }
+
+    public function getAuthProvider(): AuthProviderInterface
+    {
+        if (null === $this->authProvider) {
+            $this->authProvider = new OAuth2Provider(
+                $this->getConnection(),
+                $this->getTokenFactory(),
+                $this->getClientId(),
+                $this->getClientSecret(),
+                $this->config?->getOAuth2RedirectUri()
+            );
+        }
+
+        return $this->authProvider;
+    }
+
     public function isTokenExpired(): bool
     {
         if (null === $this->token) {
@@ -938,9 +638,6 @@ class Client extends Model
         return $this->token->isExpired();
     }
 
-    /**
-     * @return int|null
-     */
     public function getRemainingTokenLifetime(): ?int
     {
         if (null === $this->token) {
@@ -961,271 +658,165 @@ class Client extends Model
         return max(0, $remaining);
     }
 
-    /**
-     * @param mixed $tokenClass
-     * @return void
-     */
-    public function setTokenClass($tokenClass = null): void
-    {
-        $this->validateClass($tokenClass, TokenInterface::class);
-        $this->tokenClass = $tokenClass;
-    }
 
-    public function getTokenClass()
+    public function setConnection(?ConnectionInterface $connection = null): void
     {
-        return $this->tokenClass;
-    }
-
-    /**
-     * @param mixed $connectionClass
-     * @return void
-     */
-    public function setConnectionClass($connectionClass = null): void
-    {
-        $this->validateClass($connectionClass, ConnectionInterface::class);
-        $this->connectionClass = $connectionClass;
-    }
-
-    public function getConnectionClass()
-    {
-        return $this->connectionClass;
-    }
-
-    /**
-     * @param mixed $connection
-     * @return void
-     * @throws BoxException
-     */
-    public function setConnection($connection = null): void
-    {
-        if (!$connection instanceof ConnectionInterface) {
-            throw new BoxException("Invalid Class", BoxException::INVALID_CLASS);
-        }
         $this->connection = $connection;
+
+        if ($connection instanceof Connection && null !== $this->eventDispatcher) {
+            $connection->setEventDispatcher($this->eventDispatcher);
+        }
     }
 
-    public function getConnection()
+    public function getConnection(): ConnectionInterface
     {
         if (null === $this->connection) {
-            $connectionClass = $this->getConnectionClass();
-            /** @var ConnectionInterface $connection */
-            $connection = new $connectionClass();
+            $this->connection = $this->serviceRegistry->getConnectionFactory()->createConnection();
             if ($this->logger) {
-                $connection->setLogger($this->logger);
+                $this->connection->setLogger($this->logger);
             }
-            $connection->setClientId($this->getClientId());
-            $connection->setClientSecret($this->getClientSecret());
-            $connection->setRedirectUri($this->getRedirectUri());
             if ($this->token) {
-                $connection->setAccessToken($this->token->getAccessToken());
+                $this->connection->setAccessToken($this->token->getAccessToken());
             }
-            $this->connection = $connection;
         }
 
         return $this->connection;
     }
 
-    /**
-     * @param mixed $fileClass
-     * @return void
-     */
-    public function setFileClass($fileClass = null): void
-    {
-        $this->validateClass($fileClass, FileInterface::class);
-        $this->fileClass = $fileClass;
-    }
-
-    public function getFileClass()
-    {
-        return $this->fileClass;
-    }
 
     /**
-     * @todo determine best validation for this
-     *
-     * @param null $files
-     *
-     * @return $this
+     * @param array<string|int, File>|null $files
      */
-    /**
-     * @param mixed $files
-     * @return void
-     */
-    public function setFiles($files = null): void
+    public function setFiles(?array $files = null): void
     {
         $this->files = $files;
     }
 
-    public function getFiles()
+    public function getFiles(): ?array
     {
         return $this->files;
     }
 
-    /**
-     * @param mixed $folderClass
-     * @return void
-     */
-    public function setFolderClass($folderClass = null): void
-    {
-        $this->validateClass($folderClass, FolderInterface::class);
-        $this->folderClass = $folderClass;
-    }
-
-    public function getFolderClass()
-    {
-        return $this->folderClass;
-    }
 
     /**
-     * @param mixed $folders
-     * @return void
+     * @param array<string|int, Folder>|null $folders
      */
-    public function setFolders($folders = null): void
+    public function setFolders(?array $folders = null): void
     {
         $this->folders = $folders;
     }
 
-    /**
-     * @param mixed $collaborationClass
-     * @return void
-     */
-    public function setCollaborationClass($collaborationClass = null): void
-    {
-        $this->validateClass($collaborationClass, CollaborationInterface::class);
-        $this->collaborationClass = $collaborationClass;
-    }
-
-    public function getCollaborationClass()
-    {
-        return $this->collaborationClass;
-    }
 
     /**
-     * @param mixed $userClass
-     * @return void
+     * @param array<int, Collaboration>|null $collaborations
      */
-    public function setUserClass($userClass = null): void
-    {
-        $this->validateClass($userClass, UserInterface::class);
-        $this->userClass = $userClass;
-    }
-
-    public function getUserClass()
-    {
-        return $this->userClass;
-    }
-
-    /**
-     * @param mixed $groupClass
-     * @return void
-     */
-    public function setGroupClass($groupClass = null): void
-    {
-        $this->validateClass($groupClass, GroupInterface::class);
-        $this->groupClass = $groupClass;
-    }
-
-    public function getGroupClass()
-    {
-        return $this->groupClass;
-    }
-
-    /**
-     * @param array $collaborations
-     *
-     * @return \Box\Model\Client\Client $this
-     */
-    /**
-     * @param mixed $collaborations
-     * @return void
-     */
-    public function setCollaborations($collaborations = null): void
+    public function setCollaborations(?array $collaborations = null): void
     {
         $this->collaborations = $collaborations;
     }
 
-    /**
-     * @return array
-     */
-    public function getCollaborations()
+    public function getCollaborations(): ?array
     {
         return $this->collaborations;
     }
 
+    public function setTokenStorage(?TokenStorageInterface $tokenStorage = null): void
+    {
+        $this->tokenStorage = $tokenStorage;
+    }
+
+    public function getTokenStorage(): ?TokenStorageInterface
+    {
+        return $this->tokenStorage;
+    }
+
+    public function setTokenStorageContext(?TokenStorageContext $tokenStorageContext = null): void
+    {
+        $this->tokenStorageContext = $tokenStorageContext;
+    }
+
+    public function getTokenStorageContext(): ?TokenStorageContext
+    {
+        return $this->tokenStorageContext;
+    }
+
     /**
-     * @param mixed $deviceId
-     * @return void
+     * Load token from configured storage using provided or configured context.
+     * If successful, the loaded token is set on the Client.
      */
-    public function setDeviceId($deviceId = null): void
+    public function loadTokenFromStorage(?TokenStorageContext $context = null): ?TokenInterface
     {
-        $this->deviceId = $deviceId;
-    }
+        $storage = $this->getTokenStorage();
+        $context = $context ?? $this->getTokenStorageContext();
 
-    public function getDeviceId()
-    {
-        return $this->deviceId;
-    }
+        if (null === $storage || null === $context) {
+            return null;
+        }
 
-    /**
-     * @param mixed $deviceName
-     * @return void
-     */
-    public function setDeviceName($deviceName = null): void
-    {
-        $this->deviceName = $deviceName;
-    }
+        $token = $storage->retrieveToken($context);
 
-    public function getDeviceName()
-    {
-        return $this->deviceName;
+        if (null !== $token) {
+            $this->setToken($token);
+
+            $this->eventDispatcher?->dispatch(new TokenLoadedFromStorage($token));
+        }
+
+        return $token;
     }
 
     /**
-     * @param mixed $state
-     * @return void
-     */
-    public function setState($state = null): void
-    {
-        $this->state = $state;
-    }
-
-    public function getState()
-    {
-        return $this->state;
-    }
-
-    /**
-     * @param \Box\Folder\Folder|\Box\Folder\FolderInterface $root
+     * Save token to configured storage using provided or configured context.
      *
-     * @return \Box\Model\Client\Client
+     * @param TokenInterface|null $token If null, the current Client token is used.
+     * @param TokenStorageContext|null $context If null, the configured Client context is used.
      */
+    public function saveTokenToStorage(?TokenInterface $token = null, ?TokenStorageContext $context = null): void
+    {
+        $storage = $this->getTokenStorage();
+        $context = $context ?? $this->getTokenStorageContext();
+        $token = $token ?? $this->token;
+
+        if (null === $storage || null === $context || null === $token) {
+            return;
+        }
+
+        $storage->storeToken($token, $context);
+        $this->eventDispatcher?->dispatch(new TokenSavedToStorage($token));
+    }
+
     /**
-     * @param mixed $root
-     * @return void
+     * Remove token from configured storage using provided or configured context.
+     *
+     * @param TokenStorageContext|null $context If null, the configured Client context is used.
      */
-    public function setRoot($root = null): void
+    public function removeTokenFromStorage(?TokenStorageContext $context = null): void
+    {
+        $storage = $this->getTokenStorage();
+        $context = $context ?? $this->getTokenStorageContext();
+
+        if (null === $storage || null === $context) {
+            return;
+        }
+
+        $storage->removeToken($context);
+    }
+
+    public function setRoot(?Folder $root = null): void
     {
         $this->root = $root;
     }
 
-    /**
-     * @return \Box\Folder\Folder|\Box\Folder\FolderInterface
-     */
-    public function getRoot()
+    public function getRoot(): ?Folder
     {
         return $this->root;
     }
 
     /**
-     * @param $uri
-     *
-     * @return mixed
      * @throws BoxException
      */
-    public function query($uri = null)
+    public function query(string $uri): array
     {
         $connection = $this->getConnection();
-        $this->setConnectionAuthHeader($connection);
 
         $response = $connection->query($uri);
 
@@ -1233,37 +824,58 @@ class Client extends Model
     }
 
     /**
-     * @param string|null $query
-     * @param int|null $limit
-     * @param int|null $offset
-     * @param string|null $type
-     * @return mixed
      * @throws BoxException
      */
-    public function search($query = null, $limit = null, $offset = null, $type = null)
+    public function search(?string $query = null, ?int $limit = null, ?int $offset = null, ?string $type = null): array
     {
-        if (empty($query)) {
-            throw new BoxException('please enter a search term', BoxException::INVALID_INPUT);
+        $searchService = $this->configureService($this->serviceRegistry->getSearchService());
+
+        return $searchService->search($query, $limit, $offset, $type);
+    }
+
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher): void
+    {
+        $this->eventDispatcher = $dispatcher;
+
+        if ($this->connection instanceof Connection) {
+            $this->connection->setEventDispatcher($dispatcher);
         }
 
-        $uriQuery = rawurlencode($query);
+        if ($this->authProvider instanceof JwtProvider) {
+            $this->authProvider->setEventDispatcher($dispatcher);
+        }
+    }
 
-        $uri = self::SEARCH_URI . "/?query=" . $uriQuery;
+    public function getEventDispatcher(): ?EventDispatcherInterface
+    {
+        return $this->eventDispatcher;
+    }
 
-        if (is_string($type) && in_array($type, ['folder', 'file'])) {
-            $uri .= "&type=" . $type;
+    /**
+     * @throws RuntimeException if an authenticated service has no access token set
+     */
+    protected function configureService(ServiceInterface $service): ServiceInterface
+    {
+        $service->setConnection($this->getConnection());
+
+        if ($service instanceof AuthenticatedServiceInterface) {
+            $token = $this->getToken();
+            if (null === $token->getAccessToken()) {
+                throw new RuntimeException("Access token is not set for authenticated service: " . $service::class);
+            }
+            $service->setToken($token);
+        } else {
+            try {
+                $service->setToken($this->getToken());
+            } catch (RuntimeException $e) {
+                // Token not set on client, skip setting it on service
+            }
         }
 
-        if (is_numeric($limit) && is_int($limit)) {
-            $uri .= "&limit=" . $limit;
+        if ($this->logger) {
+            $service->setLogger($this->logger);
         }
 
-        if (is_numeric($offset) && is_int($offset)) {
-            $uri .= "&offset=" . $offset;
-        }
-
-        $this->debug("full search uri: " . $uri, [__METHOD__, __LINE__]);
-
-        return $this->query($uri);
+        return $service;
     }
 }

@@ -20,6 +20,7 @@ class RetryAfterTest extends TestCase
         ]);
         $response->method('isSuccessful')->willReturn(false);
         $response->method('getContent')->willReturn('');
+        $response->method('getRetryAfter')->willReturn(30);
 
         $service = $this->getMockForAbstractClass(Service::class);
 
@@ -45,6 +46,7 @@ class RetryAfterTest extends TestCase
         ]);
         $response->method('isSuccessful')->willReturn(false);
         $response->method('getContent')->willReturn('');
+        $response->method('getRetryAfter')->willReturn(60);
 
         $service = $this->getMockForAbstractClass(Service::class);
 

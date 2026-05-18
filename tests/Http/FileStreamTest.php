@@ -39,4 +39,35 @@ class FileStreamTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         new FileStream('not a resource', 'test.txt');
     }
+
+    public function testGetSizeReturnsContentLength(): void
+    {
+        $content = 'hello world';
+        $stream = FileStream::fromString($content, 'test.txt');
+
+        $this->assertSame(strlen($content), $stream->getSize());
+
+        fclose($stream->getResource());
+    }
+
+    public function testReadChunkReadsRequestedBytes(): void
+    {
+        $stream = FileStream::fromString('hello world', 'test.txt');
+
+        $this->assertSame('hello', $stream->readChunk(5));
+        $this->assertSame(' worl', $stream->readChunk(5));
+
+        fclose($stream->getResource());
+    }
+
+    public function testIsEofReturnsTrueAfterFullRead(): void
+    {
+        $stream = FileStream::fromString('hi', 'test.txt');
+
+        $this->assertFalse($stream->isEof());
+        $stream->readChunk(100);
+        $this->assertTrue($stream->isEof());
+
+        fclose($stream->getResource());
+    }
 }

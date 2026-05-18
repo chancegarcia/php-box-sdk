@@ -4,12 +4,13 @@ namespace Box\Tests\Service;
 
 use Box\Service\ConsoleOutputFormatter;
 use PHPUnit\Framework\TestCase;
+use Box\Contract\JsonFormatterInterface;
 
 class ConsoleOutputFormatterTest extends TestCase
 {
     public function testMaskSensitiveData(): void
     {
-        $jsonFormatter = $this->createMock(\Box\Contract\JsonFormatterInterface::class);
+        $jsonFormatter = $this->createMock(JsonFormatterInterface::class);
         $formatter = new ConsoleOutputFormatter($jsonFormatter);
         $data = [
             'access_token' => 'sensitive_token_12345678',
@@ -29,7 +30,7 @@ class ConsoleOutputFormatterTest extends TestCase
 
     public function testMaskShortString(): void
     {
-        $jsonFormatter = $this->createMock(\Box\Contract\JsonFormatterInterface::class);
+        $jsonFormatter = $this->createMock(JsonFormatterInterface::class);
         $formatter = new ConsoleOutputFormatter($jsonFormatter);
         $data = ['access_token' => 'short'];
         $masked = $formatter->maskSensitiveData($data);

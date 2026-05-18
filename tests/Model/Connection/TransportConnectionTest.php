@@ -2,6 +2,7 @@
 
 namespace Box\Tests\Model\Connection;
 
+use Box\Factory\ConnectionFactory;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Connection\Connection;
 use Box\Http\Transport\TransportInterface;
@@ -10,6 +11,8 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use PHPUnit\Framework\TestCase;
+use Box\Http\Transport\GuzzleTransport;
+use Box\Http\Response\BoxResponse;
 
 class TransportConnectionTest extends TestCase
 {
@@ -21,7 +24,7 @@ class TransportConnectionTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $client = new GuzzleClient(['handler' => $handlerStack]);
 
-        $connection = new Connection([
+        $connection = (new ConnectionFactory())->createConnection([
             'transport' => Connection::TRANSPORT_GUZZLE,
             'accessToken' => 'fake_token'
         ]);
@@ -29,7 +32,7 @@ class TransportConnectionTest extends TestCase
         // Inject mock guzzle client via transport if we had a setter,
         // but for now let's test if it uses the transport.
         // Better: create a GuzzleTransport with the mock client and set it.
-        $transport = new \Box\Http\Transport\GuzzleTransport($client);
+        $transport = new GuzzleTransport($client);
         $connection->setTransport($transport);
 
         $response = $connection->query('http://example.com/me');
@@ -65,7 +68,7 @@ class TransportConnectionTest extends TestCase
     {
         $content = '{"foo":"bar"}';
         $header = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n";
-        $response = new \Box\Http\Response\BoxResponse($content, $header);
+        $response = new BoxResponse($content, $header);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('application/json', $response->getHeaderLine('Content-Type'));

@@ -2,23 +2,30 @@
 
 namespace Box\Mapper;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Exception;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionNamedType;
 use ReflectionProperty;
 use ReflectionType;
 use ReflectionUnionType;
+use stdClass;
 
 class Hydrator
 {
     /**
-     * @template T of object
      * @param class-string<T>|T $target
-     * @param array|\stdClass $data
+     * @param array|stdClass $data object or array from box api
+     *
+     * @throws ReflectionException
      * @return T
+     *
+     * @template T of object
      */
-    public function hydrate(string|object $target, array|\stdClass $data): object
+    public function hydrate(string|object $target, array|stdClass $data): object
     {
         if (is_string($target)) {
             $target = new $target();
@@ -27,7 +34,7 @@ class Hydrator
         $data = (array) $data;
 
         foreach ($data as $key => $value) {
-            $camelKey = ModelMapper::toClassVar($key);
+            $camelKey = lcfirst(str_replace('_', '', ucwords($key, '_')));
             $setter = 'set' . ucfirst($camelKey);
 
             if (method_exists($target, $setter)) {
@@ -59,7 +66,21 @@ class Hydrator
 
         $type = $parameters[0]->getType();
         $hydratedValue = $this->hydrateValue($type, $value, $target, $propertyName);
+
+        if ($hydratedValue === null && $value !== null && $this->isEnumResolutionFailure($type)) {
+            return;
+        }
+
         $target->$setter($hydratedValue);
+    }
+
+    private function isEnumResolutionFailure(?ReflectionType $type): bool
+    {
+        if ($type instanceof ReflectionNamedType && !$type->isBuiltin() && enum_exists($type->getName())) {
+            return true;
+        }
+
+        return false;
     }
 
     private function hydrateViaProperty(object $target, string $propertyName, mixed $value): void
@@ -80,22 +101,42 @@ class Hydrator
         if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
             $className = $type->getName();
 
-            if (is_subclass_of($className, Collection::class) || $className === Collection::class || $className === ArrayCollection::class) {
+            if (
+                is_subclass_of($className, Collection::class) ||
+                $className === Collection::class ||
+                $className === ArrayCollection::class
+            ) {
                 return $this->hydrateCollection($className, $value, $target, $propertyName);
             }
 
-            if (is_array($value) || $value instanceof \stdClass) {
+            if (is_array($value) || $value instanceof stdClass) {
                 return $this->hydrate($className, $value);
+            }
+
+            if ($className === DateTimeImmutable::class && is_string($value)) {
+                try {
+                    return new DateTimeImmutable($value);
+                } catch (Exception) {
+                    return $value;
+                }
+            }
+
+            if (is_scalar($value) && enum_exists($className)) {
+                return $className::tryFrom($value);
             }
         }
 
         if ($type instanceof ReflectionUnionType) {
             foreach ($type->getTypes() as $unionType) {
+                if ($unionType instanceof ReflectionNamedType && $unionType->isBuiltin() && $unionType->getName() === 'array' && is_array($value)) {
+                    return $value;
+                }
+            }
+
+            foreach ($type->getTypes() as $unionType) {
                 if ($unionType instanceof ReflectionNamedType && !$unionType->isBuiltin()) {
                     $className = $unionType->getName();
-                    if (is_array($value) || $value instanceof \stdClass) {
-                        // Attempt to hydrate into the first non-builtin class in the union
-                        // This might need more sophisticated logic if multiple classes are possible
+                    if (is_array($value) || $value instanceof stdClass) {
                         return $this->hydrate($className, $value);
                     }
                 }
@@ -105,17 +146,22 @@ class Hydrator
         return $value;
     }
 
-    private function hydrateCollection(string $collectionClass, mixed $value, object $target, string $propertyName): Collection
-    {
+    private function hydrateCollection(
+        string $collectionClass,
+        mixed $value,
+        object $target,
+        string $propertyName
+    ): Collection {
         $items = is_array($value) ? $value : [$value];
-        $collection = ($collectionClass === Collection::class || $collectionClass === ArrayCollection::class)
+        $isGeneric = $collectionClass === Collection::class || $collectionClass === ArrayCollection::class;
+        $collection = ($isGeneric)
             ? new ArrayCollection()
             : new $collectionClass();
 
         $itemType = $this->inferItemType($target, $propertyName);
 
         foreach ($items as $item) {
-            if ($itemType && (is_array($item) || $item instanceof \stdClass)) {
+            if ($itemType && (is_array($item) || $item instanceof stdClass)) {
                 $collection->add($this->hydrate($itemType, $item));
             } else {
                 $collection->add($item);
@@ -133,8 +179,9 @@ class Hydrator
         if ($reflection->hasProperty($propertyName)) {
             $prop = $reflection->getProperty($propertyName);
             $doc = $prop->getDocComment();
-            if ($doc && preg_match('/@var\s+([\w\\\]+)\[\]|Collection<([\w\\\]+)>/', $doc, $matches)) {
-                return $matches[1] ?: $matches[2];
+            if ($doc && preg_match('/@var\s+([\\\\A-Za-z0-9_]+)\[\]|Collection<([\\\\A-Za-z0-9_]+)>/', $doc, $matches)) {
+                $type = $matches[1] ?: $matches[2];
+                return $this->resolveType($type, $reflection);
             }
         }
 
@@ -143,11 +190,30 @@ class Hydrator
         if ($reflection->hasMethod($setter)) {
             $method = $reflection->getMethod($setter);
             $doc = $method->getDocComment();
-            if ($doc && preg_match('/@param\s+([\w\\\]+)\[\]|Collection<([\w\\\]+)>/', $doc, $matches)) {
-                return $matches[1] ?: $matches[2];
+            if ($doc && preg_match('/@param\s+([\\\\A-Za-z0-9_]+)\[\]|Collection<([\\\\A-Za-z0-9_]+)>/', $doc, $matches)) {
+                $type = $matches[1] ?: $matches[2];
+                return $this->resolveType($type, $reflection);
             }
         }
 
         return null;
+    }
+
+    private function resolveType(string $type, ReflectionClass $context): string
+    {
+        if (str_starts_with($type, '\\')) {
+            return ltrim($type, '\\');
+        }
+
+        $namespace = $context->getNamespaceName();
+        if ($namespace && class_exists($namespace . '\\' . $type)) {
+            return $namespace . '\\' . $type;
+        }
+
+        if (class_exists($type)) {
+            return $type;
+        }
+
+        return $type;
     }
 }

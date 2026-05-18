@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop, release-* ]
+    branches: [ "main", "develop", "release-*", "feature-*", "patch-*", "*-rc" ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ "main", "develop" ]
 
 permissions:
   contents: read
@@ -27,7 +27,7 @@ jobs:
         uses: shivammathur/setup-php@2.37.1
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: curl, fileinfo
+          extensions: fileinfo, openssl, pdo
           coverage: none
           tools: composer:v2
 

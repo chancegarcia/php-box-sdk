@@ -2,7 +2,7 @@
 
 namespace Box\Tests\Model;
 
-use Box\File\File;
+use Box\Resource\File;
 use PHPUnit\Framework\TestCase;
 
 class FileTest extends TestCase
