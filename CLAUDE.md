@@ -1,9 +1,9 @@
-# CLAUDE.md — box-api-v2-sdk
+# CLAUDE.md — php-box-sdk
 
 ## Project
-PHP 8.4+ SDK for the Box API v2. Repository: `chancegarcia/box-api-v2-sdk`.
+PHP 8.4+ SDK for the Box API v2. Repository: `chancegarcia/php-box-sdk`.
 Namespace: `Box\` from `src/`; tests: `Box\Tests\` from `tests/`.
-v1.0.0 complete. Package/repo rename pending (human-managed).
+v1.0.0 complete.
 
 ## Workflow Template
 - Version: 2.0

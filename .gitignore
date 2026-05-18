@@ -8,6 +8,7 @@ composer.lock
 /.phpunit.result.cache
 /.idea/
 /coverage/
+/build/coverage
 /.phpunit.cache
 /.env.local
 /.env.*.local

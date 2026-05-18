@@ -1,10 +1,10 @@
 # Box PHP SDK
 
-[![CI](https://github.com/chancegarcia/box.net-v2api-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/chancegarcia/box.net-v2api-sdk/actions/workflows/ci.yml)
-[![Latest Stable Version](https://poser.pugx.org/chancegarcia/box-api-v2-sdk/v/stable)](https://packagist.org/packages/chancegarcia/box-api-v2-sdk)
-[![PHP Version Require](https://poser.pugx.org/chancegarcia/box-api-v2-sdk/require/php)](https://packagist.org/packages/chancegarcia/box-api-v2-sdk)
-[![License](https://poser.pugx.org/chancegarcia/box-api-v2-sdk/license)](https://packagist.org/packages/chancegarcia/box-api-v2-sdk)
-[![Total Downloads](https://poser.pugx.org/chancegarcia/box-api-v2-sdk/downloads)](https://packagist.org/packages/chancegarcia/box-api-v2-sdk)
+[![CI](https://github.com/chancegarcia/php-box-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/chancegarcia/php-box-sdk/actions/workflows/ci.yml)
+[![Latest Stable Version](https://shields.io/packagist/v/chancegarcia/php-box-sdk?label=stable)](https://packagist.org/packages/chancegarcia/php-box-sdk)
+[![PHP Version Require](https://shields.io/packagist/php-v/chancegarcia/php-box-sdk)](https://packagist.org/packages/chancegarcia/php-box-sdk)
+[![License](https://shields.io/packagist/l/chancegarcia/php-box-sdk)](https://packagist.org/packages/chancegarcia/php-box-sdk)
+[![Total Downloads](https://shields.io/packagist/dt/chancegarcia/php-box-sdk)](https://packagist.org/packages/chancegarcia/php-box-sdk)
 
 A modern PHP SDK for interacting with the [Box.com API](https://developer.box.com/).
 
@@ -20,7 +20,7 @@ This library is designed as a boundary layer for Box API access, suitable for st
 ## Installation
 
 ```bash
-composer require chancegarcia/box-api-v2-sdk
+composer require chancegarcia/php-box-sdk
 ```
 
 ## Quickstart

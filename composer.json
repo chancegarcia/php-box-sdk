@@ -1,5 +1,5 @@
 {
-    "name": "chancegarcia/box-api-v2-sdk",
+    "name": "chancegarcia/php-box-sdk",
     "license": "Apache-2.0",
     "description": "PHP SDK and API client for the Box API v2024.0, supporting OAuth2 and JWT/S2S authentication, file and folder operations, uploads, webhook signature verification, typed models, and PSR-3 logging.",
     "keywords": [
@@ -21,11 +21,11 @@
         "psr-3",
         "guzzle"
     ],
-    "homepage": "https://github.com/chancegarcia/box.net-v2api-sdk",
+    "homepage": "https://github.com/chancegarcia/php-box-sdk",
     "support": {
         "docs": "https://developer.box.com/reference",
-        "source": "https://github.com/chancegarcia/box.net-v2api-sdk",
-        "issues": "https://github.com/chancegarcia/box.net-v2api-sdk/issues"
+        "source": "https://github.com/chancegarcia/php-box-sdk",
+        "issues": "https://github.com/chancegarcia/php-box-sdk/issues"
     },
     "autoload": {
         "psr-4": {
@@ -70,15 +70,18 @@
         "cs:check": "phpcs",
         "cs:fix": "phpcbf",
         "test": "phpunit",
+        "test:coverage": "XDEBUG_MODE=coverage phpunit --coverage-html build/coverage",
         "lint": "find src tests bin -name '*.php' -print0 | xargs -0 -n 1 -P 8 php -l",
         "analyse": "phpstan analyse --memory-limit=2G",
         "analyze": "@analyse",
+        "stan": "@analyse",
         "review": [
             "@lint",
             "@cs:check",
             "@analyse",
             "@test"
-        ]
+        ],
+        "qa": "@review"
     },
     "config": {
         "allow-plugins": {
