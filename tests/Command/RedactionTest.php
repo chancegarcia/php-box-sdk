@@ -47,7 +47,7 @@ class RedactionTest extends TestCase
         $this->client->method('refreshToken')->willReturn($newToken);
 
         $application = new Application();
-        $application->add(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);
@@ -74,7 +74,7 @@ class RedactionTest extends TestCase
         $this->client->method('exchangeAuthorizationCodeForToken')->willReturn($newToken);
 
         $application = new Application();
-        $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:exchange-code');
         $commandTester = new CommandTester($command);

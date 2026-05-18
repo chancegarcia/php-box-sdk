@@ -56,7 +56,7 @@ class JwtTokenCommandTest extends TestCase
 
         $application = new Application();
         $command = new JwtTokenCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory);
-        $application->add($command);
+        $application->addCommand($command);
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
@@ -73,7 +73,7 @@ class JwtTokenCommandTest extends TestCase
 
         $application = new Application();
         $command = new JwtTokenCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory);
-        $application->add($command);
+        $application->addCommand($command);
 
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--user-id' => 'user-123']);

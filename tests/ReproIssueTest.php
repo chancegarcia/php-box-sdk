@@ -77,7 +77,7 @@ class ReproIssueTest extends TestCase
 
         $application = new Application();
         $command = new FileUploadCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory);
-        $application->add($command);
+        $application->addCommand($command);
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([

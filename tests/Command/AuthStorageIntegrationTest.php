@@ -63,7 +63,7 @@ class AuthStorageIntegrationTest extends TestCase
             ->willReturn($token);
 
         $application = new Application();
-        $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:exchange-code');
         $commandTester = new CommandTester($command);
@@ -101,7 +101,7 @@ class AuthStorageIntegrationTest extends TestCase
             ->willReturn($newToken);
 
         $application = new Application();
-        $application->add(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);
@@ -134,7 +134,7 @@ class AuthStorageIntegrationTest extends TestCase
             ->willReturn($newToken);
 
         $application = new Application();
-        $application->add(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);
@@ -164,7 +164,7 @@ class AuthStorageIntegrationTest extends TestCase
             ->with($this->isInstanceOf(TokenStorageInterface::class));
 
         $application = new Application();
-        $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:exchange-code');
         $commandTester = new CommandTester($command);
@@ -192,7 +192,7 @@ class AuthStorageIntegrationTest extends TestCase
             ->with($this->isInstanceOf(FilesystemTokenStorage::class));
 
         $application = new Application();
-        $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:exchange-code');
         $commandTester = new CommandTester($command);
@@ -224,7 +224,7 @@ class AuthStorageIntegrationTest extends TestCase
             ->with($this->isInstanceOf(FilesystemTokenStorage::class));
 
         $application = new Application();
-        $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:exchange-code');
         $commandTester = new CommandTester($command);
@@ -251,7 +251,7 @@ class AuthStorageIntegrationTest extends TestCase
             ->with($this->isInstanceOf(TokenStorageInterface::class));
 
         $application = new Application();
-        $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:exchange-code');
         $commandTester = new CommandTester($command);

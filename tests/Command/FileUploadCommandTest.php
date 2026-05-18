@@ -55,7 +55,7 @@ class FileUploadCommandTest extends TestCase
         $this->configProvider->method('getOAuth2AccessToken')->willReturn(null);
 
         $application = new Application();
-        $application->add(new FileUploadCommand(
+        $application->addCommand(new FileUploadCommand(
             $this->clientFactory,
             $this->configProvider,
             $this->outputFormatter,
@@ -81,7 +81,7 @@ class FileUploadCommandTest extends TestCase
         $this->configProvider->method('getOAuth2AccessToken')->willReturn('');
 
         $application = new Application();
-        $application->add(new FileUploadCommand(
+        $application->addCommand(new FileUploadCommand(
             $this->clientFactory,
             $this->configProvider,
             $this->outputFormatter,
@@ -106,7 +106,7 @@ class FileUploadCommandTest extends TestCase
         $this->configProvider->method('getOAuth2AccessToken')->willReturn('   ');
 
         $application = new Application();
-        $application->add(new FileUploadCommand(
+        $application->addCommand(new FileUploadCommand(
             $this->clientFactory,
             $this->configProvider,
             $this->outputFormatter,
@@ -140,7 +140,7 @@ class FileUploadCommandTest extends TestCase
             ->willReturn($response);
 
         $application = new Application();
-        $application->add(new FileUploadCommand(
+        $application->addCommand(new FileUploadCommand(
             $this->clientFactory,
             $this->configProvider,
             $this->outputFormatter,

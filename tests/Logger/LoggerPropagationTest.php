@@ -93,7 +93,7 @@ class LoggerPropagationTest extends TestCase
         $command = new FileUploadCommand($factory, $configProvider, $outputFormatter, $loggerFactory);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([

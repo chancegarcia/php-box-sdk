@@ -44,7 +44,7 @@ class AuthExchangeCommandTest extends TestCase
             ->willReturn($token);
 
         $application = new Application();
-        $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:exchange-code');
         $commandTester = new CommandTester($command);
@@ -68,7 +68,7 @@ class AuthExchangeCommandTest extends TestCase
             ->willReturn($token);
 
         $application = new Application();
-        $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:exchange-code');
         $commandTester = new CommandTester($command);
@@ -84,7 +84,7 @@ class AuthExchangeCommandTest extends TestCase
         $this->configProvider->method('getOAuth2AuthCode')->willReturn(null);
 
         $application = new Application();
-        $application->add(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthExchangeCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:exchange-code');
         $commandTester = new CommandTester($command);

@@ -36,7 +36,7 @@ class AuthRefreshCommandTest extends TestCase
     public function testRefreshTokenOptionIsNotAvailable(): void
     {
         $application = new Application();
-        $application->add(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:refresh-token');
         $this->assertFalse($command->getDefinition()->hasOption('refresh-token'));
@@ -61,7 +61,7 @@ class AuthRefreshCommandTest extends TestCase
             ->willReturn($newToken);
 
         $application = new Application();
-        $application->add(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);
@@ -77,7 +77,7 @@ class AuthRefreshCommandTest extends TestCase
         $this->configProvider->method('getOAuth2RefreshToken')->willReturn(null);
 
         $application = new Application();
-        $application->add(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new AuthRefreshCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
 
         $command = $application->find('box:auth:refresh-token');
         $commandTester = new CommandTester($command);
