@@ -1,6 +1,5 @@
 {
     "name": "chancegarcia/box-api-v2-sdk",
-    "version": "1.0.0",
     "license": "Apache-2.0",
     "description": "PHP SDK and API client for the Box API v2024.0, supporting OAuth2 and JWT/S2S authentication, file and folder operations, uploads, webhook signature verification, typed models, and PSR-3 logging.",
     "keywords": [
