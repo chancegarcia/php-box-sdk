@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, develop, release-* ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, develop ]
 
 permissions:
   contents: read
@@ -21,13 +21,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@2.37.1
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: curl, fileinfo, json, mbstring
+          extensions: curl, fileinfo
           coverage: none
           tools: composer:v2
 
@@ -36,17 +36,17 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5.0.5
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
-
       - name: Validate composer.json
         run: composer validate --strict
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
 
       - name: Composer Audit
         run: composer audit
