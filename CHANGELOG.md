@@ -1,5 +1,115 @@
 # Changelog
 
+## v1.0.0
+
+### Summary
+- Relicensed from MIT to Apache 2.0.
+- JWT/Server-to-Server (S2S) authentication via `JwtProvider` and `JwtAuthConfig`: enterprise and app-user token exchange without OAuth2 redirects.
+- Formal token storage with PDO (`TokenStorage`), Filesystem (`FilesystemTokenStorage`), and in-memory (`TokenStorageContainer`) backends behind a unified `TokenStorageInterface`.
+- `WebhookVerifier` for HMAC-SHA256 signature verification of incoming Box webhook payloads, with configurable replay-window protection and signing key rotation support.
+- Chunked file upload via `FileService` session API and `Client::chunkedUpload()`; optional PSR-14 event dispatching for auth, upload, and rate-limit lifecycle events.
+- Full architectural overhaul: `Box\Model` legacy layer removed, resources rationalized to `Box\Resource`, Guzzle is the only supported transport.
+
+### Developer Details
+
+- **JWT / S2S Authentication**:
+    - Added `Box\Auth\Jwt\JwtProvider` implementing `AuthProviderInterface` with `exchangeForEnterpriseToken()` and `exchangeForAppUserToken(string $userId)`.
+    - Added `Box\Auth\Jwt\JwtAuthConfig` DTO for JWT credentials; `$privateKey` is always PEM content, never a path.
+    - Added `Box\Auth\Jwt\JwtAssertionGenerator` for building signed JWT assertions.
+    - `EnvConfigProvider` reads `BOX_JWT_*` variables; `BOX_AUTH_MODE=jwt` switches `BoxClientFactory::createClientForCurrentMode()` to the JWT path.
+    - `BoxClientFactory::createJwtClient(JwtAuthConfig $config)` builds a fully wired JWT client.
+
+- **Token Storage**:
+    - Added `Box\Storage\Token\TokenStorageInterface` as the common contract.
+    - `FilesystemTokenStorage`: persists tokens to a JSON file. Path from `--storage-path` or `BOX_STORAGE_FILE_PATH`.
+    - `Pdo\TokenStorage`: persists tokens to a database. DSN/user/pass from `--pdo-dsn`/`--pdo-user`/`--pdo-pass` or `BOX_STORAGE_PDO_*` env vars.
+    - `TokenStorageContainer`: in-memory storage; one active token per context; supports lifecycle edge cases (empty store, safe idempotent remove, context isolation).
+    - CLI default storage type changed from `memory` to `filesystem`.
+
+- **Webhook Verification**:
+    - Added `Box\Webhook\WebhookVerifier` implementing `WebhookVerifierInterface`.
+    - Signing formula: `base64(HMAC-SHA256(body + delivery_timestamp, key))`.
+    - Enforces a 10-minute replay window. Supports both primary and secondary signing keys for rotation.
+    - Webhook CRUD management deferred to post-v1.
+
+- **Service Layer Hardening**:
+    - Added `Box\Factory\BoxClientFactory` as the canonical client construction entry point.
+    - Added `Box\Service\ClientServiceRegistry` and `ClientServiceRegistryInterface` for typed service access.
+    - Added `AuthenticatedServiceInterface`; `Client` throws `RuntimeException` if an authenticated service is accessed without a token.
+    - `Service::handleBoxResponse()` replaces legacy `queryBox`/`handleResponseContent`; all services use this unified response path.
+
+- **Legacy Removal**:
+    - Removed `Box\Model` base architecture (`BaseModel`, `Model`, `BoxModel`, traits, interfaces).
+    - Removed one-class mirror factory interfaces (`FileFactoryInterface`, `FolderFactoryInterface`, `UserFactoryInterface`, `GroupFactoryInterface`, `CollaborationFactoryInterface`).
+    - Removed one-class mirror resource interfaces (`FileInterface`, `FolderInterface`, etc.).
+    - Removed `queryBox`, `putIntoBox`, `getFromBox`, `sendUpdateToBox`, `handleResponseContent`, `validateReturnType`, `allowedReturnTypes` from `ServiceInterface`/`Service`.
+    - Removed `authorizedConnection` (collapsed into `connection`).
+    - Removed `BoxLoggerTrait`; replaced by `BoxApiErrorTrait`.
+    - Removed `--transport` CLI option; Guzzle is the only transport.
+
+- **Resource and Namespace**:
+    - All resources now in `Box\Resource` (`File`, `Folder`, `Group`, `Collaboration`, `Event`, `AdminEvent`, `UserEvent`, `SharedLink`).
+    - Endpoint constants moved from resource interfaces to their respective service classes (`FileService::ENDPOINT`, etc.).
+    - Resources are passive state objects; hydration is handled exclusively by `Hydrator` and factories.
+
+- **Event Service**:
+    - `UserEventService::getEvents()` now returns `Box\Dto\Event\EventResponse` (Doctrine Collection of `Event` objects, `nextStreamPosition` as `string`).
+    - Added `EventResponseMapper` for mapping raw API arrays to `EventResponse`.
+
+- **Code Quality**:
+    - `BoxApiErrorTrait::error()` return type corrected to `never` (always throws).
+    - Yoda conditionals applied consistently across auth and webhook classes.
+    - PHPStan level-0 clean; 372 tests, 1002 assertions.
+
+- **Chunked Upload**:
+    - `FileService` low-level session API: `createUploadSession()`, `uploadPart()`, `listUploadSessionParts()`, `commitUploadSession()`, `abortUploadSession()`.
+    - `FileService::chunkedUpload(string|FileStream $file, string|int $parentId)` and `Client::chunkedUpload(string|FileStream $file, string|int $parentId): File` handle part-splitting and session management automatically.
+
+- **PSR-14 Event Dispatcher**:
+    - Inject a `Psr\EventDispatcher\EventDispatcherInterface` via `Client::setEventDispatcher()` to subscribe to SDK lifecycle events; omitting the dispatcher has no behavioral impact.
+    - Auth events: `TokenExchanged`, `TokenRefreshed`, `TokenRevoked`, `TokenLoadedFromStorage`, `TokenSavedToStorage`, `JwtTokenGenerated`.
+    - File events: `FileUploaded`, `UploadSessionCreated`, `UploadPartUploaded`, `UploadSessionCommitted`, `UploadSessionAborted`.
+    - HTTP event: `RateLimitHit`.
+
+- **PHP Enum Wiring**:
+    - `Collaboration::setRole()` now requires `CollaborationRole` (cases: `Editor`, `Viewer`, `Previewer`, `Uploader`, `PreviewerUploader`, `ViewerUploader`, `CoOwner`, `Owner`).
+    - Added `CollaborationStatus` enum (`Accepted`, `Pending`, `Rejected`); `Collaboration::setStatus()` now requires it.
+    - `SharedLink::setAccess()` now requires `SharedLinkAccess` (`Open`, `Company`, `Collaborators`).
+
+### Breaking Changes
+- **Namespace**: All resources moved to `Box\Resource`. Update all imports.
+- **Interfaces removed**: Mirror resource interfaces, mirror factory interfaces, and legacy model interfaces are gone. Use concrete classes.
+- **Legacy methods removed**: `queryBox`, `putIntoBox`, `getFromBox`, `sendUpdateToBox`, `handleResponseContent`, `mapBoxToClass`, `toBoxArray`, `buildQuery`, `getLastResult()`, `getDefaultReturnType()`, `setDefaultReturnType()`.
+- **Legacy classes removed**: `Box\Model\BaseModel`, `Box\Model\Model`, `Box\Model\BoxModel`, and all associated traits.
+- **CLI**: `--transport` option removed. `--storage-type memory` removed; use `filesystem` or `pdo`.
+- **`UserEventService::getEvents()`**: Now returns `EventResponse` DTO instead of array.
+- **`BoxApiErrorTrait::error()`**: Return type is now `never`. Any code checking the return value will break (there is no return value — it always throws).
+- **Enum-typed setters**: `Collaboration::setRole()`, `Collaboration::setStatus()`, and `SharedLink::setAccess()` now require backed enum values (`CollaborationRole`, `CollaborationStatus`, `SharedLinkAccess`). Passing a raw string causes a type error.
+
+### Migration Notes
+- **Enum-typed setters** (`Collaboration`, `SharedLink`): Replace raw string arguments with the appropriate backed enum.
+    - *Before*:
+
+      ~~~~php
+      $collaboration->setRole('editor');
+      $collaboration->setStatus('accepted');
+      $sharedLink->setAccess('open');
+      ~~~~
+
+    - *After*:
+
+      ~~~~php
+      use Box\Enum\CollaborationRole;
+      use Box\Enum\CollaborationStatus;
+      use Box\Enum\SharedLinkAccess;
+
+      $collaboration->setRole(CollaborationRole::Editor);
+      $collaboration->setStatus(CollaborationStatus::Accepted);
+      $sharedLink->setAccess(SharedLinkAccess::Open);
+      ~~~~
+
+See [Upgrading from 0.11 to 1.0](docs/migration/upgrading-0.11-to-1.0.md) for full migration details.
+
 ## v0.11.3
 
 ### Summary
@@ -13,7 +123,7 @@
 - **Documentation and release visibility**:
     - Added README badges for CI status, latest stable version, PHP requirement, license, and total downloads to improve quick release and compatibility checks for consumers.
 - **Maintainer workflow**:
-    - Updated `docs/changelog-prompt.md` to keep the project-context section in the expected location and wording, helping keep changelog generation aligned with SDK/library release-note standards.
+    - Updated `docs/prompts/changelog-prompt.md` to keep the project-context section in the expected location and wording, helping keep changelog generation aligned with SDK/library release-note standards.
 
 ## v0.11.2
 
@@ -58,7 +168,7 @@
 - **Advanced Model Mapping**: Introduced a recursive `Hydrator` service for complex API response mapping.
 - **Namespace Simplification**: Flattened structure for easier imports (e.g., `Box\Client` instead of `Box\Model\Client\Client`).
 - **Standardized Collections**: Migrated to Doctrine Collections for improved consistency and power.
-- **Comprehensive Documentation Pass**: Consolidated all audit and planning material into long-lived documentation. Introduced [v1.0 Planning](docs/v1-planning.md) to track technical goals and architectural decisions for the next major release.
+- **Comprehensive Documentation Pass**: Consolidated all audit and planning material into long-lived documentation. Introduced [v1.0 Planning](docs/planning/v1/overview.md) to track technical goals and architectural decisions for the next major release.
 - **Improved Tooling**: New CLI test harness for managing OAuth2 and API interactions without writing code.
 
 ### Developer Details
@@ -101,4 +211,4 @@
       ~~~~
 - **Update Collections**: If you used `Box\Collection\ArrayCollection`, migrate to `Doctrine\Common\Collections\ArrayCollection`.
 - **Configuration**: Use the new `.env.dist` template for environment-based configuration.
-- **Comprehensive Guide**: See [Upgrading from 0.10.x to 0.11.0](docs/upgrading-0.10-to-0.11.md) for a detailed checklist.
+- **Comprehensive Guide**: See [Upgrading from 0.10.x to 0.11.0](docs/migration/upgrading-0.10-to-0.11.md) for a detailed checklist.

@@ -7,10 +7,7 @@ use Box\Http\Response\BoxResponseInterface;
 interface TransportInterface
 {
     /**
-     * @param string $method
-     * @param string $uri
-     * @param array $options
-     * @return BoxResponseInterface
+     * @param array<string, mixed> $options
      */
     public function request(string $method, string $uri, array $options = []): BoxResponseInterface;
 }

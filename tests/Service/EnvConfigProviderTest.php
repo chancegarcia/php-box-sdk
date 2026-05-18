@@ -24,56 +24,130 @@ class EnvConfigProviderTest extends TestCase
 
     public function testGetRequiredEnvThrowsExceptionWhenMissing(): void
     {
-        unset($_ENV['BOX_CLIENT_ID'], $_SERVER['BOX_CLIENT_ID']);
+        unset($_ENV['BOX_OAUTH_CLIENT_ID'], $_SERVER['BOX_OAUTH_CLIENT_ID']);
         $provider = new EnvConfigProvider();
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Environment variable "BOX_CLIENT_ID" is required');
-        $provider->getClientId();
+        $this->expectExceptionMessage('Environment variable "BOX_OAUTH_CLIENT_ID" is required');
+        $provider->getOAuth2ClientId();
     }
 
     public function testGetClientIdFromEnv(): void
     {
-        $_ENV['BOX_CLIENT_ID'] = 'env_id';
+        $_ENV['BOX_OAUTH_CLIENT_ID'] = 'env_id';
         $provider = new EnvConfigProvider();
-        $this->assertEquals('env_id', $provider->getClientId());
+        $this->assertEquals('env_id', $provider->getOAuth2ClientId());
     }
 
     public function testGetClientSecretFromEnv(): void
     {
-        $_ENV['BOX_CLIENT_SECRET'] = 'env_secret';
+        $_ENV['BOX_OAUTH_CLIENT_SECRET'] = 'env_secret';
         $provider = new EnvConfigProvider();
-        $this->assertEquals('env_secret', $provider->getClientSecret());
+        $this->assertEquals('env_secret', $provider->getOAuth2ClientSecret());
     }
 
     public function testGetClientSecretThrowsExceptionWhenMissing(): void
     {
-        unset($_ENV['BOX_CLIENT_SECRET'], $_SERVER['BOX_CLIENT_SECRET']);
+        unset($_ENV['BOX_OAUTH_CLIENT_SECRET'], $_SERVER['BOX_OAUTH_CLIENT_SECRET']);
         $provider = new EnvConfigProvider();
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Environment variable "BOX_CLIENT_SECRET" is required');
-        $provider->getClientSecret();
+        $this->expectExceptionMessage('Environment variable "BOX_OAUTH_CLIENT_SECRET" is required');
+        $provider->getOAuth2ClientSecret();
     }
 
     public function testGetRedirectUriFromEnv(): void
     {
-        $_ENV['BOX_REDIRECT_URI'] = 'https://redirect.example.com';
+        $_ENV['BOX_OAUTH_REDIRECT_URI'] = 'https://redirect.example.com';
         $provider = new EnvConfigProvider();
-        $this->assertEquals('https://redirect.example.com', $provider->getRedirectUri());
+        $this->assertEquals('https://redirect.example.com', $provider->getOAuth2RedirectUri());
     }
 
     public function testGetAccessTokenFromEnv(): void
     {
-        $_ENV['BOX_ACCESS_TOKEN'] = 'test_token';
+        $_ENV['BOX_OAUTH_ACCESS_TOKEN'] = 'test_token';
         $provider = new EnvConfigProvider();
-        $this->assertEquals('test_token', $provider->getAccessToken());
+        $this->assertEquals('test_token', $provider->getOAuth2AccessToken());
     }
 
     public function testGetAccessTokenReturnsNullWhenMissing(): void
     {
-        unset($_ENV['BOX_ACCESS_TOKEN'], $_SERVER['BOX_ACCESS_TOKEN']);
+        unset($_ENV['BOX_OAUTH_ACCESS_TOKEN'], $_SERVER['BOX_OAUTH_ACCESS_TOKEN']);
         $provider = new EnvConfigProvider();
-        $this->assertNull($provider->getAccessToken());
+        $this->assertNull($provider->getOAuth2AccessToken());
+    }
+
+    public function testGetAuthModeDefaultsToOauth2(): void
+    {
+        unset($_ENV['BOX_AUTH_MODE'], $_SERVER['BOX_AUTH_MODE']);
+        $provider = new EnvConfigProvider();
+        $this->assertEquals('oauth2', $provider->getAuthMode());
+    }
+
+    public function testGetAuthModeReturnsJwt(): void
+    {
+        $_ENV['BOX_AUTH_MODE'] = 'jwt';
+        $provider = new EnvConfigProvider();
+        $this->assertEquals('jwt', $provider->getAuthMode());
+    }
+
+    public function testGetJwtPrivateKeyReadsFile(): void
+    {
+        $tempFile = tempnam(sys_get_temp_dir(), 'box_jwt_test');
+        file_put_contents($tempFile, 'test_private_key_content');
+        $_ENV['BOX_JWT_PRIVATE_KEY_PATH'] = $tempFile;
+
+        $provider = new EnvConfigProvider();
+        try {
+            $this->assertEquals('test_private_key_content', $provider->getJwtPrivateKey());
+        } finally {
+            unlink($tempFile);
+        }
+    }
+
+    public function testGetJwtPrivateKeyThrowsOnMissingFile(): void
+    {
+        $_ENV['BOX_JWT_PRIVATE_KEY_PATH'] = '/non/existent/path';
+        $provider = new EnvConfigProvider();
+
+        $this->expectException(\Box\Exception\BoxException::class);
+        $this->expectExceptionMessage('JWT private key file "/non/existent/path" does not exist or is not readable');
+        $provider->getJwtPrivateKey();
+    }
+
+    public function testGetJwtPrivateKeyPassphraseReturnsNullWhenUnset(): void
+    {
+        unset($_ENV['BOX_JWT_PRIVATE_KEY_PASSPHRASE'], $_SERVER['BOX_JWT_PRIVATE_KEY_PASSPHRASE']);
+        $provider = new EnvConfigProvider();
+        $this->assertNull($provider->getJwtPrivateKeyPassphrase());
+    }
+
+    public function testGetStorageFilePathFromEnv(): void
+    {
+        $_ENV['BOX_STORAGE_FILE_PATH'] = '/tmp/box_tokens.json';
+        $provider = new EnvConfigProvider();
+        $this->assertEquals('/tmp/box_tokens.json', $provider->getStorageFilePath());
+    }
+
+    public function testGetStorageFilePathReturnsNullWhenUnset(): void
+    {
+        unset($_ENV['BOX_STORAGE_FILE_PATH'], $_SERVER['BOX_STORAGE_FILE_PATH']);
+        $provider = new EnvConfigProvider();
+        $this->assertNull($provider->getStorageFilePath());
+    }
+
+    public function testGetBoxSubdomainFromEnv(): void
+    {
+        $_ENV['BOX_SUBDOMAIN'] = 'acme';
+        $provider = new EnvConfigProvider();
+        $this->assertSame('acme', $provider->getBoxSubdomain());
+        unset($_ENV['BOX_SUBDOMAIN']);
+    }
+
+    public function testGetBoxSubdomainReturnsNullWhenUnset(): void
+    {
+        unset($_ENV['BOX_SUBDOMAIN'], $_SERVER['BOX_SUBDOMAIN']);
+        $provider = new EnvConfigProvider();
+        $this->assertNull($provider->getBoxSubdomain());
     }
 }

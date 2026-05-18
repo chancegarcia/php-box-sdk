@@ -8,6 +8,7 @@ composer.lock
 /.phpunit.result.cache
 /.idea/
 /coverage/
+/build/coverage
 /.phpunit.cache
 /.env.local
 /.env.*.local
@@ -16,6 +17,7 @@ composer.lock
 /phpstan-result.cache
 /psalm.xml.cache
 /.phpcs-cache
+/.junie/memory
 
 # Keep directory structure, ignore contents
 var/tmp/*
@@ -23,3 +25,10 @@ var/tmp/*
 
 var/log/*
 !var/log/.gitkeep
+
+# AI session files (gitignored — Claude Code reads/writes these directly)
+docs/ai/*.md
+docs/planning/drafts/
+
+# Machine-specific Claude Code permissions
+.claude/settings.local.json

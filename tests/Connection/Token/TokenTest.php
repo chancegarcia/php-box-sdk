@@ -4,6 +4,7 @@ namespace Box\Tests\Connection\Token;
 
 use Box\Connection\Token\Token;
 use PHPUnit\Framework\TestCase;
+use ReflectionProperty;
 
 class TokenTest extends TestCase
 {
@@ -31,7 +32,7 @@ class TokenTest extends TestCase
         $token = new class extends Token {
             public function forceReceivedAt(int $time): void
             {
-                $reflection = new \ReflectionProperty(parent::class, 'receivedAt');
+                $reflection = new ReflectionProperty(parent::class, 'receivedAt');
                 $reflection->setValue($this, $time);
             }
         };
@@ -46,7 +47,7 @@ class TokenTest extends TestCase
         $token = new class extends Token {
             public function forceReceivedAt(int $time): void
             {
-                $reflection = new \ReflectionProperty(parent::class, 'receivedAt');
+                $reflection = new ReflectionProperty(parent::class, 'receivedAt');
                 $reflection->setValue($this, $time);
             }
         };

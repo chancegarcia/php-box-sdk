@@ -45,6 +45,23 @@ class FileStream
         return new self($resource, $filename, $mimeType);
     }
 
+    public function getSize(): int
+    {
+        $stat = fstat($this->resource);
+        return $stat !== false ? (int) $stat['size'] : 0;
+    }
+
+    public function readChunk(int $length): string
+    {
+        $data = fread($this->resource, $length);
+        return $data !== false ? $data : '';
+    }
+
+    public function isEof(): bool
+    {
+        return feof($this->resource);
+    }
+
     /**
      * Create from a local file path
      */

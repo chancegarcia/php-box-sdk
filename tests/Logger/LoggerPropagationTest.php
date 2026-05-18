@@ -3,14 +3,19 @@
 namespace Box\Tests\Logger;
 
 use Box\Client;
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactory;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
-use Box\Service\BoxClientFactory;
-use Box\Connection\Connection;
-use Box\Folder\Folder;
-use Box\Collaboration\Collaboration;
+use Box\Connection\ConnectionInterface;
+use Box\Resource\Folder;
+use Box\Resource\Collaboration;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Box\Logger\LoggerFactory;
+use Box\Service\ConsoleOutputFormatter;
+use Box\Command\FileUploadCommand;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Tester\CommandTester;
 
 class LoggerPropagationTest extends TestCase
 {
@@ -22,7 +27,7 @@ class LoggerPropagationTest extends TestCase
         $factory = new BoxClientFactory($configProvider);
         $factory->setLogger($logger);
 
-        $client = $factory->createClient();
+        $client = $factory->createOAuth2Client();
 
         $this->assertInstanceOf(Client::class, $client);
         $this->assertSame($logger, $client->getLogger());
@@ -36,11 +41,11 @@ class LoggerPropagationTest extends TestCase
 
         $connection = $client->getConnection();
 
-        $this->assertInstanceOf(Connection::class, $connection);
+        $this->assertInstanceOf(ConnectionInterface::class, $connection);
         $this->assertSame($logger, $connection->getLogger());
     }
 
-    public function testLoggerPropagatesViaGetNewClass(): void
+    public function testResourcesArePassiveAndNotLoggerAware(): void
     {
         $logger = $this->createMock(LoggerInterface::class);
         $client = new Client();
@@ -49,10 +54,12 @@ class LoggerPropagationTest extends TestCase
         $folder = $client->getNewFolder(['id' => '123']);
 
         $this->assertInstanceOf(Folder::class, $folder);
-        $this->assertSame($logger, $folder->getLogger());
+        // Resources should no longer have loggers propagated from Client in v1
+        $this->assertFalse(method_exists($folder, 'getLogger'));
+        $this->assertFalse(method_exists($folder, 'setLogger'));
     }
 
-    public function testLoggerPropagatesToCollaboration(): void
+    public function testCollaborationIsPassiveAndNotLoggerAware(): void
     {
         $logger = $this->createMock(LoggerInterface::class);
         $client = new Client();
@@ -61,24 +68,16 @@ class LoggerPropagationTest extends TestCase
         $collaboration = $client->getNewCollaboration(['id' => '123']);
 
         $this->assertInstanceOf(Collaboration::class, $collaboration);
-        $this->assertSame($logger, $collaboration->getLogger());
+        // Resources should no longer have loggers propagated from Client in v1
+        $this->assertFalse(method_exists($collaboration, 'getLogger'));
+        $this->assertFalse(method_exists($collaboration, 'setLogger'));
     }
 
-    public function testLoggerPropagatesViaValidateClass(): void
-    {
-        $logger = $this->createMock(LoggerInterface::class);
-        $client = new Client();
-        $client->setLogger($logger);
-
-        $client->setFolderClass(Folder::class);
-
-        $this->assertEquals(Folder::class, $client->getFolderClass());
-    }
 
     public function testCliCommandInjectsLoggerIntoFactory(): void
     {
         $factory = $this->createMock(BoxClientFactoryInterface::class);
-        $loggerFactory = $this->createMock(\Box\Logger\LoggerFactory::class);
+        $loggerFactory = $this->createMock(LoggerFactory::class);
         $logger = $this->createMock(LoggerInterface::class);
 
         $loggerFactory->method('createLogger')->willReturn($logger);
@@ -89,14 +88,14 @@ class LoggerPropagationTest extends TestCase
             ->with($logger);
 
         $configProvider = $this->createMock(ConfigProviderInterface::class);
-        $outputFormatter = $this->createMock(\Box\Service\ConsoleOutputFormatter::class);
+        $outputFormatter = $this->createMock(ConsoleOutputFormatter::class);
 
-        $command = new \Box\Command\FileUploadCommand($factory, $configProvider, $outputFormatter, $loggerFactory);
+        $command = new FileUploadCommand($factory, $configProvider, $outputFormatter, $loggerFactory);
 
-        $application = new \Symfony\Component\Console\Application();
-        $application->add($command);
+        $application = new Application();
+        $application->addCommand($command);
 
-        $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
+        $commandTester = new CommandTester($command);
         $commandTester->execute([
             'file-path' => 'dummy.txt',
         ]);

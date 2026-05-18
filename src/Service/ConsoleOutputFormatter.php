@@ -40,10 +40,19 @@ class ConsoleOutputFormatter
             'refresh_token',
             'client_secret',
             'code',
+            'assertion',
+            'jwt_assertion',
+        ];
+
+        $fullRedactKeys = [
+            'private_key',
+            'private_key_passphrase',
         ];
 
         foreach ($data as $key => $value) {
-            if (in_array($key, $sensitiveKeys, true) && is_string($value)) {
+            if (in_array($key, $fullRedactKeys, true)) {
+                $data[$key] = '[REDACTED]';
+            } elseif (in_array($key, $sensitiveKeys, true) && is_string($value)) {
                 $data[$key] = $this->maskString($value);
             } elseif (is_array($value)) {
                 $data[$key] = $this->maskSensitiveData($value);

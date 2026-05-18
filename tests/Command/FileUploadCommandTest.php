@@ -3,12 +3,11 @@
 namespace Box\Tests\Command;
 
 use Box\Command\FileUploadCommand;
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactoryInterface;
 use Box\Contract\ConfigProviderInterface;
 use Box\Client;
 use Box\Logger\ConfigNormalizer;
 use Box\Logger\LoggerFactory;
-use Box\Connection\Connection;
 use Box\Http\Response\BoxResponseInterface;
 use Box\Service\ConsoleOutputFormatter;
 use Box\Service\DefaultJsonFormatter;
@@ -16,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Console\Command\Command;
+use Box\Connection\ConnectionInterface;
 
 class FileUploadCommandTest extends TestCase
 {
@@ -34,9 +34,9 @@ class FileUploadCommandTest extends TestCase
         $this->outputFormatter = new ConsoleOutputFormatter(new DefaultJsonFormatter());
         $this->loggerFactory = new LoggerFactory(new ConfigNormalizer());
         $this->client = $this->createMock(Client::class);
-        $this->connection = $this->createMock(Connection::class);
+        $this->connection = $this->createMock(ConnectionInterface::class);
 
-        $this->clientFactory->method('createClient')->willReturn($this->client);
+        $this->clientFactory->method('createOAuth2Client')->willReturn($this->client);
         $this->client->method('getConnection')->willReturn($this->connection);
 
         $this->testFile = sys_get_temp_dir() . '/test_upload.txt';
@@ -52,10 +52,15 @@ class FileUploadCommandTest extends TestCase
 
     public function testUploadFailsWhenTokenIsMissing(): void
     {
-        $this->configProvider->method('getAccessToken')->willReturn(null);
+        $this->configProvider->method('getOAuth2AccessToken')->willReturn(null);
 
         $application = new Application();
-        $application->add(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new FileUploadCommand(
+            $this->clientFactory,
+            $this->configProvider,
+            $this->outputFormatter,
+            $this->loggerFactory
+        ));
 
         $command = $application->find('box:file:upload');
         $commandTester = new CommandTester($command);
@@ -73,10 +78,15 @@ class FileUploadCommandTest extends TestCase
 
     public function testUploadFailsWhenTokenIsEmpty(): void
     {
-        $this->configProvider->method('getAccessToken')->willReturn('');
+        $this->configProvider->method('getOAuth2AccessToken')->willReturn('');
 
         $application = new Application();
-        $application->add(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new FileUploadCommand(
+            $this->clientFactory,
+            $this->configProvider,
+            $this->outputFormatter,
+            $this->loggerFactory
+        ));
 
         $command = $application->find('box:file:upload');
         $commandTester = new CommandTester($command);
@@ -93,10 +103,15 @@ class FileUploadCommandTest extends TestCase
 
     public function testUploadFailsWhenTokenIsWhitespace(): void
     {
-        $this->configProvider->method('getAccessToken')->willReturn('   ');
+        $this->configProvider->method('getOAuth2AccessToken')->willReturn('   ');
 
         $application = new Application();
-        $application->add(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new FileUploadCommand(
+            $this->clientFactory,
+            $this->configProvider,
+            $this->outputFormatter,
+            $this->loggerFactory
+        ));
 
         $command = $application->find('box:file:upload');
         $commandTester = new CommandTester($command);
@@ -113,7 +128,7 @@ class FileUploadCommandTest extends TestCase
 
     public function testUploadSucceedsWhenTokenIsPresent(): void
     {
-        $this->configProvider->method('getAccessToken')->willReturn('valid_token');
+        $this->configProvider->method('getOAuth2AccessToken')->willReturn('valid_token');
 
         $response = $this->createMock(BoxResponseInterface::class);
         $response->method('getContent')->willReturn(json_encode([
@@ -125,7 +140,12 @@ class FileUploadCommandTest extends TestCase
             ->willReturn($response);
 
         $application = new Application();
-        $application->add(new FileUploadCommand($this->clientFactory, $this->configProvider, $this->outputFormatter, $this->loggerFactory));
+        $application->addCommand(new FileUploadCommand(
+            $this->clientFactory,
+            $this->configProvider,
+            $this->outputFormatter,
+            $this->loggerFactory
+        ));
 
         $command = $application->find('box:file:upload');
         $commandTester = new CommandTester($command);

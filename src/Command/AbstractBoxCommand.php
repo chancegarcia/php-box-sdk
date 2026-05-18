@@ -3,7 +3,6 @@
 namespace Box\Command;
 
 use Box\Client;
-use Box\Connection\Connection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -11,9 +10,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Psr\Log\LoggerInterface;
 use Box\Logger\LoggerFactory;
+use Box\Dto\TokenStorageContext;
+use Box\Storage\Token\Filesystem\FilesystemTokenStorage;
+use Box\Storage\Token\Pdo\TokenStorage as PdoTokenStorage;
 use Exception;
 use InvalidArgumentException;
-use Box\Contract\BoxClientFactoryInterface;
+use Box\Factory\BoxClientFactoryInterface;
+use Box\Contract\ConfigProviderInterface;
 
 abstract class AbstractBoxCommand extends Command
 {
@@ -22,9 +25,17 @@ abstract class AbstractBoxCommand extends Command
 
     public function __construct(
         protected BoxClientFactoryInterface $clientFactory,
-        protected LoggerFactory $loggerFactory
+        protected LoggerFactory $loggerFactory,
+        protected ConfigProviderInterface $configProvider
     ) {
         parent::__construct();
+    }
+
+    abstract public function __invoke(InputInterface $input, OutputInterface $output): int;
+
+    final public function execute(InputInterface $input, OutputInterface $output): int
+    {
+        return $this->__invoke($input, $output);
     }
 
     protected function configure(): void
@@ -33,36 +44,88 @@ abstract class AbstractBoxCommand extends Command
             ->addOption('log-config', null, InputOption::VALUE_REQUIRED, 'Path to a different log config file')
             ->addOption('log-dir', null, InputOption::VALUE_REQUIRED, 'Different log directory')
             ->addOption('log-file', null, InputOption::VALUE_REQUIRED, 'Different base log file name (contains all levels)')
-            ->addOption('json', null, InputOption::VALUE_NONE, 'Output result as JSON to console');
-
-        $this->configureTransportOption();
+            ->addOption('json', null, InputOption::VALUE_NONE, 'Output result as JSON to console')
+            ->addOption('use-storage', null, InputOption::VALUE_NONE, 'Enable token storage')
+            ->addOption('storage-type', null, InputOption::VALUE_REQUIRED, 'Type of storage (pdo, filesystem)', 'filesystem')
+            ->addOption('user-id', null, InputOption::VALUE_REQUIRED, 'User ID for storage context')
+            ->addOption('enterprise-id', null, InputOption::VALUE_REQUIRED, 'Enterprise ID for storage context')
+            ->addOption('pdo-dsn', null, InputOption::VALUE_REQUIRED, 'PDO DSN for storage')
+            ->addOption('pdo-user', null, InputOption::VALUE_REQUIRED, 'PDO username')
+            ->addOption('pdo-pass', null, InputOption::VALUE_REQUIRED, 'PDO password')
+            ->addOption('storage-path', null, InputOption::VALUE_REQUIRED, 'File path for filesystem token storage')
+            ->addOption('subdomain', null, InputOption::VALUE_REQUIRED, 'Box account subdomain (e.g. "acme" for acme.app.box.com); falls back to BOX_SUBDOMAIN env');
     }
 
-    protected function configureTransportOption(): void
+    protected function getBoxSubdomain(InputInterface $input): ?string
     {
-        $this->addOption(
-            'transport',
-            null,
-            InputOption::VALUE_REQUIRED,
-            sprintf('The HTTP transport to use. Allowed values: %s, %s', Connection::TRANSPORT_CURL, Connection::TRANSPORT_GUZZLE)
-        );
+        $option = $input->getOption('subdomain');
+        if (null !== $option && '' !== $option) {
+            return (string) $option;
+        }
+        return $this->configProvider->getBoxSubdomain();
     }
 
-    protected function applyTransportOption(InputInterface $input, Client $client): void
+    protected function applyStorageOption(InputInterface $input, Client $client): void
     {
-        $transport = $input->getOption('transport');
-        if (null === $transport) {
+        if (!$input->getOption('use-storage')) {
             return;
         }
 
-        $allowedTransports = [Connection::TRANSPORT_CURL, Connection::TRANSPORT_GUZZLE];
-        if (!in_array($transport, $allowedTransports, true)) {
-            throw new InvalidArgumentException(
-                sprintf('Invalid transport "%s". Allowed transports: %s.', $transport, implode(', ', $allowedTransports))
-            );
+        $userId = $input->getOption('user-id');
+        $enterpriseId = $input->getOption('enterprise-id');
+        $clientId = $client->getClientId();
+
+        if (null === $userId && null === $enterpriseId) {
+            $this->logger->warning('Storage enabled but no user-id or enterprise-id provided. Storage may not function correctly if context is required.');
         }
 
-        $client->getConnection()->setTransportName($transport);
+        $context = new TokenStorageContext(
+            userId: $userId,
+            enterpriseId: $enterpriseId,
+            clientId: $clientId
+        );
+
+        $client->setTokenStorageContext($context);
+
+        $storageType = $input->getOption('storage-type');
+
+        $storage = match ($storageType) {
+            'pdo' => $this->buildPdoStorage($input),
+            'filesystem' => $this->buildFilesystemStorage($input),
+            default => throw new InvalidArgumentException(
+                sprintf('Unsupported storage type "%s". Valid types: pdo, filesystem.', $storageType)
+            ),
+        };
+
+        $client->setTokenStorage($storage);
+
+        $this->logger->info('Token storage configured for command', [
+            'type' => $storageType,
+            'user_id' => $userId,
+            'enterprise_id' => $enterpriseId,
+            'client_id' => $clientId
+        ]);
+    }
+
+    private function buildPdoStorage(InputInterface $input): PdoTokenStorage
+    {
+        $dsn = $input->getOption('pdo-dsn') ?? $this->configProvider->getStoragePdoDsn();
+        if (null === $dsn) {
+            throw new InvalidArgumentException('PDO DSN is required when storage is enabled. Use --pdo-dsn or BOX_STORAGE_PDO_DSN env.');
+        }
+        $user = $input->getOption('pdo-user') ?? $this->configProvider->getStoragePdoUser();
+        $pass = $input->getOption('pdo-pass') ?? $this->configProvider->getStoragePdoPassword();
+
+        return new PdoTokenStorage($dsn, $user, $pass);
+    }
+
+    private function buildFilesystemStorage(InputInterface $input): FilesystemTokenStorage
+    {
+        $defaultPath = rtrim((string) getcwd(), '/') . '/var/tmp/box-sdk/tokens.json';
+
+        $path = $input->getOption('storage-path') ?? $this->configProvider->getStorageFilePath() ?? $defaultPath;
+
+        return new FilesystemTokenStorage($path);
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output): void

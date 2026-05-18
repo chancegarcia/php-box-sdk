@@ -3,6 +3,18 @@
 
 require __DIR__.'/../vendor/autoload.php';
 
+use Box\Command\AuthExchangeCommand;
+use Box\Command\AuthRefreshCommand;
+use Box\Command\AuthUrlCommand;
+use Box\Command\FileUploadCommand;
+use Box\Command\JwtTokenCommand;
+use Box\Contract\JsonFormatterInterface;
+use Box\Factory\BoxClientFactory;
+use Box\Logger\ConfigNormalizer;
+use Box\Logger\LoggerFactory;
+use Box\Service\ConsoleOutputFormatter;
+use Box\Service\DefaultJsonFormatter;
+use Box\Service\EnvConfigProvider;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Dotenv\Dotenv;
 
@@ -13,27 +25,28 @@ if (file_exists(__DIR__ . '/../.env')) {
 
 $application = new Application('Box SDK CLI', '1.0.0');
 
-$configProvider = new \Box\Service\EnvConfigProvider();
-$clientFactory = new \Box\Service\BoxClientFactory($configProvider);
+$configProvider = new EnvConfigProvider();
+$clientFactory = new BoxClientFactory($configProvider);
 
 // Resolve JSON formatter
-$jsonFormatterClass = $configProvider->getJsonFormatterClass() ?? \Box\Service\DefaultJsonFormatter::class;
+$jsonFormatterClass = $configProvider->getJsonFormatterClass() ?? DefaultJsonFormatter::class;
 if (!class_exists($jsonFormatterClass)) {
     throw new \RuntimeException(sprintf('JSON formatter class "%s" not found.', $jsonFormatterClass));
 }
 $jsonFormatter = new $jsonFormatterClass();
-if (!$jsonFormatter instanceof \Box\Contract\JsonFormatterInterface) {
+if (!$jsonFormatter instanceof JsonFormatterInterface) {
     throw new \RuntimeException(sprintf('JSON formatter class "%s" must implement Box\Contract\JsonFormatterInterface.', $jsonFormatterClass));
 }
 
-$outputFormatter = new \Box\Service\ConsoleOutputFormatter($jsonFormatter);
+$outputFormatter = new ConsoleOutputFormatter($jsonFormatter);
 
-$configNormalizer = new \Box\Logger\ConfigNormalizer();
-$loggerFactory = new \Box\Logger\LoggerFactory($configNormalizer);
+$configNormalizer = new ConfigNormalizer();
+$loggerFactory = new LoggerFactory($configNormalizer);
 
-$application->addCommand(new \Box\Command\AuthUrlCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
-$application->addCommand(new \Box\Command\AuthExchangeCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
-$application->addCommand(new \Box\Command\AuthRefreshCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
-$application->addCommand(new \Box\Command\FileUploadCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->addCommand(new AuthUrlCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->addCommand(new AuthExchangeCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->addCommand(new AuthRefreshCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->addCommand(new JwtTokenCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
+$application->addCommand(new FileUploadCommand($clientFactory, $configProvider, $outputFormatter, $loggerFactory));
 
 $application->run();
