@@ -57,7 +57,7 @@ class AuthRefreshCommand extends AbstractBoxCommand
         }
 
         if (!$refreshTokenValue) {
-            $io->error('Refresh token is required. Set BOX_REFRESH_TOKEN env or enable storage with a stored token.');
+            $io->error('Refresh token is required. Set BOX_OAUTH_REFRESH_TOKEN env or enable storage with a stored token.');
             $this->logger->error('Refresh token is missing');
             return Command::FAILURE;
         }

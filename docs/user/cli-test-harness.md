@@ -34,11 +34,7 @@ Developers can use the CLI to:
    ```bash
    cp .env.dist .env
    ```
-2. Configure your Box credentials in `.env`:
-   - `BOX_CLIENT_ID`: Your application's client ID.
-   - `BOX_CLIENT_SECRET`: Your application's client secret.
-   - `BOX_REDIRECT_URI`: (Optional) Must match your Box App settings.
-   - `BOX_ACCESS_TOKEN`: (Required for file operations) Can be manually set or obtained via exchange commands.
+2. Configure your Box credentials in `.env`. See the [Environment Variable Reference](configuration.md) for a complete list of supported variables.
 
 ### Discovery
 Run the following to list all available Box-specific commands:
@@ -157,4 +153,5 @@ You can inject a custom JSON formatter by setting `BOX_JSON_FORMATTER` in your `
 
 **See also:**
 - [README.md](../README.md)
+- [Environment Variable Reference](configuration.md)
 - [Programmatic Usage Guide](programmatic-usage.md)

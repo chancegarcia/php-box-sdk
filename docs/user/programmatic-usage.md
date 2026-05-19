@@ -51,7 +51,7 @@ class BoxStorageService
 The `Box\Client` is stateful regarding its configuration (Client ID, Secret) and its current `Token`.
 
 ### Configuration
-Always fail fast if required configuration is missing. Use environment variables or secure secret management to inject `BOX_CLIENT_ID` and `BOX_CLIENT_SECRET`.
+Always fail fast if required configuration is missing. Use environment variables or secure secret management to inject credentials. See the [Environment Variable Reference](configuration.md) for all supported variables.
 
 ### Token Persistence
 The SDK provides a `Box\Connection\Token\Token` model. Your application is responsible for:
@@ -489,7 +489,7 @@ $client->setTokenStorage(new RedisTokenStorage($redis));
 
 ## 10. Best Practices
 
-- **Security:** Never commit `BOX_CLIENT_SECRET` or any tokens to source control.
+- **Security:** Never commit `BOX_OAUTH_CLIENT_SECRET`, `BOX_JWT_CLIENT_SECRET`, or any tokens to source control.
 - **Infrastructure:** Treat the SDK as infrastructure. Your business logic shouldn't know how Box handles OAuth2; it should only care about "storing a file."
 - **Testing:** Use the SDK's interfaces to mock the `Client` in your unit tests.
 
@@ -613,5 +613,6 @@ $client->setEventDispatcher($dispatcher);
 
 **See also:**
 - [README.md](../README.md)
+- [Environment Variable Reference](configuration.md)
 - [CLI Test Harness Guide](cli-test-harness.md)
 - [Upgrading from 0.11 to 1.0](../migration/upgrading-0.11-to-1.0.md)
