@@ -73,7 +73,7 @@ class FileUploadCommand extends AbstractBoxCommand
         $accessToken = $this->configProvider->getOAuth2AccessToken();
 
         if (empty($accessToken) || trim($accessToken) === '') {
-            $io->error('BOX_ACCESS_TOKEN is required for upload.');
+            $io->error('BOX_OAUTH_ACCESS_TOKEN is required for upload.');
             $this->logger->error('Access token is missing for upload');
             return Command::FAILURE;
         }

@@ -33,7 +33,7 @@ class AuthExchangeCommand extends AbstractBoxCommand
         parent::configure();
         $this
             ->setHelp('This command exchanges the temporary authorization code obtained from the browser for a more permanent access token.')
-            ->addArgument('code', InputArgument::OPTIONAL, 'The authorization code (falls back to BOX_AUTH_CODE env)')
+            ->addArgument('code', InputArgument::OPTIONAL, 'The authorization code (falls back to BOX_OAUTH_AUTH_CODE env)')
             ->addOption('secrets-file', null, InputOption::VALUE_REQUIRED, 'Path to write the full token payload')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force writing to secrets file without confirmation');
     }
@@ -49,7 +49,7 @@ class AuthExchangeCommand extends AbstractBoxCommand
         $code = $input->getArgument('code') ?? $this->configProvider->getOAuth2AuthCode();
 
         if (!$code) {
-            $io->error('Authorization code is required. Provide it as an argument or set BOX_AUTH_CODE env.');
+            $io->error('Authorization code is required. Provide it as an argument or set BOX_OAUTH_AUTH_CODE env.');
             $this->logger->error('Authorization code is missing');
             return Command::FAILURE;
         }

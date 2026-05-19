@@ -85,8 +85,8 @@ class AuthRefreshCommandTest extends TestCase
 
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString('Refresh token is required.', $output);
-        $this->assertStringContainsString('BOX_REFRESH_TOKEN env', $output);
-        $this->assertStringContainsString('enable storage', $output);
+        $this->assertStringContainsString('BOX_OAUTH_REFRESH_TOKEN env', $output);
+        $this->assertStringContainsString('stored token', $output);
         $this->assertEquals(1, $commandTester->getStatusCode());
     }
 }

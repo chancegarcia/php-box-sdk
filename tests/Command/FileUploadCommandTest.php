@@ -69,7 +69,7 @@ class FileUploadCommandTest extends TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('BOX_ACCESS_TOKEN is required for upload.', $output);
+        $this->assertStringContainsString('BOX_OAUTH_ACCESS_TOKEN is required for upload.', $output);
         $this->assertEquals(Command::FAILURE, $commandTester->getStatusCode());
 
         // Verify no upload was attempted
@@ -95,7 +95,7 @@ class FileUploadCommandTest extends TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('BOX_ACCESS_TOKEN is required for upload.', $output);
+        $this->assertStringContainsString('BOX_OAUTH_ACCESS_TOKEN is required for upload.', $output);
         $this->assertEquals(Command::FAILURE, $commandTester->getStatusCode());
 
         $this->connection->expects($this->never())->method('postFile');
@@ -120,7 +120,7 @@ class FileUploadCommandTest extends TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('BOX_ACCESS_TOKEN is required for upload.', $output);
+        $this->assertStringContainsString('BOX_OAUTH_ACCESS_TOKEN is required for upload.', $output);
         $this->assertEquals(Command::FAILURE, $commandTester->getStatusCode());
 
         $this->connection->expects($this->never())->method('postFile');

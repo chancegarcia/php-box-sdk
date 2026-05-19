@@ -1,5 +1,33 @@
 # Changelog
 
+## v1.0.3
+
+### Summary
+- Added `docs/user/configuration.md` as the single consolidated reference for all `BOX_*` environment variables, covering OAuth2, JWT, token storage, file operations, and miscellaneous options. Both the Programmatic Usage Guide and the CLI Test Harness Guide now link to it.
+- Fixed incorrect environment variable names in the user guides, CLI help text, and CLI error messages. Documentation referenced `BOX_CLIENT_ID`, `BOX_CLIENT_SECRET`, `BOX_REDIRECT_URI`, and `BOX_ACCESS_TOKEN`, which do not exist in the SDK. The correct names — `BOX_OAUTH_CLIENT_ID`, `BOX_OAUTH_CLIENT_SECRET`, `BOX_OAUTH_REDIRECT_URI`, and `BOX_OAUTH_ACCESS_TOKEN` — have been applied throughout.
+- Added `BOX_SUBDOMAIN` to `.env.dist`; it was supported by `EnvConfigProvider` but missing from the distributed template.
+
+### Developer Details
+- **Documentation**:
+    - Added `docs/user/configuration.md` with a complete env var reference table organized by category (Auth Mode, OAuth2, JWT, Token Storage, File Operations, Misc), including required/optional status and default values.
+    - `docs/user/cli-test-harness.md` §2 Setup: replaced a stale, incorrect variable list with a link to the new reference.
+    - `docs/user/programmatic-usage.md` §4 Configuration and §10 Best Practices: corrected stale variable names and linked to the new reference.
+- **CLI error messages and help text** (`src/Command/`):
+    - `AuthExchangeCommand`: `BOX_AUTH_CODE` → `BOX_OAUTH_AUTH_CODE` in argument description and error output.
+    - `AuthRefreshCommand`: `BOX_REFRESH_TOKEN` → `BOX_OAUTH_REFRESH_TOKEN` in error output.
+    - `FileUploadCommand`: `BOX_ACCESS_TOKEN` → `BOX_OAUTH_ACCESS_TOKEN` in error output.
+- **`.env.dist`**: Added `BOX_SUBDOMAIN=` under the Misc section.
+
+## v1.0.2
+
+### Summary
+- Upgraded `actions/checkout` from v4 to v6.0.2 in the CI workflow. No impact on SDK consumers.
+
+## v1.0.1
+
+### Summary
+- Added `bin/box-sdk` to the `bin` field in `composer.json`. Without this entry, Composer did not link the CLI binary into `vendor/bin/` when the package was installed as a dependency.
+
 ## v1.0.0
 
 ### Summary
